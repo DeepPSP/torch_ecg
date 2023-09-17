@@ -3,21 +3,17 @@ Currently NOT used, NOT tested.
 """
 
 from copy import deepcopy
-from typing import Union, Optional, Any
+from typing import Any, Optional, Union
 
 import numpy as np
 import torch
-from torch import Tensor
-from torch_ecg.cfg import CFG
-from torch_ecg.models._nets import MLP
-from torch_ecg.components.outputs import (
-    ClassificationOutput,
-    SequenceLabellingOutput,
-)
-from torch_ecg.utils import add_docstring, CkptMixin
-
 from cfg import ModelCfg
+from torch import Tensor
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
+from torch_ecg.models._nets import MLP
+from torch_ecg.utils import CkptMixin, add_docstring
 
 __all__ = ["OutComeMLP"]
 
@@ -27,9 +23,7 @@ class OutComeMLP(MLP, CkptMixin):
 
     __name__ = "OutComeMLP"
 
-    def __init__(
-        self, in_channels: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, in_channels: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """ """
         _config = CFG(deepcopy(ModelCfg.outcome))
         _config.update(deepcopy(config) or {})

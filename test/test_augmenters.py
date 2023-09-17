@@ -4,12 +4,12 @@
 import re
 
 import numpy as np
-import torch
 import pytest
+import torch
 
-from torch_ecg.cfg import CFG
 from torch_ecg.augmenters import (
     Augmenter,
+    AugmenterManager,
     BaselineWanderAugmenter,
     CutMix,
     LabelSmooth,
@@ -19,10 +19,9 @@ from torch_ecg.augmenters import (
     RandomRenormalize,
     StretchCompress,
     StretchCompressOffline,
-    AugmenterManager,
 )
 from torch_ecg.augmenters.baseline_wander import _gen_baseline_wander
-
+from torch_ecg.cfg import CFG
 
 SIG_LEN = 2000
 BATCH_SIZE = 2
@@ -73,9 +72,7 @@ def test_augmenter_manager():
     am.random = True
     sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
 
-    with pytest.warns(
-        RuntimeWarning, match="The augmenters are applied in random order"
-    ):
+    with pytest.warns(RuntimeWarning, match="The augmenters are applied in random order"):
         am.random = True
         am.rearrange(
             new_ordering=[
@@ -184,15 +181,11 @@ def test_cutmix_augmenter():
 
     assert str(cm) == repr(cm)
 
-    with pytest.raises(
-        AssertionError, match="`label` should NOT be categorical labels"
-    ):
+    with pytest.raises(AssertionError, match="`label` should NOT be categorical labels"):
         label = torch.randint(0, 26, (BATCH_SIZE,), dtype=torch.long)
         cm(sig, label)
 
-    with pytest.raises(
-        AssertionError, match="`num_mix` must be a positive integer, but got `.+`"
-    ):
+    with pytest.raises(AssertionError, match="`num_mix` must be a positive integer, but got `.+`"):
         cm = CutMix(fs=500, num_mix=0)
     with pytest.raises(AssertionError, match="Probability must be between 0 and 1"):
         cm = CutMix(fs=500, prob=1.1)
@@ -244,9 +237,7 @@ def test_random_flip():
 def test_random_masking():
     rm = RandomMasking(fs=500, prob=0.7)
     sig = torch.randn(BATCH_SIZE, N_LEADS, SIG_LEN)
-    critical_points = [
-        np.arange(250, SIG_LEN - 250, step=400) for _ in range(BATCH_SIZE)
-    ]
+    critical_points = [np.arange(250, SIG_LEN - 250, step=400) for _ in range(BATCH_SIZE)]
     sig, _ = rm(sig, None, critical_points=critical_points)
     rm = RandomMasking(fs=500, prob=0.3, inplace=False)
     sig = torch.randn(BATCH_SIZE, N_LEADS, SIG_LEN)
@@ -268,9 +259,7 @@ def test_random_renormalize():
     # sig = torch.randn(BATCH_SIZE, N_LEADS, SIG_LEN)
     # sig, _ = rrn(sig, None)
 
-    rrn = RandomRenormalize(
-        mean=np.zeros((N_LEADS,)), std=np.ones((N_LEADS,)), inplace=False
-    )
+    rrn = RandomRenormalize(mean=np.zeros((N_LEADS,)), std=np.ones((N_LEADS,)), inplace=False)
     sig = torch.randn(BATCH_SIZE, N_LEADS, SIG_LEN)
     sig, _ = rrn(sig, None)
 

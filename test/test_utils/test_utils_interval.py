@@ -5,22 +5,22 @@ import numpy as np
 import pytest
 
 from torch_ecg.utils.utils_interval import (
-    get_optimal_covering,
-    overlaps,
-    validate_interval,
-    in_interval,
-    in_generalized_interval,
-    intervals_union,
-    generalized_intervals_union,
-    intervals_intersection,
-    generalized_intervals_intersection,
-    generalized_interval_complement,
-    find_max_cont_len,
-    interval_len,
-    generalized_interval_len,
     find_extrema,
+    find_max_cont_len,
+    generalized_interval_complement,
+    generalized_interval_len,
+    generalized_intervals_intersection,
+    generalized_intervals_union,
+    get_optimal_covering,
+    in_generalized_interval,
+    in_interval,
+    interval_len,
+    intervals_intersection,
+    intervals_union,
     is_intersect,
     max_disjoint_covering,
+    overlaps,
+    validate_interval,
 )
 
 
@@ -80,9 +80,11 @@ def test_generalized_intervals_union():
         [-3, 2],
         [3, 9],
     ]
-    assert generalized_intervals_union(
-        ([[1, 2], [3, 7]], [[4, 9], [-3, 1]]), join_book_endeds=False
-    ) == [[-3, 1], [1, 2], [3, 9]]
+    assert generalized_intervals_union(([[1, 2], [3, 7]], [[4, 9], [-3, 1]]), join_book_endeds=False) == [
+        [-3, 1],
+        [1, 2],
+        [3, 9],
+    ]
 
 
 def test_intervals_intersection():
@@ -95,22 +97,17 @@ def test_intervals_intersection():
 
 
 def test_generalized_intervals_intersection():
-    assert (
-        generalized_intervals_intersection([[1, 2], [3, 7]], [[40, 90], [-30, -10]])
-        == []
-    )
-    assert generalized_intervals_intersection(
-        [[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]]
-    ) == [[1, 3], [4, 5]]
-    assert generalized_intervals_intersection(
-        [[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]], drop_degenerate=False
-    ) == [[1, 3], [4, 5], [33, 33]]
+    assert generalized_intervals_intersection([[1, 2], [3, 7]], [[40, 90], [-30, -10]]) == []
+    assert generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]]) == [[1, 3], [4, 5]]
+    assert generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]], drop_degenerate=False) == [
+        [1, 3],
+        [4, 5],
+        [33, 33],
+    ]
 
 
 def test_generalized_interval_complement():
-    assert generalized_interval_complement(
-        [1, 100], [[5, 33], [40, 50], [60, 140]]
-    ) == [[1, 5], [33, 40], [50, 60]]
+    assert generalized_interval_complement([1, 100], [[5, 33], [40, 50], [60, 140]]) == [[1, 5], [33, 40], [50, 60]]
     assert generalized_interval_complement([1, 10], [[40, 66], [111, 300]]) == [[1, 10]]
     assert generalized_interval_complement([150, 200], [[40, 66], [111, 300]]) == []
 
@@ -119,28 +116,18 @@ def test_get_optimal_covering():
     # TODO: add more test examples
     total_interval = [0, 100]
     to_cover = [[7, 33], 66, [82, 89]]
-    covering_1 = get_optimal_covering(
-        total_interval, to_cover, min_len=10, split_threshold=5, verbose=3
-    )
+    covering_1 = get_optimal_covering(total_interval, to_cover, min_len=10, split_threshold=5, verbose=3)
     assert len(covering_1) == 3
-    covering, traceback = get_optimal_covering(
-        total_interval, to_cover, min_len=10, split_threshold=5, traceback=True
-    )
+    covering, traceback = get_optimal_covering(total_interval, to_cover, min_len=10, split_threshold=5, traceback=True)
     assert covering_1 == covering
     assert traceback == [[0], [1], [2]]
-    covering, traceback = get_optimal_covering(
-        total_interval, to_cover, min_len=20, split_threshold=5, traceback=True
-    )
+    covering, traceback = get_optimal_covering(total_interval, to_cover, min_len=20, split_threshold=5, traceback=True)
     assert len(covering) == 3
     assert traceback == [[0], [1], [2]]
-    covering, traceback = get_optimal_covering(
-        total_interval, to_cover, min_len=20, split_threshold=13, traceback=True
-    )
+    covering, traceback = get_optimal_covering(total_interval, to_cover, min_len=20, split_threshold=13, traceback=True)
     assert len(covering) == 3
     assert traceback == [[0], [1], [2]]
-    covering, traceback = get_optimal_covering(
-        total_interval, to_cover, min_len=20, split_threshold=14, traceback=True
-    )
+    covering, traceback = get_optimal_covering(total_interval, to_cover, min_len=20, split_threshold=14, traceback=True)
     assert len(covering) == 2
     assert traceback == [[0], [1, 2]]
     covering, traceback = get_optimal_covering(
@@ -249,9 +236,7 @@ def test_get_optimal_covering():
         get_optimal_covering(total_interval, to_cover, min_len=0, split_threshold=5)
     with pytest.raises(AssertionError, match="`split_threshold` must be positive"):
         get_optimal_covering(total_interval, to_cover, min_len=10, split_threshold=0)
-    with pytest.raises(
-        AssertionError, match="`isolated_point_dist_threshold` must be non-negative"
-    ):
+    with pytest.raises(AssertionError, match="`isolated_point_dist_threshold` must be non-negative"):
         get_optimal_covering(
             total_interval,
             to_cover,
@@ -314,9 +299,7 @@ def test_find_extrema():
 
     with pytest.raises(ValueError, match="`signal` must be 1D, but got 2D"):
         find_extrema(y.reshape(1, -1), mode="max")
-    with pytest.raises(
-        ValueError, match="Unknwon `invalid`, must be one of `max`, `min`, `both`"
-    ):
+    with pytest.raises(ValueError, match="Unknwon `invalid`, must be one of `max`, `min`, `both`"):
         find_extrema(y, mode="invalid")
 
 
@@ -328,6 +311,7 @@ def test_max_disjoint_covering():
         [[1, 4], [4, 6], [8, 9]],
         [0, 2, 3],
     )
-    assert max_disjoint_covering(
-        [[1, 4], [2, 3], [4, 6], [8, 9]], allow_book_endeds=False, traceback=False
-    ) == ([[2, 3], [4, 6], [8, 9]], [])
+    assert max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]], allow_book_endeds=False, traceback=False) == (
+        [[2, 3], [4, 6], [8, 9]],
+        [],
+    )

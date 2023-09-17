@@ -5,12 +5,8 @@ from copy import deepcopy
 
 import torch
 
+from torch_ecg.model_configs.cnn.densenet import densenet_leadwise, densenet_vanilla
 from torch_ecg.models.cnn.densenet import DenseNet
-from torch_ecg.model_configs.cnn.densenet import (
-    densenet_vanilla,
-    densenet_leadwise,
-)
-
 
 IN_CHANNELS = 12
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -26,9 +22,7 @@ def test_densenet():
         model = DenseNet(in_channels=IN_CHANNELS, **config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[-1], batch_size=inp.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
         assert model.in_channels == IN_CHANNELS
         assert isinstance(model.doi, list)
 
@@ -38,9 +32,7 @@ def test_densenet():
     model = DenseNet(in_channels=IN_CHANNELS, **densenet_config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[-1], batch_size=inp.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
 
     densenet_config = deepcopy(densenet_leadwise)
     densenet_config.block.building_block = "bottleneck"
@@ -48,6 +40,4 @@ def test_densenet():
     model = DenseNet(in_channels=IN_CHANNELS, **densenet_config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[-1], batch_size=inp.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])

@@ -53,12 +53,8 @@ LUDBTrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 LUDBTrainCfg.fs = 500
 LUDBTrainCfg.train_ratio = 0.8
 
-LUDBTrainCfg.leads = (
-    EAK.Standard12Leads
-)  # ["II",]  # the lead to tain model, None --> all leads
-LUDBTrainCfg.use_single_lead = (
-    False  # use single lead as input or use all leads in `LUDBTrainCfg.leads`
-)
+LUDBTrainCfg.leads = EAK.Standard12Leads  # ["II",]  # the lead to tain model, None --> all leads
+LUDBTrainCfg.use_single_lead = False  # use single lead as input or use all leads in `LUDBTrainCfg.leads`
 
 if LUDBTrainCfg.use_single_lead:
     LUDBTrainCfg.n_leads = 1
@@ -86,9 +82,7 @@ LUDBTrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 LUDBTrainCfg.learning_rate = 1e-3  # 1e-4
 LUDBTrainCfg.lr = LUDBTrainCfg.learning_rate
 
-LUDBTrainCfg.lr_scheduler = (
-    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
-)
+LUDBTrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 LUDBTrainCfg.lr_step_size = 50
 LUDBTrainCfg.lr_gamma = 0.1
 LUDBTrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
@@ -101,9 +95,7 @@ LUDBTrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 LUDBTrainCfg.early_stopping.patience = 10
 
 # configs of loss function
-LUDBTrainCfg.loss = (
-    "FocalLoss"  # "BCEWithLogitsLoss", "AsymmetricLoss", "CrossEntropyLoss"
-)
+LUDBTrainCfg.loss = "FocalLoss"  # "BCEWithLogitsLoss", "AsymmetricLoss", "CrossEntropyLoss"
 LUDBTrainCfg.loss_kw = CFG()  # "BCEWithLogitsLoss", "AsymmetricLoss"
 LUDBTrainCfg.flooding_level = 0.0  # flooding performed if positive
 

@@ -26,7 +26,6 @@ from torch_ecg.utils.utils_data import mask_to_intervals
 
 from .ecg_rpeaks_dl_models import load_model
 
-
 __all__ = [
     "seq_lab_net_detect",
 ]
@@ -35,9 +34,7 @@ __all__ = [
 CNN_MODEL, CRNN_MODEL = load_model("keras_ecg_seq_lab_net")
 
 
-def seq_lab_net_detect(
-    sig: np.ndarray, fs: Real, correction: bool = False, **kwargs
-) -> np.ndarray:
+def seq_lab_net_detect(sig: np.ndarray, fs: Real, correction: bool = False, **kwargs) -> np.ndarray:
     """
 
     use model of entry 0416 of CPSC2019,
@@ -93,14 +90,10 @@ def seq_lab_net_detect(
         if batch_size is None:
             batch_size = 64
         if verbose >= 1:
-            print(
-                f"the signal is too long, hence split into segments for parallel computing of batch size {batch_size}"
-            )
+            print(f"the signal is too long, hence split into segments for parallel computing of batch size {batch_size}")
     if batch_size is not None:
         model_input_len = 5000
-        half_overlap_len = (
-            256  # approximately 0.5s, should be divisible by `model_granularity`
-        )
+        half_overlap_len = 256  # approximately 0.5s, should be divisible by `model_granularity`
         half_overlap_len_prob = half_overlap_len // model_granularity
         overlap_len = 2 * half_overlap_len
         forward_len = model_input_len - overlap_len
@@ -120,12 +113,9 @@ def seq_lab_net_detect(
             # b_start = b_idx * batch_size * forward_len
             b_start = b_idx * batch_size
             b_segs = segs[b_start : b_start + batch_size]
-            b_input = np.vstack(
-                [
-                    sig_rsmp[idx * forward_len : idx * forward_len + model_input_len]
-                    for idx in b_segs
-                ]
-            ).reshape((-1, model_input_len, 1))
+            b_input = np.vstack([sig_rsmp[idx * forward_len : idx * forward_len + model_input_len] for idx in b_segs]).reshape(
+                (-1, model_input_len, 1)
+            )
             prob_cnn = CNN_MODEL.predict(b_input)
             prob_crnn = CRNN_MODEL.predict(b_input)
             b_prob = (prob_cnn[..., 0] + prob_crnn[..., 0]) / 2
@@ -139,11 +129,7 @@ def seq_lab_net_detect(
                 print(f"{b_idx+1}/{n_batches} batches", end="\r")
         # prob, output from the for loop,
         # is the array of probabilities for sig_rsmp[half_overlap_len: -half_overlap_len]
-        prob = (
-            list(repeat(0, half_overlap_len_prob))
-            + prob
-            + list(repeat(0, half_overlap_len_prob))
-        )
+        prob = list(repeat(0, half_overlap_len_prob)) + prob + list(repeat(0, half_overlap_len_prob))
         # prob = head_prob + prob + tail_prob  # NOTE: head and tail might not be trustable
         prob = np.array(prob)
     else:
@@ -231,9 +217,7 @@ def _seq_lab_net_post_process(
     model_spacing = 1000 / model_fs  # units in ms
     model_granularity = 8  # 1/8 times of model_fs
     _prob = prob.squeeze()
-    assert (
-        _prob.ndim == 1
-    ), "only support single record processing, batch processing not supported!"
+    assert _prob.ndim == 1, "only support single record processing, batch processing not supported!"
     # prob --> qrs mask --> qrs intervals --> rpeaks
     mask = (_prob >= prob_thr).astype(int)
     qrs_intervals = mask_to_intervals(mask, 1)
@@ -241,9 +225,7 @@ def _seq_lab_net_post_process(
     # is set to eliminate some wrong predictions
     _duration_thr = duration_thr / model_spacing / model_granularity
     # should be 8 * (itv[0]+itv[1]) / 2
-    rpeaks = (model_granularity // 2) * np.array(
-        [itv[0] + itv[1] for itv in qrs_intervals if itv[1] - itv[0] >= _duration_thr]
-    )
+    rpeaks = (model_granularity // 2) * np.array([itv[0] + itv[1] for itv in qrs_intervals if itv[1] - itv[0] >= _duration_thr])
 
     if verbose >= 3:
         print(f"raw rpeak predictions = {rpeaks.tolist()}")
@@ -268,9 +250,7 @@ def _seq_lab_net_post_process(
                 rpeaks = np.delete(rpeaks, del_ind)
                 check = True
                 if verbose >= 2:
-                    print(
-                        f"the {del_ind}-th R peak was removed since too close to another R peak"
-                    )
+                    print(f"the {del_ind}-th R peak was removed since too close to another R peak")
                 break
     if len(_dist_thr) == 1:
         return rpeaks
@@ -292,27 +272,18 @@ def _seq_lab_net_post_process(
             if rpeaks_diff[r] >= dist_thr_inds:  # 1200 ms
                 prev_r_ind = int(rpeaks[r] / model_granularity)  # ind in _prob
                 next_r_ind = int(rpeaks[r + 1] / model_granularity)  # ind in _prob
-                prev_qrs = [
-                    itv for itv in qrs_intervals if itv[0] <= prev_r_ind <= itv[1]
-                ][0]
-                next_qrs = [
-                    itv for itv in qrs_intervals if itv[0] <= next_r_ind <= itv[1]
-                ][0]
+                prev_qrs = [itv for itv in qrs_intervals if itv[0] <= prev_r_ind <= itv[1]][0]
+                next_qrs = [itv for itv in qrs_intervals if itv[0] <= next_r_ind <= itv[1]][0]
                 check_itv = [prev_qrs[1], next_qrs[0]]
                 l_new_itv = mask_to_intervals(mask[check_itv[0] : check_itv[1]], 1)
                 if len(l_new_itv) == 0:
                     continue
-                l_new_itv = [
-                    [itv[0] + check_itv[0], itv[1] + check_itv[0]] for itv in l_new_itv
-                ]
+                l_new_itv = [[itv[0] + check_itv[0], itv[1] + check_itv[0]] for itv in l_new_itv]
                 new_itv = max(l_new_itv, key=lambda itv: itv[1] - itv[0])
                 new_max_prob = (_prob[new_itv[0] : new_itv[1]]).max()
                 for itv in l_new_itv:
                     itv_prob = (_prob[itv[0] : itv[1]]).max()
-                    if (
-                        itv[1] - itv[0] == new_itv[1] - new_itv[0]
-                        and itv_prob > new_max_prob
-                    ):
+                    if itv[1] - itv[0] == new_itv[1] - new_itv[0] and itv_prob > new_max_prob:
                         new_itv = itv
                         new_max_prob = itv_prob
                 rpeaks = np.insert(rpeaks, r + 1, 4 * (new_itv[0] + new_itv[1]))

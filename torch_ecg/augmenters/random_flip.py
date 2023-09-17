@@ -62,16 +62,10 @@ class RandomFlip(Augmenter):
             self.prob = np.array([self.prob, self.prob])
         else:
             self.prob = np.array(self.prob)
-        assert (self.prob >= 0).all() and (
-            self.prob <= 1
-        ).all(), "Probability must be between 0 and 1"
+        assert (self.prob >= 0).all() and (self.prob <= 1).all(), "Probability must be between 0 and 1"
 
     def forward(
-        self,
-        sig: Tensor,
-        label: Optional[Tensor],
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        self, sig: Tensor, label: Optional[Tensor], *extra_tensors: Sequence[Tensor], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """Forward function of the RandomFlip augmenter.
 

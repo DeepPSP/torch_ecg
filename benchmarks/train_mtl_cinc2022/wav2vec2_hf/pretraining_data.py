@@ -6,26 +6,23 @@ import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from random import shuffle
-from typing import Dict, List, Sequence, Optional, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import torch
+from data_reader import CINC2016Reader, CINC2022Reader, CompositeReader, EPHNOGRAMReader
 from torch.utils.data import Dataset
-from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Config, BatchFeature
+from tqdm.auto import tqdm
+from transformers import BatchFeature, Wav2Vec2Config, Wav2Vec2FeatureExtractor
+from transformers.models.wav2vec2.modeling_wav2vec2 import _compute_mask_indices, _sample_negative_indices
 from transformers.pytorch_utils import torch_int_div
-from transformers.models.wav2vec2.modeling_wav2vec2 import (
-    _compute_mask_indices,
-    _sample_negative_indices,
-)
+
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import stratified_train_test_split
-from torch_ecg._preprocessors import PreprocManager
-from tqdm.auto import tqdm
 
 from .pretraining_cfg import PreTrainModelCfg
-from data_reader import CINC2022Reader, CINC2016Reader, EPHNOGRAMReader, CompositeReader
-
 
 __all__ = [
     "DataCollatorForWav2Vec2Pretraining",
@@ -68,9 +65,7 @@ class DataCollatorForWav2Vec2Pretraining:
     max_length: Optional[int] = None
     pad_to_multiple_of: Optional[int] = None
 
-    def __call__(
-        self, features: List[Dict[str, Union[List[int], torch.Tensor]]]
-    ) -> Dict[str, torch.Tensor]:
+    def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         """
         reformat list to dict and set to pytorch format
 
@@ -93,9 +88,7 @@ class DataCollatorForWav2Vec2Pretraining:
         device = batch["input_values"].device
         batch_size = batch["input_values"].shape[0]
 
-        mask_indices_seq_length = self._get_feat_extract_output_lengths(
-            batch["input_values"].shape[-1]
-        )
+        mask_indices_seq_length = self._get_feat_extract_output_lengths(batch["input_values"].shape[-1])
         # make sure masked sequence length is a Python scalar
         mask_indices_seq_length = int(mask_indices_seq_length)
 
@@ -122,12 +115,8 @@ class DataCollatorForWav2Vec2Pretraining:
             self.config.num_negatives,
             mask_time_indices=mask_time_indices,
         )
-        batch["mask_time_indices"] = torch.tensor(
-            mask_time_indices, dtype=torch.long, device=device
-        )
-        batch["sampled_negative_indices"] = torch.tensor(
-            sampled_negative_indices, dtype=torch.long, device=device
-        )
+        batch["mask_time_indices"] = torch.tensor(mask_time_indices, dtype=torch.long, device=device)
+        batch["sampled_negative_indices"] = torch.tensor(sampled_negative_indices, dtype=torch.long, device=device)
 
         return batch
 
@@ -141,9 +130,7 @@ class DataCollatorForWav2Vec2Pretraining:
         # on inference mode.
         non_padded_lengths = attention_mask.cumsum(dim=-1)[:, -1]
 
-        output_lengths = self._get_feat_extract_output_lengths(
-            non_padded_lengths, add_adapter=add_adapter
-        )
+        output_lengths = self._get_feat_extract_output_lengths(non_padded_lengths, add_adapter=add_adapter)
         output_lengths = output_lengths.to(torch.long)
 
         batch_size = attention_mask.shape[0]
@@ -179,16 +166,12 @@ class DataCollatorForWav2Vec2Pretraining:
             # from https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
             return torch_int_div(input_length - kernel_size, stride) + 1
 
-        for kernel_size, stride in zip(
-            self.config.conv_kernel, self.config.conv_stride
-        ):
+        for kernel_size, stride in zip(self.config.conv_kernel, self.config.conv_stride):
             input_lengths = _conv_out_length(input_lengths, kernel_size, stride)
 
         if add_adapter:
             for _ in range(self.config.num_adapter_layers):
-                input_lengths = _conv_out_length(
-                    input_lengths, 1, self.config.adapter_stride
-                )
+                input_lengths = _conv_out_length(input_lengths, 1, self.config.adapter_stride)
 
         return input_lengths
 
@@ -200,9 +183,7 @@ def get_pretraining_datacollator(
     if cfg is None:
         cfg = PreTrainModelCfg
     assert hasattr(cfg, "get_Wav2Vec2Config"), "cfg must have get_Wav2Vec2Config method"
-    assert hasattr(
-        cfg, "get_Wav2Vec2FeatureExtractor"
-    ), "cfg must have get_Wav2Vec2FeatureExtractor method"
+    assert hasattr(cfg, "get_Wav2Vec2FeatureExtractor"), "cfg must have get_Wav2Vec2FeatureExtractor method"
 
     extra_options = {
         "padding": cfg.get("padding", None),
@@ -253,9 +234,7 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
 
         self.reader = CompositeReader(data_readers, fs=self.config.fs)
         self.records = [
-            self.reader.get_composite_record_name(dr, rec)
-            for dr, l_rec in zip(data_readers, self.records)
-            for rec in l_rec
+            self.reader.get_composite_record_name(dr, rec) for dr, l_rec in zip(data_readers, self.records) for rec in l_rec
         ]
 
         if self.training:
@@ -270,9 +249,7 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
         ppm_config.update(deepcopy(self.config))
         self.ppm = PreprocManager.from_config(ppm_config)
 
-        self.fdr = FastDataReader(
-            self.reader, self.records, self.config, self.feature_extractor, self.ppm
-        )
+        self.fdr = FastDataReader(self.reader, self.records, self.config, self.feature_extractor, self.ppm)
 
         self._signals = None
         if not self.lazy:
@@ -348,9 +325,7 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
             subjects = test_subjects
 
         df = reader.df_stats[reader.df_stats["Patient ID"].isin(subjects)]
-        records = list_sum(
-            [reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()]
-        )
+        records = list_sum([reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()])
 
         if self.training:
             shuffle(records)
@@ -401,12 +376,8 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
                 ],
                 test_ratio=1 - train_ratio,
             )
-            train_set = reader.df_stats[
-                reader.df_stats["Subject ID"].isin(df_train["Subject ID"])
-            ]["Record Name"].tolist()
-            test_set = reader.df_stats[
-                reader.df_stats["Subject ID"].isin(df_test["Subject ID"])
-            ]["Record Name"].tolist()
+            train_set = reader.df_stats[reader.df_stats["Subject ID"].isin(df_train["Subject ID"])]["Record Name"].tolist()
+            test_set = reader.df_stats[reader.df_stats["Subject ID"].isin(df_test["Subject ID"])]["Record Name"].tolist()
 
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))

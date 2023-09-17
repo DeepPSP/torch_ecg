@@ -2,22 +2,21 @@
 
 import re
 import warnings
-from copy import deepcopy
-from pathlib import Path
 import xml.etree.ElementTree as ET
-from typing import Any, Optional, Sequence, Dict, List, Union, Tuple
+from copy import deepcopy
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
 import scipy.signal as SS
 
 from ...cfg import DEFAULTS
 from ...utils.download import http_get
 from ...utils.misc import add_docstring
-from ..base import _DataBase, DataBaseInfo
-
+from ..base import DataBaseInfo, _DataBase
 
 __all__ = [
     "CACHET_CADB",
@@ -182,11 +181,7 @@ class CACHET_CADB(_DataBase):
             self._short_format_file = None
 
         # the whole database
-        candidate_folders = [
-            f
-            for f in list(self.db_dir.rglob("*"))
-            if re.match(self._subject_pattern, f.name) is not None
-        ]
+        candidate_folders = [f for f in list(self.db_dir.rglob("*")) if re.match(self._subject_pattern, f.name) is not None]
         self._all_subjects = sorted(set([f.name for f in candidate_folders]))
         if len(self._all_subjects) == 0:
             return  # no record found
@@ -206,44 +201,31 @@ class CACHET_CADB(_DataBase):
                 self._all_records.append(f"{subject}/{measurement_id}/{segment}")
         self._df_records = pd.DataFrame()
         self._df_records["record"] = self._all_records
-        self._df_records["subject"] = self._df_records["record"].apply(
-            lambda x: x.split("/")[0]
-        )
-        self._df_records["data_path"] = self._df_records["record"].apply(
-            lambda x: self._full_data_dir / f"{x}/{self.data_ext}"
-        )
-        self._df_records["ann_path"] = self._df_records["record"].apply(
-            lambda x: self._full_ann_dir / f"{x}/{self.ann_ext}"
-        )
+        self._df_records["subject"] = self._df_records["record"].apply(lambda x: x.split("/")[0])
+        self._df_records["data_path"] = self._df_records["record"].apply(lambda x: self._full_data_dir / f"{x}/{self.data_ext}")
+        self._df_records["ann_path"] = self._df_records["record"].apply(lambda x: self._full_ann_dir / f"{x}/{self.ann_ext}")
         self._df_records["context_ann_path"] = self._df_records["record"].apply(
             lambda x: self._full_ann_dir / f"{x}/{self.context_ann_ext}"
         )
         for context_name, context_ext in self.context_data_ext.items():
-            self._df_records[f"context_{context_name}_path"] = self._df_records[
-                "record"
-            ].apply(lambda x: self._full_data_dir / f"{x}/{context_ext}")
+            self._df_records[f"context_{context_name}_path"] = self._df_records["record"].apply(
+                lambda x: self._full_data_dir / f"{x}/{context_ext}"
+            )
         self._df_records["header_path"] = self._df_records["record"].apply(
             lambda x: self._full_data_dir / f"{x}/{self.header_ext}"
         )
         self._df_records.set_index("record", inplace=True)
         self._subject_records = {
-            subject: sorted(
-                self._df_records[self._df_records["subject"] == subject].index
-            )
-            for subject in self._all_subjects
+            subject: sorted(self._df_records[self._df_records["subject"] == subject].index) for subject in self._all_subjects
         }
 
         # the table of metadata
-        self._df_metadata = pd.DataFrame(
-            [self.get_record_metadata(rec) for rec in self._all_records]
-        )
+        self._df_metadata = pd.DataFrame([self.get_record_metadata(rec) for rec in self._all_records])
         self._df_metadata["record"] = self._all_records
         self._df_metadata.set_index("record", inplace=True)
         self._df_metadata = self._df_metadata[self._metadata_cols]
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: str = "signal-ecg"
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: str = "signal-ecg") -> Path:
         """Get the absolute path of the signal folder of the record.
 
         Parameters
@@ -277,9 +259,7 @@ class CACHET_CADB(_DataBase):
 
         ext1, ext2 = extension.split("-")
         assert ext1 == "signal", f"extension `{extension}` not supported"
-        assert ext2 in list(self.context_data_ext) + [
-            "ecg"
-        ], f"extension `{extension}` not supported"
+        assert ext2 in list(self.context_data_ext) + ["ecg"], f"extension `{extension}` not supported"
         if ext2 == "ecg":
             return self._df_records.loc[rec, "data_path"]
         else:
@@ -304,9 +284,7 @@ class CACHET_CADB(_DataBase):
         assert rec in self.all_records, f"record `{rec}` not found"
         return self._df_records.loc[rec, "subject"]
 
-    def _rdheader(
-        self, rec: Union[str, int], key: Optional[str] = None, raw: bool = False
-    ) -> Union[str, Dict[str, Any]]:
+    def _rdheader(self, rec: Union[str, int], key: Optional[str] = None, raw: bool = False) -> Union[str, Dict[str, Any]]:
         """Read header file of the record.
 
         Parameters
@@ -340,14 +318,10 @@ class CACHET_CADB(_DataBase):
         header = {}
         for child in root:
             if "customAttributes" in child.tag:
-                header["customAttributes"] = {
-                    k: v for k, v in root.attrib.items() if k in self._metadata_cols
-                }
+                header["customAttributes"] = {k: v for k, v in root.attrib.items() if k in self._metadata_cols}
                 for child2 in child:
                     if child2.attrib["key"] in self._metadata_cols:
-                        header["customAttributes"][
-                            child2.attrib["key"]
-                        ] = child2.attrib["value"]
+                        header["customAttributes"][child2.attrib["key"]] = child2.attrib["value"]
             elif "signalEntry" in child.tag:
                 sig_key = child.attrib["id"].split(".")[0]
                 header[sig_key] = deepcopy(child.attrib)
@@ -423,9 +397,7 @@ class CACHET_CADB(_DataBase):
             raise ValueError(f"Invalid record name: `{rec}`")
         data_path = self._df_records.loc[rec, "data_path"]
         header = self._rdheader(rec, key="ecg")
-        data = np.fromfile(data_path, dtype=header["dataType"])[
-            sampfrom or 0 : sampto or None
-        ]
+        data = np.fromfile(data_path, dtype=header["dataType"])[sampfrom or 0 : sampto or None]
         if units is not None:
             # digital to analog conversion using the field `lsbValue` in the header
             data = (data - int(header["baseline"])) * float(header["lsbValue"])
@@ -504,9 +476,7 @@ class CACHET_CADB(_DataBase):
             raise ValueError(f"Invalid record name: `{rec}`")
         if context_name == "ecg":
             raise ValueError("Call `load_data` to load ECG data")
-        assert (
-            context_name in self.context_data_ext.keys()
-        ), f"Invalid `context_name`: `{context_name}`"
+        assert context_name in self.context_data_ext.keys(), f"Invalid `context_name`: `{context_name}`"
         context_data_path = self._df_records.loc[rec, f"context_{context_name}_path"]
 
         if context_data_path.suffix == ".csv":
@@ -526,18 +496,14 @@ class CACHET_CADB(_DataBase):
             return np.array([])
 
         header = self._rdheader(rec, key=context_name)
-        context_data = np.fromfile(context_data_path, dtype=header["dataType"])[
-            sampfrom or 0 : sampto or None
-        ]
+        context_data = np.fromfile(context_data_path, dtype=header["dataType"])[sampfrom or 0 : sampto or None]
         if units is not None:
             assert units.lower() in ["default", header["unit"]], (
                 f"`units` should be `default` or `{header['unit']}`, but got `{units}`. "
                 "Currently, units conversion is not supported."
             )
             # digital to analog conversion using the field `lsbValue` in the header
-            context_data = (context_data - int(header.get("baseline", 1))) * float(
-                header["lsbValue"]
-            )
+            context_data = (context_data - int(header.get("baseline", 1))) * float(header["lsbValue"])
             context_data = context_data.astype(DEFAULTS.DTYPE.NP)
 
         # convert to "channel_first" format
@@ -558,17 +524,9 @@ class CACHET_CADB(_DataBase):
             channels = [channels]
         else:
             assert all(
-                [
-                    ch in header["channel"]
-                    if isinstance(ch, str)
-                    else ch in range(len(header["channel"]))
-                    for ch in channels
-                ]
+                [ch in header["channel"] if isinstance(ch, str) else ch in range(len(header["channel"])) for ch in channels]
             ), f"`channels` should be a subset of `{header['channel']}`, but got `{_input_channels}`"
-            _channels = [
-                header["channel"].index(ch) if isinstance(ch, str) else ch
-                for ch in channels
-            ]
+            _channels = [header["channel"].index(ch) if isinstance(ch, str) else ch for ch in channels]
             channels = list(dict.fromkeys(_channels))
             if len(channels) != len(_channels):
                 warnings.warn(
@@ -578,9 +536,7 @@ class CACHET_CADB(_DataBase):
         context_data = context_data[channels]
 
         if fs is not None and fs != header["sampleRate"]:
-            context_data = SS.resample_poly(
-                context_data, fs, header["sampleRate"], axis=1
-            ).astype(context_data.dtype)
+            context_data = SS.resample_poly(context_data, fs, header["sampleRate"], axis=1).astype(context_data.dtype)
 
         return context_data
 
@@ -649,9 +605,7 @@ class CACHET_CADB(_DataBase):
         if rec not in self.all_records:
             raise ValueError(f"Invalid record name: `{rec}`")
         context_ann_path = self._df_records.loc[rec, "context_ann_path"]
-        context_ann = pd.read_excel(
-            context_ann_path, engine="openpyxl", sheet_name=sheet_name
-        )
+        context_ann = pd.read_excel(context_ann_path, engine="openpyxl", sheet_name=sheet_name)
         return context_ann
 
     def get_record_metadata(self, rec: Union[str, int]) -> Dict[str, str]:
@@ -672,9 +626,7 @@ class CACHET_CADB(_DataBase):
         metadata = self._rdheader(rec, key="customAttributes")
         return metadata
 
-    def get_subject_info(
-        self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None
-    ) -> Dict[str, str]:
+    def get_subject_info(self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None) -> Dict[str, str]:
         """Read auxiliary information of a subject (a record)
         stored in the header files.
 
@@ -751,9 +703,7 @@ class CACHET_CADB(_DataBase):
             files = self.url.keys()
         if isinstance(files, str):
             files = [files]
-        assert set(files).issubset(
-            self.url
-        ), f"`files` should be a subset of `{list(self.url)}`"
+        assert set(files).issubset(self.url), f"`files` should be a subset of `{list(self.url)}`"
         for filename in files:
             url = self.url[filename]
             if not (self.db_dir / filename).is_file():

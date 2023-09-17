@@ -14,7 +14,6 @@ from scipy.signal import butter, filtfilt, peak_prominences
 
 from .utils_data import ensure_siglen
 
-
 __all__ = [
     "smooth",
     "resample_irregular_timeseries",
@@ -111,9 +110,7 @@ def smooth(
         return x
 
     if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
-        raise ValueError(
-            """ `window` should be of "flat", "hanning", "hamming", "bartlett", "blackman" """
-        )
+        raise ValueError(""" `window` should be of "flat", "hanning", "hamming", "bartlett", "blackman" """)
 
     s = np.r_[x[radius - 1 : 0 : -1], x, x[-2 : -radius - 1 : -1]]
     # print(len(s))
@@ -193,9 +190,7 @@ def resample_irregular_timeseries(
         "spline",
         "interp1d",
     ], f"method `{method}` not supported"
-    assert (
-        sum([output_fs is None, tnew is None]) == 1
-    ), "one and only one of `output_fs` and `tnew` should be specified"
+    assert sum([output_fs is None, tnew is None]) == 1, "one and only one of `output_fs` and `tnew` should be specified"
 
     _interp_kw = deepcopy(interp_kw)
 
@@ -217,9 +212,7 @@ def resample_irregular_timeseries(
         tot_len = len(xnew)
 
     if verbose >= 1:
-        print(
-            f"time_series start ts = {time_series[0][0]}, end ts = {time_series[-1][0]}"
-        )
+        print(f"time_series start ts = {time_series[0][0]}, end ts = {time_series[-1][0]}")
         print(f"tot_len = {tot_len}")
         print(f"xnew start = {xnew[0]}, end = {xnew[-1]}")
 
@@ -380,9 +373,7 @@ def detect_peaks(
     ind = np.unique(np.hstack((ine, ire, ife)))
 
     if verbose >= 1:
-        print(
-            f"before filtering by mpd = {mpd}, and threshold = {threshold}, ind = {ind.tolist()}"
-        )
+        print(f"before filtering by mpd = {mpd}, and threshold = {threshold}, ind = {ind.tolist()}")
         print(
             f"additionally, left_threshold = {left_threshold}, "
             f"right_threshold = {right_threshold}, length of data = {len(data)}"
@@ -391,11 +382,7 @@ def detect_peaks(
     # handle NaN's
     if ind.size and indnan.size:
         # NaN's and values close to NaN's cannot be peaks
-        ind = ind[
-            np.in1d(
-                ind, np.unique(np.hstack((indnan, indnan - 1, indnan + 1))), invert=True
-            )
-        ]
+        ind = ind[np.in1d(ind, np.unique(np.hstack((indnan, indnan - 1, indnan + 1))), invert=True)]
 
     if verbose >= 1:
         print(f"after handling nan values, ind = {ind.tolist()}")
@@ -404,9 +391,7 @@ def detect_peaks(
     ind = np.array([pos for pos in ind if mpd <= pos < len(data) - mpd])
 
     if verbose >= 1:
-        print(
-            f"after fitering out elements too close to border by mpd = {mpd}, ind = {ind.tolist()}"
-        )
+        print(f"after fitering out elements too close to border by mpd = {mpd}, ind = {ind.tolist()}")
 
     # first and last values of data cannot be peaks
     # if ind.size and ind[0] == 0:
@@ -425,15 +410,11 @@ def detect_peaks(
     _right_threshold = right_threshold if right_threshold > 0 else threshold
     if ind.size and (_left_threshold > 0 and _right_threshold > 0):
         # dx = np.min(np.vstack([data[ind]-data[ind-1], data[ind]-data[ind+1]]), axis=0)
-        dx = np.max(
-            np.vstack([data[ind] - data[ind + idx] for idx in range(-mpd, 0)]), axis=0
-        )
+        dx = np.max(np.vstack([data[ind] - data[ind + idx] for idx in range(-mpd, 0)]), axis=0)
         ind = np.delete(ind, np.where(dx < _left_threshold)[0])
         if verbose >= 2:
             print(f"from left, dx = {dx.tolist()}")
-            print(
-                f"after deleting those dx < _left_threshold = {_left_threshold}, ind = {ind.tolist()}"
-            )
+            print(f"after deleting those dx < _left_threshold = {_left_threshold}, ind = {ind.tolist()}")
         dx = np.max(
             np.vstack([data[ind] - data[ind + idx] for idx in range(1, mpd + 1)]),
             axis=0,
@@ -441,9 +422,7 @@ def detect_peaks(
         ind = np.delete(ind, np.where(dx < _right_threshold)[0])
         if verbose >= 2:
             print(f"from right, dx = {dx.tolist()}")
-            print(
-                f"after deleting those dx < _right_threshold = {_right_threshold}, ind = {ind.tolist()}"
-            )
+            print(f"after deleting those dx < _right_threshold = {_right_threshold}, ind = {ind.tolist()}")
     if verbose >= 1:
         print(f"after filtering by threshold, ind = {ind.tolist()}")
     # detect small peaks closer than minimum peak distance
@@ -453,20 +432,12 @@ def detect_peaks(
         for i in range(ind.size):
             if not idel[i]:
                 # keep peaks with the same height if kpsh is True
-                idel = idel | (ind >= ind[i] - mpd) & (ind <= ind[i] + mpd) & (
-                    data[ind[i]] > data[ind] if kpsh else True
-                )
+                idel = idel | (ind >= ind[i] - mpd) & (ind <= ind[i] + mpd) & (data[ind[i]] > data[ind] if kpsh else True)
                 idel[i] = 0  # Keep current peak
         # remove the small peaks and sort back the indices by their occurrence
         ind = np.sort(ind[~idel])
 
-    ind = np.array(
-        [
-            item
-            for item in ind
-            if data[item] == np.max(data[item - mpd : item + mpd + 1])
-        ]
-    )
+    ind = np.array([item for item in ind if data[item] == np.max(data[item - mpd : item + mpd + 1])])
 
     if verbose >= 1:
         print(f"after filtering by mpd, ind = {ind.tolist()}")
@@ -482,9 +453,7 @@ def detect_peaks(
     return ind
 
 
-def remove_spikes_naive(
-    sig: np.ndarray, threshold: Real = 20, inplace: bool = True
-) -> np.ndarray:
+def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = True) -> np.ndarray:
     """Remove signal spikes using a naive method.
 
     This is a method proposed in entry 0416 of CPSC2019.
@@ -524,9 +493,7 @@ def remove_spikes_naive(
     b = list(
         filter(
             lambda k: k > 0,
-            np.argwhere(np.logical_or(np.abs(sig) > threshold, np.isnan(sig))).squeeze(
-                -1
-            ),
+            np.argwhere(np.logical_or(np.abs(sig) > threshold, np.isnan(sig))).squeeze(-1),
         )
     )
     if not inplace:
@@ -538,9 +505,7 @@ def remove_spikes_naive(
     return sig.astype(dtype)
 
 
-def butter_bandpass(
-    lowcut: Real, highcut: Real, fs: Real, order: int, verbose: int = 0
-) -> Tuple[np.ndarray, np.ndarray]:
+def butter_bandpass(lowcut: Real, highcut: Real, fs: Real, order: int, verbose: int = 0) -> Tuple[np.ndarray, np.ndarray]:
     """Butterworth Bandpass Filter Design.
 
     Parameters
@@ -595,9 +560,7 @@ def butter_bandpass(
         btype = "band"
 
     if verbose >= 1:
-        print(
-            f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}"
-        )
+        print(f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}")
 
     b, a = butter(order, Wn, btype=btype)
     return b, a
@@ -730,10 +693,7 @@ def get_ampl(
         #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
     else:
         s = np.stack(
-            [
-                _sig[..., idx * half_window : idx * half_window + _window]
-                for idx in range(_sig.shape[-1] // half_window - 1)
-            ],
+            [_sig[..., idx * half_window : idx * half_window + _window] for idx in range(_sig.shape[-1] // half_window - 1)],
             axis=-1,
         ).astype(dtype)
         # the following is much slower
@@ -805,8 +765,7 @@ def normalize(
     assert sig.ndim in [1, 2, 3], "signal `sig` should be 1d or 2d or 3d array"
     if sig.ndim == 1 and per_channel:
         warnings.warn(
-            "per-channel normalization is not supported for 1d signal, "
-            "`per_channel` will be set to False",
+            "per-channel normalization is not supported for 1d signal, " "`per_channel` will be set to False",
             RuntimeWarning,
         )
         per_channel = False
@@ -870,9 +829,7 @@ def normalize(
                 elif np.shape(mean) == sig.shape[:2]:
                     _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
                 else:
-                    raise AssertionError(
-                        f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
-                    )
+                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")
             else:  # "channel_last" or "lead_last"
                 if np.shape(mean) == (sig.shape[0],):
                     _mean = np.array(mean, dtype=dtype)[..., np.newaxis, np.newaxis]
@@ -885,9 +842,7 @@ def normalize(
                 elif np.shape(mean) == (sig.shape[0], sig.shape[-1]):
                     _mean = np.expand_dims(np.array(mean, dtype=dtype), axis=1)
                 else:
-                    raise AssertionError(
-                        f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
-                    )
+                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")
     else:
         _mean = mean
     if isinstance(std, Iterable):
@@ -920,9 +875,7 @@ def normalize(
                 elif np.shape(std) == sig.shape[:2]:
                     _std = np.array(std, dtype=dtype)[..., np.newaxis]
                 else:
-                    raise AssertionError(
-                        f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
-                    )
+                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")
             else:  # "channel_last" or "lead_last"
                 if np.shape(std) == (sig.shape[0],):
                     _std = np.array(std, dtype=dtype)[..., np.newaxis, np.newaxis]
@@ -935,9 +888,7 @@ def normalize(
                 elif np.shape(std) == (sig.shape[0], sig.shape[-1]):
                     _std = np.expand_dims(np.array(std, dtype=dtype), axis=1)
                 else:
-                    raise AssertionError(
-                        f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
-                    )
+                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")
     else:
         _std = std
 
@@ -968,12 +919,7 @@ def normalize(
             options = dict(axis=0, keepdims=True)
 
     if _method == "z-score":
-        nm_sig = (
-            (sig - np.mean(sig, dtype=dtype, **options))
-            / (np.std(sig, dtype=dtype, **options) + eps)
-        ) * _std + _mean
+        nm_sig = ((sig - np.mean(sig, dtype=dtype, **options)) / (np.std(sig, dtype=dtype, **options) + eps)) * _std + _mean
     elif _method == "min-max":
-        nm_sig = (sig - np.amin(sig, **options)) / (
-            np.amax(sig, **options) - np.amin(sig, **options) + eps
-        )
+        nm_sig = (sig - np.amin(sig, **options)) / (np.amax(sig, **options) - np.amin(sig, **options) + eps)
     return nm_sig.astype(dtype)

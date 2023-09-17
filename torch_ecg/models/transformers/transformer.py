@@ -8,9 +8,8 @@ import torch
 import torch.nn as nn
 from einops.layers.torch import Rearrange
 
-from ...utils.utils_nn import SizeMixin
 from ...utils.misc import get_kwargs
-
+from ...utils.utils_nn import SizeMixin
 
 __all__ = [
     "Transformer",
@@ -72,13 +71,9 @@ class Transformer(nn.Module, SizeMixin):
                 self.project = nn.Linear(input_size, self.__input_size)
             else:
                 self.project = nn.Sequential(
-                    Rearrange(
-                        "seq_len batch_size input_size -> batch_size seq_len input_size"
-                    ),
+                    Rearrange("seq_len batch_size input_size -> batch_size seq_len input_size"),
                     nn.Linear(input_size, self.__input_size),
-                    Rearrange(
-                        "batch_size seq_len input_size -> seq_len batch_size input_size"
-                    ),
+                    Rearrange("batch_size seq_len input_size -> seq_len batch_size input_size"),
                 )
         else:
             self.project = nn.Identity()
@@ -106,9 +101,7 @@ class Transformer(nn.Module, SizeMixin):
                     RuntimeWarning,
                 )
             self.__batch_first = False
-        self.encoder = nn.TransformerEncoder(
-            encoder_layer, num_layers=self.__num_layers
-        )
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=self.__num_layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass of the transformer feature extractor.

@@ -8,7 +8,6 @@ import scipy.signal as SS
 
 from .base import PreProcessor
 
-
 __all__ = [
     "Resample",
 ]
@@ -41,14 +40,10 @@ class Resample(PreProcessor):
 
     __name__ = "Resample"
 
-    def __init__(
-        self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any) -> None:
         self.fs = fs
         self.siglen = siglen
-        assert (
-            sum([bool(self.fs), bool(self.siglen)]) == 1
-        ), "one and only one of `fs` and `siglen` should be set"
+        assert sum([bool(self.fs), bool(self.siglen)]) == 1, "one and only one of `fs` and `siglen` should be set"
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """Apply the preprocessor to `sig`.

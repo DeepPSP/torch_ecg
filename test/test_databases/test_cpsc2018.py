@@ -12,7 +12,6 @@ import pytest
 from torch_ecg.databases import CPSC2018, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2018 import compute_metrics
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2018"
@@ -40,17 +39,11 @@ class TestCPSC2018:
         reader_ss = CPSC2018(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2018(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2018(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2018(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -73,12 +66,8 @@ class TestCPSC2018:
             ann_1 = reader.load_ann(rec, ann_format="n")
             ann_2 = reader.load_ann(rec, ann_format="a")
             ann_3 = reader.load_ann(rec, ann_format="f")
-            assert set(reader.diagnosis_num_to_abbr[item] for item in ann_1) == set(
-                ann_2
-            )
-            assert set(reader.diagnosis_abbr_to_full[item] for item in ann_2) == set(
-                ann_3
-            )
+            assert set(reader.diagnosis_num_to_abbr[item] for item in ann_1) == set(ann_2)
+            assert set(reader.diagnosis_abbr_to_full[item] for item in ann_2) == set(ann_3)
 
         with pytest.raises(
             ValueError,

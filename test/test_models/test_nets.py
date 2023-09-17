@@ -9,55 +9,47 @@ import inspect
 import itertools
 import operator
 
-import torch
 import pytest
+import torch
 from tqdm.auto import tqdm
 
-from torch_ecg.models._nets import (
-    Initializers,
-    Activations,
-    # Normalizations,
-    Bn_Activation,
-    Conv_Bn_Activation,
+from torch_ecg.models._nets import (  # Normalizations,; DeformConv,; "BAMBlock",; "CoordAttention",; "GEBlock",; "SKBlock",; internal
     CBA,
-    MultiConv,
-    BranchedConv,
-    SeparableConv,
-    # DeformConv,
-    AntiAliasConv,
-    DownSample,
-    BlurPool,
-    BidirectionalLSTM,
-    StackedLSTM,
-    AttentionWithContext,
-    MultiHeadAttention,
-    SelfAttention,
-    AttentivePooling,
-    ZeroPadding,
-    ZeroPad1d,
-    SeqLin,
+    CRF,
     MLP,
+    Activations,
+    AntiAliasConv,
+    AttentionWithContext,
+    AttentivePooling,
+    BidirectionalLSTM,
+    BlurPool,
+    Bn_Activation,
+    BranchedConv,
+    CBAMBlock,
+    Conv_Bn_Activation,
+    DownSample,
+    DropPath,
+    ExtendedCRF,
+    GlobalContextBlock,
+    Initializers,
+    MLDecoder,
+    MultiConv,
+    MultiHeadAttention,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
-    CBAMBlock,
-    # "BAMBlock",
-    # "CoordAttention",
-    # "GEBlock",
-    # "SKBlock",
-    CRF,
-    ExtendedCRF,
+    SelfAttention,
+    SeparableConv,
+    SeqLin,
     SpaceToDepth,
-    MLDecoder,
-    DropPath,
-    make_attention_layer,
+    StackedLSTM,
+    ZeroPad1d,
+    ZeroPadding,
+    _ScaledDotProductAttention,
     get_activation,
     get_normalization,
-    # internal
-    _ScaledDotProductAttention,
+    make_attention_layer,
 )
 from torch_ecg.utils.utils_nn import compute_receptive_field
-
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 4
@@ -110,46 +102,29 @@ def test_normalization():
 
     assert get_normalization("batch_norm") == torch.nn.BatchNorm1d
     assert isinstance(
-        get_normalization(
-            "batch_normalization", kw_norm=dict(num_features=IN_CHANNELS)
-        ),
+        get_normalization("batch_normalization", kw_norm=dict(num_features=IN_CHANNELS)),
         torch.nn.BatchNorm1d,
     )
-    assert (
-        get_normalization("batch_normalization", kw_norm=dict(num_features=IN_CHANNELS))
-        != bn
-    )
+    assert get_normalization("batch_normalization", kw_norm=dict(num_features=IN_CHANNELS)) != bn
     assert get_normalization(bn, kw_norm=dict(num_features=IN_CHANNELS)) == bn
 
-    norm = get_normalization(
-        "batch_norm", kw_norm=dict(num_features=IN_CHANNELS, momentum=0.01)
-    ).to(DEVICE)
+    norm = get_normalization("batch_norm", kw_norm=dict(num_features=IN_CHANNELS, momentum=0.01)).to(DEVICE)
     assert norm.momentum == 0.01
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization(
-        "group_norm", kw_norm=dict(num_channels=IN_CHANNELS, num_groups=IN_CHANNELS)
-    ).to(DEVICE)
+    norm = get_normalization("group_norm", kw_norm=dict(num_channels=IN_CHANNELS, num_groups=IN_CHANNELS)).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization(
-        "group_norm", kw_norm=dict(num_features=IN_CHANNELS, num_groups=IN_CHANNELS)
-    ).to(DEVICE)
+    norm = get_normalization("group_norm", kw_norm=dict(num_features=IN_CHANNELS, num_groups=IN_CHANNELS)).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization("layer_norm", kw_norm=dict(normalized_shape=SEQ_LEN)).to(
-        DEVICE
-    )
+    norm = get_normalization("layer_norm", kw_norm=dict(normalized_shape=SEQ_LEN)).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization(
-        "instance_norm", kw_norm=dict(num_features=IN_CHANNELS)
-    ).to(DEVICE)
+    norm = get_normalization("instance_norm", kw_norm=dict(num_features=IN_CHANNELS)).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization(
-        "local_response_norm", kw_norm=dict(size=IN_CHANNELS // 4)
-    ).to(DEVICE)
+    norm = get_normalization("local_response_norm", kw_norm=dict(size=IN_CHANNELS // 4)).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
     class SomeClass:
@@ -192,9 +167,7 @@ def test_ba():
             dropout=dropout,
         ).to(DEVICE)
         ba.eval()
-        assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
         assert ba.compute_receptive_field() == 1
 
     with pytest.raises(ValueError, match="normalization `.+` not supported"):
@@ -242,9 +215,7 @@ def test_cba():
         ordering,
         conv_type,
         alpha,
-    ) in tqdm(
-        grid, mininterval=3.0, total=grid_len, desc="Testing CBA", dynamic_ncols=True
-    ):
+    ) in tqdm(grid, mininterval=3.0, total=grid_len, desc="Testing CBA", dynamic_ncols=True):
         if not norm and "b" in ordering:
             continue
         if norm and "b" not in ordering:
@@ -272,9 +243,7 @@ def test_cba():
             **config,
         ).to(DEVICE)
         cba.eval()
-        assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
         assert cba.compute_receptive_field() == compute_receptive_field(
             kernel_sizes=kernel_size,
             strides=stride,
@@ -294,9 +263,7 @@ def test_cba():
         "BatchNorm1d",
         "ReLU6",
     ]
-    assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     cab = CBA(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
@@ -311,9 +278,7 @@ def test_cba():
         "ReLU6",
         "BatchNorm1d",
     ]
-    assert cab(SAMPLE_INPUT).shape == cab.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert cab(SAMPLE_INPUT).shape == cab.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     bac = CBA(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
@@ -328,9 +293,7 @@ def test_cba():
         "Mish",
         "Conv1d",
     ]
-    assert bac(SAMPLE_INPUT).shape == bac.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert bac(SAMPLE_INPUT).shape == bac.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
 
     with pytest.raises(AssertionError, match="convolution must be included"):
         Conv_Bn_Activation(
@@ -356,9 +319,7 @@ def test_cba():
             activation="gelu",
         )
 
-    with pytest.raises(
-        NotImplementedError, match="convolution of type `.+` not implemented yet"
-    ):
+    with pytest.raises(NotImplementedError, match="convolution of type `.+` not implemented yet"):
         Conv_Bn_Activation(
             in_channels=IN_CHANNELS,
             out_channels=IN_CHANNELS * 3,
@@ -471,9 +432,7 @@ def test_multi_conv():
         activation="mish",
     ).to(DEVICE)
     mc.eval()
-    assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert mc.in_channels == IN_CHANNELS
     assert mc.compute_receptive_field() == compute_receptive_field(
         kernel_sizes=[5, 5, 5],
@@ -501,9 +460,7 @@ def test_branched_conv():
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
     assert all(isinstance(t, torch.Tensor) for t in out_tensors)
-    assert [t.shape for t in out_tensors] == bc.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert [t.shape for t in out_tensors] == bc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert bc.in_channels == IN_CHANNELS
     bc_config["dropouts"] = {"p": 0.2, "type": "1d"}
     bc = BranchedConv(**bc_config).to(DEVICE)
@@ -511,9 +468,7 @@ def test_branched_conv():
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
     assert all(isinstance(t, torch.Tensor) for t in out_tensors)
-    assert [t.shape for t in out_tensors] == bc.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert [t.shape for t in out_tensors] == bc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert bc.in_channels == IN_CHANNELS
     receptive_fields = bc.compute_receptive_field()
     assert isinstance(receptive_fields, tuple) and len(receptive_fields) == 2
@@ -542,9 +497,7 @@ def test_separable_conv():
         groups=IN_CHANNELS // 3,
     ).to(DEVICE)
     sc.eval()
-    assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert sc.in_channels == IN_CHANNELS
 
 
@@ -570,19 +523,13 @@ def test_blur_pool():
             pad_off=pad_off,
         ).to(DEVICE)
         bp.eval()
-        assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert bp.in_channels == IN_CHANNELS
     repr(bp)
 
-    with pytest.raises(
-        NotImplementedError, match="Filter size of `\\d+` is not implemented"
-    ):
+    with pytest.raises(NotImplementedError, match="Filter size of `\\d+` is not implemented"):
         BlurPool(in_channels=IN_CHANNELS, down_scale=3, filt_size=10)
-    with pytest.raises(
-        NotImplementedError, match="Padding type of `.+` is not implemented"
-    ):
+    with pytest.raises(NotImplementedError, match="Padding type of `.+` is not implemented"):
         BlurPool(in_channels=IN_CHANNELS, down_scale=3, pad_type="xxx")
 
 
@@ -598,9 +545,7 @@ def test_anti_alias_conv():
         groups=IN_CHANNELS // 4,
     ).to(DEVICE)
     aac.eval()
-    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     aac = AntiAliasConv(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
@@ -611,9 +556,7 @@ def test_anti_alias_conv():
         groups=IN_CHANNELS // 2,
     ).to(DEVICE)
     aac.eval()
-    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
+    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert aac.in_channels == IN_CHANNELS
 
 
@@ -640,9 +583,7 @@ def test_down_sample():
             padding=padding,
         ).to(DEVICE)
         ds.eval()
-        assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert ds.in_channels == IN_CHANNELS
 
     for mode in ["nearest", "area", "linear", "lse"]:
@@ -671,9 +612,7 @@ def test_bidirectional_lstm():
             return_sequences=return_sequences,
         ).to(DEVICE)
         bi_lstm.eval()
-        assert bi_lstm(sample_input).shape == bi_lstm.compute_output_shape(
-            seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
-        )
+        assert bi_lstm(sample_input).shape == bi_lstm.compute_output_shape(seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE)
 
 
 @torch.no_grad()
@@ -700,9 +639,7 @@ def test_stacked_lstm():
             return_sequences=return_sequences,
         ).to(DEVICE)
         slstm.eval()
-        assert slstm(sample_input).shape == slstm.compute_output_shape(
-            seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
-        )
+        assert slstm(sample_input).shape == slstm.compute_output_shape(seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE)
 
     slstm = StackedLSTM(
         input_size=IN_CHANNELS,
@@ -711,9 +648,7 @@ def test_stacked_lstm():
         dropout=[0.0, 0.2, 0.1],
     ).to(DEVICE)
     slstm.eval()
-    assert slstm(sample_input).shape == slstm.compute_output_shape(
-        seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
-    )
+    assert slstm(sample_input).shape == slstm.compute_output_shape(seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE)
 
 
 @torch.no_grad()
@@ -739,13 +674,9 @@ def test_attention_with_context():
             initializer=initializer,
         ).to(DEVICE)
         awc.eval()
-        assert awc(SAMPLE_INPUT).shape == awc.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert awc(SAMPLE_INPUT).shape == awc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
 
-    with pytest.raises(
-        AssertionError, match="at least one of `seq_len` and `batch_size` must be given"
-    ):
+    with pytest.raises(AssertionError, match="at least one of `seq_len` and `batch_size` must be given"):
         awc.compute_output_shape(seq_len=None, batch_size=None)
 
 
@@ -759,10 +690,7 @@ def test_multi_head_attention():
     target_seq_len = SEQ_LEN // 10
     source_seq_len = SEQ_LEN // 5
     q = torch.randn(target_seq_len, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
-    k, v = (
-        torch.randn(source_seq_len, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
-        for _ in range(2)
-    )
+    k, v = (torch.randn(source_seq_len, BATCH_SIZE, IN_CHANNELS).to(DEVICE) for _ in range(2))
     for bias, num_heads, batch_first in grid:
         mha = MultiHeadAttention(
             embed_dim=IN_CHANNELS,
@@ -772,9 +700,7 @@ def test_multi_head_attention():
         ).to(DEVICE)
         mha.eval()
         if batch_first:
-            attn_output, attn_output_weights = mha(
-                q.transpose(0, 1), k.transpose(0, 1), v.transpose(0, 1)
-            )
+            attn_output, attn_output_weights = mha(q.transpose(0, 1), k.transpose(0, 1), v.transpose(0, 1))
         else:
             attn_output, attn_output_weights = mha(q, k, v)
         attn_output_shape, attn_output_weights_shape = mha.compute_output_shape(
@@ -813,9 +739,7 @@ def test_self_attention():
             sa_output = sa(sample_input.transpose(0, 1))
         else:
             sa_output = sa(sample_input)
-        sa_output_shape = sa.compute_output_shape(
-            seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
-        )
+        sa_output_shape = sa.compute_output_shape(seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE)
         assert sa_output.shape == sa_output_shape
     with pytest.warns(
         RuntimeWarning,
@@ -844,9 +768,7 @@ def test_attentive_pooling():
             kw_activation=kw_activation,
         ).to(DEVICE)
         ap.eval()
-        assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert ap.in_channels == IN_CHANNELS
 
 
@@ -863,14 +785,10 @@ def test_zero_padding():
             loc=loc,
         ).to(DEVICE)
         zp.eval()
-        assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
 
     with pytest.raises(AssertionError, match="`loc` must be in"):
-        ZeroPadding(
-            in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 2, loc="invalid"
-        )
+        ZeroPadding(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 2, loc="invalid")
 
     with pytest.raises(AssertionError, match="`out_channels` must be >= `in_channels`"):
         ZeroPadding(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS // 2)
@@ -926,9 +844,7 @@ def test_mlp():
             dropout=dropout,
         ).to(DEVICE)
         mlp.eval()
-        assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert mlp.in_channels == IN_CHANNELS
 
     with pytest.raises(
@@ -960,19 +876,13 @@ def test_attention_blocks():
         )
         nl = NonLocalBlock(in_channels=IN_CHANNELS, **config).to(DEVICE)
         nl.eval()
-        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
         nl = make_attention_layer(IN_CHANNELS, name="non_local", **config).to(DEVICE)
         nl.eval()
-        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert nl.in_channels == IN_CHANNELS
 
-    with pytest.raises(
-        AssertionError, match="`filter_lengths` must be an int or a dict, but got `.+`"
-    ):
+    with pytest.raises(AssertionError, match="`filter_lengths` must be an int or a dict, but got `.+`"):
         NonLocalBlock(
             in_channels=IN_CHANNELS,
             mid_channels=IN_CHANNELS * 2,
@@ -993,16 +903,10 @@ def test_attention_blocks():
     for reduction in [2, 4, 8]:
         se = SEBlock(in_channels=IN_CHANNELS, reduction=reduction).to(DEVICE)
         se.eval()
-        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
-        se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction).to(
-            DEVICE
-        )
+        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
+        se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction).to(DEVICE)
         se.eval()
-        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert se.in_channels == IN_CHANNELS
 
     grid_gc = itertools.product(
@@ -1021,14 +925,10 @@ def test_attention_blocks():
         )
         gc = GlobalContextBlock(in_channels=IN_CHANNELS * 16, **config).to(DEVICE)
         gc.eval()
-        assert gc(sample_input).shape == gc.compute_output_shape(
-            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
-        )
+        assert gc(sample_input).shape == gc.compute_output_shape(seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE)
         gc = make_attention_layer(IN_CHANNELS * 16, name="gc", **config).to(DEVICE)
         gc.eval()
-        assert gc(sample_input).shape == gc.compute_output_shape(
-            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
-        )
+        assert gc(sample_input).shape == gc.compute_output_shape(seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE)
     assert gc.in_channels == IN_CHANNELS * 16
 
     with pytest.raises(
@@ -1066,14 +966,10 @@ def test_attention_blocks():
         )
         cbam = CBAMBlock(gate_channels=IN_CHANNELS * 16, **config).to(DEVICE)
         cbam.eval()
-        assert cbam(sample_input).shape == cbam.compute_output_shape(
-            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
-        )
+        assert cbam(sample_input).shape == cbam.compute_output_shape(seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE)
         cbam = make_attention_layer(IN_CHANNELS * 16, name="cbam", **config).to(DEVICE)
         cbam.eval()
-        assert cbam(sample_input).shape == cbam.compute_output_shape(
-            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
-        )
+        assert cbam(sample_input).shape == cbam.compute_output_shape(seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE)
     assert cbam.gate_channels == IN_CHANNELS * 16
     assert cbam.in_channels == IN_CHANNELS * 16
 
@@ -1097,9 +993,7 @@ def test_crf():
 
     crf = CRF(num_tags=num_tags, batch_first=False).to(DEVICE)
     crf.eval()
-    assert crf(sample_input).shape == crf.compute_output_shape(
-        seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
-    )
+    assert crf(sample_input).shape == crf.compute_output_shape(seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE)
     repr(crf)
     nll = crf.neg_log_likelihood(sample_input, labels)
     assert nll.shape == torch.Size([])
@@ -1114,9 +1008,7 @@ def test_crf():
     assert nll_1.shape == torch.Size([BATCH_SIZE])
     nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="token_mean")
     assert nll_1.shape == torch.Size([])
-    with pytest.raises(
-        ValueError, match="`reduction` should be one of `.+`, but got `.+`"
-    ):
+    with pytest.raises(ValueError, match="`reduction` should be one of `.+`, but got `.+`"):
         crf.neg_log_likelihood(sample_input, labels, mask, reduction="max")
 
     sample_input = sample_input.permute(1, 0, 2)
@@ -1124,9 +1016,7 @@ def test_crf():
     mask = mask.permute(1, 0)
     crf = CRF(num_tags=num_tags, batch_first=True).to(DEVICE)
     crf.eval()
-    assert crf(sample_input).shape == crf.compute_output_shape(
-        seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
-    )
+    assert crf(sample_input).shape == crf.compute_output_shape(seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE)
     nll = crf.neg_log_likelihood(sample_input, labels)
     assert nll.shape == torch.Size([])
     nll_1 = crf.neg_log_likelihood(sample_input, labels, mask)
@@ -1150,12 +1040,8 @@ def test_crf():
     # ExtendedCRF
     sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, IN_CHANNELS).to(DEVICE)
     for bias in [True, False]:
-        crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias).to(
-            DEVICE
-        )
-        assert crf(sample_input).shape == crf.compute_output_shape(
-            seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
-        )
+        crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias).to(DEVICE)
+        assert crf(sample_input).shape == crf.compute_output_shape(seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE)
     assert crf.in_channels == IN_CHANNELS
 
 
@@ -1169,9 +1055,7 @@ def test_s2d():
             block_size=block_size,
         ).to(DEVICE)
         s2d.eval()
-        assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert s2d.in_channels == IN_CHANNELS
 
 
@@ -1190,9 +1074,7 @@ def test_mldecoder():
             zsl=zsl,
         ).to(DEVICE)
         mldecoder.eval()
-        assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(
-            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-        )
+        assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert mldecoder.in_channels == IN_CHANNELS
 
     with pytest.raises(NotImplementedError, match="Not implemented for `zsl` is `.+`"):
@@ -1204,9 +1086,7 @@ def test_droppath():
     # DropPath
     dp = DropPath().to(DEVICE)
     dp.train()
-    assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(
-        input_shape=SAMPLE_INPUT.shape
-    )
+    assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(input_shape=SAMPLE_INPUT.shape)
     repr(dp)
     dp.eval()
     out = dp(SAMPLE_INPUT)

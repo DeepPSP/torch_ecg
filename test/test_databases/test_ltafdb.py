@@ -15,7 +15,6 @@ from torch_ecg.databases import LTAFDB, BeatAnn, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 from torch_ecg.utils.utils_interval import validate_interval
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "ltafdb"
@@ -44,17 +43,11 @@ class TestLTAFDB:
         reader_ss = LTAFDB(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LTAFDB(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LTAFDB(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LTAFDB(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -63,9 +56,7 @@ class TestLTAFDB:
         assert data.ndim == 2
         data = reader.load_data(rec, leads=0, data_format="flat")
         assert data.ndim == 1
-        data = reader.load_data(
-            rec, leads=[0], data_format="flat", sampfrom=1000, sampto=2000
-        )
+        data = reader.load_data(rec, leads=[0], data_format="flat", sampfrom=1000, sampto=2000)
         assert data.shape == (1000,)
         data = reader.load_data(rec)
         data, data_fs = reader.load_data(rec, fs=100, return_fs=True)
@@ -74,13 +65,8 @@ class TestLTAFDB:
     def test_load_ann(self):
         ann = reader.load_ann(0)
         assert isinstance(ann, dict) and ann.keys() == {"beat", "rhythm"}
-        assert isinstance(ann["beat"], list) and all(
-            isinstance(a, BeatAnn) for a in ann["beat"]
-        )
-        assert (
-            isinstance(ann["rhythm"], dict)
-            and ann["rhythm"].keys() <= reader.rhythm_types_map.keys()
-        )
+        assert isinstance(ann["beat"], list) and all(isinstance(a, BeatAnn) for a in ann["beat"])
+        assert isinstance(ann["rhythm"], dict) and ann["rhythm"].keys() <= reader.rhythm_types_map.keys()
         for v in ann["rhythm"].values():
             assert isinstance(v, list) and all(validate_interval(i)[0] for i in v)
 
@@ -89,9 +75,7 @@ class TestLTAFDB:
 
         ann = reader.load_ann(0, rhythm_format="mask", beat_format="dict")
         assert isinstance(ann, dict) and ann.keys() == {"beat", "rhythm"}
-        assert isinstance(ann["beat"], dict) and ann["beat"].keys() <= set(
-            reader.beat_types
-        )
+        assert isinstance(ann["beat"], dict) and ann["beat"].keys() <= set(reader.beat_types)
         for v in ann["beat"].values():
             assert isinstance(v, np.ndarray) and v.ndim == 1
         assert isinstance(ann["rhythm"], np.ndarray) and ann["rhythm"].ndim == 1
@@ -100,16 +84,11 @@ class TestLTAFDB:
 
     def test_load_rhythm_ann(self):
         rhythm_ann = reader.load_rhythm_ann(0)
-        assert (
-            isinstance(rhythm_ann, dict)
-            and rhythm_ann.keys() <= reader.rhythm_types_map.keys()
-        )
+        assert isinstance(rhythm_ann, dict) and rhythm_ann.keys() <= reader.rhythm_types_map.keys()
         for v in rhythm_ann.values():
             assert isinstance(v, list) and all(validate_interval(i)[0] for i in v)
 
-        rhythm_ann = reader.load_rhythm_ann(
-            0, sampfrom=1000, sampto=9000, keep_original=True
-        )
+        rhythm_ann = reader.load_rhythm_ann(0, sampfrom=1000, sampto=9000, keep_original=True)
         assert isinstance(rhythm_ann, dict)
 
         rhythm_ann = reader.load_rhythm_ann(0, rhythm_format="mask")
@@ -119,13 +98,9 @@ class TestLTAFDB:
 
     def test_load_beat_ann(self):
         beat_ann = reader.load_beat_ann(0)
-        assert isinstance(beat_ann, list) and all(
-            isinstance(a, BeatAnn) for a in beat_ann
-        )
+        assert isinstance(beat_ann, list) and all(isinstance(a, BeatAnn) for a in beat_ann)
 
-        beat_ann = reader.load_beat_ann(
-            0, sampfrom=1000, sampto=9000, keep_original=True
-        )
+        beat_ann = reader.load_beat_ann(0, sampfrom=1000, sampto=9000, keep_original=True)
         assert isinstance(beat_ann, list)
 
         beat_ann = reader.load_beat_ann(0, beat_format="dict")
@@ -137,20 +112,14 @@ class TestLTAFDB:
         rpeak_indices = reader.load_rpeak_indices(0)
         assert isinstance(rpeak_indices, np.ndarray) and rpeak_indices.ndim == 1
 
-        rpeak_indices = reader.load_rpeak_indices(
-            0, sampfrom=1000, sampto=9000, keep_original=True
-        )
+        rpeak_indices = reader.load_rpeak_indices(0, sampfrom=1000, sampto=9000, keep_original=True)
         assert isinstance(rpeak_indices, np.ndarray) and rpeak_indices.ndim == 1
-        rpeak_indices_1 = reader.load_rpeak_indices(
-            0, sampfrom=1000, sampto=9000, keep_original=False
-        )
+        rpeak_indices_1 = reader.load_rpeak_indices(0, sampfrom=1000, sampto=9000, keep_original=False)
         assert isinstance(rpeak_indices_1, np.ndarray) and rpeak_indices_1.ndim == 1
         assert np.all(rpeak_indices_1 == rpeak_indices - 1000)
 
     def test_meta_data(self):
-        assert isinstance(reader.version, str) and re.match(
-            PHYSIONET_DB_VERSION_PATTERN, reader.version
-        )
+        assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)

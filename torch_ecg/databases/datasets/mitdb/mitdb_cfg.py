@@ -5,7 +5,6 @@ from copy import deepcopy
 
 from ....cfg import CFG, DEFAULTS
 
-
 __all__ = [
     "MITDBTrainCfg",
 ]
@@ -122,9 +121,7 @@ MITDBTrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizer
 MITDBTrainCfg.learning_rate = 1e-4  # 1e-3
 MITDBTrainCfg.lr = MITDBTrainCfg.learning_rate
 
-MITDBTrainCfg.lr_scheduler = (
-    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
-)
+MITDBTrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 MITDBTrainCfg.lr_step_size = 50
 MITDBTrainCfg.lr_gamma = 0.1
 MITDBTrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
@@ -166,20 +163,12 @@ MITDBTrainCfg.beat_classification.rnn_name = "none"
 MITDBTrainCfg.beat_classification.attn_name = "se"  # "none", "se", "gc", "nl"
 MITDBTrainCfg.beat_classification.winL = int(0.8 * MITDBTrainCfg.fs)
 MITDBTrainCfg.beat_classification.winR = int(1.2 * MITDBTrainCfg.fs)
-MITDBTrainCfg.beat_classification.input_len = (
-    MITDBTrainCfg.beat_classification.winL + MITDBTrainCfg.beat_classification.winR
-)
+MITDBTrainCfg.beat_classification.input_len = MITDBTrainCfg.beat_classification.winL + MITDBTrainCfg.beat_classification.winR
 MITDBTrainCfg.beat_classification.classes = deepcopy(MITDBTrainCfg.beat_types)
-MITDBTrainCfg.beat_classification.class_map = {
-    k: i for i, k in enumerate(MITDBTrainCfg.beat_classification.classes)
-}
-MITDBTrainCfg.beat_classification.monitor = (
-    "f1_measure"  # monitor for determining the best model
-)
+MITDBTrainCfg.beat_classification.class_map = {k: i for i, k in enumerate(MITDBTrainCfg.beat_classification.classes)}
+MITDBTrainCfg.beat_classification.monitor = "f1_measure"  # monitor for determining the best model
 MITDBTrainCfg.beat_classification.loss = "AsymmetricLoss"  # "BCEWithLogitsLoss"
-MITDBTrainCfg.beat_classification.loss_kw = CFG(
-    gamma_pos=0, gamma_neg=0.5, implementation="deep-psp"
-)
+MITDBTrainCfg.beat_classification.loss_kw = CFG(gamma_pos=0, gamma_neg=0.5, implementation="deep-psp")
 
 MITDBTrainCfg.qrs_detection.final_model_name = None
 MITDBTrainCfg.qrs_detection.model_name = "seq_lab"  # "unet"
@@ -193,9 +182,7 @@ MITDBTrainCfg.qrs_detection.critical_overlap_len = int(25 * MITDBTrainCfg.fs)
 MITDBTrainCfg.qrs_detection.classes = [
     "N",
 ]
-MITDBTrainCfg.qrs_detection.monitor = (
-    "qrs_score"  # monitor for determining the best model
-)
+MITDBTrainCfg.qrs_detection.monitor = "qrs_score"  # monitor for determining the best model
 MITDBTrainCfg.qrs_detection.loss = "BCEWithLogitsLoss"  # "AsymmetricLoss"
 MITDBTrainCfg.qrs_detection.loss_kw = CFG()
 
@@ -203,9 +190,7 @@ MITDBTrainCfg.rr_lstm.final_model_name = None
 MITDBTrainCfg.rr_lstm.model_name = "lstm"  # "lstm", "lstm_crf"
 MITDBTrainCfg.rr_lstm.input_len = 30  # number of rr intervals ( number of rpeaks - 1)
 MITDBTrainCfg.rr_lstm.overlap_len = 15  # number of rr intervals ( number of rpeaks - 1)
-MITDBTrainCfg.rr_lstm.critical_overlap_len = (
-    25  # number of rr intervals ( number of rpeaks - 1)
-)
+MITDBTrainCfg.rr_lstm.critical_overlap_len = 25  # number of rr intervals ( number of rpeaks - 1)
 MITDBTrainCfg.rr_lstm.classes = [
     "AFIB",
 ]
@@ -223,16 +208,12 @@ for t in ["rhythm_segmentation", "af_event"]:  # segmentation of AF events
     MITDBTrainCfg[t].input_len = int(30 * MITDBTrainCfg.fs)
     MITDBTrainCfg[t].overlap_len = int(15 * MITDBTrainCfg.fs)
     MITDBTrainCfg[t].critical_overlap_len = int(25 * MITDBTrainCfg.fs)
-    MITDBTrainCfg[
-        t
-    ].monitor = "neg_masked_bce"  # "main_score", "neg_masked_bce"  # monitor for determining the best model
+    MITDBTrainCfg[t].monitor = "neg_masked_bce"  # "main_score", "neg_masked_bce"  # monitor for determining the best model
     # MITDBTrainCfg[t].loss = "AsymmetricLoss" # "MaskedBCEWithLogitsLoss"
     # MITDBTrainCfg[t].loss_kw = CFG(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
     MITDBTrainCfg[t].loss = "MaskedBCEWithLogitsLoss"  # "MaskedBCEWithLogitsLoss"
     MITDBTrainCfg[t].loss_kw = CFG()
 
 MITDBTrainCfg.rhythm_segmentation.classes = deepcopy(MITDBTrainCfg.rhythm_types)
-MITDBTrainCfg.rhythm_segmentation.class_map = {
-    k: i for i, k in enumerate(MITDBTrainCfg.rhythm_segmentation.classes)
-}
+MITDBTrainCfg.rhythm_segmentation.class_map = {k: i for i, k in enumerate(MITDBTrainCfg.rhythm_segmentation.classes)}
 MITDBTrainCfg.af_event.classes = ["AFIB"]

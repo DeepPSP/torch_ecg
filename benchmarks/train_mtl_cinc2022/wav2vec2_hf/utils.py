@@ -3,8 +3,7 @@
 
 import inspect
 from copy import deepcopy
-from typing import Callable, Dict, Any
-
+from typing import Any, Callable, Dict
 
 __all__ = [
     "get_kwargs",
@@ -35,7 +34,5 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     if kwonly:
         return kwargs
     if fas.defaults is not None:
-        kwargs.update(
-            {k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)}
-        )
+        kwargs.update({k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)})
     return kwargs

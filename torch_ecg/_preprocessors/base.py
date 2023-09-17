@@ -9,11 +9,11 @@ import numpy as np
 from biosppy.signals.tools import filter_signal
 from scipy.ndimage import median_filter
 
-# from scipy.signal import medfilt
-# https://github.com/scipy/scipy/issues/9680
-
 from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_signal import butter_bandpass_filter
+
+# from scipy.signal import medfilt
+# https://github.com/scipy/scipy/issues/9680
 
 
 __all__ = [
@@ -135,9 +135,7 @@ def preprocess_multi_lead_signal(
 
     # remove baseline
     if bl_win:
-        window1, window2 = list(repeat(1, filtered_ecg.ndim)), list(
-            repeat(1, filtered_ecg.ndim)
-        )
+        window1, window2 = list(repeat(1, filtered_ecg.ndim)), list(repeat(1, filtered_ecg.ndim))
         window1[-1] = 2 * (int(bl_win[0] * fs) // 2) + 1  # window size must be odd
         window2[-1] = 2 * (int(bl_win[1] * fs) // 2) + 1
         baseline = median_filter(filtered_ecg, size=window1, mode="nearest")
@@ -175,8 +173,7 @@ def preprocess_multi_lead_signal(
                 lowcut=band_fs[0],
                 highcut=band_fs[1],
                 fs=fs,
-                order=filter_order
-                or round(0.01 * fs),  # better be determined by the `buttord`
+                order=filter_order or round(0.01 * fs),  # better be determined by the `buttord`
             )
         else:
             raise ValueError(f"Unsupported filter type `{filter_type}`")
@@ -274,8 +271,7 @@ def preprocess_single_lead_signal(
                 lowcut=band_fs[0],
                 highcut=band_fs[1],
                 fs=fs,
-                order=filter_order
-                or round(0.01 * fs),  # better be determined by the `buttord`
+                order=filter_order or round(0.01 * fs),  # better be determined by the `buttord`
             )
         else:
             raise ValueError(f"Unsupported filter type `{filter_type}`")

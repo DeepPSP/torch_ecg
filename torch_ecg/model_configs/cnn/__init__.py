@@ -6,12 +6,20 @@ from .cpsc import cpsc_2018_leadwise  # cpsc2018 SOTA
 from .cpsc import cpsc_2018, cpsc_block_basic, cpsc_block_mish, cpsc_block_swish
 from .densenet import densenet_leadwise  # vanilla densenet; custom densenet
 from .densenet import densenet_vanilla
-from .mobilenet import (
-    mobilenet_v1_vanilla,
-    mobilenet_v2_vanilla,
-    mobilenet_v3_small,
-)  # vanilla mobilenets
+from .mobilenet import mobilenet_v1_vanilla, mobilenet_v2_vanilla, mobilenet_v3_small  # vanilla mobilenets
 from .multi_scopic import multi_scopic, multi_scopic_block, multi_scopic_leadwise
+from .regnet import (
+    regnet_16_8,
+    regnet_23_168,
+    regnet_27_24,
+    regnet_bottle_neck,
+    regnet_bottle_neck_B,
+    regnet_bottle_neck_D,
+    regnet_bottle_neck_gc,
+    regnet_bottle_neck_nl,
+    regnet_bottle_neck_se,
+    regnet_S,
+)
 from .resnet import (  # building blocks; vanilla resnet; cpsc2018 resnet; smaller resnets; stanford resnet; ResNet Nature Communications; TResNet
     resnet_block_basic,
     resnet_block_basic_gc,
@@ -56,18 +64,6 @@ from .resnet import (  # building blocks; vanilla resnet; cpsc2018 resnet; small
     tresnetP,
     tresnetS,
     tresnetXL,
-)
-from .regnet import (
-    regnet_16_8,
-    regnet_27_24,
-    regnet_23_168,
-    regnet_S,
-    regnet_bottle_neck,
-    regnet_bottle_neck_B,
-    regnet_bottle_neck_D,
-    regnet_bottle_neck_se,
-    regnet_bottle_neck_nl,
-    regnet_bottle_neck_gc,
 )
 from .vgg import vgg16, vgg16_leadwise, vgg_block_basic, vgg_block_mish, vgg_block_swish
 from .xception import xception_leadwise  # vanilla xception; custom xception

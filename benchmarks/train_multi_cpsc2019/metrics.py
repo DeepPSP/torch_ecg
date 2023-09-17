@@ -61,16 +61,12 @@ def compute_metrics(
             next_t_ind = extended_truth_arr[j + 1]
             loc = np.where(np.abs(pred_arr - t_ind) <= thr_)[0]
             if j == 0:
-                err = np.where(
-                    (pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_)
-                )[0]
+                err = np.where((pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_))[0]
             else:
                 err = np.array([], dtype=int)
             err = np.append(
                 err,
-                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[
-                    0
-                ],
+                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[0],
             )
 
             false_positive += len(err)
@@ -126,10 +122,7 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
         for j in range(len(r_ref[i])):
             loc = np.where(np.abs(r_ans[i] - r_ref[i][j]) <= thr_ * fs_)[0]
             if j == 0:
-                err = np.where(
-                    (r_ans[i] >= 0.5 * fs_ + thr_ * fs_)
-                    & (r_ans[i] <= r_ref[i][j] - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= 0.5 * fs_ + thr_ * fs_) & (r_ans[i] <= r_ref[i][j] - thr_ * fs_))[0]
             # comments by wenh06:
             # elif j == len(r_ref[i])-1:
             # the above would falsely omit the interval between the 0-th and the 1-st ref rpeaks
@@ -138,15 +131,9 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
             # r_ans = [np.array([500, 700, 1000])]
             # a false positive is missed
             if j == len(r_ref[i]) - 1:
-                err = np.where(
-                    (r_ans[i] >= r_ref[i][j] + thr_ * fs_)
-                    & (r_ans[i] <= 9.5 * fs_ - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= r_ref[i][j] + thr_ * fs_) & (r_ans[i] <= 9.5 * fs_ - thr_ * fs_))[0]
             else:
-                err = np.where(
-                    (r_ans[i] >= r_ref[i][j] + thr_ * fs_)
-                    & (r_ans[i] <= r_ref[i][j + 1] - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= r_ref[i][j] + thr_ * fs_) & (r_ans[i] <= r_ref[i][j + 1] - thr_ * fs_))[0]
 
             FP = FP + len(err)
             if len(loc) >= 1:

@@ -83,22 +83,14 @@ def compute_metrics(
     truth_waveforms, pred_waveforms = [], []
     # compute for each element
     for tm, pm in zip(truth_masks, pred_masks):
-        n_masks = (
-            tm.shape[0]
-            if mask_format.lower() in ["channel_first", "lead_first"]
-            else tm.shape[1]
-        )
+        n_masks = tm.shape[0] if mask_format.lower() in ["channel_first", "lead_first"] else tm.shape[1]
 
         new_t = masks_to_waveforms(tm, class_map, fs, mask_format)
-        new_t = [
-            new_t[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_t = [new_t[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         truth_waveforms += new_t
 
         new_p = masks_to_waveforms(pm, class_map, fs, mask_format)
-        new_p = [
-            new_p[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_p = [new_p[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         pred_waveforms += new_p
 
     scorings = compute_metrics_waveform(truth_waveforms, pred_waveforms, fs)
@@ -189,15 +181,9 @@ def compute_metrics_waveform(
             "twave",
         ]:
             for term in ["onset", "offset"]:
-                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "truth_positive"
-                ]
-                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_positive"
-                ]
-                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_negative"
-                ]
+                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["truth_positive"]
+                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_positive"]
+                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_negative"]
                 errors[f"{wave}_{term}"] += s[f"{wave}_{term}"]["errors"]
     scorings = CFG()
     for wave in [
@@ -212,9 +198,7 @@ def compute_metrics_waveform(
             err = errors[f"{wave}_{term}"]
             sensitivity = tp / (tp + fn + DEFAULTS.eps)
             precision = tp / (tp + fp + DEFAULTS.eps)
-            f1_score = (
-                2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
-            )
+            f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
             mean_error = np.mean(err) * 1000 / fs
             standard_deviation = np.std(err) * 1000 / fs
             scorings[f"{wave}_{term}"] = CFG(
@@ -296,9 +280,7 @@ def _compute_metrics_waveform(
                 f1_score,
                 mean_error,
                 standard_deviation,
-            ) = _compute_metrics_base(
-                eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs
-            )
+            ) = _compute_metrics_base(eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs)
             scorings[f"{wave}_{term}"] = CFG(
                 truth_positive=truth_positive,
                 false_negative=false_negative,
@@ -313,9 +295,7 @@ def _compute_metrics_waveform(
     return scorings
 
 
-def _compute_metrics_base(
-    truths: Sequence[Real], preds: Sequence[Real], fs: Real
-) -> Dict[str, float]:
+def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Real) -> Dict[str, float]:
     """
 
     Parameters

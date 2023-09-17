@@ -3,7 +3,7 @@ import math
 import warnings
 from copy import deepcopy
 from random import shuffle
-from typing import List, Optional, Sequence, Tuple, Any
+from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -13,7 +13,6 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import CPSC2019 as CR
 from ....utils.misc import ReprMixin
-
 
 __all__ = [
     "CPSC2019Dataset",
@@ -59,9 +58,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
-            warnings.warn(
-                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
-            )
+            warnings.warn("`db_dir` is specified in both config and reader_kwargs", RuntimeWarning)
         self.reader = CR(db_dir=config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir
         self.training = training
@@ -125,9 +122,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         """
         return self._labels
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """Perform train-test split.
 
         Parameters

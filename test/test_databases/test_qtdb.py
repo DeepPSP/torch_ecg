@@ -14,7 +14,6 @@ import pytest
 from torch_ecg.databases import QTDB, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "qtdb"
@@ -42,26 +41,18 @@ class TestQTDB:
         reader_ss = QTDB(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             QTDB(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             QTDB(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             QTDB(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         data = reader.load_data(0)
         assert data.ndim == 2
         assert data.shape[0] == len(reader.get_lead_names(0))
-        data_1 = reader.load_data(
-            0, leads=0, data_format="flat", sampto=1000, units="uV"
-        )
+        data_1 = reader.load_data(0, leads=0, data_format="flat", sampto=1000, units="uV")
         assert np.allclose(data[0][:1000], data_1 / 1000)
 
     def test_load_ann(self):
@@ -69,9 +60,7 @@ class TestQTDB:
         ann_1 = reader.load_ann(0, ignore_beat_types=False)
         assert len(ann) <= len(ann_1)
         ann = reader.load_ann(0, sampfrom=1000, sampto=2000, extension="pu1")
-        ann_1 = reader.load_ann(
-            0, sampfrom=1000, sampto=2000, extension="pu1", keep_original=True
-        )
+        ann_1 = reader.load_ann(0, sampfrom=1000, sampto=2000, extension="pu1", keep_original=True)
         assert len(ann) == len(ann_1)
 
         with pytest.raises(
@@ -79,9 +68,7 @@ class TestQTDB:
             match="extension should be one of `q1c`, `q2c`, `pu1`, `pu2`",
         ):
             reader.load_ann(0, extension="q1")
-        with pytest.raises(
-            AssertionError, match="`sampto` should be greater than `sampfrom`"
-        ):
+        with pytest.raises(AssertionError, match="`sampto` should be greater than `sampfrom`"):
             reader.load_ann(0, sampfrom=2000, sampto=1000)
 
     def test_load_wave_ann(self):
@@ -108,14 +95,10 @@ class TestQTDB:
         beat_ann = reader.load_beat_ann(0)
         beat_ann_1 = reader.load_beat_ann(0, beat_types=reader.beat_types[:2])
         assert len(beat_ann) >= len(beat_ann_1)
-        beat_ann = reader.load_beat_ann(
-            0, sampfrom=1000, sampto=2000, beat_format="dict"
-        )
+        beat_ann = reader.load_beat_ann(0, sampfrom=1000, sampto=2000, beat_format="dict")
         assert isinstance(beat_ann, dict)
         assert all([isinstance(beat_ann[k], np.ndarray) for k in beat_ann])
-        beat_ann_1 = reader.load_beat_ann(
-            0, sampfrom=1000, sampto=2000, beat_format="dict", keep_original=True
-        )
+        beat_ann_1 = reader.load_beat_ann(0, sampfrom=1000, sampto=2000, beat_format="dict", keep_original=True)
         assert beat_ann.keys() == beat_ann_1.keys()
         assert all([np.allclose(beat_ann[k], beat_ann_1[k] - 1000) for k in beat_ann])
 
@@ -127,9 +110,7 @@ class TestQTDB:
 
     def test_load_rpeak_indices(self):
         rpeak_indices = reader.load_rpeak_indices(0, sampfrom=1000, sampto=2000)
-        rpeak_indices_1 = reader.load_rpeak_indices(
-            0, sampfrom=1000, sampto=2000, keep_original=True
-        )
+        rpeak_indices_1 = reader.load_rpeak_indices(0, sampfrom=1000, sampto=2000, keep_original=True)
         assert np.allclose(rpeak_indices, rpeak_indices_1 - 1000)
 
         with pytest.raises(
@@ -144,9 +125,7 @@ class TestQTDB:
             reader.load_rpeak_indices("sel30")
 
     def test_meta_data(self):
-        assert isinstance(reader.version, str) and re.match(
-            PHYSIONET_DB_VERSION_PATTERN, reader.version
-        )
+        assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)

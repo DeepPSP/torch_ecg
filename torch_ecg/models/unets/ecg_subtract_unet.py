@@ -13,19 +13,15 @@ import textwrap
 import warnings
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Union, Sequence, List
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import torch
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (
-    BranchedConv,
-    Conv_Bn_Activation,
-    DownSample,
-    MultiConv,
-)
+from ...model_configs import ECG_SUBTRACT_UNET_CONFIG
+from ...models._nets import BranchedConv, Conv_Bn_Activation, DownSample, MultiConv
 from ...utils.misc import add_docstring
 from ...utils.utils_nn import (
     CkptMixin,
@@ -34,8 +30,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-from ...model_configs import ECG_SUBTRACT_UNET_CONFIG
-
 
 __all__ = [
     "ECG_SUBTRACT_UNET",
@@ -402,9 +396,7 @@ class UpTripleConv(nn.Module, SizeMixin):
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
         if self.__mode == "deconv":
-            self.__deconv_padding = max(
-                0, (self.__deconv_filter_length - self.__up_scale) // 2
-            )
+            self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale) // 2)
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
                 out_channels=self.__in_channels,
@@ -445,9 +437,7 @@ class UpTripleConv(nn.Module, SizeMixin):
 
         """
         output = self.up(input)
-        output = torch.cat(
-            [down_output, output], dim=1
-        )  # concate along the channel axis
+        output = torch.cat([down_output, output], dim=1)  # concate along the channel axis
         output = self.conv(output)
 
         return output
@@ -519,9 +509,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         self.__in_channels = n_leads
         self.config = deepcopy(ECG_SUBTRACT_UNET_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
 
         # TODO: an init batch normalization?
@@ -654,9 +642,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         return output
 
     @torch.no_grad()
-    def inference(
-        self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
-    ) -> Tensor:
+    def inference(self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5) -> Tensor:
         """Method for making inference on a single input."""
         raise NotImplementedError("implement a task specific inference method")
 

@@ -8,7 +8,6 @@ import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
 
-
 __all__ = [
     "BandPass",
 ]
@@ -35,20 +34,13 @@ class BandPass(torch.nn.Module):
     __name__ = "BandPass"
 
     def __init__(
-        self,
-        fs: Real,
-        lowcut: Optional[Real] = 0.5,
-        highcut: Optional[Real] = 45,
-        inplace: bool = True,
-        **kwargs: Any
+        self, fs: Real, lowcut: Optional[Real] = 0.5, highcut: Optional[Real] = 45, inplace: bool = True, **kwargs: Any
     ) -> None:
         super().__init__()
         self.fs = fs
         self.lowcut = lowcut
         self.highcut = highcut
-        assert any(
-            [self.lowcut is not None, self.highcut is not None]
-        ), "At least one of lowcut and highcut should be set"
+        assert any([self.lowcut is not None, self.highcut is not None]), "At least one of lowcut and highcut should be set"
         if not self.lowcut:
             self.lowcut = 0
         if not self.highcut:

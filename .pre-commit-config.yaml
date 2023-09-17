@@ -1,4 +1,6 @@
-# generate a pre-commit config file using flake8, black, and isort
+# ignore svg, txt, json files
+exclude: '^.*\.(svg|txt|json)$'
+fail_fast: false
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

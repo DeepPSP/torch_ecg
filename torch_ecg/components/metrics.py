@@ -3,7 +3,7 @@
 
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional, Sequence, Union, Dict
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 from torch import Tensor
@@ -13,12 +13,11 @@ from ..utils.utils_data import ECGWaveFormNames
 from ..utils.utils_metrics import (
     QRS_score,
     cls_to_bin,
-    metrics_from_confusion_matrix,
-    confusion_matrix,
-    ovr_confusion_matrix,
     compute_wave_delineation_metrics,
+    confusion_matrix,
+    metrics_from_confusion_matrix,
+    ovr_confusion_matrix,
 )
-
 
 __all__ = [
     "Metrics",
@@ -123,9 +122,7 @@ class ClassificationMetrics(Metrics):
             self.__prefix = "macro_"
 
     @add_docstring(
-        metrics_from_confusion_matrix.__doc__.replace(
-            "metrics : dict", f"self : {__name__},"
-        )
+        metrics_from_confusion_matrix.__doc__.replace("metrics : dict", f"self : {__name__},")
         .replace(
             "Metrics computed from the one-vs-rest confusion matrix.",
             "The metrics object itself with the computed metrics.",
@@ -158,9 +155,7 @@ class ClassificationMetrics(Metrics):
         bin_outputs[outputs < thr] = 0
         self._cm = confusion_matrix(labels, bin_outputs, num_classes)
         self._cm_ovr = ovr_confusion_matrix(labels, bin_outputs, num_classes)
-        self._metrics = metrics_from_confusion_matrix(
-            labels, outputs, num_classes, weights
-        )
+        self._metrics = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
         if self._extra_metrics is not None:
             self._em = self._extra_metrics(labels, outputs, num_classes, weights)
             self._metrics.update(self._em)
@@ -323,15 +318,9 @@ class ClassificationMetrics(Metrics):
     @property
     def classification_report(self) -> dict:
         if self.__prefix == "macro_":
-            return {
-                k.replace("macro_", ""): v
-                for k, v in self._metrics.items()
-                if k.startswith("macro_")
-            }
+            return {k.replace("macro_", ""): v for k, v in self._metrics.items() if k.startswith("macro_")}
         else:
-            return {
-                k: v for k, v in self._metrics.items() if not k.startswith("macro_")
-            }
+            return {k: v for k, v in self._metrics.items() if not k.startswith("macro_")}
 
     @property
     def extra_metrics(self) -> dict:
@@ -553,9 +542,7 @@ class WaveDelineationMetrics(Metrics):
         # wave delineation specific metrics
         truth_masks = labels.numpy() if isinstance(labels, Tensor) else labels
         pred_masks = outputs.numpy() if isinstance(outputs, Tensor) else outputs
-        raw_metrics = compute_wave_delineation_metrics(
-            truth_masks, pred_masks, class_map, fs, mask_format, tol or self.tol
-        )
+        raw_metrics = compute_wave_delineation_metrics(truth_masks, pred_masks, class_map, fs, mask_format, tol or self.tol)
         self._metrics = {
             metric: {
                 f"{wf}_{pos}": raw_metrics[f"{wf}_{pos}"][metric]

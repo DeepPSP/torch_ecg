@@ -18,8 +18,7 @@ import tensorboardX
 import torch
 
 from ..cfg import DEFAULTS
-from ..utils.misc import ReprMixin, get_date_str, init_logger, add_docstring
-
+from ..utils.misc import ReprMixin, add_docstring, get_date_str, init_logger
 
 __all__ = [
     "BaseLogger",
@@ -183,19 +182,11 @@ class TxtLogger(BaseLogger):
         prefix = f"Step {step}: "
         if epoch is not None:
             prefix = f"Epoch {epoch} / {prefix}"
-        _metrics = {
-            k: v.item() if isinstance(v, torch.Tensor) else v
-            for k, v in metrics.items()
-        }
+        _metrics = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in metrics.items()}
         spaces = len(max(_metrics.keys(), key=len))
         msg = (
             f"{part.capitalize()} Metrics:\n{self.short_sep}\n"
-            + "\n".join(
-                [
-                    f"{prefix}{part}/{k} : {' '*(spaces-len(k))}{v:.4f}"
-                    for k, v in _metrics.items()
-                ]
-            )
+            + "\n".join([f"{prefix}{part}/{k} : {' '*(spaces-len(k))}{v:.4f}" for k, v in _metrics.items()])
             + f"\n{self.short_sep}"
         )
         self.log_message(msg)
@@ -301,16 +292,9 @@ class CSVLogger(BaseLogger):
         row = {"step": self.step, "time": datetime.now(), "part": part}
         if epoch is not None:
             row.update({"epoch": epoch})
-        row.update(
-            {
-                k: v.item() if isinstance(v, torch.Tensor) else v
-                for k, v in metrics.items()
-            }
-        )
+        row.update({k: v.item() if isinstance(v, torch.Tensor) else v for k, v in metrics.items()})
         # self.logger = self.logger.append(row, ignore_index=True)
-        self.logger = pd.concat(
-            [self.logger, pd.DataFrame(row, index=[0])], ignore_index=True
-        )
+        self.logger = pd.concat([self.logger, pd.DataFrame(row, index=[0])], ignore_index=True)
 
         self._flushed = False
 
@@ -375,9 +359,7 @@ class TensorBoardXLogger(BaseLogger):
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_dir.mkdir(parents=True, exist_ok=True)
-        self.logger = tensorboardX.SummaryWriter(
-            str(self._log_dir), filename_suffix=log_suffix or ""
-        )
+        self.logger = tensorboardX.SummaryWriter(str(self._log_dir), filename_suffix=log_suffix or "")
         self.log_file = self.logger.file_writer.event_writer._ev_writer._file_name
         self.step = -1
 

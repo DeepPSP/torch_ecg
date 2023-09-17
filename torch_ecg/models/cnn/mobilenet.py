@@ -13,25 +13,15 @@ import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import Any, Optional, Sequence, Union, List
+from typing import Any, List, Optional, Sequence, Union
 
-from torch import Tensor, nn
 from deprecate_kwargs import deprecate_kwargs
+from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (
-    Conv_Bn_Activation,
-    Initializers,
-    MultiConv,
-    make_attention_layer,
-)
-from ...utils.misc import add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-
+from ...models._nets import Conv_Bn_Activation, Initializers, MultiConv, make_attention_layer
+from ...utils.misc import CitationMixin, add_docstring
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
 
 __all__ = [
     "MobileNetV1",
@@ -185,14 +175,9 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
             if callable(kernel_initializer):
                 for module in self:
                     kernel_initializer(module.weight)
-            elif (
-                isinstance(kernel_initializer, str)
-                and kernel_initializer.lower() in Initializers.keys()
-            ):
+            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
                 for module in self:
-                    Initializers[kernel_initializer.lower()](
-                        module.weight, **kw_initializer
-                    )
+                    Initializers[kernel_initializer.lower()](module.weight, **kw_initializer)
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
@@ -366,32 +351,15 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
 
         """
         n_convs = len(out_channels)
-        _filter_lengths = (
-            list(repeat(filter_lengths, n_convs))
-            if isinstance(filter_lengths, int)
-            else filter_lengths
-        )
+        _filter_lengths = list(repeat(filter_lengths, n_convs)) if isinstance(filter_lengths, int) else filter_lengths
         _subsample_lengths = (
-            list(repeat(subsample_lengths, n_convs))
-            if isinstance(subsample_lengths, int)
-            else subsample_lengths
+            list(repeat(subsample_lengths, n_convs)) if isinstance(subsample_lengths, int) else subsample_lengths
         )
-        _dilations = (
-            list(repeat(dilations, n_convs))
-            if isinstance(dilations, int)
-            else dilations
-        )
-        assert (
-            n_convs
-            == len(_filter_lengths)
-            == len(_subsample_lengths)
-            == len(_dilations)
-        )
+        _dilations = list(repeat(dilations, n_convs)) if isinstance(dilations, int) else dilations
+        assert n_convs == len(_filter_lengths) == len(_subsample_lengths) == len(_dilations)
         ic = in_channels
         flow = nn.Sequential()
-        for idx, (oc, fl, sl, dl) in enumerate(
-            zip(out_channels, _filter_lengths, _subsample_lengths, _dilations)
-        ):
+        for idx, (oc, fl, sl, dl) in enumerate(zip(out_channels, _filter_lengths, _subsample_lengths, _dilations)):
             sc_layer = MobileNetSeparableConv(
                 in_channels=ic,
                 out_channels=oc,
@@ -912,9 +880,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
         groups: int = 1,
         dilation: Union[int, Sequence[int]] = 1,
         batch_norm: Union[bool, str, nn.Module] = True,
-        activation: Optional[
-            Union[str, nn.Module, Sequence[Union[str, nn.Module]]]
-        ] = "relu",
+        activation: Optional[Union[str, nn.Module, Sequence[Union[str, nn.Module]]]] = "relu",
         width_multiplier: Union[float, Sequence[float]] = 1.0,
         out_channels: Union[int, Sequence[int]] = None,
         attn: Optional[Union[CFG, Sequence[CFG]]] = None,
@@ -928,9 +894,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
             self.__expansion = list(repeat(expansion, self.n_blocks))
         else:
             self.__expansion = expansion
-        assert (
-            len(self.__expansion) == self.n_blocks
-        ), f"expansion must be an integer or a sequence of length {self.n_blocks}"
+        assert len(self.__expansion) == self.n_blocks, f"expansion must be an integer or a sequence of length {self.n_blocks}"
         if isinstance(filter_length, int):
             self.__filter_length = list(repeat(filter_length, self.n_blocks))
         else:
@@ -944,17 +908,13 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
             self.__stride = list(repeat(stride, self.n_blocks))
         else:
             self.__stride = stride
-        assert (
-            len(self.__stride) == self.n_blocks
-        ), f"stride must be an integer or a sequence of length {self.n_blocks}"
+        assert len(self.__stride) == self.n_blocks, f"stride must be an integer or a sequence of length {self.n_blocks}"
         self.__groups = groups
         if isinstance(dilation, int):
             self.__dilation = list(repeat(dilation, self.n_blocks))
         else:
             self.__dilation = dilation
-        assert (
-            len(self.__dilation) == self.n_blocks
-        ), f"dilation must be an integer or a sequence of length {self.n_blocks}"
+        assert len(self.__dilation) == self.n_blocks, f"dilation must be an integer or a sequence of length {self.n_blocks}"
         self.__batch_norm = batch_norm
         if isinstance(activation, (str, nn.Module)):
             self.__activation = [deepcopy(activation) for _ in range(self.n_blocks)]
@@ -983,9 +943,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
             self.__attn = [deepcopy(attn) for _ in range(self.n_blocks)]
         else:
             self.__attn = attn
-        assert (
-            len(self.__attn) == self.n_blocks
-        ), f"attn must be a CFG or a sequence of length {self.n_blocks}"
+        assert len(self.__attn) == self.n_blocks, f"attn must be a CFG or a sequence of length {self.n_blocks}"
 
         ivt_res_in_channels = self.__in_channels
         for idx, exp in enumerate(self.__expansion):
@@ -1060,9 +1018,7 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
         groups: int = 1,
         bias: bool = True,
         batch_norm: Union[bool, str, nn.Module] = True,
-        activation: Optional[
-            Union[str, nn.Module, Sequence[Union[str, nn.Module]]]
-        ] = "relu",
+        activation: Optional[Union[str, nn.Module, Sequence[Union[str, nn.Module]]]] = "relu",
         width_multiplier: Union[float, Sequence[float]] = 1.0,
         **config: CFG,
     ) -> None:
@@ -1223,12 +1179,8 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
 
         # inverted residual blocks
         _, inv_res_in_channels, _ = self.stem.compute_output_shape()
-        strides = self.config.inv_res.get(
-            "strides", list(repeat(None, len(self.config.inv_res.n_blocks)))
-        )
-        out_channels = self.config.inv_res.get(
-            "out_channels", list(repeat(None, len(self.config.inv_res.n_blocks)))
-        )
+        strides = self.config.inv_res.get("strides", list(repeat(None, len(self.config.inv_res.n_blocks))))
+        out_channels = self.config.inv_res.get("out_channels", list(repeat(None, len(self.config.inv_res.n_blocks))))
         for idx, n_blocks in enumerate(self.config.inv_res.n_blocks):
             block = InvertedResidualBlock(
                 in_channels=inv_res_in_channels,

@@ -263,16 +263,7 @@ def save_outputs(output_file, recording_id, classes, labels, probabilities):
     class_string = ",".join(str(cs) for cs in classes)
     label_string = ",".join(str(lb) for lb in labels)
     probabilities_string = ",".join(str(p) for p in probabilities)
-    output_string = (
-        recording_string
-        + "\n"
-        + class_string
-        + "\n"
-        + label_string
-        + "\n"
-        + probabilities_string
-        + "\n"
-    )
+    output_string = recording_string + "\n" + class_string + "\n" + label_string + "\n" + probabilities_string + "\n"
 
     # Save the model outputs.
     with open(output_file, "w") as f:
@@ -290,10 +281,7 @@ def load_outputs(output_file):
             elif i == 2:
                 labels = tuple(entry.strip() for entry in l.split(","))
             elif i == 3:
-                probabilities = tuple(
-                    float(entry) if is_finite_number(entry) else float("nan")
-                    for entry in l.split(",")
-                )
+                probabilities = tuple(float(entry) if is_finite_number(entry) else float("nan") for entry in l.split(","))
             else:
                 break
     return recording_id, classes, labels, probabilities

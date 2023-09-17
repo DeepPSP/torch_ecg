@@ -1,25 +1,12 @@
 """
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from torch_ecg.cfg import DEFAULTS
-from torch_ecg.components.metrics import (
-    Metrics,
-    ClassificationMetrics,
-    RPeaksDetectionMetrics,
-    WaveDelineationMetrics,
-)
-from torch_ecg.utils.utils_metrics import (
-    top_n_accuracy,
-    f_measure,
-    sensitivity,
-    precision,
-    specificity,
-    accuracy,
-    auc,
-)
+from torch_ecg.components.metrics import ClassificationMetrics, Metrics, RPeaksDetectionMetrics, WaveDelineationMetrics
+from torch_ecg.utils.utils_metrics import accuracy, auc, f_measure, precision, sensitivity, specificity, top_n_accuracy
 
 
 def test_classification_metrics():
@@ -106,20 +93,14 @@ def test_classification_metrics():
     assert isinstance(cm.bookmaker_informedness, np.ndarray)
     assert isinstance(cm.markedness, np.ndarray)
     assert isinstance(cm.diagnostic_odds_ratio, np.ndarray)
-    assert isinstance(
-        cm.area_under_the_receiver_operater_characteristic_curve, np.ndarray
-    )
+    assert isinstance(cm.area_under_the_receiver_operater_characteristic_curve, np.ndarray)
     assert isinstance(cm.auroc, np.ndarray)
     assert isinstance(cm.area_under_the_precision_recall_curve, np.ndarray)
     assert isinstance(cm.auprc, np.ndarray)
 
-    with pytest.warns(
-        RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"
-    ):
+    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"):
         cm(labels, outputs_bin)
-    with pytest.warns(
-        RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"
-    ):
+    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"):
         cm(labels, outputs_cate)
 
     assert str(cm) == repr(cm)

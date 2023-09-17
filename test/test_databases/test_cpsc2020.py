@@ -15,7 +15,6 @@ from torch_ecg.databases import CPSC2020, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2020 import compute_metrics
 from torch_ecg.utils import validate_interval
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cpsc2020"
@@ -43,25 +42,17 @@ class TestCPSC2020:
         reader_ss = CPSC2020(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2020(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2020(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2020(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         # reader.fs is 400
         data_1 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="flat")
-        data_2 = reader.load_data(
-            0, sampfrom=2000, sampto=4000, data_format="channel_last"
-        )
+        data_2 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="channel_last")
         data_3 = reader.load_data(0, sampfrom=2000, sampto=4000, units="uV")
         data_4 = reader.load_data(0, sampfrom=2000, sampto=4000, fs=reader.fs * 2)
         assert data_1.shape == (2000,)
@@ -69,9 +60,7 @@ class TestCPSC2020:
         assert np.allclose(data_1, data_2[:, 0])
         assert np.allclose(data_1, data_3 / 1000, atol=1e-2)
         assert data_4.shape == (1, 4000)
-        data, data_fs = reader.load_data(
-            0, sampfrom=2000, sampto=4000, fs=reader.fs // 4, return_fs=True
-        )
+        data, data_fs = reader.load_data(0, sampfrom=2000, sampto=4000, fs=reader.fs // 4, return_fs=True)
         assert data_fs == reader.fs // 4
 
         with pytest.raises(ValueError, match="Invalid `data_format`"):
@@ -87,24 +76,12 @@ class TestCPSC2020:
     def test_locate_premature_beats(self):
         premature_beat_intervals = reader.locate_premature_beats(0)
         assert len(premature_beat_intervals) > 0
-        premature_beat_intervals_1 = reader.locate_premature_beats(
-            0, sampfrom=1000, sampto=90000
-        )
+        premature_beat_intervals_1 = reader.locate_premature_beats(0, sampfrom=1000, sampto=90000)
         assert len(premature_beat_intervals_1) <= len(premature_beat_intervals)
-        premature_beat_intervals = reader.locate_premature_beats(
-            0, premature_type="SPB"
-        )
-        assert (
-            len(premature_beat_intervals) == 0
-            or validate_interval(premature_beat_intervals)[0]
-        )
-        premature_beat_intervals = reader.locate_premature_beats(
-            0, premature_type="PVC"
-        )
-        assert (
-            len(premature_beat_intervals) == 0
-            or validate_interval(premature_beat_intervals)[0]
-        )
+        premature_beat_intervals = reader.locate_premature_beats(0, premature_type="SPB")
+        assert len(premature_beat_intervals) == 0 or validate_interval(premature_beat_intervals)[0]
+        premature_beat_intervals = reader.locate_premature_beats(0, premature_type="PVC")
+        assert len(premature_beat_intervals) == 0 or validate_interval(premature_beat_intervals)[0]
 
     def test_train_test_split_rec(self):
         for test_rec_num in range(1, 5):
@@ -143,13 +120,9 @@ class TestCPSC2020:
             sampto=sampto,
             rpeak_inds=[2500, 3500],
         )
-        data = reader.load_data(
-            rec, sampfrom=sampfrom, sampto=sampto, data_format="flat"
-        )
+        data = reader.load_data(rec, sampfrom=sampfrom, sampto=sampto, data_format="flat")
         reader.plot(rec, data=data, ticks_granularity=1, rpeak_inds=[500, 1500])
-        data = reader.load_data(
-            rec, sampfrom=sampfrom, sampto=sampto, units="μV", data_format="flat"
-        )
+        data = reader.load_data(rec, sampfrom=sampfrom, sampto=sampto, units="μV", data_format="flat")
         reader.plot(rec, data=data, ticks_granularity=0)
 
     def test_compute_metrics(self):
@@ -163,13 +136,9 @@ class TestCPSC2020:
             [sbp_true_0, sbp_true_1],
             [pvc_true_0, pvc_true_1],
         ) == (0, 0)
-        Score1, Score2 = compute_metrics(
-            [sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1]
-        )
+        Score1, Score2 = compute_metrics([sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1])
         assert Score1 <= 0 and Score2 <= 0
-        assert compute_metrics(
-            [sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1], verbose=2
-        ).keys() == {
+        assert compute_metrics([sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1], verbose=2).keys() == {
             "total_loss",
             "class_loss",
             "true_positive",

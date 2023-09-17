@@ -1,12 +1,12 @@
 """
 """
 
-import re
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Union, Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import requests
@@ -15,7 +15,6 @@ from tqdm.auto import tqdm
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from cfg import BaseCfg  # noqa: E402
-
 
 _URLS = {
     "summary": "https://moody-challenge.physionet.org/2022/results/summary.tsv",
@@ -82,11 +81,7 @@ def _update_final_results() -> None:
     df = _fetch_final_results()
     updated = False
     save_path = _FINAL_SCORES_FILE
-    df_old = (
-        pd.read_excel(save_path, sheet_name=None, engine="openpyxl")
-        if save_path.exists()
-        else None
-    )
+    df_old = pd.read_excel(save_path, sheet_name=None, engine="openpyxl") if save_path.exists() else None
     if df_old is None:
         updated = True
     else:
@@ -132,9 +127,7 @@ def _get_row(
         col = f"{metric} on {evaluated_set} Set"
     df_all = pd.read_excel(_FINAL_SCORES_FILE, sheet_name=None, engine="openpyxl")
     df = df_all[f"official_{task}_scores"]
-    df = df.sort_values(by=col, ascending=True if "Cost" in col else False).reset_index(
-        drop=True
-    )
+    df = df.sort_values(by=col, ascending=True if "Cost" in col else False).reset_index(drop=True)
     if team_name not in df.Team.to_list():
         unofficial_teams = df_all[f"unofficial_{task}_scores"].Team.to_list()
         newline = "\n"
@@ -197,9 +190,7 @@ def get_score(
     return score
 
 
-def get_team_digest(
-    team_name: str, fmt: str = "pd", latest: bool = False
-) -> Union[str, pd.DataFrame]:
+def get_team_digest(team_name: str, fmt: str = "pd", latest: bool = False) -> Union[str, pd.DataFrame]:
     """ """
     assert fmt.lower() in [
         "pd",

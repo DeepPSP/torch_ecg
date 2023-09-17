@@ -14,7 +14,6 @@ import pytest
 
 from torch_ecg.databases import SHHS, DataBaseInfo
 
-
 ###############################################################################
 # set paths
 # 9 files are downloaded in the following directory using `nsrr`
@@ -31,9 +30,7 @@ reader = SHHS(_CWD / "polysomnography", current_version="0.15.0", lazy=False, ve
 class TestSHHS:
     def test_emtpy_db(self):
         directory = Path(f"~/tmp/test-empty-{int(time.time())}/").expanduser().resolve()
-        with pytest.warns(
-            RuntimeWarning, match="`.+` does not exist\\. It is now created"
-        ):
+        with pytest.warns(RuntimeWarning, match="`.+` does not exist\\. It is now created"):
             empty_reader = SHHS(directory, logger=reader.logger)
         assert len(empty_reader) == 0
         assert len(empty_reader.all_records) == 0
@@ -68,17 +65,11 @@ class TestSHHS:
         reader_ss = SHHS(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SHHS(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SHHS(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SHHS(_CWD, subsample=-0.1)
 
     def test_load_psg_data(self):
@@ -111,22 +102,14 @@ class TestSHHS:
         assert fs_1 == fs
         assert data_1.shape[0] == int(10 * fs)
         assert np.allclose(data_1, data[0, int(10 * fs) : int(20 * fs)])
-        data_1 = reader.load_data(
-            0, sampfrom=10, sampto=20, data_format="flat", return_fs=False
-        )
+        data_1 = reader.load_data(0, sampfrom=10, sampto=20, data_format="flat", return_fs=False)
         assert isinstance(data_1, np.ndarray)
-        data_2, _ = reader.load_data(
-            0, sampfrom=10, sampto=20, data_format="flat", units="uv"
-        )
+        data_2, _ = reader.load_data(0, sampfrom=10, sampto=20, data_format="flat", units="uv")
         assert np.allclose(data_2, data_1 * 1e3)
 
-        with pytest.raises(
-            AssertionError, match="`data_format` should be one of `.+`, but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`data_format` should be one of `.+`, but got `.+`"):
             reader.load_data(0, data_format="invalid")
-        with pytest.raises(
-            AssertionError, match="`units` should be one of `.+` or None, but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`units` should be one of `.+` or None, but got `.+`"):
             reader.load_data(0, units="kV")
 
     def test_load_ecg_data(self):
@@ -174,9 +157,7 @@ class TestSHHS:
         assert len(ann_1) == len(ann)
         assert (ann_1.columns == ann.columns).all()
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         ann = reader.load_event_ann(rec)
         assert isinstance(ann, pd.DataFrame) and ann.empty
 
@@ -185,22 +166,14 @@ class TestSHHS:
         ann = reader.load_event_profusion_ann(rec)
         assert isinstance(ann, dict) and len(ann) == 2
         assert set(ann.keys()) == {"sleep_stage_list", "df_events"}
-        assert (
-            isinstance(ann["sleep_stage_list"], list)
-            and len(ann["sleep_stage_list"]) > 0
-        )
+        assert isinstance(ann["sleep_stage_list"], list) and len(ann["sleep_stage_list"]) > 0
         assert isinstance(ann["df_events"], pd.DataFrame) and len(ann["df_events"]) > 0
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         ann = reader.load_event_profusion_ann(rec)
         assert isinstance(ann, dict) and len(ann) == 2
         assert set(ann.keys()) == {"sleep_stage_list", "df_events"}
-        assert (
-            isinstance(ann["sleep_stage_list"], list)
-            and len(ann["sleep_stage_list"]) == 0
-        )
+        assert isinstance(ann["sleep_stage_list"], list) and len(ann["sleep_stage_list"]) == 0
         assert isinstance(ann["df_events"], pd.DataFrame) and ann["df_events"].empty
 
     def test_load_hrv_detailed_ann(self):
@@ -223,9 +196,7 @@ class TestSHHS:
 
         ann = reader.load_hrv_summary_ann(rec=None)
         assert isinstance(ann, pd.DataFrame)
-        assert len(ann) == len(reader.get_table("shhs1-hrv-summary")) + len(
-            reader.get_table("shhs2-hrv-summary")
-        )
+        assert len(ann) == len(reader.get_table("shhs1-hrv-summary")) + len(reader.get_table("shhs2-hrv-summary"))
 
     def test_load_wave_delineation_ann(self):
         rec = reader.rec_with_rpeaks_ann[0]
@@ -289,9 +260,7 @@ class TestSHHS:
         ann_2 = reader.load_rr_ann(rec, units=None)
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == ann.shape
-        assert np.allclose(
-            ann_2 / reader.get_fs(rec, "rpeak"), ann, atol=1e-2
-        )  # ann_2 is rounded
+        assert np.allclose(ann_2 / reader.get_fs(rec, "rpeak"), ann, atol=1e-2)  # ann_2 is rounded
 
         rec = list(set(reader.all_records) - set(reader.rec_with_rpeaks_ann))[0]
         ann = reader.load_rr_ann(rec)
@@ -320,9 +289,7 @@ class TestSHHS:
         ann_2 = reader.load_nn_ann(rec, units=None)
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == ann.shape
-        assert np.allclose(
-            ann_2 / reader.get_fs(rec, "rpeak"), ann, atol=1e-2
-        )  # ann_2 is rounded
+        assert np.allclose(ann_2 / reader.get_fs(rec, "rpeak"), ann, atol=1e-2)  # ann_2 is rounded
 
         rec = list(set(reader.all_records) - set(reader.rec_with_rpeaks_ann))[0]
         ann = reader.load_nn_ann(rec)
@@ -345,10 +312,7 @@ class TestSHHS:
         ann = reader.load_sleep_ann(rec, source="event_profusion")
         assert isinstance(ann, dict)
         assert len(ann) == 2 and set(ann.keys()) == {"sleep_stage_list", "df_events"}
-        assert (
-            isinstance(ann["sleep_stage_list"], list)
-            and len(ann["sleep_stage_list"]) > 0
-        )
+        assert isinstance(ann["sleep_stage_list"], list) and len(ann["sleep_stage_list"]) > 0
         assert isinstance(ann["df_events"], pd.DataFrame) and len(ann["df_events"]) > 0
 
         rec = reader.rec_with_hrv_detailed_ann[0]
@@ -363,10 +327,7 @@ class TestSHHS:
         assert isinstance(ann, pd.DataFrame) and len(ann) == 0
         ann = reader.load_sleep_ann(rec, source="event_profusion")
         assert isinstance(ann, dict) and len(ann) == 2
-        assert (
-            isinstance(ann["sleep_stage_list"], list)
-            and len(ann["sleep_stage_list"]) == 0
-        )
+        assert isinstance(ann["sleep_stage_list"], list) and len(ann["sleep_stage_list"]) == 0
         assert isinstance(ann["df_events"], pd.DataFrame) and len(ann["df_events"]) == 0
 
         with pytest.raises(ValueError, match="Source `.+` not supported, "):
@@ -380,23 +341,17 @@ class TestSHHS:
             assert len(ann) > 0
         rec = reader.rec_with_event_profusion_ann[0]
         for apnea_types in [None, ["OSA", "Hypopnea"], ["CSA", "MSA", "Hypopnea"]]:
-            ann = reader.load_apnea_ann(
-                rec, source="event_profusion", apnea_types=apnea_types
-            )
+            ann = reader.load_apnea_ann(rec, source="event_profusion", apnea_types=apnea_types)
             assert isinstance(ann, pd.DataFrame)
             assert len(ann) > 0
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         ann = reader.load_apnea_ann(rec, source="event")
         assert isinstance(ann, pd.DataFrame) and ann.empty
         ann = reader.load_apnea_ann(rec, source="event_profusion")
         assert isinstance(ann, pd.DataFrame) and ann.empty
 
-        with pytest.raises(
-            ValueError, match="Source `hrv` contains no apnea annotations"
-        ):
+        with pytest.raises(ValueError, match="Source `hrv` contains no apnea annotations"):
             reader.load_apnea_ann(rec, source="hrv")
 
     def test_load_sleep_event_ann(self):
@@ -467,19 +422,13 @@ class TestSHHS:
         ann_2 = reader.locate_abnormal_beats(rec, abnormal_type="VE", units="s")
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == abn_beats["VE"].shape
-        assert np.allclose(
-            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak"), atol=1e-2
-        )
+        assert np.allclose(ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak"), atol=1e-2)
         ann_2 = reader.locate_abnormal_beats(rec, abnormal_type="VE", units="ms")
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == abn_beats["VE"].shape
-        assert np.allclose(
-            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak") * 1000, atol=1e-2
-        )
+        assert np.allclose(ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak") * 1000, atol=1e-2)
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         abn_beats = reader.locate_abnormal_beats(rec)
         assert isinstance(abn_beats, dict)
         assert set(abn_beats.keys()) == {"VE", "SVE"}
@@ -511,13 +460,9 @@ class TestSHHS:
         ann_1 = reader.locate_artifacts(rec, units="ms")
         assert isinstance(ann_1, np.ndarray)
         assert ann_1.shape == artifacts.shape
-        assert np.allclose(
-            ann_1, artifacts / reader.get_fs(rec, "rpeak") * 1000, atol=1.0
-        )
+        assert np.allclose(ann_1, artifacts / reader.get_fs(rec, "rpeak") * 1000, atol=1.0)
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         artifacts = reader.locate_artifacts(rec)
         assert isinstance(artifacts, np.ndarray)
         assert artifacts.ndim == 1
@@ -536,9 +481,7 @@ class TestSHHS:
         assert isinstance(available_signals, list)
         assert set() < set(available_signals) <= set(reader.all_signals)
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         assert reader.get_available_signals(rec) == []
 
     def test_get_chn_num(self):
@@ -566,9 +509,7 @@ class TestSHHS:
         fs = reader.get_fs(rec, "rpeak")
         assert isinstance(fs, Real) and fs > 0
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         fs = reader.get_fs(rec)
         assert fs == -1
         fs = reader.get_fs(rec, "rpeak")
@@ -635,9 +576,7 @@ class TestSHHS:
         assert reader.current_version >= "0.19.0"
         assert reader.show_rec_stats(0) is None  # printed to stdout
 
-        with pytest.warns(
-            RuntimeWarning, match="one has to apply for a token from `sleepdata.org`"
-        ):
+        with pytest.warns(RuntimeWarning, match="one has to apply for a token from `sleepdata.org`"):
             assert reader.url == ""
             reader.helper()
             reader.helper("attributes")
@@ -664,9 +603,7 @@ class TestSHHS:
             rec = list(set(reader.all_records) - set(reader.rec_with_rpeaks_ann))[0]
             reader.plot_ann(rec, stage_source="hrv")
 
-        rec = (
-            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
-        )
+        rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         with pytest.raises(
             ValueError,
             match=f"No sleep event annotations found for record `{rec}` with source `event`",

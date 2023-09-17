@@ -31,13 +31,7 @@ def load_ans(data_path_, rpos_path_, fs_):
         r_ref = sio.loadmat(ref_path)["R_peak"].flatten()
         r_ref = r_ref[(r_ref >= 0.5 * fs_) & (r_ref <= 9.5 * fs_)]
 
-        r_hr = np.array(
-            [
-                loc
-                for loc in r_ref
-                if (loc > 5.5 * fs_ and loc < len(ecg_data) - 0.5 * fs_)
-            ]
-        )
+        r_hr = np.array([loc for loc in r_ref if (loc > 5.5 * fs_ and loc < len(ecg_data) - 0.5 * fs_)])
         hr_ans, r_ans = CPSC2019_challenge(ecg_data)
 
         HR_ref.append(round(60 * fs_ / np.mean(np.diff(r_hr))))
@@ -74,20 +68,11 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
         for j in range(len(r_ref[i])):
             loc = np.where(np.abs(r_ans[i] - r_ref[i][j]) <= thr_ * fs_)[0]
             if j == 0:
-                err = np.where(
-                    (r_ans[i] >= 0.5 * fs_ + thr_ * fs_)
-                    & (r_ans[i] <= r_ref[i][j] - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= 0.5 * fs_ + thr_ * fs_) & (r_ans[i] <= r_ref[i][j] - thr_ * fs_))[0]
             elif j == len(r_ref[i]) - 1:
-                err = np.where(
-                    (r_ans[i] >= r_ref[i][j] + thr_ * fs_)
-                    & (r_ans[i] <= 9.5 * fs_ - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= r_ref[i][j] + thr_ * fs_) & (r_ans[i] <= 9.5 * fs_ - thr_ * fs_))[0]
             else:
-                err = np.where(
-                    (r_ans[i] >= r_ref[i][j] + thr_ * fs_)
-                    & (r_ans[i] <= r_ref[i][j + 1] - thr_ * fs_)
-                )[0]
+                err = np.where((r_ans[i] >= r_ref[i][j] + thr_ * fs_) & (r_ans[i] <= r_ref[i][j + 1] - thr_ * fs_))[0]
 
             FP = FP + len(err)
             if len(loc) >= 1:

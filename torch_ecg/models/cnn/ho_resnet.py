@@ -19,8 +19,7 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     ZeroPadding,
 )
-from ...utils import SizeMixin, CitationMixin
-
+from ...utils import CitationMixin, SizeMixin
 
 __all__ = [
     "MidPointResNet",

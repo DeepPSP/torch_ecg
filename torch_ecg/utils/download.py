@@ -11,15 +11,14 @@ import re
 import shutil
 import tarfile
 import tempfile
-import zipfile
-import warnings
 import urllib
+import warnings
+import zipfile
 from pathlib import Path
-from typing import Optional, Union, Iterable
+from typing import Iterable, Optional, Union
 
 import requests
 from tqdm.auto import tqdm
-
 
 __all__ = [
     "http_get",
@@ -101,9 +100,7 @@ def http_get(
     total = int(content_length) if content_length is not None else None
     if req.status_code == 403 or req.status_code == 404:
         raise Exception(f"Could not reach {url}.")
-    progress = tqdm(
-        unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=1.0
-    )
+    progress = tqdm(unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=1.0)
     for chunk in req.iter_content(chunk_size=1024):
         if chunk:  # filter out keep-alive new chunks
             progress.update(len(chunk))
@@ -159,9 +156,7 @@ def _stem(path: Union[str, Path]) -> str:
     return ret
 
 
-def _suffix(
-    path: Union[str, Path], ignore_pattern: str = PHYSIONET_DB_VERSION_PATTERN
-) -> str:
+def _suffix(path: Union[str, Path], ignore_pattern: str = PHYSIONET_DB_VERSION_PATTERN) -> str:
     """Get file extension, including all suffixes.
 
     Parameters
@@ -236,9 +231,7 @@ def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -
 
     """
     print(f"Extracting file {path_to_tar_file} to {dst_dir}.")
-    mode = (
-        Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "").strip(":")
-    )
+    mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "").strip(":")
     with tarfile.open(str(path_to_tar_file), mode) as tar_ref:
         # tar_ref.extractall(str(dst_dir))
         # CVE-2007-4559 (related to  CVE-2001-1267):

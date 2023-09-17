@@ -1,17 +1,17 @@
 """
 """
 
-from decimal import localcontext, Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal, localcontext
 from typing import Optional, Sequence
 
 import numpy as np
 import scipy.signal as SS
 from easydict import EasyDict as ED
+
 from torch_ecg.utils.utils_signal import butter_bandpass_filter, normalize
 
 from .schmidt_spike_removal import schmidt_spike_removal
 from .springer_dwt import get_dwt_features
-
 
 __all__ = [
     "get_springer_features",
@@ -85,21 +85,13 @@ def get_springer_features(
     )
     filtered_signal = schmidt_spike_removal(filtered_signal, fs)
 
-    homomorphic_envelope = homomorphic_envelope_with_hilbert(
-        filtered_signal, fs, lpf_freq=cfg.lpf_freq
-    )
-    downsampled_homomorphic_envelope = SS.resample_poly(
-        homomorphic_envelope, feature_fs, fs
-    )
-    downsampled_homomorphic_envelope = normalize(
-        downsampled_homomorphic_envelope, method="z-score", mean=0.0, std=1.0
-    )
+    homomorphic_envelope = homomorphic_envelope_with_hilbert(filtered_signal, fs, lpf_freq=cfg.lpf_freq)
+    downsampled_homomorphic_envelope = SS.resample_poly(homomorphic_envelope, feature_fs, fs)
+    downsampled_homomorphic_envelope = normalize(downsampled_homomorphic_envelope, method="z-score", mean=0.0, std=1.0)
 
     amplitude_envelope = hilbert_envelope(filtered_signal, fs)
     downsampled_hilbert_envelope = SS.resample_poly(amplitude_envelope, feature_fs, fs)
-    downsampled_hilbert_envelope = normalize(
-        downsampled_hilbert_envelope, method="z-score", mean=0.0, std=1.0
-    )
+    downsampled_hilbert_envelope = normalize(downsampled_hilbert_envelope, method="z-score", mean=0.0, std=1.0)
 
     psd = get_PSD_feature(filtered_signal, fs, freq_lim=cfg.psd_freq_lim)
     psd = SS.resample_poly(psd, len(downsampled_homomorphic_envelope), len(psd))
@@ -148,9 +140,7 @@ def hilbert_envelope(signal: np.ndarray, fs: int) -> np.ndarray:
     return np.abs(SS.hilbert(signal))
 
 
-def homomorphic_envelope_with_hilbert(
-    signal: np.ndarray, fs: int, lpf_freq: int = 8, order: int = 1
-) -> np.ndarray:
+def homomorphic_envelope_with_hilbert(signal: np.ndarray, fs: int, lpf_freq: int = 8, order: int = 1) -> np.ndarray:
     """
 
     Compute the homomorphic envelope of the signal using the Hilbert transform.
@@ -174,9 +164,7 @@ def homomorphic_envelope_with_hilbert(
 
     """
     amplitude_envelope = hilbert_envelope(signal, fs)
-    homomorphic_envelope = np.exp(
-        butter_bandpass_filter(np.log(amplitude_envelope), 0, lpf_freq, fs, order=order)
-    )
+    homomorphic_envelope = np.exp(butter_bandpass_filter(np.log(amplitude_envelope), 0, lpf_freq, fs, order=order))
     homomorphic_envelope[0] = homomorphic_envelope[1]
     return homomorphic_envelope
 

@@ -19,9 +19,7 @@ from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.outputs import MultiLabelClassificationOutput
 from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset, CINC2021TrainCfg
-from torch_ecg.databases.physionet_databases.cinc2021 import (
-    compute_metrics as compute_cinc2021_metrics,
-)
+from torch_ecg.databases.physionet_databases.cinc2021 import compute_metrics as compute_cinc2021_metrics
 from torch_ecg.model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.utils.misc import add_docstring
@@ -341,9 +339,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
     __DEBUG__ = False
     __name__ = "ECG_CRNN_CINC2021"
 
-    def __init__(
-        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None) -> None:
         """
 
         Parameters
@@ -418,10 +414,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
                 pred[row_idx, nsr_cid] = 1
             elif row.sum() == 0:
                 pred[row_idx, ...] = (
-                    (
-                        (prob[row_idx, ...] + ModelCfg.bin_pred_look_again_tol)
-                        >= row_max_prob
-                    )
+                    ((prob[row_idx, ...] + ModelCfg.bin_pred_look_again_tol) >= row_max_prob)
                     & (prob[row_idx, ...] >= ModelCfg.bin_pred_nsr_thr)
                 ).astype(int)
         if class_names:
@@ -429,9 +422,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             prob.columns = self.classes
             prob["pred"] = ""
             for row_idx in range(len(prob)):
-                prob.at[row_idx, "pred"] = np.array(self.classes)[
-                    np.where(pred[row_idx] == 1)[0]
-                ].tolist()
+                prob.at[row_idx, "pred"] = np.array(self.classes)[np.where(pred[row_idx] == 1)[0]].tolist()
         return MultiLabelClassificationOutput(
             classes=self.classes,
             thr=bin_pred_thr,
@@ -525,18 +516,14 @@ class CINC2021Trainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         if torch.cuda.is_available():
@@ -576,9 +563,7 @@ class CINC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -633,13 +618,9 @@ class CINC2021Trainer(BaseTrainer):
             head_num = 5
             head_scalar_preds = all_scalar_preds[:head_num, ...]
             head_bin_preds = all_bin_preds[:head_num, ...]
-            head_preds_classes = [
-                np.array(classes)[np.where(row)] for row in head_bin_preds
-            ]
+            head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
             head_labels = all_labels[:head_num, ...]
-            head_labels_classes = [
-                np.array(classes)[np.where(row)] for row in head_labels
-            ]
+            head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
             for n in range(head_num):
                 msg = textwrap.dedent(
                     f"""
@@ -654,15 +635,7 @@ class CINC2021Trainer(BaseTrainer):
                 )
                 self.log_manager.log_message(msg)
 
-        (
-            auroc,
-            auprc,
-            accuracy,
-            f_measure,
-            f_beta_measure,
-            g_beta_measure,
-            challenge_metric,
-        ) = compute_cinc2021_metrics(
+        (auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric,) = compute_cinc2021_metrics(
             classes=classes,
             truth=all_labels,
             scalar_pred=all_scalar_preds,

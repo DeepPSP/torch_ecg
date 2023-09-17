@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Optional, Union, Sequence, List, Tuple
 from numbers import Real
+from pathlib import Path
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -11,8 +11,7 @@ import wfdb
 
 from ...cfg import DEFAULTS
 from ...utils import add_docstring
-from ..base import PhysioNetDataBase, DataBaseInfo
-
+from ..base import DataBaseInfo, PhysioNetDataBase
 
 __all__ = [
     "ApneaECG",
@@ -125,26 +124,16 @@ class ApneaECG(PhysioNetDataBase):
         if len(self.all_records) == 0:
             return
 
-        self._rsp_records = self._df_records[
-            self._df_records.index.str.match("^[abcx]\\d{2}r$")
-        ].index.tolist()
-        ecg_records = self._df_records[
-            self._df_records.index.str.match(self.data_pattern)
-        ].index.tolist()
+        self._rsp_records = self._df_records[self._df_records.index.str.match("^[abcx]\\d{2}r$")].index.tolist()
+        ecg_records = self._df_records[self._df_records.index.str.match(self.data_pattern)].index.tolist()
         if subsample is not None:
             size = min(
                 len(ecg_records),
                 max(1, int(round(len(ecg_records) * subsample))),
             )
-            self.logger.debug(
-                f"subsample `{size}` records from `{len(ecg_records)}` `ecg_records`"
-            )
-            self._ecg_records = sorted(
-                DEFAULTS.RNG.choice(ecg_records, size=size, replace=False).tolist()
-            )
-            self._df_records = self._df_records.loc[
-                sorted(self._ecg_records + self._rsp_records)
-            ]
+            self.logger.debug(f"subsample `{size}` records from `{len(ecg_records)}` `ecg_records`")
+            self._ecg_records = sorted(DEFAULTS.RNG.choice(ecg_records, size=size, replace=False).tolist())
+            self._df_records = self._df_records.loc[sorted(self._ecg_records + self._rsp_records)]
             del ecg_records
         else:
             self._ecg_records = ecg_records
@@ -210,9 +199,7 @@ class ApneaECG(PhysioNetDataBase):
         fs: Optional[Real] = None,
         return_fs: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
-        return super().load_data(
-            rec, leads, sampfrom, sampto, data_format, units, fs, return_fs
-        )
+        return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     @add_docstring(PhysioNetDataBase.load_data.__doc__)
     def load_ecg_data(
@@ -297,15 +284,10 @@ class ApneaECG(PhysioNetDataBase):
         file_path = str(ann_path or self.get_absolute_path(rec))
         extension = kwargs.get("extension", "apn")
         wfdb_ann = wfdb.rdann(file_path, extension=extension)
-        detailed_ann = [
-            [si // (self.fs * 60), sy]
-            for si, sy in zip(wfdb_ann.sample.tolist(), wfdb_ann.symbol)
-        ]
+        detailed_ann = [[si // (self.fs * 60), sy] for si, sy in zip(wfdb_ann.sample.tolist(), wfdb_ann.symbol)]
         return detailed_ann
 
-    def load_apnea_event(
-        self, rec: Union[str, int], ann_path: Optional[str] = None
-    ) -> pd.DataFrame:
+    def load_apnea_event(self, rec: Union[str, int], ann_path: Optional[str] = None) -> pd.DataFrame:
         """Load annotations of apnea events of the record.
 
         Parameters
@@ -347,18 +329,12 @@ class ApneaECG(PhysioNetDataBase):
         if len(apnea_periods) == 0:
             return pd.DataFrame(columns=self.sleep_event_keys)
 
-        apnea_periods = np.array(
-            [[60 * p[0], 60 * p[1]] for p in apnea_periods]
-        )  # minutes to seconds
-        apnea_periods = np.array(apnea_periods, dtype=int).reshape(
-            (len(apnea_periods), 2)
-        )
+        apnea_periods = np.array([[60 * p[0], 60 * p[1]] for p in apnea_periods])  # minutes to seconds
+        apnea_periods = np.array(apnea_periods, dtype=int).reshape((len(apnea_periods), 2))
 
         df_apnea_ann = pd.DataFrame(apnea_periods, columns=["event_start", "event_end"])
         df_apnea_ann["event_name"] = "Obstructive Apnea"
-        df_apnea_ann["event_duration"] = df_apnea_ann.apply(
-            lambda row: row["event_end"] - row["event_start"], axis=1
-        )
+        df_apnea_ann["event_duration"] = df_apnea_ann.apply(lambda row: row["event_end"] - row["event_start"], axis=1)
 
         df_apnea_ann = df_apnea_ann[self.sleep_event_keys]
 
@@ -411,9 +387,7 @@ class ApneaECG(PhysioNetDataBase):
                 color=self.palette[row["event_name"]],
                 alpha=plot_alpha,
             )
-            ax.legend(
-                handles=[patches[k] for k in self.palette.keys()], loc="best"
-            )  # keep ordering
+            ax.legend(handles=[patches[k] for k in self.palette.keys()], loc="best")  # keep ordering
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis="y", which="both", length=0)
 

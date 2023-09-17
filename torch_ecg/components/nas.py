@@ -14,7 +14,6 @@ from torch.utils.data.dataset import Dataset
 from ..cfg import CFG
 from .trainer import BaseTrainer
 
-
 __all__ = [
     "NAS",
 ]
@@ -58,12 +57,8 @@ class NAS:
         self.model_configs = model_configs
         self.lazy = lazy
         if not lazy:
-            self.ds_train = self.dataset_cls(
-                self.train_config, training=True, lazy=False
-            )
-            self.ds_val = self.dataset_cls(
-                self.train_config, training=False, lazy=False
-            )
+            self.ds_train = self.dataset_cls(self.train_config, training=True, lazy=False)
+            self.ds_val = self.dataset_cls(self.train_config, training=False, lazy=False)
         else:
             self.ds_train = None
             self.ds_val = None

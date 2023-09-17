@@ -18,16 +18,12 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.components.outputs import (
-    MultiLableClassificationOutput,
-    SequenceLabellingOutput,
-)
-from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
-from torch_ecg.utils.utils_data import mask_to_intervals
-
 from cfg import ModelCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import MultiLableClassificationOutput, SequenceLabellingOutput
+from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 __all__ = [
     "ECG_CRNN_CPSC2020",
@@ -41,13 +37,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
     __DEBUG__ = True
     __name__ = "ECG_CRNN_CPSC2020"
 
-    def __init__(
-        self,
-        classes: Sequence[str],
-        n_leads: int,
-        config: Optional[CFG] = None,
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -108,17 +98,13 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         for row_idx, row in enumerate(pred):
             row_max_prob = prob[row_idx, ...].max()
             if row.sum() == 0:
-                pred[row_idx, ...] = (
-                    prob[row_idx, ...] == np.max(prob[row_idx, ...])
-                ).astype(int)
+                pred[row_idx, ...] = (prob[row_idx, ...] == np.max(prob[row_idx, ...])).astype(int)
         if class_names:
             prob = pd.DataFrame(prob)
             prob.columns = self.classes
             prob["pred"] = ""
             for row_idx in range(len(prob)):
-                prob.at[row_idx, "pred"] = np.array(self.classes)[
-                    np.where(pred == 1)[0]
-                ].tolist()
+                prob.at[row_idx, "pred"] = np.array(self.classes)[np.where(pred == 1)[0]].tolist()
         return MultiLableClassificationOutput(
             classes=self.classes,
             thr=bin_pred_thr,
@@ -145,13 +131,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2020"
 
-    def __init__(
-        self,
-        classes: Sequence[str],
-        n_leads: int,
-        config: Optional[CFG] = None,
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -231,24 +211,16 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
             rpeak_mask = np.ones((batch_size, seq_len // self.reduction), dtype=int)
 
         SPB_intervals = [
-            mask_to_intervals(seq * rpeak_mask[idx], 1)
-            for idx, seq in enumerate(pred[..., self.classes.index("S")])
+            mask_to_intervals(seq * rpeak_mask[idx], 1) for idx, seq in enumerate(pred[..., self.classes.index("S")])
         ]
         SPB_indices = [
-            [self.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv]
-            if len(l_itv) > 0
-            else []
-            for l_itv in SPB_intervals
+            [self.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv] if len(l_itv) > 0 else [] for l_itv in SPB_intervals
         ]
         PVC_intervals = [
-            mask_to_intervals(seq * rpeak_mask[idx], 1)
-            for idx, seq in enumerate(pred[..., self.classes.index("V")])
+            mask_to_intervals(seq * rpeak_mask[idx], 1) for idx, seq in enumerate(pred[..., self.classes.index("V")])
         ]
         PVC_indices = [
-            [self.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv]
-            if len(l_itv) > 0
-            else []
-            for l_itv in PVC_intervals
+            [self.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv] if len(l_itv) > 0 else [] for l_itv in PVC_intervals
         ]
         return SequenceLabellingOutput(
             classes=self.classes,
@@ -259,9 +231,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         )
 
     @torch.no_grad()
-    def inference_CPSC2020(
-        self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
-    ) -> SequenceLabellingOutput:
+    def inference_CPSC2020(self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5) -> SequenceLabellingOutput:
         """
         alias for `self.inference`
         """

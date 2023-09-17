@@ -126,9 +126,7 @@ class CPSC2019(ReprMixin, Dataset):
         """ """
         return self._labels
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """
         do train test split,
         it is ensured that both the train and the test set contain all classes

@@ -5,11 +5,10 @@ from copy import deepcopy
 from pathlib import Path
 from typing import List
 
-from transformers import Wav2Vec2Config, Wav2Vec2FeatureExtractor
-from torch_ecg.cfg import CFG
-
 from cfg import BaseCfg, TrainCfg
+from transformers import Wav2Vec2Config, Wav2Vec2FeatureExtractor
 
+from torch_ecg.cfg import CFG
 
 __all__ = [
     "PreTrainCfg",
@@ -87,19 +86,13 @@ def register_model(model_name: str, model_cfg: dict) -> None:
     """register a new model configuration"""
     if model_name in [k for k in _PreTrainModelCfg if k != "model_name"]:
         raise ValueError(f"Model {model_name} already exists, choose another name.")
-    assert hasattr(
-        model_cfg, "model_config_args"
-    ), "`model_config_args` must be defined in `model_cfg`"
+    assert hasattr(model_cfg, "model_config_args"), "`model_config_args` must be defined in `model_cfg`"
 
     if "feature_extractor" not in model_cfg:
         model_cfg["feature_extractor"] = deepcopy(_DefaultFeatureExtractorCfg)
 
-    assert (
-        model_cfg["feature_extractor"]["sampling_rate"] == BaseCfg.fs
-    ), "sampling_rate must be equal to BaseCfg.fs"
-    assert (
-        model_cfg["feature_extractor"]["do_normalize"] is True
-    ), "do_normalize must be True"
+    assert model_cfg["feature_extractor"]["sampling_rate"] == BaseCfg.fs, "sampling_rate must be equal to BaseCfg.fs"
+    assert model_cfg["feature_extractor"]["do_normalize"] is True, "do_normalize must be True"
     # adjust "return_attention_mask" according to "feat_extract_norm" of "model_config_args"
     if model_cfg["model_config_args"]["feat_extract_norm"] == "layer":
         model_cfg["feature_extractor"]["return_attention_mask"] = True
@@ -111,11 +104,7 @@ def register_model(model_name: str, model_cfg: dict) -> None:
 
 def list_models() -> List[str]:
     """ """
-    return [
-        k
-        for k in _PreTrainModelCfg
-        if not k.startswith("_") and k not in ["model_name"]
-    ]
+    return [k for k in _PreTrainModelCfg if not k.startswith("_") and k not in ["model_name"]]
 
 
 _wav2vec_base = CFG(

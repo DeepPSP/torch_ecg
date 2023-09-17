@@ -96,7 +96,7 @@ class DummyPreProcessor(PreProcessor):
         """
         """
         return sig, fs
-    
+
 
 config = CFG(
     random=False,

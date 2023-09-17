@@ -7,7 +7,6 @@ source: https://pypi.org/project/wfdb/2.2.1/#files
 import numpy as np
 import scipy.signal as scisig
 
-
 __all__ = [
     "PanTompkins",
     "pantompkins",
@@ -194,9 +193,7 @@ class PanTompkins(object):
 
         # 5Hz High Pass Filter - passband gain = 32, delay = 16 samples
         a_high = [1, -1]
-        b_high = np.concatenate(
-            ([-1 / 32], np.zeros(15), [1, -1], np.zeros(14), [1 / 32])
-        )
+        b_high = np.concatenate(([-1 / 32], np.zeros(15), [1, -1], np.zeros(14), [1 / 32]))
         self.sig_F = scisig.lfilter(b_high, a_high, sig_low)
 
         if plotsteps:
@@ -288,12 +285,8 @@ class PanTompkins(object):
         windownum = 0
 
         while (windownum + 1) * learntime * 200 < self.siglen:
-            wavelearn_F = self.sig_F[
-                windownum * learntime * 200 : (windownum + 1) * learntime * 200
-            ]
-            wavelearn_I = self.sig_I[
-                windownum * learntime * 200 : (windownum + 1) * learntime * 200
-            ]
+            wavelearn_F = self.sig_F[windownum * learntime * 200 : (windownum + 1) * learntime * 200]
+            wavelearn_I = self.sig_I[windownum * learntime * 200 : (windownum + 1) * learntime * 200]
 
             # Find peaks in the signal sections
             peakinds_F = findpeaks_radius(wavelearn_F, radius)
@@ -334,23 +327,15 @@ class PanTompkins(object):
 
         # Use all signal and noise peaks in learning window to estimate threshold
         # Based on steady state equation: thres = 0.75*noisepeak + 0.25*sigpeak
-        self.thresh_F = 0.75 * np.mean(wavelearn_F[noisepeakinds_F]) + 0.25 * np.mean(
-            wavelearn_F[sigpeakinds_F]
-        )
-        self.thresh_I = 0.75 * np.mean(wavelearn_I[noisepeakinds_I]) + 0.25 * np.mean(
-            wavelearn_I[sigpeakinds_I]
-        )
+        self.thresh_F = 0.75 * np.mean(wavelearn_F[noisepeakinds_F]) + 0.25 * np.mean(wavelearn_F[sigpeakinds_F])
+        self.thresh_I = 0.75 * np.mean(wavelearn_I[noisepeakinds_I]) + 0.25 * np.mean(wavelearn_I[sigpeakinds_I])
         # Alternatively, could skip all of that and do something very simple like thresh_F =  max(filtsig[:400])/3
 
         # Set the r-r history using the first r-r interval
         # The most recent 8 rr intervals
-        self.rr_history_unbound = [
-            wavelearn_F[sigpeakinds[1]] - wavelearn_F[sigpeakinds[0]]
-        ] * 8
+        self.rr_history_unbound = [wavelearn_F[sigpeakinds[1]] - wavelearn_F[sigpeakinds[0]]] * 8
         # The most recent 8 rr intervals that fall within the acceptable low and high rr interval limits
-        self.rr_history_bound = [
-            wavelearn_I[sigpeakinds[1]] - wavelearn_I[sigpeakinds[0]]
-        ] * 8
+        self.rr_history_bound = [wavelearn_I[sigpeakinds[1]] - wavelearn_I[sigpeakinds[0]]] * 8
 
         self.rr_average_unbound = np.mean(self.rr_history_unbound)
         self.rr_average_bound = np.mean(self.rr_history_bound)
@@ -476,12 +461,8 @@ class PanTompkins(object):
 
         lastqrsind = self.qrs_inds[:-1]
 
-        qrs_sig_F_deriv = scisig.lfilter(
-            b_deriv, a_deriv, self.sig_F[lastqrsind - self.qrscheckwidth : lastqrsind]
-        )
-        checksection_sig_F_deriv = scisig.lfilter(
-            b_deriv, a_deriv, self.sig_F[i - self.qrscheckwidth : i]
-        )
+        qrs_sig_F_deriv = scisig.lfilter(b_deriv, a_deriv, self.sig_F[lastqrsind - self.qrscheckwidth : lastqrsind])
+        checksection_sig_F_deriv = scisig.lfilter(b_deriv, a_deriv, self.sig_F[i - self.qrscheckwidth : i])
 
         # Classified as a t-wave
         if max(checksection_sig_F_deriv) < 0.5 * max(qrs_sig_F_deriv):

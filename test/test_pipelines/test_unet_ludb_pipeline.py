@@ -16,9 +16,7 @@ from torch_ecg.components.outputs import WaveDelineationOutput
 from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.databases import LUDB
 from torch_ecg.databases.datasets.ludb import LUDBDataset, LUDBTrainCfg
-from torch_ecg.databases.physionet_databases.ludb import (
-    compute_metrics as compute_ludb_metrics,
-)
+from torch_ecg.databases.physionet_databases.ludb import compute_metrics as compute_ludb_metrics
 from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
@@ -76,9 +74,7 @@ class ECG_UNET_LUDB(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_LUDB"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -94,9 +90,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             model_config.update(deepcopy(config[config.model_name]))
             ModelCfg.update(deepcopy(config))
         _inv_class_map = {v: k for k, v in ModelCfg.class_map.items()}
-        self._mask_map = CFG(
-            {k: _inv_class_map[v] for k, v in ModelCfg.mask_class_map.items()}
-        )
+        self._mask_map = CFG({k: _inv_class_map[v] for k, v in ModelCfg.mask_class_map.items()})
         super().__init__(ModelCfg.mask_classes, n_leads, model_config)
 
     @torch.no_grad()
@@ -235,18 +229,14 @@ class LUDBTrainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         if torch.cuda.is_available():
@@ -286,9 +276,7 @@ class LUDBTrainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -347,18 +335,14 @@ class LUDBTrainer(BaseTrainer):
         all_labels = np.concatenate(all_labels, axis=0)
 
         if self.train_config.loss != "CrossEntropyLoss":
-            all_labels = all_labels.argmax(
-                axis=-1
-            )  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
+            all_labels = all_labels.argmax(axis=-1)  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
 
         # eval_res are scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         # each scoring is a dict consisting of the following metrics:
         # sensitivity, precision, f1_score, mean_error, standard_deviation
         eval_res_split = compute_ludb_metrics(
             np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),
-            np.repeat(
-                all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1
-            ),
+            np.repeat(all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1),
             self._cm,
             self.train_config.fs,
         )

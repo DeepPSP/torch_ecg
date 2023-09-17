@@ -1,14 +1,14 @@
 """
 """
 
-import re
 import os
+import re
 import warnings
+from abc import abstractmethod
+from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
-from collections import defaultdict
-from abc import abstractmethod
-from typing import Union, Optional, Any, List, Dict, Tuple, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -24,31 +24,23 @@ try:
     import torchaudio
 except Exception:
     torchaudio = None
-import scipy.signal as ss  # noqa: F401
 import scipy.io as sio
+import scipy.signal as ss  # noqa: F401
 
 try:
     import scipy.io.wavfile as sio_wav
 except Exception:
     sio_wav = None
 import IPython
-from tqdm.auto import tqdm
-
-from torch_ecg.cfg import DEFAULTS
-from torch_ecg.databases.base import PhysioNetDataBase, DataBaseInfo
-from torch_ecg.utils.utils_signal import butter_bandpass_filter
-from torch_ecg.utils.misc import (
-    get_record_list_recursive,
-    get_record_list_recursive3,
-    ReprMixin,
-    list_sum,
-    add_docstring,
-)
-from torch_ecg.utils.download import http_get
-
 from cfg import BaseCfg
+from tqdm.auto import tqdm
 from utils.schmidt_spike_removal import schmidt_spike_removal
 
+from torch_ecg.cfg import DEFAULTS
+from torch_ecg.databases.base import DataBaseInfo, PhysioNetDataBase
+from torch_ecg.utils.download import http_get
+from torch_ecg.utils.misc import ReprMixin, add_docstring, get_record_list_recursive, get_record_list_recursive3, list_sum
+from torch_ecg.utils.utils_signal import butter_bandpass_filter
 
 __all__ = [
     "PCGDataBase",
@@ -165,17 +157,14 @@ class PCGDataBase(PhysioNetDataBase):
 
         """
         super().__init__(db_name, db_dir, working_dir, verbose, **kwargs)
-        self.db_dir = (
-            Path(self.db_dir).resolve().absolute()
-        )  # will be fixed in `torch_ecg`
+        self.db_dir = Path(self.db_dir).resolve().absolute()  # will be fixed in `torch_ecg`
         self.fs = fs
         self.dtype = kwargs.get("dtype", BaseCfg.np_dtype)
         self.audio_backend = audio_backend.lower()
         if self.audio_backend not in self.available_backends():
             self.audio_backend = self.available_backends()[0]
             warnings.warn(
-                f"audio backend {audio_backend.lower()} is not available, "
-                f"using {self.audio_backend} instead",
+                f"audio backend {audio_backend.lower()} is not available, " f"using {self.audio_backend} instead",
                 RuntimeWarning,
             )
         if self.audio_backend == "torchaudio":
@@ -340,9 +329,7 @@ class CINC2022Reader(PCGDataBase):
         self.segmentation_states = deepcopy(BaseCfg.states)
         self.ignore_unannotated = kwargs.get("ignore_unannotated", True)
         if self.ignore_unannotated:
-            self.segmentation_states = [
-                s for s in self.segmentation_states if s != "unannotated"
-            ]
+            self.segmentation_states = [s for s in self.segmentation_states if s != "unannotated"]
         self.segmentation_map = {n: s for n, s in enumerate(self.segmentation_states)}
         if self.ignore_unannotated:
             self.segmentation_map[BaseCfg.ignore_index] = "unannotated"
@@ -422,12 +409,8 @@ class CINC2022Reader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.db_dir / x
-            )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: self.db_dir / x)
         else:
             write_file = True
 
@@ -443,9 +426,7 @@ class CINC2022Reader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
 
         data_dir = self._df_records["path"].apply(lambda x: x.parent).unique()
@@ -454,16 +435,10 @@ class CINC2022Reader(PCGDataBase):
             self.data_dir = data_dir[0]
 
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-        self._df_records = self._df_records[
-            ~self._df_records["record"].isin(self._exceptional_records)
-        ]
+        self._df_records = self._df_records[~self._df_records["record"].isin(self._exceptional_records)]
         self._df_records.set_index("record", inplace=True)
 
-        self._all_records = [
-            item
-            for item in self._df_records.index.tolist()
-            if item not in self._exceptional_records
-        ]
+        self._all_records = [item for item in self._df_records.index.tolist() if item not in self._exceptional_records]
         self._all_subjects = sorted(
             set([item.split("_")[0] for item in self._all_records]),
             key=lambda x: int(x),
@@ -475,11 +450,7 @@ class CINC2022Reader(PCGDataBase):
 
         if write_file and self._subsample is None:
             records_file.write_text(
-                "\n".join(
-                    self._df_records["path"]
-                    .apply(lambda x: x.relative_to(self.db_dir).as_posix())
-                    .tolist()
-                )
+                "\n".join(self._df_records["path"].apply(lambda x: x.relative_to(self.db_dir).as_posix()).tolist())
             )
 
     def _load_stats(self) -> None:
@@ -527,16 +498,10 @@ class CINC2022Reader(PCGDataBase):
         self._df_stats = self._df_stats.fillna(self.stats_fillna_val)
         try:
             # the column "Locations" is changed to "Recording locations:" in version 1.0.2
-            self._df_stats.Locations = self._df_stats.Locations.apply(
-                lambda s: s.split("+")
-            )
+            self._df_stats.Locations = self._df_stats.Locations.apply(lambda s: s.split("+"))
         except AttributeError:
-            self._df_stats["Locations"] = self._df_stats["Recording locations:"].apply(
-                lambda s: s.split("+")
-            )
-        self._df_stats["Murmur locations"] = self._df_stats["Murmur locations"].apply(
-            lambda s: s.split("+")
-        )
+            self._df_stats["Locations"] = self._df_stats["Recording locations:"].apply(lambda s: s.split("+"))
+        self._df_stats["Murmur locations"] = self._df_stats["Murmur locations"].apply(lambda s: s.split("+"))
         self._df_stats["Patient ID"] = self._df_stats["Patient ID"].astype(str)
         self._df_stats = self._df_stats[self._stats_cols]
         for idx, row in self._df_stats.iterrows():
@@ -606,9 +571,7 @@ class CINC2022Reader(PCGDataBase):
             rec = self[rec]
         return list(re.finditer(self._rec_pattern, rec))[0].groupdict()
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """
         get the absolute path of the record `rec`
 
@@ -694,9 +657,7 @@ class CINC2022Reader(PCGDataBase):
         """alias of `load_data`"""
         return self.load_data(rec, fs, data_format, data_type)
 
-    def load_ann(
-        self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None
-    ) -> Union[str, int]:
+    def load_ann(self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None) -> Union[str, int]:
         """
         load classification annotation of the record `rec` or the subject `sid`
 
@@ -719,9 +680,7 @@ class CINC2022Reader(PCGDataBase):
             rec_or_sid = self[rec_or_sid]
         _class_map = class_map or {}
         if rec_or_sid in self.all_subjects:
-            ann = self.df_stats[self.df_stats["Patient ID"] == rec_or_sid].iloc[0][
-                "Murmur"
-            ]
+            ann = self.df_stats[self.df_stats["Patient ID"] == rec_or_sid].iloc[0]["Murmur"]
         elif rec_or_sid in self.all_records:
             decom = self._decompose_rec(rec_or_sid)
             sid, loc = decom["sid"], decom["loc"]
@@ -738,9 +697,7 @@ class CINC2022Reader(PCGDataBase):
         return ann
 
     @add_docstring(load_ann.__doc__)
-    def load_murmur(
-        self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None
-    ) -> Union[str, int]:
+    def load_murmur(self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None) -> Union[str, int]:
         """alias of `load_ann`"""
         return self.load_ann(rec_or_sid, class_map)
 
@@ -788,9 +745,7 @@ class CINC2022Reader(PCGDataBase):
         df_seg = pd.read_csv(segmentation_file, sep="\t", header=None)
         df_seg.columns = ["start_t", "end_t", "label"]
         if self.ignore_unannotated:
-            df_seg["label"] = df_seg["label"].apply(
-                lambda x: x - 1 if x > 0 else BaseCfg.ignore_index
-            )
+            df_seg["label"] = df_seg["label"].apply(lambda x: x - 1 if x > 0 else BaseCfg.ignore_index)
         df_seg["wave"] = df_seg["label"].apply(lambda s: self.segmentation_map[s])
         df_seg["start"] = (fs * df_seg["start_t"]).apply(round)
         df_seg["end"] = (fs * df_seg["end_t"]).apply(round)
@@ -819,10 +774,7 @@ class CINC2022Reader(PCGDataBase):
         ]:
             # dict of intervals
             return {
-                k: [
-                    [row["start"], row["end"]]
-                    for _, row in df_seg[df_seg["wave"] == k].iterrows()
-                ]
+                k: [[row["start"], row["end"]] for _, row in df_seg[df_seg["wave"] == k].iterrows()]
                 for _, k in self.segmentation_map.items()
             }
         elif seg_format.lower() in [
@@ -836,9 +788,7 @@ class CINC2022Reader(PCGDataBase):
         elif seg_format.lower() in [
             "binary",
         ]:
-            bin_mask = np.zeros(
-                (df_seg.end.values[-1], len(self.segmentation_states)), dtype=self.dtype
-            )
+            bin_mask = np.zeros((df_seg.end.values[-1], len(self.segmentation_states)), dtype=self.dtype)
             for _, row in df_seg.iterrows():
                 if row["wave"] in self.segmentation_states:
                     bin_mask[
@@ -1076,9 +1026,7 @@ class CINC2022Reader(PCGDataBase):
 
         """
         if "data" in kwargs:
-            return IPython.display.Audio(
-                kwargs["data"], rate=kwargs.get("fs", self.get_fs(rec))
-            )
+            return IPython.display.Audio(kwargs["data"], rate=kwargs.get("fs", self.get_fs(rec)))
         audio_file = self.get_absolute_path(rec)
         return IPython.display.Audio(filename=str(audio_file))
 
@@ -1212,9 +1160,7 @@ class CINC2022Reader(PCGDataBase):
 
         assert col in ["Murmur", "Age", "Sex", "Pregnancy status"]
         prefix_sep = " - "
-        df_dummies = pd.get_dummies(
-            self.df_stats[col], prefix=col, prefix_sep=prefix_sep
-        )
+        df_dummies = pd.get_dummies(self.df_stats[col], prefix=col, prefix_sep=prefix_sep)
         columns = df_dummies.columns.tolist()
         if f"{col}{prefix_sep}{self.stats_fillna_val}" in columns:
             idx = columns.index(f"{col}{prefix_sep}{self.stats_fillna_val}")
@@ -1234,11 +1180,7 @@ class CINC2022Reader(PCGDataBase):
             # hatch=hatches[: len(columns)],
         )
         plot_kw.update(kwargs)
-        ax = (
-            df_stats.groupby("Outcome")
-            .agg("sum")[df_dummies.columns.tolist()]
-            .plot(**plot_kw)
-        )
+        ax = df_stats.groupby("Outcome").agg("sum")[df_dummies.columns.tolist()].plot(**plot_kw)
         for idx in range(len(columns)):
             ax.patches[2 * idx].set_hatch(hatches[idx])
             ax.patches[2 * idx + 1].set_hatch(hatches[idx])
@@ -1327,57 +1269,37 @@ class CINC2016Reader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.db_dir / x
-            )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: self.db_dir / x)
         else:
             write_file = True
         if len(self._df_records) == 0:
             write_file = True
-            self._df_records["path"] = get_record_list_recursive(
-                self.db_dir, self.header_ext, relative=False
-            )
+            self._df_records["path"] = get_record_list_recursive(self.db_dir, self.header_ext, relative=False)
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
-        self._df_records["subset"] = self._df_records["path"].apply(
-            lambda x: x.parent.name
-        )
-        self._df_records = self._df_records[
-            self._df_records["subset"].isin(self._subsets)
-        ]
+        self._df_records["subset"] = self._df_records["path"].apply(lambda x: x.parent.name)
+        self._df_records = self._df_records[self._df_records["subset"].isin(self._subsets)]
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
         if write_file and self._subsample is None:
             records_file.write_text(
-                "\n".join(
-                    self._df_records["path"]
-                    .apply(lambda x: x.relative_to(self.db_dir).as_posix())
-                    .tolist()
-                )
+                "\n".join(self._df_records["path"].apply(lambda x: x.relative_to(self.db_dir).as_posix()).tolist())
             )
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """ """
         if isinstance(rec, int):
             rec = self[rec]
         path = self._df_records.loc[rec, "path"]
         if extension is not None:
-            path = path.with_suffix(
-                extension if extension.startswith(".") else f".{extension}"
-            )
+            path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
         return path
 
     def load_data(
@@ -1439,9 +1361,7 @@ class CINC2016Reader(PCGDataBase):
         fs = fs or self.fs
         if fs == -1:
             fs = None
-        wfdb_rec = wfdb.rdrecord(
-            str(self.get_absolute_path(rec)), channel_names=["ECG"], physical=True
-        )
+        wfdb_rec = wfdb.rdrecord(str(self.get_absolute_path(rec)), channel_names=["ECG"], physical=True)
         ecg = wfdb_rec.p_signal.T
         if fs is not None and fs != wfdb_rec.fs:
             # ecg = ss.resample_poly(ecg, fs, wfdb_rec.fs, axis=-1)
@@ -1470,8 +1390,7 @@ class CINC2016Reader(PCGDataBase):
     @property
     def url(self) -> List[str]:
         return [
-            f"https://physionet.org/files/challenge-2016/1.0.0/{subset}.zip?download"
-            for subset in ["training", "validation"]
+            f"https://physionet.org/files/challenge-2016/1.0.0/{subset}.zip?download" for subset in ["training", "validation"]
         ]
 
     def download(self) -> None:
@@ -1527,8 +1446,7 @@ _EPHNOGRAM_INFO = DataBaseInfo(  # NOT finished yet
     """,
     usage=[
         "Simultaneous multi-modal analysis of ECG and PCG",
-        "Mathematical PCG models for generating synthetic signals"
-        "PCG quality enhancement",
+        "Mathematical PCG models for generating synthetic signals" "PCG quality enhancement",
         "PCG model pretraining",
         "ECG model pretraining",
     ],
@@ -1597,25 +1515,13 @@ class EPHNOGRAMReader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["record"] = self._df_records["record"].apply(
-                lambda x: x.replace("WFDB", "MAT")
-            )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.db_dir / x
-            )
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.stem
-            )
-            self._df_records["aux_path"] = self._df_records["path"].apply(
-                lambda x: x.parents[1] / "WFDB" / x.stem
-            )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["record"] = self._df_records["record"].apply(lambda x: x.replace("WFDB", "MAT"))
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: self.db_dir / x)
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
+            self._df_records["aux_path"] = self._df_records["path"].apply(lambda x: x.parents[1] / "WFDB" / x.stem)
             self._df_records.set_index("record", inplace=True)
-            self._df_records = self._df_records[
-                self._df_records["path"].apply(lambda x: x.exists())
-            ]
+            self._df_records = self._df_records[self._df_records["path"].apply(lambda x: x.exists())]
             self._all_records = self._df_records.index.values.tolist()
         except Exception:
             self._ls_rec_local()
@@ -1634,47 +1540,29 @@ class EPHNOGRAMReader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["record"] = self._df_records["record"].apply(
-                lambda x: x.replace("WFDB", "MAT")
-            )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.db_dir / x
-            )
-            self._df_records = self._df_records[
-                self._df_records["path"].apply(lambda x: x.is_file())
-            ]
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["record"] = self._df_records["record"].apply(lambda x: x.replace("WFDB", "MAT"))
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: self.db_dir / x)
+            self._df_records = self._df_records[self._df_records["path"].apply(lambda x: x.is_file())]
         else:
             write_file = True
         if len(self._df_records) == 0:
             write_file = True
-            self._df_records["path"] = get_record_list_recursive(
-                self.db_dir, self.data_ext, relative=False
-            )
+            self._df_records["path"] = get_record_list_recursive(self.db_dir, self.data_ext, relative=False)
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-        self._df_records["aux_path"] = self._df_records["path"].apply(
-            lambda x: x.parents[1] / "WFDB" / x.stem
-        )
+        self._df_records["aux_path"] = self._df_records["path"].apply(lambda x: x.parents[1] / "WFDB" / x.stem)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
         if write_file and self._subsample is None:
             records_file.write_text(
-                "\n".join(
-                    self._df_records["path"]
-                    .apply(lambda x: x.relative_to(self.db_dir).as_posix())
-                    .tolist()
-                )
+                "\n".join(self._df_records["path"].apply(lambda x: x.relative_to(self.db_dir).as_posix()).tolist())
             )
 
         if self._subsample is None:
@@ -1702,13 +1590,9 @@ class EPHNOGRAMReader(PCGDataBase):
                 "Database Housekeeping",
             ]
         ]
-        self._df_stats = self._df_stats[
-            ~self._df_stats["Record Name"].isna()
-        ].reset_index(drop=True)
+        self._df_stats = self._df_stats[~self._df_stats["Record Name"].isna()].reset_index(drop=True)
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """ """
         if isinstance(rec, int):
             rec = self[rec]
@@ -1717,9 +1601,7 @@ class EPHNOGRAMReader(PCGDataBase):
             key = "aux_path"
         path = self._df_records.loc[rec, key]
         if extension is not None:
-            path = path.with_suffix(
-                extension if extension.startswith(".") else f".{extension}"
-            )
+            path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
         return path
 
     def load_data(
@@ -1815,9 +1697,7 @@ class CompositeReader(ReprMixin):
 
     __name__ = "CompositeReader"
 
-    def __init__(
-        self, databases: Sequence[PCGDataBase], fs: Optional[int] = None
-    ) -> None:
+    def __init__(self, databases: Sequence[PCGDataBase], fs: Optional[int] = None) -> None:
         """ """
         self.databases = databases
         self.fs = fs
@@ -1826,23 +1706,12 @@ class CompositeReader(ReprMixin):
             max(
                 [
                     len(item)
-                    for item in list_sum(
-                        [
-                            re.findall("[\\^]+", rec)
-                            for dr in databases
-                            for rec in dr.all_records
-                        ]
-                    )
-                    + ["^"]
+                    for item in list_sum([re.findall("[\\^]+", rec) for dr in databases for rec in dr.all_records]) + ["^"]
                 ]
             )
             + 1
         )
-        self._all_records = [
-            self.get_composite_record_name(dr, rec)
-            for dr in databases
-            for rec in dr.all_records
-        ]
+        self._all_records = [self.get_composite_record_name(dr, rec) for dr in databases for rec in dr.all_records]
         self._db_name_map = {dr.db_name: dr for dr in self.databases}
 
     def get_composite_record_name(self, database: PCGDataBase, rec: str) -> str:

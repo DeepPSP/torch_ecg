@@ -13,15 +13,8 @@ from typing import List
 
 from torch import nn
 
-from ...models._nets import (  # noqa: F401
-    Conv_Bn_Activation,
-    DownSample,
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
-)
-from ...utils import SizeMixin, CitationMixin
-
+from ...models._nets import Conv_Bn_Activation, DownSample, GlobalContextBlock, NonLocalBlock, SEBlock  # noqa: F401
+from ...utils import CitationMixin, SizeMixin
 
 __all__ = [
     "EfficientNet",

@@ -73,24 +73,18 @@ BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 SpecialDetectorCfg = CFG()
 SpecialDetectorCfg.leads_ordering = deepcopy(EAK.Standard12Leads)
 SpecialDetectorCfg.pr_fs_lower_bound = 47  # Hz
-SpecialDetectorCfg.pr_spike_mph_ratio = (
-    15  # ratio to the average amplitude of the signal
-)
+SpecialDetectorCfg.pr_spike_mph_ratio = 15  # ratio to the average amplitude of the signal
 SpecialDetectorCfg.pr_spike_mpd = 300  # ms
 SpecialDetectorCfg.pr_spike_prominence = 0.3
 SpecialDetectorCfg.pr_spike_prominence_wlen = 120  # ms
-SpecialDetectorCfg.pr_spike_inv_density_threshold = (
-    2500  # inverse density (1/density), one spike per 2000 ms
-)
+SpecialDetectorCfg.pr_spike_inv_density_threshold = 2500  # inverse density (1/density), one spike per 2000 ms
 SpecialDetectorCfg.pr_spike_leads_threshold = 7 / 12  # proportion
 SpecialDetectorCfg.axis_qrs_mask_radius = 70  # ms
 SpecialDetectorCfg.axis_method = "2-lead"  # can also be "3-lead"
 SpecialDetectorCfg.brady_threshold = _ONE_MINUTE_IN_MS / 60  # ms, corr. to 60 bpm
 SpecialDetectorCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100 bpm
 SpecialDetectorCfg.lqrsv_qrs_mask_radius = 60  # ms
-SpecialDetectorCfg.lqrsv_ampl_bias = (
-    0.02  # mV, TODO: should be further determined by resolution, etc.
-)
+SpecialDetectorCfg.lqrsv_ampl_bias = 0.02  # mV, TODO: should be further determined by resolution, etc.
 SpecialDetectorCfg.lqrsv_ratio_threshold = 0.8
 SpecialDetectorCfg.prwp_v3_thr = 0.3  # mV
 
@@ -134,9 +128,7 @@ def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
             ]
         }
     )
-    cfg.tranche_classes = CFG(
-        {t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()}
-    )
+    cfg.tranche_classes = CFG({t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()})
 
     cfg.class_weights = get_class_weight(
         tranches="ABEFG",
@@ -233,9 +225,7 @@ TrainCfg.early_stopping.patience = 10
 # TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
 TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
-TrainCfg.flooding_level = (
-    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
-)
+TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
 
 TrainCfg.monitor = "challenge_metric"
 

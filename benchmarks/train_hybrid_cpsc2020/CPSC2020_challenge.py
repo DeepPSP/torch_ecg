@@ -7,11 +7,9 @@ import time
 import numpy as np
 import scipy.signal as SS
 import torch
-
 from cfg import ModelCfg
 from saved_models import load_model
 from signal_processing import ecg_denoise, parallel_preprocess_signal
-
 
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
 CRNN_CFG, SEQ_LAB_CFG = ModelCfg.crnn, ModelCfg.seq_lab
@@ -68,9 +66,7 @@ def CPSC2020_challenge(ECG, fs):
     filtered_ecg = pps["filtered_ecg"]
     rpeaks = pps["rpeaks"]
     valid_intervals = ecg_denoise(filtered_ecg, fs=FS, config={"ampl_min": 0.15})
-    rpeaks = [
-        r for r in rpeaks if any([itv[0] <= r <= itv[1] for itv in valid_intervals])
-    ]
+    rpeaks = [r for r in rpeaks if any([itv[0] <= r <= itv[1] for itv in valid_intervals])]
     rpeaks = np.array(rpeaks, dtype=int)
 
     print(f"signal preprocessing used {time.time()-timer:.3f} seconds")
@@ -115,9 +111,7 @@ def CPSC2020_challenge(ECG, fs):
         b_input = b_input.astype(_DTYPE)
 
         _, crnn_out = CRNN_MODEL.inference(b_input, bin_pred_thr=0.5)  # (batch_size, 3)
-        _, SPB_indices, PVC_indices = SEQ_LAB_MODEL.inference(
-            b_input, bin_pred_thr=0.5, rpeak_inds=b_rpeaks
-        )
+        _, SPB_indices, PVC_indices = SEQ_LAB_MODEL.inference(b_input, bin_pred_thr=0.5, rpeak_inds=b_rpeaks)
 
         for i, idx in enumerate(b_segs):
             if crnn_out[i, CRNN_CFG.classes.index("N")] == 1:
@@ -126,24 +120,14 @@ def CPSC2020_challenge(ECG, fs):
             if crnn_out[i, CRNN_CFG.classes.index("S")] == 1:
                 seg_spb = np.array(SPB_indices[i])
                 seg_spb = (
-                    seg_spb[
-                        np.where(
-                            (seg_spb >= half_overlap_len)
-                            & (seg_spb < model_input_len - half_overlap_len)
-                        )[0]
-                    ]
+                    seg_spb[np.where((seg_spb >= half_overlap_len) & (seg_spb < model_input_len - half_overlap_len))[0]]
                     + idx * forward_len
                 )
                 S_pos_rsmp = np.append(S_pos_rsmp, seg_spb)
             if crnn_out[i, CRNN_CFG.classes.index("V")] == 1:
                 seg_pvc = np.array(PVC_indices[i])
                 seg_pvc = (
-                    seg_pvc[
-                        np.where(
-                            (seg_pvc >= half_overlap_len)
-                            & (seg_pvc < model_input_len - half_overlap_len)
-                        )[0]
-                    ]
+                    seg_pvc[np.where((seg_pvc >= half_overlap_len) & (seg_pvc < model_input_len - half_overlap_len))[0]]
                     + idx * forward_len
                 )
                 V_pos_rsmp = np.append(V_pos_rsmp, seg_pvc)

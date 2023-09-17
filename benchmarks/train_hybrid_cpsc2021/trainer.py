@@ -20,11 +20,7 @@ try:
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from aux_metrics import (
-    compute_main_task_metric,
-    compute_rpeak_metric,
-    compute_rr_metric,
-)
+from aux_metrics import compute_main_task_metric, compute_rpeak_metric, compute_rr_metric
 from cfg import BaseCfg, ModelCfg, TrainCfg
 from dataset import CPSC2021
 from model import (  # noqa: F401
@@ -176,9 +172,7 @@ class CPSC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -226,26 +220,16 @@ class CPSC2021Trainer(BaseTrainer):
             for signals, labels in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
                 labels = labels.numpy()
-                labels = [
-                    mask_to_intervals(item, 1) for item in labels
-                ]  # intervals of qrs complexes
+                labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
                 labels = [  # to indices of rpeaks in the original signal sequence
-                    (
-                        self.train_config.qrs_detection.reduction
-                        * np.array([itv[0] + itv[1] for itv in item])
-                        / 2
-                    ).astype(int)
+                    (self.train_config.qrs_detection.reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(int)
                     for item in labels
                 ]
                 labels = [
                     item[
                         np.where(
                             (item >= self.train_config.rpeaks_dist2border)
-                            & (
-                                item
-                                < self.train_config.qrs_detection.input_len
-                                - self.train_config.rpeaks_dist2border
-                            )
+                            & (item < self.train_config.qrs_detection.input_len - self.train_config.rpeaks_dist2border)
                         )[0]
                     ]
                     for item in labels
@@ -265,31 +249,19 @@ class CPSC2021Trainer(BaseTrainer):
             # in case possible memeory leakage?
             del all_rpeak_preds, all_rpeak_labels
         elif self.train_config.task == "rr_lstm":
-            all_preds = np.array([]).reshape(
-                (0, self.train_config[self.train_config.task].input_len)
-            )
-            all_labels = np.array([]).reshape(
-                (0, self.train_config[self.train_config.task].input_len)
-            )
-            all_weight_masks = np.array([]).reshape(
-                (0, self.train_config[self.train_config.task].input_len)
-            )
+            all_preds = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
+            all_labels = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
+            all_weight_masks = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(
-                    -1
-                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(
-                    -1
-                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
                 model_output = self._model.inference(signals)
-                all_preds = np.concatenate(
-                    (all_preds, model_output.af_mask)
-                )  # or model_output.prob ?
+                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
             eval_res = compute_rr_metric(all_labels, all_preds, all_weight_masks)
             # in case possible memeory leakage?
             del all_preds, all_labels, all_weight_masks
@@ -297,40 +269,31 @@ class CPSC2021Trainer(BaseTrainer):
             all_preds = np.array([]).reshape(
                 (
                     0,
-                    self.train_config.main.input_len
-                    // self.train_config.main.reduction,
+                    self.train_config.main.input_len // self.train_config.main.reduction,
                 )
             )
             all_labels = np.array([]).reshape(
                 (
                     0,
-                    self.train_config.main.input_len
-                    // self.train_config.main.reduction,
+                    self.train_config.main.input_len // self.train_config.main.reduction,
                 )
             )
             all_weight_masks = np.array([]).reshape(
                 (
                     0,
-                    self.train_config.main.input_len
-                    // self.train_config.main.reduction,
+                    self.train_config.main.input_len // self.train_config.main.reduction,
                 )
             )
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(
-                    -1
-                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(
-                    -1
-                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
                 model_output = self._model.inference(signals)
-                all_preds = np.concatenate(
-                    (all_preds, model_output.af_mask)
-                )  # or model_output.prob ?
+                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
             eval_res = compute_main_task_metric(
                 mask_truths=all_labels,
                 mask_preds=all_preds,

@@ -2,8 +2,8 @@
 """
 
 import numpy as np
-import torch
 import pytest
+import torch
 
 from torch_ecg.cfg import CFG, DEFAULTS, DTYPE
 
@@ -26,11 +26,7 @@ def test_cfg():
 
 def test_dtype():
     dtp = DTYPE("float32")
-    assert (
-        str(dtp)
-        == repr(dtp)
-        == "DTYPE(STR='float32', NP=dtype('float32'), TORCH=torch.float32, INT=32)"
-    )
+    assert str(dtp) == repr(dtp) == "DTYPE(STR='float32', NP=dtype('float32'), TORCH=torch.float32, INT=32)"
 
     with pytest.raises(TypeError, match="data type 'hehe' not understood"):
         DTYPE("hehe")
@@ -47,9 +43,7 @@ def test_defaults():
     DEFAULTS.change_dtype(np.float32)
     assert DEFAULTS.dtype == torch.float32
 
-    with pytest.raises(
-        TypeError, match="`dtype` must be a str or np.dtype or torch.dtype"
-    ):
+    with pytest.raises(TypeError, match="`dtype` must be a str or np.dtype or torch.dtype"):
         DEFAULTS.change_dtype(32)
     with pytest.raises(AssertionError, match="`dtype` must be one of "):
         DEFAULTS.change_dtype("float128")

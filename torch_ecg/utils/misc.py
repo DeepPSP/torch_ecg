@@ -6,8 +6,8 @@ import inspect
 import logging
 import os
 import re
-import sys
 import signal
+import sys
 import time
 import types
 import warnings
@@ -17,25 +17,14 @@ from functools import reduce, wraps
 from glob import glob
 from numbers import Number, Real
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Union,
-    Tuple,
-)
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from bib_lookup import CitationMixin as _CitationMixin
 from deprecated import deprecated
 
-from ..cfg import DEFAULTS, _DATA_CACHE
-
+from ..cfg import _DATA_CACHE, DEFAULTS
 
 __all__ = [
     "get_record_list_recursive",
@@ -68,9 +57,7 @@ __all__ = [
 ]
 
 
-def get_record_list_recursive(
-    db_dir: Union[str, Path], rec_ext: str, relative: bool = True
-) -> List[str]:
+def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str, relative: bool = True) -> List[str]:
     """Get the list of records in a recursive manner.
 
     For example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -98,11 +85,7 @@ def get_record_list_recursive(
         res = Path(db_dir).rglob(f"*.{rec_ext}")
     else:
         res = Path(db_dir).rglob(f"*{rec_ext}")
-    res = [
-        str((item.relative_to(db_dir) if relative else item).with_suffix(""))
-        for item in res
-        if str(item).endswith(rec_ext)
-    ]
+    res = [str((item.relative_to(db_dir) if relative else item).with_suffix("")) for item in res if str(item).endswith(rec_ext)]
     res = sorted(res)
 
     return res
@@ -141,9 +124,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
             res += glob(os.path.join(r, rec_pattern), recursive=False)
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
-    res = [
-        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res
-    ]
+    res = [os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res]
     res = sorted(res)
 
     return res
@@ -189,36 +170,23 @@ def get_record_list_recursive3(
         for r in roots:
             tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
-                res += [
-                    r / item for item in filter(re.compile(rec_patterns).search, tmp)
-                ]
+                res += [r / item for item in filter(re.compile(rec_patterns).search, tmp)]
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
-                    res[k] += [
-                        r / item
-                        for item in filter(re.compile(rec_patterns[k]).search, tmp)
-                    ]
+                    res[k] += [r / item for item in filter(re.compile(rec_patterns[k]).search, tmp)]
             new_roots += [r / item for item in tmp if (r / item).is_dir()]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
-        res = [
-            str((item.relative_to(_db_dir) if relative else item).with_suffix(""))
-            for item in res
-        ]
+        res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
-            res[k] = [
-                str((item.relative_to(_db_dir) if relative else item).with_suffix(""))
-                for item in res[k]
-            ]
+            res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]
             res[k] = sorted(res[k])
     return res
 
 
-def dict_to_str(
-    d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
-) -> str:
+def dict_to_str(d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4) -> str:
     """Convert a (possibly) nested dict into a `str` of json-like formatted form.
 
     This nested dict might also contain lists or tuples of dict (and of str, int, etc.)
@@ -348,9 +316,7 @@ def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
 
     """
     if step >= len(a):
-        raise ValueError(
-            f"`step` ({step}) should be less than the length ({len(a)}) of `a`"
-        )
+        raise ValueError(f"`step` ({step}) should be less than the length ({len(a)}) of `a`")
     d = a[step:] - a[:-step]
     return d
 
@@ -504,11 +470,7 @@ def init_logger(
     else:
         if log_file is None:
             log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"
-        log_dir = (
-            Path(log_dir).expanduser().resolve()
-            if log_dir is not None
-            else DEFAULTS.log_dir
-        )
+        log_dir = Path(log_dir).expanduser().resolve() if log_dir is not None else DEFAULTS.log_dir
         log_dir.mkdir(parents=True, exist_ok=True)
         log_file = log_dir / log_file
         print(f"log file path: {str(log_file)}")
@@ -550,9 +512,7 @@ def init_logger(
     logger.addHandler(c_handler)
 
     if log_file is not None:
-        f_format = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         f_handler.setFormatter(f_format)
         logger.addHandler(f_handler)
 
@@ -668,13 +628,9 @@ def read_event_scalars(
         from tensorflow.python.summary.event_accumulator import EventAccumulator
     except Exception:
         try:
-            from tensorboard.backend.event_processing.event_accumulator import (
-                EventAccumulator,
-            )
+            from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
         except Exception:
-            raise ImportError(
-                "cannot import `EventAccumulator` from `tensorflow` or `tensorboard`"
-            )
+            raise ImportError("cannot import `EventAccumulator` from `tensorflow` or `tensorboard`")
     event_acc = EventAccumulator(fp)
     event_acc.Reload()
     if keys:
@@ -686,12 +642,7 @@ def read_event_scalars(
         _keys = event_acc.scalars.Keys()
     summary = {}
     for k in _keys:
-        df = pd.DataFrame(
-            [
-                [item.wall_time, item.step, item.value]
-                for item in event_acc.scalars.Items(k)
-            ]
-        )
+        df = pd.DataFrame([[item.wall_time, item.step, item.value] for item in event_acc.scalars.Items(k)])
         df.columns = ["wall_time", "step", "value"]
         summary[k] = df
     if isinstance(keys, str):
@@ -745,16 +696,12 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
             return False
         if not allow_array_diff_types and not isinstance(d2[k], type(v)):
             return False
-        if allow_array_diff_types and isinstance(
-            v, (list, tuple, np.ndarray, torch.Tensor)
-        ):
+        if allow_array_diff_types and isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
             if not isinstance(d2[k], (list, tuple, np.ndarray, torch.Tensor)):
                 return False
             if not np.array_equal(v, d2[k]):
                 return False
-        elif allow_array_diff_types and not isinstance(
-            v, (list, tuple, np.ndarray, torch.Tensor)
-        ):
+        elif allow_array_diff_types and not isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
             if not isinstance(d2[k], type(v)):
                 return False
         if isinstance(v, dict):
@@ -973,9 +920,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
 
-    def __call__(
-        self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any
-    ) -> np.ndarray:
+    def __call__(self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any) -> np.ndarray:
         """Compute moving average.
 
         Parameters
@@ -1163,9 +1108,7 @@ def nildent(text: str) -> str:
         Processed text.
 
     """
-    new_text = "\n".join([line.lstrip() for line in text.splitlines()]) + (
-        "\n" if text.endswith("\n") else ""
-    )
+    new_text = "\n".join([line.lstrip() for line in text.splitlines()]) + ("\n" if text.endswith("\n") else "")
     return new_text
 
 
@@ -1239,18 +1182,13 @@ def remove_parameters_returns_from_docstring(
         if start_idx is not None and len(line.strip()) == 0:
             indices2remove.extend(list(range(start_idx, idx)))
             start_idx = None
-        if parameters_starts and len(line.lstrip()) == len(line) - len(
-            parameters_indent
-        ):
+        if parameters_starts and len(line.lstrip()) == len(line) - len(parameters_indent):
             if any([line.lstrip().startswith(p) for p in parameters]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
                 start_idx = idx
             elif start_idx is not None:
-                if (
-                    line.lstrip().startswith(returns_indicator)
-                    and len(new_doc[idx - 1].strip()) == 0
-                ):
+                if line.lstrip().startswith(returns_indicator) and len(new_doc[idx - 1].strip()) == 0:
                     indices2remove.extend(list(range(start_idx, idx - 1)))
                 else:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1266,9 +1204,7 @@ def remove_parameters_returns_from_docstring(
     if start_idx is not None:
         indices2remove.extend(list(range(start_idx, len(new_doc))))
         new_doc.extend(["\n", parameters_indicator or returns_indicator])
-    new_doc = "\n".join(
-        [line for idx, line in enumerate(new_doc) if idx not in indices2remove]
-    )
+    new_doc = "\n".join([line for idx, line in enumerate(new_doc) if idx not in indices2remove])
     return new_doc
 
 
@@ -1385,9 +1321,7 @@ class Timer(ReprMixin):
         if self.ends[name] == 0:
             self.ends[name] = time.perf_counter()
             if self.verbose >= self.levels[name]:
-                time_cost, unit = self._simplify_time_expr(
-                    self.ends[name] - self.timers[name]
-                )
+                time_cost, unit = self._simplify_time_expr(self.ends[name] - self.timers[name])
                 print(f"{name} took {time_cost:.4f} {unit}")
 
     def _simplify_time_expr(self, time_cost: float) -> Tuple[float, str]:
@@ -1435,9 +1369,7 @@ def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
     if fas.kwonlydefaults is not None:
         kwargs = deepcopy(fas.kwonlydefaults)
     if not kwonly and fas.defaults is not None:
-        kwargs.update(
-            {k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)}
-        )
+        kwargs.update({k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)})
     if len(kwargs) == 0:
         # perhaps `inspect.getfullargspec` does not work
         # we should use `inspect.signature` instead
@@ -1473,8 +1405,7 @@ def get_required_args(func_or_cls: callable) -> List[str]:
         k
         for k, v in signature.parameters.items()
         if v.default is inspect.Parameter.empty
-        and v.kind
-        in [inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.POSITIONAL_ONLY]
+        and v.kind in [inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.POSITIONAL_ONLY]
     ]
     return required_args
 
@@ -1527,9 +1458,7 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
 
     if isinstance(func, types.MethodType):
         # can not assign `__signature__` to a bound method directly
-        func.__func__.__signature__ = func_signature.replace(
-            parameters=func_parameters.values()
-        )
+        func.__func__.__signature__ = func_signature.replace(parameters=func_parameters.values())
     else:
         func.__signature__ = func_signature.replace(parameters=func_parameters.values())
 
@@ -1538,8 +1467,7 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     @wraps(func)
     def wrapper(*args: Any, **kwargs_: Any) -> Any:
         assert set(kwargs_).issubset(full_kwargs), (
-            "got unexpected keyword arguments: "
-            f"{list(set(kwargs_).difference(full_kwargs))}"
+            "got unexpected keyword arguments: " f"{list(set(kwargs_).difference(full_kwargs))}"
         )
         filtered_kwargs = {k: v for k, v in kwargs_.items() if k in old_kwargs}
         return func(*args, **filtered_kwargs)
@@ -1547,9 +1475,7 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     return wrapper
 
 
-def make_serializable(
-    x: Union[np.ndarray, np.generic, dict, list, tuple]
-) -> Union[list, dict, Number]:
+def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Union[list, dict, Number]:
     """Make an object serializable.
 
     This function is used to convert all numpy arrays to list in an object,

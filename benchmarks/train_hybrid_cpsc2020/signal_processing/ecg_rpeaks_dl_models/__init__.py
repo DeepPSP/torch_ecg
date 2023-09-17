@@ -28,9 +28,7 @@ __all__ = [
 ]
 
 
-def load_model(
-    name: str, **kwargs
-) -> Union[Model, Tuple[Model, ...], nn.Module, Tuple[nn.Module, ...]]:
+def load_model(name: str, **kwargs) -> Union[Model, Tuple[Model, ...], nn.Module, Tuple[nn.Module, ...]]:
     """
 
     Parameters
@@ -51,9 +49,7 @@ def load_model(
         raise NotImplementedError
 
 
-def _load_keras_ecg_seq_lab_net(
-    which: str = "both", **kwargs
-) -> Union[Tuple[Model, Model], Model]:
+def _load_keras_ecg_seq_lab_net(which: str = "both", **kwargs) -> Union[Tuple[Model, Model], Model]:
     """
 
     load the CNN model and CRNN model from the entry 0416 of CPSC2019

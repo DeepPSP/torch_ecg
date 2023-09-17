@@ -4,17 +4,16 @@ import re
 import warnings
 from numbers import Real
 from pathlib import Path
-from typing import Any, List, Optional, Union, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 
 from ...cfg import DEFAULTS
-from ...utils.misc import get_record_list_recursive, add_docstring
 from ...utils.download import http_get
+from ...utils.misc import add_docstring, get_record_list_recursive
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
-
 
 __all__ = [
     "CPSC2018",
@@ -191,17 +190,13 @@ class CPSC2018(CPSCDataBase):
         and store them (path, metadata, etc.) in some private attributes.
         """
         self._df_records = pd.DataFrame()
-        self._df_records["path"] = get_record_list_recursive(
-            self.db_dir, self.rec_ext, relative=False
-        )
+        self._df_records["path"] = get_record_list_recursive(self.db_dir, self.rec_ext, relative=False)
         if self._subsample is not None:
             size = min(
                 len(self._df_records),
                 max(1, int(round(self._subsample * len(self._df_records)))),
             )
-            self._df_records = self._df_records.sample(
-                n=size, random_state=DEFAULTS.SEED, replace=False
-            )
+            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
         self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
@@ -211,8 +206,7 @@ class CPSC2018(CPSCDataBase):
         ann_file = list(self.db_dir.rglob("REFERENCE.csv"))
         if len(ann_file) != 1:
             warnings.warn(
-                "Annotation file not found. Please call method `_download_labels`, "
-                "and call method `_ls_rec` again.",
+                "Annotation file not found. Please call method `_download_labels`, " "and call method `_ls_rec` again.",
                 RuntimeWarning,
             )
             for c in ["labels_n", "labels_a", "labels_f"]:
@@ -221,13 +215,8 @@ class CPSC2018(CPSCDataBase):
             df_ann = pd.read_csv(ann_file[0])
             label_mat = df_ann[df_ann.columns[1:]].values
             mask = np.isnan(label_mat)
-            label_mat = [
-                row[~mask[idx]].astype(int).tolist()
-                for idx, row in enumerate(label_mat)
-            ]
-            df_ann.loc[df_ann.index, "labels_n"] = df_ann.apply(
-                lambda row: label_mat[row.name], axis=1
-            )
+            label_mat = [row[~mask[idx]].astype(int).tolist() for idx, row in enumerate(label_mat)]
+            df_ann.loc[df_ann.index, "labels_n"] = df_ann.apply(lambda row: label_mat[row.name], axis=1)
             df_ann.loc[df_ann.index, "labels_a"] = df_ann.apply(
                 lambda row: [self.diagnosis_num_to_abbr[i] for i in row.labels_n],
                 axis=1,
@@ -240,9 +229,7 @@ class CPSC2018(CPSCDataBase):
             df_ann.columns = ["record", "labels_n", "labels_a", "labels_f"]
             df_ann.set_index("record", inplace=True)
             # merge `df_ann` and `self._df_records`
-            self._df_records = self._df_records.merge(
-                df_ann, how="left", left_index=True, right_index=True
-            )
+            self._df_records = self._df_records.merge(df_ann, how="left", left_index=True, right_index=True)
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
         """Attach a unique subject ID for the record.
@@ -328,10 +315,7 @@ class CPSC2018(CPSCDataBase):
             data = data.T
         if units.lower() == "mv" and self._auto_infer_units(data) != "mV":
             data /= 1000
-        elif (
-            units.lower() in ["uv", "μv", "muv"]
-            and self._auto_infer_units(data) != "μV"
-        ):
+        elif units.lower() in ["uv", "μv", "muv"] and self._auto_infer_units(data) != "μV":
             data *= 1000
 
         if return_fs:
@@ -367,9 +351,7 @@ class CPSC2018(CPSCDataBase):
                 "n": "labels_n",
             }[ann_format.lower()]
         except KeyError:
-            raise ValueError(
-                f"`ann_format` should be one of `['a', 'f', 'n']`, but got `{ann_format}`"
-            )
+            raise ValueError(f"`ann_format` should be one of `['a', 'f', 'n']`, but got `{ann_format}`")
         labels = self._df_records.loc[rec, col]
         return labels
 
@@ -378,9 +360,7 @@ class CPSC2018(CPSCDataBase):
         """alias of `load_ann`"""
         return self.load_ann(rec, ann_format)
 
-    def get_subject_info(
-        self, rec: Union[int, str], items: Optional[List[str]] = None
-    ) -> dict:
+    def get_subject_info(self, rec: Union[int, str], items: Optional[List[str]] = None) -> dict:
         """Get subject information (e.g sex, age, etc.).
 
         Parameters
@@ -452,9 +432,7 @@ class CPSC2018(CPSCDataBase):
         duration = len(t) / self.fs
         fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
         fig_sz_h = 6 * y_ranges / 1500
-        fig, axes = plt.subplots(
-            nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
-        )
+        fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         for idx in range(nb_leads):
             axes[idx].plot(
                 t,
@@ -467,15 +445,11 @@ class CPSC2018(CPSCDataBase):
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(
-                    which="major", linestyle="-", linewidth="0.5", color="red"
-                )
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(
-                    which="minor", linestyle=":", linewidth="0.5", color="black"
-                )
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
             axes[idx].plot([], [], " ", label=f"labels - {','.join(diag)}")
             axes[idx].legend(loc="upper left")
             axes[idx].set_xlim(t[0], t[-1])

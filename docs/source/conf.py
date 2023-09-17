@@ -14,10 +14,10 @@
 import sys
 from pathlib import Path
 
+import pydata_sphinx_theme
+import sphinx_book_theme
 import sphinx_rtd_theme
 import sphinx_theme
-import sphinx_book_theme
-import pydata_sphinx_theme
 
 # import recommonmark  # noqa: F401
 # from recommonmark.transform import AutoStructify

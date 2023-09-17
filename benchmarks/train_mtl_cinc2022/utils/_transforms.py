@@ -12,7 +12,7 @@ NOTE:
 """
 
 import math
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import torch
 from torch import Tensor
@@ -72,11 +72,7 @@ class PitchShift(torch.nn.Module):
         self.n_fft = n_fft
         self.win_length = win_length if win_length is not None else n_fft
         self.hop_length = hop_length if hop_length is not None else self.win_length // 4
-        window = (
-            window_fn(self.win_length)
-            if wkwargs is None
-            else window_fn(self.win_length, **wkwargs)
-        )
+        window = window_fn(self.win_length) if wkwargs is None else window_fn(self.win_length, **wkwargs)
         self.register_buffer("window", window)
 
     def forward(self, waveform: Tensor) -> Tensor:
@@ -152,9 +148,7 @@ def pitch_shift(
         onesided=True,
         return_complex=True,
     )
-    phase_advance = torch.linspace(
-        0, math.pi * hop_length, spec_f.shape[-2], device=spec_f.device
-    )[..., None]
+    phase_advance = torch.linspace(0, math.pi * hop_length, spec_f.shape[-2], device=spec_f.device)[..., None]
     spec_stretch = phase_vocoder(spec_f, rate, phase_advance)
     len_stretch = int(round(ori_len / rate))
     waveform_stretch = torch.istft(
@@ -170,18 +164,14 @@ def pitch_shift(
     if shift_len > ori_len:
         waveform_shift = waveform_shift[..., :ori_len]
     else:
-        waveform_shift = torch.nn.functional.pad(
-            waveform_shift, [0, ori_len - shift_len]
-        )
+        waveform_shift = torch.nn.functional.pad(waveform_shift, [0, ori_len - shift_len])
 
     # unpack batch
     waveform_shift = waveform_shift.view(shape[:-1] + waveform_shift.shape[-1:])
     return waveform_shift
 
 
-def phase_vocoder(
-    complex_specgrams: Tensor, rate: float, phase_advance: Tensor
-) -> Tensor:
+def phase_vocoder(complex_specgrams: Tensor, rate: float, phase_advance: Tensor) -> Tensor:
     r"""Given a STFT tensor, speed up in time without modifying pitch by a
     factor of ``rate``.
     Args:
@@ -247,9 +237,7 @@ def phase_vocoder(
     complex_specgrams_stretch = torch.stack([real_stretch, imag_stretch], dim=-1)
 
     # unpack batch
-    complex_specgrams_stretch = complex_specgrams_stretch.reshape(
-        shape[:-3] + complex_specgrams_stretch.shape[1:]
-    )
+    complex_specgrams_stretch = complex_specgrams_stretch.reshape(shape[:-3] + complex_specgrams_stretch.shape[1:])
 
     return complex_specgrams_stretch
 
@@ -339,9 +327,7 @@ def _get_sinc_resample_kernel(
             if beta is None:
                 beta = 14.769656459379492
             beta_tensor = torch.tensor(float(beta))
-            window = torch.i0(
-                beta_tensor * torch.sqrt(1 - (t / lowpass_filter_width) ** 2)
-            ) / torch.i0(beta_tensor)
+            window = torch.i0(beta_tensor * torch.sqrt(1 - (t / lowpass_filter_width) ** 2)) / torch.i0(beta_tensor)
         t *= math.pi
         kernel = torch.where(t == 0, torch.tensor(1.0).to(t), torch.sin(t) / t)
         kernel.mul_(window)
@@ -428,7 +414,5 @@ def resample(
         waveform.device,
         waveform.dtype,
     )
-    resampled = _apply_sinc_resample_kernel(
-        waveform, orig_freq, new_freq, gcd, kernel, width
-    )
+    resampled = _apply_sinc_resample_kernel(waveform, orig_freq, new_freq, gcd, kernel, width)
     return resampled

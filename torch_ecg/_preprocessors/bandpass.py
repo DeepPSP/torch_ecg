@@ -7,7 +7,6 @@ import numpy as np
 
 from .base import PreProcessor, preprocess_multi_lead_signal
 
-
 __all__ = [
     "BandPass",
 ]
@@ -52,9 +51,7 @@ class BandPass(PreProcessor):
     ) -> None:
         self.lowcut = lowcut
         self.highcut = highcut
-        assert any(
-            [self.lowcut is not None, self.highcut is not None]
-        ), "At least one of lowcut and highcut should be set"
+        assert any([self.lowcut is not None, self.highcut is not None]), "At least one of lowcut and highcut should be set"
         if not self.lowcut:
             self.lowcut = 0
         if not self.highcut:

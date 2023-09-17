@@ -1,12 +1,13 @@
 """
 """
 
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import torch
 from torch import Tensor
 from torch.nn import Module
-from torch_ecg.utils.utils_nn import SizeMixin, CkptMixin
+
+from torch_ecg.utils.utils_nn import CkptMixin, SizeMixin
 
 from . import components
 
@@ -196,9 +197,7 @@ class HuBERTPretrainModel(Module):
         x, attention_mask = self.wav2vec2.encoder._preprocess(x, lengths)
         x, mask = self.mask_generator(x, padding_mask)
         x = self.wav2vec2.encoder.transformer(x, attention_mask=attention_mask)
-        assert (
-            x.shape[1] == labels.shape[1]
-        ), "The length of label must match that of HuBERT model output"
+        assert x.shape[1] == labels.shape[1], "The length of label must match that of HuBERT model output"
         if padding_mask is not None:
             mask_m = torch.logical_and(~padding_mask, mask)
             mask_u = torch.logical_and(~padding_mask, ~mask_m)
@@ -354,13 +353,9 @@ def wav2vec2_model(
             The resulting model.
     """  # noqa: E501
     if extractor_conv_layer_config is None:
-        extractor_conv_layer_config = (
-            [(512, 10, 5)] + [(512, 3, 2)] * 4 + [(512, 2, 2)] * 2
-        )
+        extractor_conv_layer_config = [(512, 10, 5)] + [(512, 3, 2)] * 4 + [(512, 2, 2)] * 2
 
-    feature_extractor = components._get_feature_extractor(
-        extractor_mode, extractor_conv_layer_config, extractor_conv_bias
-    )
+    feature_extractor = components._get_feature_extractor(extractor_mode, extractor_conv_layer_config, extractor_conv_bias)
     encoder = components._get_encoder(
         in_features=extractor_conv_layer_config[-1][0],
         embed_dim=encoder_embed_dim,
@@ -923,13 +918,9 @@ def hubert_pretrain_model(
             The resulting model.
     """  # noqa: E501
     if extractor_conv_layer_config is None:
-        extractor_conv_layer_config = (
-            [(512, 10, 5)] + [(512, 3, 2)] * 4 + [(512, 2, 2)] * 2
-        )
+        extractor_conv_layer_config = [(512, 10, 5)] + [(512, 3, 2)] * 4 + [(512, 2, 2)] * 2
 
-    feature_extractor = components._get_feature_extractor(
-        extractor_mode, extractor_conv_layer_config, extractor_conv_bias
-    )
+    feature_extractor = components._get_feature_extractor(extractor_mode, extractor_conv_layer_config, extractor_conv_bias)
     encoder = components._get_encoder(
         in_features=extractor_conv_layer_config[-1][0],
         embed_dim=encoder_embed_dim,

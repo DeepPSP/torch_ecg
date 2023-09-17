@@ -3,18 +3,18 @@
 
 import inspect
 import math
-from copy import deepcopy
 from abc import ABC, abstractmethod
-from typing import Union, List, Sequence, Tuple
+from copy import deepcopy
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 from torch.nn import functional as F
 from torchaudio import transforms as TT
+
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.misc import ReprMixin
 from torch_ecg.utils.utils_nn import compute_conv_output_shape
-
 
 __all__ = [
     "InputConfig",
@@ -31,14 +31,7 @@ class InputConfig(CFG):
 
     __name__ = "InputConfig"
 
-    def __init__(
-        self,
-        *args: Union[CFG, dict],
-        input_type: str,
-        n_channels: int,
-        n_samples: int = -1,
-        **kwargs: dict
-    ) -> None:
+    def __init__(self, *args: Union[CFG, dict], input_type: str, n_channels: int, n_samples: int = -1, **kwargs: dict) -> None:
         """
 
         Parameters
@@ -56,13 +49,7 @@ class InputConfig(CFG):
             the number of samples of the input
 
         """
-        super().__init__(
-            *args,
-            input_type=input_type,
-            n_channels=n_channels,
-            n_samples=n_samples,
-            **kwargs
-        )
+        super().__init__(*args, input_type=input_type, n_channels=n_channels, n_samples=n_samples, **kwargs)
         assert "n_channels" in self and self.n_channels > 0
         assert "n_samples" in self and (self.n_samples > 0 or self.n_samples == -1)
         assert "input_type" in self and self.input_type.lower() in [
@@ -152,9 +139,7 @@ class BaseInput(ReprMixin, ABC):
     def device(self) -> torch.device:
         return self._device
 
-    def compute_input_shape(
-        self, waveform_shape: Union[Sequence[int], torch.Size]
-    ) -> Tuple[Union[type(None), int], ...]:
+    def compute_input_shape(self, waveform_shape: Union[Sequence[int], torch.Size]) -> Tuple[Union[type(None), int], ...]:
         """
 
         computes the input shape of the model based on the input type and the waveform shape
@@ -173,9 +158,7 @@ class BaseInput(ReprMixin, ABC):
         if self.input_type == "waveform":
             return tuple(waveform_shape)
         n_samples = compute_conv_output_shape(
-            waveform_shape
-            if len(waveform_shape) == 3
-            else [None] + list(waveform_shape),
+            waveform_shape if len(waveform_shape) == 3 else [None] + list(waveform_shape),
             kernel_size=self.win_length,
             stride=self.hop_length,
             padding=[self.hop_length, self.win_length - self.hop_length],
@@ -321,9 +304,7 @@ class SpectrogramInput(_SpectralInput):
             the transformed waveform
 
         """
-        self._values = self._transform(
-            torch.as_tensor(waveform).to(self.device, self.dtype)
-        )
+        self._values = self._transform(torch.as_tensor(waveform).to(self.device, self.dtype))
         if self.feature_fs is not None:
             scale_factor = [1] * (self.values.ndim - 3) + [self.feature_fs / self.fs]
             self._values = F.interpolate(self._values, scale_factor=scale_factor)
@@ -369,9 +350,7 @@ class MelSpectrogramInput(_SpectralInput):
             the transformed waveform
 
         """
-        self._values = self._transform(
-            torch.as_tensor(waveform).to(self.device, self.dtype)
-        )
+        self._values = self._transform(torch.as_tensor(waveform).to(self.device, self.dtype))
         if self.feature_fs is not None:
             scale_factor = [1] * (self.values.ndim - 3) + [self.feature_fs / self.fs]
             self._values = F.interpolate(self._values, scale_factor=scale_factor)
@@ -421,9 +400,7 @@ class MFCCInput(_SpectralInput):
             the transformed waveform
 
         """
-        self._values = self._transform(
-            torch.as_tensor(waveform).to(self.device, self.dtype)
-        )
+        self._values = self._transform(torch.as_tensor(waveform).to(self.device, self.dtype))
         if self.feature_fs is not None:
             scale_factor = [1] * (self.values.ndim - 3) + [self.feature_fs / self.fs]
             self._values = F.interpolate(self._values, scale_factor=scale_factor)
@@ -491,9 +468,7 @@ class SpectralInput(_SpectralInput):
         spectro_kwargs["n_fft"] = (self.n_bins - 1) * 2
         spectro_kwargs["win_length"] = self.win_length
         spectro_kwargs["hop_length"] = self.hop_length
-        self._transforms.append(
-            TT.Spectrogram(**spectro_kwargs).to(self.device, self.dtype)
-        )
+        self._transforms.append(TT.Spectrogram(**spectro_kwargs).to(self.device, self.dtype))
         # mel spectrogram
         args = inspect.getfullargspec(TT.MelSpectrogram.__init__).args
         for k in ["self", "sample_rate", "n_fft", "n_mels", "win_length", "hop_length"]:
@@ -504,9 +479,7 @@ class SpectralInput(_SpectralInput):
         mel_kwargs["n_mels"] = self.n_bins
         mel_kwargs["win_length"] = self.win_length
         mel_kwargs["hop_length"] = self.hop_length
-        self._transforms.append(
-            TT.MelSpectrogram(**mel_kwargs).to(self.device, self.dtype)
-        )
+        self._transforms.append(TT.MelSpectrogram(**mel_kwargs).to(self.device, self.dtype))
         # MFCC
         args = inspect.getfullargspec(TT.MFCC.__init__).args
         for k in ["self", "sample_rate", "n_mfcc"]:

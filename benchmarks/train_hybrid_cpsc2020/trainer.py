@@ -25,25 +25,20 @@ try:
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.components.outputs import BaseOutput  # noqa: F401
-from torch_ecg.components.trainer import BaseTrainer  # noqa: F401
-from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
-from torch_ecg.utils.misc import (
-    dict_to_str,
-    get_date_str,
-    list_sum,
-    str2bool,
-)
-from torch_ecg.utils.utils_data import mask_to_intervals
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-
 from cfg import ModelCfg, TrainCfg
 
 # from dataset import CPSC2020
 from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
 from metrics import CPSC2020_loss, CPSC2020_score, eval_score  # noqa: F401
 from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import BaseOutput  # noqa: F401
+from torch_ecg.components.trainer import BaseTrainer  # noqa: F401
+from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.utils.misc import dict_to_str, get_date_str, list_sum, str2bool
+from torch_ecg.utils.utils_data import mask_to_intervals
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -212,9 +207,7 @@ def train(
             weight_decay=config.decay,
         )
     else:
-        raise NotImplementedError(
-            f"optimizer `{config.train_optimizer}` not implemented!"
-        )
+        raise NotImplementedError(f"optimizer `{config.train_optimizer}` not implemented!")
     # scheduler = optim.lr_scheduler.LambdaLR(optimizer, burnin_schedule)
 
     if config.lr_scheduler is None:
@@ -222,9 +215,7 @@ def train(
     elif config.lr_scheduler.lower() == "plateau":
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", patience=2)
     elif config.lr_scheduler.lower() == "step":
-        scheduler = optim.lr_scheduler.StepLR(
-            optimizer, config.lr_step_size, config.lr_gamma
-        )
+        scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
     elif config.lr_scheduler.lower() in [
         "one_cycle",
         "onecycle",
@@ -236,16 +227,12 @@ def train(
             steps_per_epoch=len(train_loader),
         )
     else:
-        raise NotImplementedError(
-            f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training"
-        )
+        raise NotImplementedError(f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
 
     if config.loss == "BCEWithLogitsLoss":
         criterion = nn.BCEWithLogitsLoss()
     elif config.loss == "BCEWithLogitsWithClassWeightLoss":
-        criterion = BCEWithLogitsWithClassWeightLoss(
-            class_weight=train_dataset.class_weights.to(device=device, dtype=_DTYPE)
-        )
+        criterion = BCEWithLogitsWithClassWeightLoss(class_weight=train_dataset.class_weights.to(device=device, dtype=_DTYPE))
     else:
         raise NotImplementedError(f"loss `{config.loss}` not implemented!")
     # scheduler = ReduceLROnPlateau(optimizer, mode="max", verbose=True, patience=6, min_lr=1e-7)
@@ -323,50 +310,24 @@ def train(
             # eval for each epoch using corresponding `evaluate` function
             if debug:
                 if config.model_name == "crnn":
-                    eval_train_res = evaluate_crnn(
-                        model, val_train_loader, config, device, debug
-                    )
+                    eval_train_res = evaluate_crnn(model, val_train_loader, config, device, debug)
                     writer.add_scalar("train/auroc", eval_train_res[0], global_step)
                     writer.add_scalar("train/auprc", eval_train_res[1], global_step)
                     writer.add_scalar("train/accuracy", eval_train_res[2], global_step)
                     writer.add_scalar("train/f_measure", eval_train_res[3], global_step)
-                    writer.add_scalar(
-                        "train/f_beta_measure", eval_train_res[4], global_step
-                    )
-                    writer.add_scalar(
-                        "train/g_beta_measure", eval_train_res[5], global_step
-                    )
+                    writer.add_scalar("train/f_beta_measure", eval_train_res[4], global_step)
+                    writer.add_scalar("train/g_beta_measure", eval_train_res[5], global_step)
                 elif config.model_name == "seq_lab":
-                    eval_train_res = evaluate_seq_lab(
-                        model, val_train_loader, config, device, debug
-                    )
-                    writer.add_scalar(
-                        "train/total_loss", eval_train_res.total_loss, global_step
-                    )
-                    writer.add_scalar(
-                        "train/spb_loss", eval_train_res.spb_loss, global_step
-                    )
-                    writer.add_scalar(
-                        "train/pvc_loss", eval_train_res.pvc_loss, global_step
-                    )
-                    writer.add_scalar(
-                        "train/spb_tp", eval_train_res.spb_tp, global_step
-                    )
-                    writer.add_scalar(
-                        "train/pvc_tp", eval_train_res.pvc_tp, global_step
-                    )
-                    writer.add_scalar(
-                        "train/spb_fp", eval_train_res.spb_fp, global_step
-                    )
-                    writer.add_scalar(
-                        "train/pvc_fp", eval_train_res.pvc_fp, global_step
-                    )
-                    writer.add_scalar(
-                        "train/spb_fn", eval_train_res.spb_fn, global_step
-                    )
-                    writer.add_scalar(
-                        "train/pvc_fn", eval_train_res.pvc_fn, global_step
-                    )
+                    eval_train_res = evaluate_seq_lab(model, val_train_loader, config, device, debug)
+                    writer.add_scalar("train/total_loss", eval_train_res.total_loss, global_step)
+                    writer.add_scalar("train/spb_loss", eval_train_res.spb_loss, global_step)
+                    writer.add_scalar("train/pvc_loss", eval_train_res.pvc_loss, global_step)
+                    writer.add_scalar("train/spb_tp", eval_train_res.spb_tp, global_step)
+                    writer.add_scalar("train/pvc_tp", eval_train_res.pvc_tp, global_step)
+                    writer.add_scalar("train/spb_fp", eval_train_res.spb_fp, global_step)
+                    writer.add_scalar("train/pvc_fp", eval_train_res.pvc_fp, global_step)
+                    writer.add_scalar("train/spb_fn", eval_train_res.spb_fn, global_step)
+                    writer.add_scalar("train/pvc_fn", eval_train_res.pvc_fn, global_step)
 
             if config.model_name == "crnn":
                 eval_res = evaluate_crnn(model, val_loader, config, device, debug)
@@ -482,9 +443,7 @@ def train(
             else:
                 print(msg)
 
-            monitor = (
-                eval_res[4] if config.model_name == "crnn" else -eval_res.total_loss
-            )
+            monitor = eval_res[4] if config.model_name == "crnn" else -eval_res.total_loss
             if monitor > best_challenge_metric:
                 best_challenge_metric = monitor
                 best_state_dict = _model.state_dict()
@@ -522,12 +481,8 @@ def train(
             if config.model_name == "crnn":
                 save_suffix = f"epochloss_{epoch_loss:.5f}_fb_{eval_res[4]:.2f}_gb_{eval_res[5]:.2f}"
             elif config.model_name == "seq_lab":
-                save_suffix = (
-                    f"epochloss_{epoch_loss:.5f}_challenge_loss_{eval_res.total_loss}"
-                )
-            save_filename = (
-                f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
-            )
+                save_suffix = f"epochloss_{epoch_loss:.5f}_challenge_loss_{eval_res.total_loss}"
+            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = config.checkpoints / save_filename
             torch.save(
                 {
@@ -556,9 +511,7 @@ def train(
             save_filename = config.final_model_name
         else:
             if config.model_name == "crnn":
-                save_suffix = (
-                    f"BestModel_fb_{best_eval_res[4]:.2f}_gb_{best_eval_res[5]:.2f}"
-                )
+                save_suffix = f"BestModel_fb_{best_eval_res[4]:.2f}_gb_{best_eval_res[5]:.2f}"
             elif config.model_name == "seq_lab":
                 save_suffix = f"BestModel_challenge_loss_{best_eval_res.total_loss}"
             save_filename = f"{save_prefix}_{get_date_str()}_{save_suffix}.pth.tar"
@@ -659,9 +612,7 @@ def evaluate_crnn(
         head_num = 5
         head_scalar_preds = all_scalar_preds[:head_num, ...]
         head_bin_preds = all_bin_preds[:head_num, ...]
-        head_preds_classes = [
-            np.array(classes)[np.where(row)] for row in head_bin_preds
-        ]
+        head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
         head_labels = all_labels[:head_num, ...]
         head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
         for n in range(head_num):
@@ -751,26 +702,16 @@ def evaluate_seq_lab(
     for signals, labels in data_loader:
         signals = signals.to(device=device, dtype=_DTYPE)
         labels = labels.numpy()  # (batch_size, seq_len, 2 or 3)
-        spb_intervals = [
-            mask_to_intervals(seq, 1) for seq in labels[..., config.classes.index("S")]
-        ]
+        spb_intervals = [mask_to_intervals(seq, 1) for seq in labels[..., config.classes.index("S")]]
         # print(spb_intervals)
         spb_labels = [
-            [_model.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv]
-            if len(l_itv) > 0
-            else []
-            for l_itv in spb_intervals
+            [_model.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv] if len(l_itv) > 0 else [] for l_itv in spb_intervals
         ]
         # print(spb_labels)
         all_spb_labels.append(spb_labels)
-        pvc_intervals = [
-            mask_to_intervals(seq, 1) for seq in labels[..., config.classes.index("V")]
-        ]
+        pvc_intervals = [mask_to_intervals(seq, 1) for seq in labels[..., config.classes.index("V")]]
         pvc_labels = [
-            [_model.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv]
-            if len(l_itv) > 0
-            else []
-            for l_itv in pvc_intervals
+            [_model.reduction * (itv[0] + itv[1]) // 2 for itv in l_itv] if len(l_itv) > 0 else [] for l_itv in pvc_intervals
         ]
         all_pvc_labels.append(pvc_labels)
 

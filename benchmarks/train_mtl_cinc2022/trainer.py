@@ -1,45 +1,32 @@
 """
 """
 
+import argparse
 import os
 import sys
-import argparse
 import textwrap
 from copy import deepcopy
-from typing import Any, Optional, Tuple, Dict, List, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+from cfg import BaseCfg, ModelCfg, TrainCfg
+from dataset import CinC2022Dataset
+from models import CRNN_CINC2022, SEQ_LAB_NET_CINC2022, UNET_CINC2022, HFWav2Vec2_CINC2022, Wav2Vec2_CINC2022  # noqa: F401
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import (  # noqa: F401
-    DistributedDataParallel as DDP,
-    DataParallel as DP,
-)  # noqa: F401
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
+from tqdm.auto import tqdm
+from utils.augmentations import AugmenterManager
+from utils.scoring_metrics import compute_challenge_metrics  # noqa: F401
+
 from torch_ecg.cfg import CFG
 from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
 from torch_ecg.utils.misc import str2bool
-from torch_ecg.utils.utils_nn import default_collate_fn
 from torch_ecg.utils.utils_data import mask_to_intervals  # noqa: F401
-from torch_ecg.models.loss import (
-    AsymmetricLoss,
-    BCEWithLogitsWithClassWeightLoss,
-    FocalLoss,
-    MaskedBCEWithLogitsLoss,
-)
-from tqdm.auto import tqdm
-
-from models import (  # noqa: F401
-    Wav2Vec2_CINC2022,
-    HFWav2Vec2_CINC2022,
-    CRNN_CINC2022,
-    SEQ_LAB_NET_CINC2022,
-    UNET_CINC2022,
-)
-from cfg import BaseCfg, TrainCfg, ModelCfg
-from dataset import CinC2022Dataset
-from utils.scoring_metrics import compute_challenge_metrics  # noqa: F401
-from utils.augmentations import AugmenterManager
+from torch_ecg.utils.utils_nn import default_collate_fn
 
 if BaseCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -182,23 +169,14 @@ class CINC2022Trainer(BaseTrainer):
 
     def _setup_augmenter_manager(self) -> None:
         """ """
-        self.augmenter_manager = AugmenterManager.from_config(
-            config=self.train_config[self.train_config.task]
-        )
+        self.augmenter_manager = AugmenterManager.from_config(config=self.train_config[self.train_config.task])
 
     def _setup_criterion(self) -> None:
         """ """
-        loss_kw = (
-            self.train_config[self.train_config.task]
-            .get("loss_kw", {})
-            .get(self._criterion_key, {})
-        )
+        loss_kw = self.train_config[self.train_config.task].get("loss_kw", {}).get(self._criterion_key, {})
         if self.train_config.loss[self._criterion_key] == "BCEWithLogitsLoss":
             self.criterion = nn.BCEWithLogitsLoss(**loss_kw)
-        elif (
-            self.train_config.loss[self._criterion_key]
-            == "BCEWithLogitsWithClassWeightLoss"
-        ):
+        elif self.train_config.loss[self._criterion_key] == "BCEWithLogitsWithClassWeightLoss":
             self.criterion = BCEWithLogitsWithClassWeightLoss(**loss_kw)
         elif self.train_config.loss[self._criterion_key] == "BCELoss":
             self.criterion = nn.BCELoss(**loss_kw)
@@ -231,11 +209,7 @@ class CINC2022Trainer(BaseTrainer):
             the progress bar for training
 
         """
-        if (
-            self.epoch
-            >= self.train_config[self.train_config.task].freeze_backbone_at
-            > 0
-        ):
+        if self.epoch >= self.train_config[self.train_config.task].freeze_backbone_at > 0:
             self._model.freeze_backbone(True)
         else:
             self._model.freeze_backbone(False)
@@ -247,9 +221,7 @@ class CINC2022Trainer(BaseTrainer):
             # "murmur" (optional): the murmur labels, for classification task and multi task
             # "outcome" (optional): the outcome labels, for classification task and multi task
             # "segmentation" (optional): the segmentation labels, for segmentation task and multi task
-            input_tensors["waveforms"] = self.augmenter_manager(
-                input_tensors["waveforms"]
-            )
+            input_tensors["waveforms"] = self.augmenter_manager(input_tensors["waveforms"])
 
             # out_tensors is a dict of tensors, with the following items (some are optional):
             # - "murmur": the murmur predictions, of shape (batch_size, n_classes)
@@ -267,9 +239,7 @@ class CINC2022Trainer(BaseTrainer):
             # ref. https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html
             loss = self.criterion(
                 out_tensors[self._criterion_key],
-                input_tensors[self._criterion_key].to(
-                    dtype=self.dtype, device=self.device
-                ),
+                input_tensors[self._criterion_key].to(dtype=self.dtype, device=self.device),
             ).to(dtype=self.dtype, device=self.device) + out_tensors.get(
                 "total_extra_loss",
                 torch.tensor(0.0, dtype=self.dtype, device=self.device),
@@ -278,9 +248,7 @@ class CINC2022Trainer(BaseTrainer):
             )
 
             if self.train_config.flooding_level > 0:
-                flood = (
-                    loss - self.train_config.flooding_level
-                ).abs() + self.train_config.flooding_level
+                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
                 self.epoch_loss += loss.item()
                 self.optimizer.zero_grad()
                 flood.backward()
@@ -317,9 +285,7 @@ class CINC2022Trainer(BaseTrainer):
                 )
             pbar.update(n_samples)
 
-    def run_one_step(
-        self, input_tensors: Dict[str, torch.Tensor]
-    ) -> Dict[str, torch.Tensor]:
+    def run_one_step(self, input_tensors: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
 
         Parameters
@@ -372,16 +338,11 @@ class CINC2022Trainer(BaseTrainer):
                 torch.cuda.synchronize()
             all_outputs.append(self._model.inference(waveforms))
 
-        if self.val_train_loader is not None and self.train_config.task not in [
-            "segmentation"
-        ]:
+        if self.val_train_loader is not None and self.train_config.task not in ["segmentation"]:
             log_head_num = 5
             head_scalar_preds = all_outputs[0].murmur_output.prob[:log_head_num]
             head_bin_preds = all_outputs[0].murmur_output.bin_pred[:log_head_num]
-            head_preds_classes = [
-                np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]]
-                for row in head_bin_preds
-            ]
+            head_preds_classes = [np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]] for row in head_bin_preds]
             head_labels = all_labels[0]["murmur"][:log_head_num]
             head_labels_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)]
@@ -407,8 +368,7 @@ class CINC2022Trainer(BaseTrainer):
                 head_scalar_preds = all_outputs[0].outcome_output.prob[:log_head_num]
                 head_bin_preds = all_outputs[0].outcome_output.bin_pred[:log_head_num]
                 head_preds_classes = [
-                    np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
-                    for row in head_bin_preds
+                    np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]] for row in head_bin_preds
                 ]
                 head_labels = all_labels[0]["outcome"][:log_head_num]
                 head_labels_classes = [
@@ -465,15 +425,9 @@ class CINC2022Trainer(BaseTrainer):
 
         weighted_cost = 0
         if eval_res.get("murmur_cost", None) is not None:
-            weighted_cost += (
-                eval_res["murmur_cost"]
-                * self.train_config[self.train_config.task].head_weights.murmur
-            )
+            weighted_cost += eval_res["murmur_cost"] * self.train_config[self.train_config.task].head_weights.murmur
         if eval_res.get("outcome_cost", None) is not None:
-            weighted_cost += (
-                eval_res["outcome_cost"]
-                * self.train_config[self.train_config.task].head_weights.outcome
-            )
+            weighted_cost += eval_res["outcome_cost"] * self.train_config[self.train_config.task].head_weights.outcome
         eval_res["neg_weighted_cost"] = -weighted_cost
 
         # in case possible memeory leakage?

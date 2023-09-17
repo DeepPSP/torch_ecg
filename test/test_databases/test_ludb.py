@@ -20,7 +20,6 @@ from torch_ecg.databases import LUDB, DataBaseInfo
 from torch_ecg.databases.datasets import LUDBDataset, LUDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "ludb"
@@ -48,17 +47,11 @@ class TestLUDB:
         reader_ss = LUDB(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LUDB(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LUDB(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LUDB(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -112,9 +105,7 @@ class TestLUDB:
                 assert ann[lead][i].offset == ann_1[lead][i].offset
 
     def test_meta_data(self):
-        assert isinstance(reader.version, str) and re.match(
-            PHYSIONET_DB_VERSION_PATTERN, reader.version
-        )
+        assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)

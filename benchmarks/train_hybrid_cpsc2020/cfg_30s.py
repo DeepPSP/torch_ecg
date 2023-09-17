@@ -170,9 +170,7 @@ ModelCfg.crnn.cnn.multi_scopic.filter_lengths = [
     [11, 7, 5, 5],  # branch 1
     [11, 7, 5, 5],  # branch 2
 ]
-ModelCfg.crnn.cnn.multi_scopic.subsample_lengths = list(
-    repeat(2, len(ModelCfg.crnn.cnn.multi_scopic.scopes))
-)
+ModelCfg.crnn.cnn.multi_scopic.subsample_lengths = list(repeat(2, len(ModelCfg.crnn.cnn.multi_scopic.scopes)))
 _base_num_filters = 8
 ModelCfg.crnn.cnn.multi_scopic.num_filters = [
     [  # branch 0
@@ -205,22 +203,12 @@ ModelCfg.crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
 ModelCfg.crnn.cnn.multi_scopic.block = CFG()
-ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = (
-    "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
-)
+ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 ModelCfg.crnn.cnn.multi_scopic.block.bias = ModelCfg.crnn.cnn.multi_scopic.bias
-ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = (
-    ModelCfg.crnn.cnn.multi_scopic.kernel_initializer
-)
-ModelCfg.crnn.cnn.multi_scopic.block.kw_initializer = deepcopy(
-    ModelCfg.crnn.cnn.multi_scopic.kw_initializer
-)
-ModelCfg.crnn.cnn.multi_scopic.block.activation = (
-    ModelCfg.crnn.cnn.multi_scopic.activation
-)
-ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = deepcopy(
-    ModelCfg.crnn.cnn.multi_scopic.kw_activation
-)
+ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = ModelCfg.crnn.cnn.multi_scopic.kernel_initializer
+ModelCfg.crnn.cnn.multi_scopic.block.kw_initializer = deepcopy(ModelCfg.crnn.cnn.multi_scopic.kw_initializer)
+ModelCfg.crnn.cnn.multi_scopic.block.activation = ModelCfg.crnn.cnn.multi_scopic.activation
+ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = deepcopy(ModelCfg.crnn.cnn.multi_scopic.kw_activation)
 
 # rnn part
 # abuse of notation
@@ -300,9 +288,7 @@ TrainCfg.normalize_data = True
 # data augmentation
 TrainCfg.label_smoothing = 0.1
 TrainCfg.random_mask = int(TrainCfg.fs * 0.0)  # 1.0s, 0 for no masking
-TrainCfg.stretch_compress = (
-    5  # stretch or compress in time axis, units in percentage (0 - inf)
-)
+TrainCfg.stretch_compress = 5  # stretch or compress in time axis, units in percentage (0 - inf)
 TrainCfg.random_normalize = True  # (re-)normalize to random mean and std
 # valid segments has
 # median of mean appr. 0, mean of mean 0.038
@@ -332,9 +318,7 @@ TrainCfg.bw_gaussian = np.array(
         [0.0, 0.01],
     ]
 )
-TrainCfg.flip = [-1] + [
-    1
-] * 4  # making the signal upside down, with probability 1/(1+4)
+TrainCfg.flip = [-1] + [1] * 4  # making the signal upside down, with probability 1/(1+4)
 # TODO: explore and add more data augmentations
 
 TrainCfg.seq_lab_reduction = 2**4  # TODO: automatic adjust via model config
@@ -373,9 +357,7 @@ TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 # configs of loss function
 TrainCfg.loss = "BCEWithLogitsLoss"
 # TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
-TrainCfg.flooding_level = (
-    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
-)
+TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
 
 TrainCfg.log_step = 20
 TrainCfg.eval_every = 20

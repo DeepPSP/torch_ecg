@@ -6,24 +6,23 @@ from numbers import Real
 from typing import Tuple
 
 import numpy as np
-import torch
 import pytest
+import torch
 
-from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg._preprocessors import (
-    PreProcessor,
-    PreprocManager,
     BandPass,
     BaselineRemove,
-    Normalize,
     MinMaxNormalize,
     NaiveNormalize,
-    ZScoreNormalize,
+    Normalize,
+    PreProcessor,
+    PreprocManager,
     Resample,
+    ZScoreNormalize,
     preprocess_multi_lead_signal,
     preprocess_single_lead_signal,
 )
-
+from torch_ecg.cfg import CFG, DEFAULTS
 
 test_sig = torch.randn(12, 80000).numpy()
 
@@ -80,9 +79,7 @@ def test_preproc_manager():
     )
 
     ppm.random = True
-    with pytest.warns(
-        RuntimeWarning, match="The preprocessors are applied in random order"
-    ):
+    with pytest.warns(RuntimeWarning, match="The preprocessors are applied in random order"):
         ppm.rearrange(
             new_ordering=[
                 "bandpass",
@@ -147,9 +144,7 @@ def test_baseline_remove():
     br = BaselineRemove(0.3, 0.9)
     sig, fs = br(sig, 200)
 
-    with pytest.warns(
-        RuntimeWarning, match="values of `window1` and `window2` are switched"
-    ):
+    with pytest.warns(RuntimeWarning, match="values of `window1` and `window2` are switched"):
         br = BaselineRemove(0.9, 0.3)
 
     assert str(br) == repr(br)
@@ -163,9 +158,7 @@ def test_normalize():
 
     with pytest.raises(AssertionError, match="standard deviation should be positive"):
         norm = Normalize(std=0)
-    with pytest.raises(
-        AssertionError, match="standard deviations should all be positive"
-    ):
+    with pytest.raises(AssertionError, match="standard deviations should all be positive"):
         norm = Normalize(std=np.zeros(sig.shape[0]))
 
     assert str(norm) == repr(norm)
@@ -193,13 +186,9 @@ def test_resample():
     rsmp = Resample(siglen=5000)
     sig, fs = rsmp(sig, 200)
 
-    with pytest.raises(
-        AssertionError, match="one and only one of `fs` and `siglen` should be set"
-    ):
+    with pytest.raises(AssertionError, match="one and only one of `fs` and `siglen` should be set"):
         rsmp = Resample(fs=500, siglen=5000)
-    with pytest.raises(
-        AssertionError, match="one and only one of `fs` and `siglen` should be set"
-    ):
+    with pytest.raises(AssertionError, match="one and only one of `fs` and `siglen` should be set"):
         rsmp = Resample()
 
     assert str(rsmp) == repr(rsmp)
@@ -229,18 +218,12 @@ def test_preprocess_multi_lead_signal():
             filter_type=filter_type,
         )
 
-    with pytest.raises(
-        AssertionError, match="multi-lead signal should be 2d or 3d array"
-    ):
+    with pytest.raises(AssertionError, match="multi-lead signal should be 2d or 3d array"):
         preprocess_multi_lead_signal(sig[0], fs)
-    with pytest.raises(
-        AssertionError, match="multi-lead signal should be 2d or 3d array"
-    ):
+    with pytest.raises(AssertionError, match="multi-lead signal should be 2d or 3d array"):
         preprocess_multi_lead_signal(torch.randn(1, 1, 12, 8000).numpy(), fs)
 
-    with pytest.raises(
-        AssertionError, match="multi-lead signal format `xxx` not supported"
-    ):
+    with pytest.raises(AssertionError, match="multi-lead signal format `xxx` not supported"):
         preprocess_multi_lead_signal(sig, fs, sig_fmt="xxx")
 
     with pytest.raises(AssertionError, match="Invalid frequency band"):

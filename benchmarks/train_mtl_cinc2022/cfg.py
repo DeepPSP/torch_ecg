@@ -3,17 +3,16 @@
 
 import pathlib
 from copy import deepcopy
-from typing import Union, Sequence
+from typing import Sequence, Union
 
 import numpy as np
-from sklearn.model_selection import ParameterGrid
 import torch
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
-
 from cfg_models import ModelArchCfg
 from inputs import InputConfig
+from sklearn.model_selection import ParameterGrid
 
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 __all__ = [
     "BaseCfg",
@@ -149,23 +148,17 @@ TrainCfg.classification.input_config = InputConfig(
     fs=TrainCfg.classification.fs,
 )
 TrainCfg.classification.num_channels = TrainCfg.classification.input_config.n_channels
-TrainCfg.classification.input_len = int(
-    30 * TrainCfg.classification.fs
-)  # 30 seconds, to adjust
+TrainCfg.classification.input_len = int(30 * TrainCfg.classification.fs)  # 30 seconds, to adjust
 TrainCfg.classification.siglen = TrainCfg.classification.input_len  # alias
 TrainCfg.classification.sig_slice_tol = 0.2  # None, do no slicing
 TrainCfg.classification.classes = deepcopy(BaseCfg.classes)
 TrainCfg.classification.outcomes = deepcopy(BaseCfg.outcomes)
 # TrainCfg.classification.outcomes = None
 if TrainCfg.classification.outcomes is not None:
-    TrainCfg.classification.outcome_map = {
-        c: i for i, c in enumerate(TrainCfg.classification.outcomes)
-    }
+    TrainCfg.classification.outcome_map = {c: i for i, c in enumerate(TrainCfg.classification.outcomes)}
 else:
     TrainCfg.classification.outcome_map = None
-TrainCfg.classification.class_map = {
-    c: i for i, c in enumerate(TrainCfg.classification.classes)
-}
+TrainCfg.classification.class_map = {c: i for i, c in enumerate(TrainCfg.classification.classes)}
 
 # preprocess configurations
 TrainCfg.classification.resample = CFG(fs=TrainCfg.classification.fs)
@@ -235,18 +228,14 @@ TrainCfg.classification.loss = CFG(
 TrainCfg.classification.loss_kw = CFG(
     # murmur=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
     # outcome={},
-    murmur=CFG(
-        class_weight=torch.tensor([[5.0, 3.0, 1.0]])
-    ),  # "Present", "Unknown", "Absent"
+    murmur=CFG(class_weight=torch.tensor([[5.0, 3.0, 1.0]])),  # "Present", "Unknown", "Absent"
     outcome=CFG(class_weight=torch.tensor([[5.0, 1.0]])),  # "Abnormal", "Normal"
 )
 
 # monitor choices
 # challenge metric is the **cost** of misclassification
 # hence it is the lower the better
-TrainCfg.classification.monitor = (
-    "neg_weighted_cost"  # weighted_accuracy (not recommended)  # the higher the better
-)
+TrainCfg.classification.monitor = "neg_weighted_cost"  # weighted_accuracy (not recommended)  # the higher the better
 TrainCfg.classification.head_weights = CFG(
     # used to compute a numeric value to use the monitor
     murmur=0.5,
@@ -271,19 +260,13 @@ TrainCfg.segmentation.input_config = InputConfig(
     fs=TrainCfg.segmentation.fs,
 )
 TrainCfg.segmentation.num_channels = TrainCfg.segmentation.input_config.n_channels
-TrainCfg.segmentation.input_len = int(
-    30 * TrainCfg.segmentation.fs
-)  # 30seconds, to adjust
+TrainCfg.segmentation.input_len = int(30 * TrainCfg.segmentation.fs)  # 30seconds, to adjust
 TrainCfg.segmentation.siglen = TrainCfg.segmentation.input_len  # alias
 TrainCfg.segmentation.sig_slice_tol = 0.4  # None, do no slicing
 TrainCfg.segmentation.classes = deepcopy(BaseCfg.states)
 if TrainCfg.ignore_unannotated:
-    TrainCfg.segmentation.classes = [
-        s for s in TrainCfg.segmentation.classes if s != "unannotated"
-    ]
-TrainCfg.segmentation.class_map = {
-    c: i for i, c in enumerate(TrainCfg.segmentation.classes)
-}
+    TrainCfg.segmentation.classes = [s for s in TrainCfg.segmentation.classes if s != "unannotated"]
+TrainCfg.segmentation.class_map = {c: i for i, c in enumerate(TrainCfg.segmentation.classes)}
 
 # preprocess configurations
 TrainCfg.segmentation.resample = CFG(fs=TrainCfg.segmentation.fs)
@@ -377,18 +360,12 @@ TrainCfg.multi_task.input_len = int(30 * TrainCfg.multi_task.fs)  # 30seconds, t
 TrainCfg.multi_task.siglen = TrainCfg.multi_task.input_len  # alias
 TrainCfg.multi_task.sig_slice_tol = 0.4  # None, do no slicing
 TrainCfg.multi_task.classes = deepcopy(BaseCfg.classes)
-TrainCfg.multi_task.class_map = {
-    c: i for i, c in enumerate(TrainCfg.multi_task.classes)
-}
+TrainCfg.multi_task.class_map = {c: i for i, c in enumerate(TrainCfg.multi_task.classes)}
 TrainCfg.multi_task.outcomes = deepcopy(BaseCfg.outcomes)
-TrainCfg.multi_task.outcome_map = {
-    c: i for i, c in enumerate(TrainCfg.multi_task.outcomes)
-}
+TrainCfg.multi_task.outcome_map = {c: i for i, c in enumerate(TrainCfg.multi_task.outcomes)}
 TrainCfg.multi_task.states = deepcopy(BaseCfg.states)
 if TrainCfg.ignore_unannotated:
-    TrainCfg.multi_task.states = [
-        s for s in TrainCfg.multi_task.states if s != "unannotated"
-    ]
+    TrainCfg.multi_task.states = [s for s in TrainCfg.multi_task.states if s != "unannotated"]
 TrainCfg.multi_task.state_map = {s: i for i, s in enumerate(TrainCfg.multi_task.states)}
 
 # preprocess configurations
@@ -460,12 +437,8 @@ TrainCfg.multi_task.loss = CFG(
 TrainCfg.multi_task.loss_kw = CFG(
     # murmur=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
     # outcome={},
-    murmur=CFG(
-        class_weight=torch.tensor([[5.0 / 9.0, 3.0 / 9.0, 1.0 / 9.0]])
-    ),  # "Present", "Unknown", "Absent"
-    outcome=CFG(
-        class_weight=torch.tensor([[5.0 / 6.0, 1.0 / 6.0]])
-    ),  # "Abnormal", "Normal"
+    murmur=CFG(class_weight=torch.tensor([[5.0 / 9.0, 3.0 / 9.0, 1.0 / 9.0]])),  # "Present", "Unknown", "Absent"
+    outcome=CFG(class_weight=torch.tensor([[5.0 / 6.0, 1.0 / 6.0]])),  # "Abnormal", "Normal"
     segmentation=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
 )
 
@@ -530,9 +503,7 @@ if ModelCfg.classification.outcomes is None:
     ModelCfg.classification.outcome_head = None
 else:
     ModelCfg.classification.outcome_head.loss = TrainCfg.classification.loss.outcome
-    ModelCfg.classification.outcome_head.loss_kw = deepcopy(
-        TrainCfg.classification.loss_kw.outcome
-    )
+    ModelCfg.classification.outcome_head.loss_kw = deepcopy(TrainCfg.classification.loss_kw.outcome)
 ModelCfg.classification.states = None
 
 
@@ -542,9 +513,7 @@ ModelCfg.multi_task.outcome_head.loss = TrainCfg.multi_task.loss.outcome
 ModelCfg.multi_task.outcome_head.loss_kw = deepcopy(TrainCfg.multi_task.loss_kw.outcome)
 ModelCfg.multi_task.states = deepcopy(TrainCfg.multi_task.states)
 ModelCfg.multi_task.segmentation_head.loss = TrainCfg.multi_task.loss.segmentation
-ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(
-    TrainCfg.multi_task.loss_kw.segmentation
-)
+ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(TrainCfg.multi_task.loss_kw.segmentation)
 
 
 # model for the outcome (final diagnosis)
@@ -671,9 +640,7 @@ OutcomeCfg.grids.bagging = ParameterGrid(
 OutcomeCfg.monitor = "outcome_cost"  # the lower the better
 
 
-def remove_extra_heads(
-    train_config: CFG, model_config: CFG, heads: Union[str, Sequence[str]]
-) -> None:
+def remove_extra_heads(train_config: CFG, model_config: CFG, heads: Union[str, Sequence[str]]) -> None:
     """
     remove extra heads from **task-specific** train config and model config,
     e.g. `TrainCfg.classification` and `ModelCfg.classification`

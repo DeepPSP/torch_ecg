@@ -8,24 +8,16 @@ import warnings
 from collections import Counter
 from itertools import repeat
 from numbers import Real
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import torch
 from torch import nn
 
 from ...cfg import CFG
-from ...models._nets import (
-    Conv_Bn_Activation,
-    DownSample,
-    SpaceToDepth,
-)
-from ...utils.misc import add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-from .resnet import ResNetBottleNeck, ResNetBasicBlock
+from ...models._nets import Conv_Bn_Activation, DownSample, SpaceToDepth
+from ...utils.misc import CitationMixin, add_docstring
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from .resnet import ResNetBasicBlock, ResNetBottleNeck
 
 
 class AnyStage(nn.Sequential, SizeMixin):
@@ -222,9 +214,7 @@ class RegNetStem(nn.Sequential, SizeMixin):
         if subsample_mode.lower() in ["s2d", "space_to_depth", "SpaceToDepth"]:
             self.add_module(
                 "s2d",
-                SpaceToDepth(
-                    self.__in_channels, self.__out_channels, config.get("block_size", 4)
-                ),
+                SpaceToDepth(self.__in_channels, self.__out_channels, config.get("block_size", 4)),
             )
             return
         if isinstance(self.__filter_lengths, int):
@@ -362,9 +352,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
         stage_configs = []
         if self.config.get("num_blocks", None) is not None:
             if isinstance(self.config.filter_lengths, int):
-                self.__filter_lengths = list(
-                    repeat(self.config.filter_lengths, len(self.config.num_blocks))
-                )
+                self.__filter_lengths = list(repeat(self.config.filter_lengths, len(self.config.num_blocks)))
             else:
                 self.__filter_lengths = self.config.filter_lengths
             assert len(self.__filter_lengths) == len(self.config.num_blocks), (
@@ -372,9 +360,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
                 f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
             )
             if isinstance(self.config.subsample_lengths, int):
-                self.__subsample_lengths = list(
-                    repeat(self.config.subsample_lengths, len(self.config.num_blocks))
-                )
+                self.__subsample_lengths = list(repeat(self.config.subsample_lengths, len(self.config.num_blocks)))
             else:
                 self.__subsample_lengths = self.config.subsample_lengths
             assert len(self.__subsample_lengths) == len(self.config.num_blocks), (
@@ -387,9 +373,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
                 f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
             )
             if isinstance(self.config.dropouts, Real):
-                self.__dropouts = list(
-                    repeat(self.config.dropouts, len(self.config.num_blocks))
-                )
+                self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
             else:
                 self.__dropouts = self.config.dropouts
             assert len(self.__dropouts) == len(self.config.num_blocks), (
@@ -397,9 +381,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
                 f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
             )
             if isinstance(self.config.group_widths, int):
-                self.__group_widths = list(
-                    repeat(self.config.group_widths, len(self.config.num_blocks))
-                )
+                self.__group_widths = list(repeat(self.config.group_widths, len(self.config.num_blocks)))
             else:
                 self.__group_widths = self.config.group_widths
             assert len(self.__group_widths) == len(self.config.num_blocks), (
@@ -439,20 +421,11 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
             "and `config.tot_blocks` must be provided."
         )
         QUANT = 8
-        if (
-            self.config.w_a < 0
-            or self.config.w_0 <= 0
-            or self.config.w_m <= 1
-            or self.config.w_0 % QUANT != 0
-        ):
+        if self.config.w_a < 0 or self.config.w_0 <= 0 or self.config.w_m <= 1 or self.config.w_0 % QUANT != 0:
             raise ValueError("Invalid RegNet settings")
         # Compute the block widths. Each stage has one unique block width
-        widths_cont = (
-            torch.arange(self.config.tot_blocks) * self.config.w_a + self.config.w_0
-        )
-        block_capacity = torch.round(
-            torch.log(widths_cont / self.config.w_0) / math.log(self.config.w_m)
-        )
+        widths_cont = torch.arange(self.config.tot_blocks) * self.config.w_a + self.config.w_0
+        block_capacity = torch.round(torch.log(widths_cont / self.config.w_0) / math.log(self.config.w_m))
         block_widths = (
             (
                 torch.round(
@@ -479,9 +452,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
             "`config.w_a`, `config.w_0`, `config.w_m`, `config.tot_blocks`"
         )
         if isinstance(self.config.subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(self.config.subsample_lengths, num_stages)
-            )
+            self.__subsample_lengths = list(repeat(self.config.subsample_lengths, num_stages))
         else:
             self.__subsample_lengths = self.config.subsample_lengths
         assert len(self.__subsample_lengths) == num_stages, (

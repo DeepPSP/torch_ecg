@@ -5,38 +5,28 @@ TestCINC2021Dataset: accomplished
 subsampling: accomplished
 """
 
+import json
 from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
-import json
 import pandas as pd
 import pytest
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases import CINC2021, DataBaseInfo
-from torch_ecg.databases.physionet_databases.cinc2021 import (
-    compute_metrics,
-    compute_metrics_detailed,
-)
 from torch_ecg.databases.aux_data.cinc2021_aux_data import (
     dx_mapping_scored,
-    load_weights,
     get_class,
     get_class_count,
     get_class_weight,
     get_cooccurrence,
+    load_weights,
 )
 from torch_ecg.databases.datasets import CINC2021Dataset, CINC2021TrainCfg
-from torch_ecg.databases.datasets.cinc2021.cinc2021_cfg import (
-    twelve_leads,
-    six_leads,
-    four_leads,
-    three_leads,
-    two_leads,
-)
+from torch_ecg.databases.datasets.cinc2021.cinc2021_cfg import four_leads, six_leads, three_leads, twelve_leads, two_leads
+from torch_ecg.databases.physionet_databases.cinc2021 import compute_metrics, compute_metrics_detailed
 from torch_ecg.utils import dicts_equal
-from torch_ecg.cfg import DEFAULTS
-
 
 ###############################################################################
 # set paths
@@ -64,17 +54,11 @@ class TestCINC2021:
         reader_ss = CINC2021(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2021(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2021(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2021(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -102,9 +86,7 @@ class TestCINC2021:
 
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
             reader.load_data(0, data_format="flat")
-        with pytest.raises(
-            ValueError, match="backend `numpy` not supported for loading data"
-        ):
+        with pytest.raises(ValueError, match="backend `numpy` not supported for loading data"):
             reader.load_data(0, backend="numpy")
 
     def test_load_ann(self):
@@ -117,9 +99,7 @@ class TestCINC2021:
             assert isinstance(ann_3, str)
         reader.load_ann(0)
 
-        with pytest.raises(
-            ValueError, match="backend `numpy` not supported for loading annotations"
-        ):
+        with pytest.raises(ValueError, match="backend `numpy` not supported for loading annotations"):
             reader.load_ann(0, backend="numpy")
 
     def test_load_header(self):
@@ -137,9 +117,7 @@ class TestCINC2021:
             labels_4 = reader.get_labels(rec, scored_only=False)
             assert len(labels_1) == len(labels_2) == len(labels_3) <= len(labels_4)
             assert set(labels_1) <= set(labels_4)
-        with pytest.raises(
-            ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
-        ):
+        with pytest.raises(ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"):
             reader.get_labels(0, fmt="xxx")
 
     def test_get_fs(self):
@@ -199,18 +177,16 @@ class TestCINC2021:
 
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
-        assert isinstance(reader.url, list) and len(reader.url) - 1 == len(
-            reader.all_records
-        ) == len(reader.tranche_names) == len(reader.db_tranches)
+        assert isinstance(reader.url, list) and len(reader.url) - 1 == len(reader.all_records) == len(
+            reader.tranche_names
+        ) == len(reader.db_tranches)
         assert reader.get_citation() is None  # printed
         with pytest.warns(
             RuntimeWarning,
             match="the dataframe of stats is empty, try using _aggregate_stats",
         ):
             assert reader.df_stats.empty
-        assert set(reader.diagnoses_records_list.keys()) >= set(
-            dx_mapping_scored.Abbreviation
-        )
+        assert set(reader.diagnoses_records_list.keys()) >= set(dx_mapping_scored.Abbreviation)
         assert not reader.df_stats.empty
         assert set(reader._check_exceptions()) <= set(reader.exceptional_records)
         df_1 = reader._compute_cooccurrence(tranches="F")
@@ -280,60 +256,33 @@ class TestCINC2021:
 
         assert get_class("713426002") == get_class(713426002)
 
-        class_count_a = get_class_count(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="a"
-        )
+        class_count_a = get_class_count(tranches="ABCDEF", exclude_classes=["713426002"], fmt="a")
         assert isinstance(class_count_a, dict) and len(class_count_a) > 0
-        class_count_f = get_class_count(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="f"
-        )
+        class_count_f = get_class_count(tranches="ABCDEF", exclude_classes=["713426002"], fmt="f")
         assert isinstance(class_count_f, dict) and len(class_count_f) > 0
-        class_count_s = get_class_count(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="s"
-        )
+        class_count_s = get_class_count(tranches="ABCDEF", exclude_classes=["713426002"], fmt="s")
         assert isinstance(class_count_s, dict) and len(class_count_s) > 0
 
-        class_weight_a = get_class_weight(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="a"
-        )
-        assert (
-            isinstance(class_weight_a, dict)
-            and class_weight_a.keys() == class_count_a.keys()
-        )
-        class_weight_f = get_class_weight(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="f"
-        )
-        assert (
-            isinstance(class_weight_f, dict)
-            and class_weight_f.keys() == class_count_f.keys()
-        )
-        class_weight_s = get_class_weight(
-            tranches="ABCDEF", exclude_classes=["713426002"], fmt="s"
-        )
-        assert (
-            isinstance(class_weight_s, dict)
-            and class_weight_s.keys() == class_count_s.keys()
-        )
+        class_weight_a = get_class_weight(tranches="ABCDEF", exclude_classes=["713426002"], fmt="a")
+        assert isinstance(class_weight_a, dict) and class_weight_a.keys() == class_count_a.keys()
+        class_weight_f = get_class_weight(tranches="ABCDEF", exclude_classes=["713426002"], fmt="f")
+        assert isinstance(class_weight_f, dict) and class_weight_f.keys() == class_count_f.keys()
+        class_weight_s = get_class_weight(tranches="ABCDEF", exclude_classes=["713426002"], fmt="s")
+        assert isinstance(class_weight_s, dict) and class_weight_s.keys() == class_count_s.keys()
 
-        with pytest.raises(
-            ValueError, match="`dx_cooccurrence_all` is not found, pre-compute it first"
-        ):
+        with pytest.raises(ValueError, match="`dx_cooccurrence_all` is not found, pre-compute it first"):
             cooccurrence = get_cooccurrence(713426002, "270492004")
         reader._compute_cooccurrence()
         cooccurrence = get_cooccurrence(713426002, "270492004")
         assert isinstance(cooccurrence, int) and cooccurrence >= 0
-        with pytest.raises(
-            ValueError, match="class `164951009` not among the scored classes"
-        ):
+        with pytest.raises(ValueError, match="class `164951009` not among the scored classes"):
             get_cooccurrence("713426002", "164951009", ensure_scored=True)
 
 
 config = deepcopy(CINC2021TrainCfg)
 config.db_dir = _CWD
 
-with pytest.warns(
-    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
-):
+with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
     ds = CINC2021Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 
@@ -432,14 +381,8 @@ class TestCINC2021Dataset:
         _test_ratio = 20
         _train_ratio = 100 - _test_ratio
         file_suffix = f"_siglen_{ds.siglen}{ns}.json"
-        train_file = (
-            ds.reader.db_dir_base
-            / f"{ds.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
-        )
-        test_file = (
-            ds.reader.db_dir_base
-            / f"{ds.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
-        )
+        train_file = ds.reader.db_dir_base / f"{ds.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
+        test_file = ds.reader.db_dir_base / f"{ds.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
         assert train_file.exists() and test_file.exists()
 
         train_set = json.loads(train_file.read_text())

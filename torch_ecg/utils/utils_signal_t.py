@@ -5,10 +5,9 @@ utilities for signal processing on PyTorch tensors
 
 import warnings
 from numbers import Real
-from typing import Iterable, Optional, Union, Callable
+from typing import Callable, Iterable, Optional, Union
 
 import torch
-
 
 __all__ = [
     "normalize",
@@ -126,9 +125,7 @@ def normalize(
             # of shape (n_leads, 1), or (n_leads,), or (1, n_leads), or (1, n_leads, 1)
             _std = _std.view((-1, sig.shape[1], 1))
         else:
-            raise ValueError(
-                f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch"
-            )
+            raise ValueError(f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch")
     if isinstance(mean, Real):
         _mean = torch.full((sig.shape[0], 1, 1), mean, dtype=dtype, device=device)
     else:
@@ -140,9 +137,7 @@ def normalize(
             # of shape (n_leads, 1), or (n_leads,), or (1, n_leads), or (1, n_leads, 1)
             _mean = _mean.view((-1, sig.shape[1], 1))
         else:
-            raise ValueError(
-                f"shape of `sig` = {sig.shape} and `mean` = {_mean.shape} mismatch"
-            )
+            raise ValueError(f"shape of `sig` = {sig.shape} and `mean` = {_mean.shape} mismatch")
 
     if not per_channel:
         assert _std.shape[1] == 1 and _mean.shape[1] == 1, (
@@ -203,9 +198,7 @@ def resample(
         The resampled signal, of shape ``(..., n_leads, siglen)``.
 
     """
-    assert (
-        sum([bool(dst_fs), bool(siglen)]) == 1
-    ), "one and only one of `dst_fs` and `siglen` should be set"
+    assert sum([bool(dst_fs), bool(siglen)]) == 1, "one and only one of `dst_fs` and `siglen` should be set"
     if dst_fs is not None:
         assert fs is not None, "if `dst_fs` is set, `fs` should also be set"
         scale_factor = dst_fs / fs
@@ -415,11 +408,7 @@ class Spectrogram(torch.nn.Module):
         # number of frequencies due to onesided=True in torch.stft
         self.win_length = win_length if win_length is not None else n_fft
         self.hop_length = hop_length if hop_length is not None else self.win_length // 2
-        window = (
-            window_fn(self.win_length)
-            if wkwargs is None
-            else window_fn(self.win_length, **wkwargs)
-        )
+        window = window_fn(self.win_length) if wkwargs is None else window_fn(self.win_length, **wkwargs)
         self.register_buffer("window", window)
         self.pad = pad
         self.power = power

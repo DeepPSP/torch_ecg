@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
@@ -10,7 +10,7 @@ import wfdb
 from tqdm.auto import tqdm
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.misc import get_record_list_recursive3, add_docstring
+from ...utils.misc import add_docstring, get_record_list_recursive3
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
     BeatAnn,
@@ -20,7 +20,6 @@ from ..base import (
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
 )
-
 
 __all__ = [
     "MITDB",
@@ -95,18 +94,10 @@ class MITDB(PhysioNetDataBase):
         self.ann_ext = "atr"
 
         self.beat_types_extended = list("""!"+/AEFJLNQRSV[]aefjx|~""")
-        self.nonbeat_types = [
-            item
-            for item in self.beat_types_extended
-            if item in WFDB_Non_Beat_Annotations
-        ]
-        self.beat_types = [
-            item for item in self.beat_types_extended if item in WFDB_Beat_Annotations
-        ]
+        self.nonbeat_types = [item for item in self.beat_types_extended if item in WFDB_Non_Beat_Annotations]
+        self.beat_types = [item for item in self.beat_types_extended if item in WFDB_Beat_Annotations]
         self.beat_types_map = {item: i for i, item in enumerate(self.beat_types)}
-        self.beat_types_extended_map = {
-            item: i for i, item in enumerate(self.beat_types_extended)
-        }
+        self.beat_types_extended_map = {item: i for i, item in enumerate(self.beat_types_extended)}
         self.rhythm_types = [
             "(AB",
             "(AFIB",
@@ -127,9 +118,7 @@ class MITDB(PhysioNetDataBase):
             "PSE",
             "TS",
         ]
-        self.rhythm_types = [
-            rt.lstrip("(") for rt in self.rhythm_types if rt in WFDB_Rhythm_Annotations
-        ]
+        self.rhythm_types = [rt.lstrip("(") for rt in self.rhythm_types if rt in WFDB_Rhythm_Annotations]
         self.rhythm_types_map = {rt: idx for idx, rt in enumerate(self.rhythm_types)}
         self._rhythm_ignore_index = -100
 
@@ -153,29 +142,19 @@ class MITDB(PhysioNetDataBase):
         super()._ls_rec()
         # filters out records with names not matching `self.data_pattern`
         if len(self._df_records) > 0:
-            self._df_records = self._df_records[
-                self._df_records.index.str.match(self.data_pattern)
-            ]
+            self._df_records = self._df_records[self._df_records.index.str.match(self.data_pattern)]
         if len(self._all_records) == 0:
             self._df_records = pd.DataFrame()
-            self._df_records["path"] = get_record_list_recursive3(
-                self.db_dir, self.data_pattern_with_ext, relative=False
-            )
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.stem
-            )
+            self._df_records["path"] = get_record_list_recursive3(self.db_dir, self.data_pattern_with_ext, relative=False)
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
             self._df_records.set_index("record", inplace=True)
         if subsample is not None:
             size = min(
                 len(self._df_records),
                 max(1, int(round(subsample * len(self._df_records)))),
             )
-            self.logger.debug(
-                f"subsample `{size}` records from `{len(self._df_records)}`"
-            )
-            self._df_records = self._df_records.sample(
-                n=size, random_state=DEFAULTS.SEED, replace=False
-            )
+            self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
         self._all_records = self._df_records.index.tolist()
         self._subsample = subsample
 
@@ -194,17 +173,9 @@ class MITDB(PhysioNetDataBase):
         ) as pbar:
             for idx in pbar:
                 rec_ann = self.load_ann(idx)
-                beat_type_num = {
-                    k: v
-                    for k, v in Counter(
-                        [item.symbol for item in rec_ann["beat"]]
-                    ).most_common()
-                }
+                beat_type_num = {k: v for k, v in Counter([item.symbol for item in rec_ann["beat"]]).most_common()}
                 beat_num = sum(beat_type_num.values())
-                rhythm_len = {
-                    k: sum([itv[1] - itv[0] for itv in v])
-                    for k, v in rec_ann["rhythm"].items()
-                }
+                rhythm_len = {k: sum([itv[1] - itv[0] for itv in v]) for k, v in rec_ann["rhythm"].items()}
                 self._stats = pd.concat(
                     [
                         self._stats,
@@ -297,11 +268,7 @@ class MITDB(PhysioNetDataBase):
         if beat_types is None:
             beat_types = self.beat_types
 
-        beat_ann = [
-            BeatAnn(i, s)
-            for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices])
-            if s in beat_types
-        ]
+        beat_ann = [BeatAnn(i, s) for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices]) if s in beat_types]
 
         if rhythm_types is None:
             rhythm_types = self.rhythm_types
@@ -321,10 +288,7 @@ class MITDB(PhysioNetDataBase):
                 rhythm = ra.lstrip("(")
         if start_idx is not None:
             rhythm_intervals[rhythm].append([start_idx, si])
-        rhythm_intervals = {
-            k: np.array(generalized_intervals_intersection(v, [[sf, st]]))
-            for k, v in rhythm_intervals.items()
-        }
+        rhythm_intervals = {k: np.array(generalized_intervals_intersection(v, [[sf, st]])) for k, v in rhythm_intervals.items()}
         if rhythm_format.lower() == "mask":
             rhythm_mask = np.full((st - sf,), self._rhythm_ignore_index, dtype=int)
             for k, v in rhythm_intervals.items():
@@ -340,10 +304,7 @@ class MITDB(PhysioNetDataBase):
         #     beat_ann = [b for b in beat_ann if b.symbol in self.beat_types]
 
         if beat_format.lower() == "dict":
-            beat_ann = {
-                s: np.array([b.index for b in beat_ann if b.symbol == s], dtype=int)
-                for s in self.beat_types_extended
-            }
+            beat_ann = {s: np.array([b.index for b in beat_ann if b.symbol == s], dtype=int) for s in self.beat_types_extended}
             beat_ann = {k: v for k, v in beat_ann.items() if len(v) > 0}
 
         ann = {}
@@ -491,11 +452,7 @@ class MITDB(PhysioNetDataBase):
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
         rpeak_inds = wfdb_ann.sample
-        indices = np.where(
-            (rpeak_inds >= sf)
-            & (rpeak_inds < st)
-            & (np.isin(wfdb_ann.symbol, self.beat_types))
-        )[0]
+        indices = np.where((rpeak_inds >= sf) & (rpeak_inds < st) & (np.isin(wfdb_ann.symbol, self.beat_types)))[0]
         rpeak_inds = rpeak_inds[indices]
         if not keep_original:
             rpeak_inds -= sf
@@ -582,14 +539,7 @@ class MITDB(PhysioNetDataBase):
         ], f"`by` should be one of 'beat' or 'rhythm', but got {by}"
         key = dict(beat="beat_type_num", rhythm="rhythm_len")[by.lower()]
         return CFG(
-            {
-                item: [
-                    row["record"]
-                    for _, row in self.df_stats.iterrows()
-                    if item in row[key]
-                ]
-                for item in self.db_stats[key]
-            }
+            {item: [row["record"] for _, row in self.df_stats.iterrows() if item in row[key]] for item in self.db_stats[key]}
         )
 
     @property

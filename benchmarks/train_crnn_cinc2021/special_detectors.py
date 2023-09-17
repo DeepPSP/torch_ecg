@@ -36,14 +36,10 @@ except ModuleNotFoundError:
 from cfg import SpecialDetectorCfg
 
 from torch_ecg.cfg import CFG
-from torch_ecg.utils.ecg_arrhythmia_knowledge import (
-    LimbLeads,
-    PrecordialLeads,
-    Standard12Leads,
-)
+from torch_ecg.utils._preproc import preprocess_multi_lead_signal
+from torch_ecg.utils.ecg_arrhythmia_knowledge import LimbLeads, PrecordialLeads, Standard12Leads
 from torch_ecg.utils.misc import ms2samples, samples2ms
 from torch_ecg.utils.utils_data import get_mask
-from torch_ecg.utils._preproc import preprocess_multi_lead_signal
 from torch_ecg.utils.utils_signal import detect_peaks, get_ampl
 
 __all__ = [
@@ -105,9 +101,7 @@ def special_detectors(
     )
     filtered_sig = preprocess["filtered_ecg"]
     rpeaks = preprocess["rpeaks"]
-    is_PR = pacing_rhythm_detector(
-        raw_sig, fs, sig_fmt, leads, ret_prob=False, verbose=verbose
-    )
+    is_PR = pacing_rhythm_detector(raw_sig, fs, sig_fmt, leads, ret_prob=False, verbose=verbose)
     axis = electrical_axis_detector(
         filtered_sig,
         rpeaks,
@@ -220,9 +214,8 @@ def pacing_rhythm_detector(
     lead_has_enough_spikes = list(repeat(0, n_leads))
     for ld in range(n_leads):
         if len(potential_spikes[ld]) > 0:
-            relative_inv_density = (
-                SpecialDetectorCfg.pr_spike_inv_density_threshold
-                - sig_duration_ms / len(potential_spikes[ld])
+            relative_inv_density = SpecialDetectorCfg.pr_spike_inv_density_threshold - sig_duration_ms / len(
+                potential_spikes[ld]
             )
             # sigmoid
             lead_has_enough_spikes[ld] = 1 / (1 + np.exp(-relative_inv_density / 100))
@@ -230,9 +223,7 @@ def pacing_rhythm_detector(
                 lead_has_enough_spikes[ld] = int(lead_has_enough_spikes[ld] >= 0.5)
     if verbose >= 1:
         print(f"lead_has_enough_spikes = {lead_has_enough_spikes}")
-        print(
-            f"leads spikes density (units in ms) = {[len(potential_spikes[ld]) / sig_duration_ms for ld in range(n_leads)]}"
-        )
+        print(f"leads spikes density (units in ms) = {[len(potential_spikes[ld]) / sig_duration_ms for ld in range(n_leads)]}")
 
     _threshold = int(round(SpecialDetectorCfg.pr_spike_leads_threshold * n_leads))
     if ret_prob:
@@ -345,37 +336,21 @@ def electrical_axis_detector(
 
     # lead I
     lead_I_positive = (
-        sum(
-            [
-                np.max(lead_I[qrs_itv[0] : qrs_itv[1]])
-                > np.abs(np.min(lead_I[qrs_itv[0] : qrs_itv[1]]))
-                for qrs_itv in l_qrs
-            ]
-        )
+        sum([np.max(lead_I[qrs_itv[0] : qrs_itv[1]]) > np.abs(np.min(lead_I[qrs_itv[0] : qrs_itv[1]])) for qrs_itv in l_qrs])
         >= len(l_qrs) // 2 + 1
     )
 
     # lead aVF
     lead_aVF_positive = (
         sum(
-            [
-                np.max(lead_aVF[qrs_itv[0] : qrs_itv[1]])
-                > np.abs(np.min(lead_aVF[qrs_itv[0] : qrs_itv[1]]))
-                for qrs_itv in l_qrs
-            ]
+            [np.max(lead_aVF[qrs_itv[0] : qrs_itv[1]]) > np.abs(np.min(lead_aVF[qrs_itv[0] : qrs_itv[1]])) for qrs_itv in l_qrs]
         )
         >= len(l_qrs) // 2 + 1
     )
 
     # lead II
     lead_II_positive = (
-        sum(
-            [
-                np.max(lead_II[qrs_itv[0] : qrs_itv[1]])
-                > np.abs(np.min(lead_II[qrs_itv[0] : qrs_itv[1]]))
-                for qrs_itv in l_qrs
-            ]
-        )
+        sum([np.max(lead_II[qrs_itv[0] : qrs_itv[1]]) > np.abs(np.min(lead_II[qrs_itv[0] : qrs_itv[1]])) for qrs_itv in l_qrs])
         >= len(l_qrs) // 2 + 1
     )
 
@@ -506,30 +481,18 @@ def LQRSV_detector(
     precordial_lead_inds = [list(leads).index(ld) for ld in precordial_leads]
 
     if verbose >= 1:
-        print(
-            f"limb_lead_inds = {limb_lead_inds}, precordial_lead_inds = {precordial_lead_inds}"
-        )
+        print(f"limb_lead_inds = {limb_lead_inds}, precordial_lead_inds = {precordial_lead_inds}")
 
-    low_qrs_limb_leads = [
-        sig_ampl[idx] <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias
-        for idx in limb_lead_inds
-    ]
+    low_qrs_limb_leads = [sig_ampl[idx] <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias for idx in limb_lead_inds]
     if len(low_qrs_limb_leads) > 0:
-        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(
-            low_qrs_limb_leads
-        )  # to ratio
+        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(low_qrs_limb_leads)  # to ratio
     else:  # no limb leads
         # determining LQRSV using limb leads and precordial leads, its relation is OR
         # hence default values are set 0 if no limb leads or precordial leads
         low_qrs_limb_leads = 0
-    low_qrs_precordial_leads = [
-        sig_ampl[idx] <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias
-        for idx in precordial_lead_inds
-    ]
+    low_qrs_precordial_leads = [sig_ampl[idx] <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias for idx in precordial_lead_inds]
     if len(low_qrs_precordial_leads) > 0:
-        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(
-            low_qrs_precordial_leads
-        )
+        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(low_qrs_precordial_leads)
     else:
         low_qrs_precordial_leads = 0
 
@@ -602,20 +565,12 @@ def LQRSV_detector_backup(
 
     if len(l_qrs) == 0:
         # no rpeaks detected
-        low_qrs_limb_leads = [
-            np.max(sig_ampl[idx]) <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias
-            for idx in limb_lead_inds
-        ]
-        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(
-            low_qrs_limb_leads
-        )  # to ratio
+        low_qrs_limb_leads = [np.max(sig_ampl[idx]) <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias for idx in limb_lead_inds]
+        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(low_qrs_limb_leads)  # to ratio
         low_qrs_precordial_leads = [
-            np.max(sig_ampl[idx]) <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias
-            for idx in precordial_lead_inds
+            np.max(sig_ampl[idx]) <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias for idx in precordial_lead_inds
         ]
-        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(
-            low_qrs_precordial_leads
-        )
+        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(low_qrs_precordial_leads)
     else:
         for itv in l_qrs:
             for idx in limb_lead_inds:
@@ -634,20 +589,10 @@ def LQRSV_detector_backup(
                     f"for precordial lead {lead_name}, the qrs amplitudes are {[np.max(item) for item in l_qrs_limb_leads[idx*len(l_qrs): (idx+1)*len(l_qrs)]]}"
                 )
 
-        low_qrs_limb_leads = [
-            np.max(item) <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias
-            for item in l_qrs_limb_leads
-        ]
-        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(
-            low_qrs_limb_leads
-        )  # to ratio
-        low_qrs_precordial_leads = [
-            np.max(item) <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias
-            for item in l_qrs_precordial_leads
-        ]
-        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(
-            low_qrs_precordial_leads
-        )
+        low_qrs_limb_leads = [np.max(item) <= 0.5 + SpecialDetectorCfg.lqrsv_ampl_bias for item in l_qrs_limb_leads]
+        low_qrs_limb_leads = sum(low_qrs_limb_leads) / len(low_qrs_limb_leads)  # to ratio
+        low_qrs_precordial_leads = [np.max(item) <= 1 + SpecialDetectorCfg.lqrsv_ampl_bias for item in l_qrs_precordial_leads]
+        low_qrs_precordial_leads = sum(low_qrs_precordial_leads) / len(low_qrs_precordial_leads)
 
     if verbose >= 2:
         print(f"ratio of low qrs in limb leads = {low_qrs_limb_leads}")
@@ -698,10 +643,7 @@ def PRWP_detector(
         # all change to lead_first
         r_ampl = filtered_sig[rpeaks, ...].T
 
-    if (
-        len(set([f"V{n}" for n in range(1, 5)]).intersection(leads)) < 2
-        and "V3" not in leads
-    ):
+    if len(set([f"V{n}" for n in range(1, 5)]).intersection(leads)) < 2 and "V3" not in leads:
         # leads insufficient to make decision
         is_PRWP = False
         return is_PRWP
@@ -721,9 +663,7 @@ def PRWP_detector(
     if lead_V3_ind is not None:
         cond1 = np.mean(r_ampl[lead_V3_ind, ...]) < SpecialDetectorCfg.prwp_v3_thr
         if verbose >= 1:
-            print(
-                f"PRWP condition 1: R amplitude in lead V3 = {np.mean(r_ampl[lead_V3_ind, ...])}"
-            )
+            print(f"PRWP condition 1: R amplitude in lead V3 = {np.mean(r_ampl[lead_V3_ind, ...])}")
     else:
         cond1 = False
 
@@ -731,9 +671,7 @@ def PRWP_detector(
     cond2 = (np.diff(np.mean(r_ampl[leads_V1_4_inds, ...], axis=-1)) < 0).any()
     if verbose >= 1:
         diff = np.diff(np.mean(r_ampl[leads_V1_4_inds, ...], axis=-1))
-        print(
-            f"PRWP condition 2: reversed R wave progression, diff of mean R amplitude in V1-4 = {diff}"
-        )
+        print(f"PRWP condition 2: reversed R wave progression, diff of mean R amplitude in V1-4 = {diff}")
 
     # condition 3: delayed transition beyond V4
     # currently, exact meaning of condition 3 is not clear

@@ -6,24 +6,24 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import wfdb
-import torch
 import pytest
+import torch
+import wfdb
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.utils_data import (
-    get_mask,
+    ECGWaveForm,
     class_weight_to_sample_weight,
-    rdheader,
+    cls_to_bin,
     ensure_lead_fmt,
     ensure_siglen,
-    ECGWaveForm,
-    masks_to_waveforms,
-    mask_to_intervals,
-    uniform,
-    stratified_train_test_split,
-    cls_to_bin,
     generate_weight_mask,
+    get_mask,
+    mask_to_intervals,
+    masks_to_waveforms,
+    rdheader,
+    stratified_train_test_split,
+    uniform,
 )
 
 
@@ -32,9 +32,7 @@ def test_get_mask():
     assert mask.shape == (12, 5000)
     assert np.unique(mask).tolist() == [0, 1]
     assert mask.sum(axis=1).tolist() == [1200] * 12
-    intervals = intervals = get_mask(
-        (12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="intervals"
-    )
+    intervals = intervals = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="intervals")
     assert intervals == [
         [200, 300],
         [600, 700],
@@ -125,13 +123,9 @@ def test_rdheader():
         == rdheader(header_lines).__dict__
         == wfdb.rdheader(str(sample_path).replace(".hea", "")).__dict__
     )
-    with pytest.raises(
-        FileNotFoundError, match="file `not_exist_file\\.hea` not found"
-    ):
+    with pytest.raises(FileNotFoundError, match="file `not_exist_file\\.hea` not found"):
         rdheader("not_exist_file")
-    with pytest.raises(
-        TypeError, match="header_data must be str or sequence of str, but got"
-    ):
+    with pytest.raises(TypeError, match="header_data must be str or sequence of str, but got"):
         rdheader(1)
 
 
@@ -154,9 +148,7 @@ def test_ensure_siglen():
     values = DEFAULTS.RNG.normal(size=(num_leads, 4629))
     new_values = ensure_siglen(values, 5000, fmt="lead_first")
     assert new_values.shape == (num_leads, 5000)
-    assert np.allclose(
-        new_values[:, (5000 - 4629) // 2 : (5000 - 4629) // 2 + 4629], values
-    )
+    assert np.allclose(new_values[:, (5000 - 4629) // 2 : (5000 - 4629) // 2 + 4629], values)
     new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt="lead_first")
     assert new_values.shape == (
         math.ceil((4629 - 4000) / (0.1 * 4000)),
@@ -169,9 +161,7 @@ def test_ensure_siglen():
     values = DEFAULTS.RNG.normal(size=(4629, num_leads))
     new_values = ensure_siglen(values, 3000, fmt="channel_last")
     assert new_values.shape == (3000, num_leads)
-    assert np.allclose(
-        new_values, values[(4629 - 3000) // 2 : (4629 - 3000) // 2 + 3000]
-    )
+    assert np.allclose(new_values, values[(4629 - 3000) // 2 : (4629 - 3000) // 2 + 3000])
     new_values = ensure_siglen(values, 3000, fmt="channel_last", tolerance=0.1)
     assert new_values.shape == (math.ceil((4629 - 3000) / (0.1 * 3000)), 3000, 12)
 
@@ -195,9 +185,7 @@ def test_masks_to_waveforms():
     ]
     assert waveforms["lead_1"][0].duration_ == 50
 
-    new_waveforms = masks_to_waveforms(
-        masks, class_map=class_map, fs=500, leads=["III", "aVR"]
-    )
+    new_waveforms = masks_to_waveforms(masks, class_map=class_map, fs=500, leads=["III", "aVR"])
     assert new_waveforms.keys() == {"III", "aVR"}
     assert new_waveforms["III"] == waveforms["lead_1"]
     assert new_waveforms["aVR"] == waveforms["lead_2"]
@@ -210,12 +198,8 @@ def test_masks_to_waveforms():
     assert new_waveforms.keys() == {"lead_1"}
     assert new_waveforms["lead_1"] == waveforms["lead_1"]
 
-    with pytest.raises(
-        ValueError, match="masks should be of dim 1 or 2, but got a 3d array"
-    ):
-        masks_to_waveforms(
-            np.ones((2, 12, 500), dtype=int), class_map=class_map, fs=500
-        )
+    with pytest.raises(ValueError, match="masks should be of dim 1 or 2, but got a 3d array"):
+        masks_to_waveforms(np.ones((2, 12, 500), dtype=int), class_map=class_map, fs=500)
 
 
 def test_uniform():
@@ -225,23 +209,19 @@ def test_uniform():
 
 
 def test_stratified_train_test_split():
-    sample_data_path = (
-        Path(__file__).parents[2] / "sample-data" / "cinc2022_training_data.csv"
-    )
+    sample_data_path = Path(__file__).parents[2] / "sample-data" / "cinc2022_training_data.csv"
     df_sample = pd.read_csv(sample_data_path)
     cols = ["Murmur", "Age", "Sex", "Pregnancy status", "Outcome"]
     test_ratio = 0.2
-    df_train, df_test = stratified_train_test_split(
-        df_sample, cols, test_ratio=test_ratio
-    )
+    df_train, df_test = stratified_train_test_split(df_sample, cols, test_ratio=test_ratio)
     for col in cols:
         classes = df_sample[col].apply(str).unique()
         for c in classes:
             if len(df_sample[df_sample[col].apply(str) == c]) < 20:
                 continue
-            assert len(df_test[df_test[col].apply(str) == c]) / len(
-                df_sample[df_sample[col].apply(str) == c]
-            ) == pytest.approx(test_ratio, abs=0.03)
+            assert len(df_test[df_test[col].apply(str) == c]) / len(df_sample[df_sample[col].apply(str) == c]) == pytest.approx(
+                test_ratio, abs=0.03
+            )
 
     extra_col = "extra_col"
     df_sample.loc[df_sample.index, extra_col] = [1 for _ in range(len(df_sample))]
@@ -250,9 +230,7 @@ def test_stratified_train_test_split():
         RuntimeWarning,
         match="invalid columns: \\['extra_col'\\], each of which has classes with only one member \\(row\\)",
     ):
-        stratified_train_test_split(
-            df_sample, cols + [extra_col], test_ratio=test_ratio
-        )
+        stratified_train_test_split(df_sample, cols + [extra_col], test_ratio=test_ratio)
 
 
 def test_cls_to_bin():
@@ -279,9 +257,7 @@ def test_cls_to_bin():
     cls_array = DEFAULTS.RNG_randint(0, 1, size=(siglen, num_classes))
     bin_array = cls_to_bin(cls_array, num_classes=num_classes)
     assert (bin_array == cls_array).all()
-    with pytest.raises(
-        AssertionError, match="`cls_array` should be 1D if num_classes is not specified"
-    ):
+    with pytest.raises(AssertionError, match="`cls_array` should be 1D if num_classes is not specified"):
         cls_to_bin(cls_array)
 
 
@@ -294,29 +270,17 @@ def test_generate_weight_mask():
     reduction = 1
     radius = 0.8
     boundary_weight = 5.0
-    weight_mask = generate_weight_mask(
-        target_mask, fg_weight, fs, reduction, radius, boundary_weight, plot=True
-    )
+    weight_mask = generate_weight_mask(target_mask, fg_weight, fs, reduction, radius, boundary_weight, plot=True)
 
     assert weight_mask.shape == (50000,)
     reduction = 10
-    weight_mask_reduced = generate_weight_mask(
-        target_mask, fg_weight, fs, reduction, radius, boundary_weight
-    )
+    weight_mask_reduced = generate_weight_mask(target_mask, fg_weight, fs, reduction, radius, boundary_weight)
     assert weight_mask_reduced.shape == (5000,)
-    assert weight_mask_reduced.sum() * reduction == pytest.approx(
-        weight_mask.sum(), rel=1e-2
-    )
+    assert weight_mask_reduced.sum() * reduction == pytest.approx(weight_mask.sum(), rel=1e-2)
 
     with pytest.raises(AssertionError, match="`target_mask` should be 1D"):
-        generate_weight_mask(
-            np.zeros((100, 500)), fg_weight, fs, reduction, radius, boundary_weight
-        )
+        generate_weight_mask(np.zeros((100, 500)), fg_weight, fs, reduction, radius, boundary_weight)
     with pytest.raises(AssertionError, match="`target_mask` should be binary"):
-        generate_weight_mask(
-            np.full((100,), 2), fg_weight, fs, reduction, radius, boundary_weight
-        )
-    with pytest.raises(
-        AssertionError, match="`reduction` should be a real number greater than 1"
-    ):
+        generate_weight_mask(np.full((100,), 2), fg_weight, fs, reduction, radius, boundary_weight)
+    with pytest.raises(AssertionError, match="`reduction` should be a real number greater than 1"):
         generate_weight_mask(target_mask, fg_weight, fs, 0.6, radius, boundary_weight)

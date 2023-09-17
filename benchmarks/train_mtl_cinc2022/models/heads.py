@@ -2,21 +2,16 @@
 """
 
 import warnings
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import torch.nn as nn
 import torch.nn.functional as F
-from torch import Tensor
-from torch import scalar_tensor
+from torch import Tensor, scalar_tensor
+
 from torch_ecg.cfg import CFG
 from torch_ecg.models._nets import MLP
+from torch_ecg.models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_nn import SizeMixin
-from torch_ecg.models.loss import (
-    AsymmetricLoss,
-    BCEWithLogitsWithClassWeightLoss,
-    FocalLoss,
-    MaskedBCEWithLogitsLoss,
-)
 
 
 class MultiTaskHead(nn.Module, SizeMixin):
@@ -125,19 +120,13 @@ class MultiTaskHead(nn.Module, SizeMixin):
                     labels["segmentation"].reshape(-1, labels["segmentation"].shape[0]),
                 )
                 out["total_extra_loss"] = (
-                    out["total_extra_loss"].to(dtype=out["segmentation_loss"].dtype)
-                    + out["segmentation_loss"]
+                    out["total_extra_loss"].to(dtype=out["segmentation_loss"].dtype) + out["segmentation_loss"]
                 )
         if "outcome" in self.heads:
             out["outcome"] = self.heads["outcome"](pooled_features)
             if labels is not None and labels.get("outcome", None) is not None:
-                out["outcome_loss"] = self.criteria["outcome"](
-                    out["outcome"], labels["outcome"]
-                )
-                out["total_extra_loss"] = (
-                    out["total_extra_loss"].to(dtype=out["outcome_loss"].dtype)
-                    + out["outcome_loss"]
-                )
+                out["outcome_loss"] = self.criteria["outcome"](out["outcome"], labels["outcome"])
+                out["total_extra_loss"] = out["total_extra_loss"].to(dtype=out["outcome_loss"].dtype) + out["outcome_loss"]
         return out
 
     def _setup_criterion(self, loss: str, loss_kw: Optional[dict] = None) -> None:

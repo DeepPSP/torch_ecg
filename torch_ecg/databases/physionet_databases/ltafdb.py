@@ -5,7 +5,7 @@ import math
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import wfdb
@@ -13,8 +13,7 @@ import wfdb
 from ...cfg import CFG
 from ...utils.misc import add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, PhysioNetDataBase, DataBaseInfo
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, DataBaseInfo, PhysioNetDataBase
 
 __all__ = [
     "LTAFDB",
@@ -109,14 +108,10 @@ class LTAFDB(PhysioNetDataBase):
             "(VT",
             "NOISE",  # additional, since head of each record are noisy
         ]  # others include "\x01 Aux", "M", "MB", "MISSB", "PSE"
-        self.rhythm_types_map = CFG(
-            {k.replace("(", ""): idx for idx, k in enumerate(self.rhythm_types)}
-        )
+        self.rhythm_types_map = CFG({k.replace("(", ""): idx for idx, k in enumerate(self.rhythm_types)})
         self.palette = kwargs.get("palette", None)
         if self.palette is None:
-            n_colors = len(
-                [k for k in self.rhythm_types_map.keys() if k not in ["N", "NOISE"]]
-            )
+            n_colors = len([k for k in self.rhythm_types_map.keys() if k not in ["N", "NOISE"]])
             colors = iter(cm.rainbow(np.linspace(0, 1, n_colors)))
             self.palette = CFG()
             for k in self.rhythm_types_map.keys():
@@ -166,9 +161,7 @@ class LTAFDB(PhysioNetDataBase):
         fs: Optional[Real] = None,
         return_fs: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
-        return super().load_data(
-            rec, leads, sampfrom, sampto, data_format, units, fs, return_fs
-        )
+        return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     def load_ann(
         self,
@@ -312,18 +305,11 @@ class LTAFDB(PhysioNetDataBase):
 
             simplified_fp.write_text(json.dumps(ann, ensure_ascii=False))
 
-        ann = CFG(
-            {
-                k: generalized_intervals_intersection(l_itv, [[sf, st]])
-                for k, l_itv in ann.items()
-            }
-        )
+        ann = CFG({k: generalized_intervals_intersection(l_itv, [[sf, st]]) for k, l_itv in ann.items()})
         ann = CFG({k: l_itv for k, l_itv in ann.items() if len(l_itv) > 0})
         if rhythm_format.lower() == "mask":
             tmp = deepcopy(ann)
-            ann = np.full(
-                shape=(st - sf,), fill_value=self.rhythm_types_map.N, dtype=int
-            )
+            ann = np.full(shape=(st - sf,), fill_value=self.rhythm_types_map.N, dtype=int)
             for rhythm, l_itv in tmp.items():
                 for itv in l_itv:
                     ann[itv[0] - sf : itv[1] - sf] = self.rhythm_types_map[rhythm]
@@ -555,10 +541,7 @@ class LTAFDB(PhysioNetDataBase):
         else:
             _ann = ann or CFG({k: [] for k in self.rhythm_types_map.keys()})
         # indices to time
-        _ann = {
-            k: [[itv[0] / self.fs, itv[1] / self.fs] for itv in l_itv]
-            for k, l_itv in _ann.items()
-        }
+        _ann = {k: [[itv[0] / self.fs, itv[1] / self.fs] for itv in l_itv] for k, l_itv in _ann.items()}
         if rpeak_inds is None and data is None:
             _rpeak = self.load_rpeak_indices(
                 rec,
@@ -580,9 +563,7 @@ class LTAFDB(PhysioNetDataBase):
             )
         else:
             _beat_ann = beat_ann or CFG({k: [] for k in self.beat_types})
-        _beat_ann = {  # indices to time
-            k: [i / self.fs for i in l_inds] for k, l_inds in _beat_ann.items()
-        }
+        _beat_ann = {k: [i / self.fs for i in l_inds] for k, l_inds in _beat_ann.items()}  # indices to time
 
         ann_plot_alpha = 0.2
         rpeaks_plot_alpha = 0.8
@@ -595,48 +576,30 @@ class LTAFDB(PhysioNetDataBase):
         for seg_idx in range(nb_lines):
             seg_data = _data[..., seg_idx * line_len : (seg_idx + 1) * line_len]
             secs = (np.arange(seg_data.shape[1]) + seg_idx * line_len) / self.fs
-            seg_ann = {
-                k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]])
-                for k, l_itv in _ann.items()
-            }
+            seg_ann = {k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]]) for k, l_itv in _ann.items()}
             seg_rpeaks = _rpeak[np.where((_rpeak >= secs[0]) & (_rpeak < secs[-1]))[0]]
-            seg_beat_ann = {
-                k: [i for i in l_inds if secs[0] <= i <= secs[-1]]
-                for k, l_inds in _beat_ann.items()
-            }
-            fig_sz_w = int(
-                round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs)
-            )
+            seg_beat_ann = {k: [i for i in l_inds if secs[0] <= i <= secs[-1]] for k, l_inds in _beat_ann.items()}
+            fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs))
             if same_range:
-                y_ranges = (
-                    np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
-                )
+                y_ranges = np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
             else:
                 y_ranges = np.max(np.abs(seg_data), axis=1) + 100
             fig_sz_h = 6 * y_ranges / 1500
-            fig, axes = plt.subplots(
-                nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
-            )
+            fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
             if nb_leads == 1:
                 axes = [axes]
             for idx in range(nb_leads):
-                axes[idx].plot(
-                    secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}"
-                )
+                axes[idx].plot(secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}")
                 axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
                 # NOTE that `Locator` has default `MAXTICKS` equal to 1000
                 if ticks_granularity >= 1:
                     axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                     axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                    axes[idx].grid(
-                        which="major", linestyle="-", linewidth="0.5", color="red"
-                    )
+                    axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
                 if ticks_granularity >= 2:
                     axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                     axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                    axes[idx].grid(
-                        which="minor", linestyle=":", linewidth="0.5", color="black"
-                    )
+                    axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
                 for k, l_itv in seg_ann.items():
                     if k in ["N", "NOISE"]:
                         continue
@@ -658,9 +621,7 @@ class LTAFDB(PhysioNetDataBase):
                 for k, l_t in seg_beat_ann.items():
                     for t in l_t:
                         x_pos = t + 0.05 if t + 0.05 < secs[-1] else t - 0.15
-                        axes[idx].text(
-                            x_pos, 0.65 * y_ranges[idx], k, color="black", fontsize=16
-                        )
+                        axes[idx].text(x_pos, 0.65 * y_ranges[idx], k, color="black", fontsize=16)
                 axes[idx].legend(loc="upper left")
                 axes[idx].set_xlim(secs[0], secs[-1])
                 axes[idx].set_ylim(-y_ranges[idx], y_ranges[idx])

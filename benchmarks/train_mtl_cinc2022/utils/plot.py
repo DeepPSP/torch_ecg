@@ -1,12 +1,11 @@
 """
 """
 
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
-
 
 __all__ = [
     "plot_spectrogram",

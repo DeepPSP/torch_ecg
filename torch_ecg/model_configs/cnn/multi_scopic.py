@@ -135,9 +135,7 @@ multi_scopic_leadwise.num_filters = [
 
 
 multi_scopic_block = CFG()
-multi_scopic_block.subsample_mode = (
-    "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
-)
+multi_scopic_block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 multi_scopic_block.bias = multi_scopic.bias
 multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer
 multi_scopic_block.kw_initializer = deepcopy(multi_scopic.kw_initializer)

@@ -53,9 +53,7 @@ class Resample(torch.nn.Module):
         self.fs = fs
         self.siglen = siglen
         self.inplace = inplace
-        assert (
-            sum([bool(self.fs), bool(self.siglen)]) == 1
-        ), "one and only one of `fs` and `siglen` should be set"
+        assert sum([bool(self.fs), bool(self.siglen)]) == 1, "one and only one of `fs` and `siglen` should be set"
         if self.dst_fs is not None:
             assert self.fs is not None, "if `dst_fs` is set, `fs` should also be set"
             self.scale_factor = self.dst_fs / self.fs

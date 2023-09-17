@@ -6,14 +6,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from torch_ecg.components.loggers import (
-    BaseLogger,
-    TxtLogger,
-    CSVLogger,
-    TensorBoardXLogger,
-    LoggerManager,
-)
-
+from torch_ecg.components.loggers import BaseLogger, CSVLogger, LoggerManager, TensorBoardXLogger, TxtLogger
 
 _LOG_DIR = Path(__file__).parents[1] / "logs"
 

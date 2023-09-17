@@ -1,12 +1,11 @@
 """
 """
 
-from typing import Union, Optional
+from typing import Optional, Union
 
-import pywt
 import numpy as np
+import pywt
 from easydict import EasyDict as ED
-
 
 __all__ = [
     "get_dwt_features",
@@ -14,9 +13,7 @@ __all__ = [
 ]
 
 
-def get_dwt_features(
-    signal: np.ndarray, fs: int, config: Optional[dict] = None
-) -> np.ndarray:
+def get_dwt_features(signal: np.ndarray, fs: int, config: Optional[dict] = None) -> np.ndarray:
     """
 
     compute the discrete wavelet transform (DWT) features using Springer's algorithm
@@ -47,16 +44,12 @@ def get_dwt_features(
     cfg.update(config or {})
     siglen = len(signal)
 
-    detail_coefs = pywt.downcoef(
-        "d", signal, wavelet=cfg.wavelet_name, level=cfg.wavelet_level
-    )
+    detail_coefs = pywt.downcoef("d", signal, wavelet=cfg.wavelet_name, level=cfg.wavelet_level)
     dwt_features = _wkeep1(np.repeat(detail_coefs, 2**cfg.wavelet_level), siglen)
     return dwt_features
 
 
-def get_full_dwt_features(
-    signal: np.ndarray, fs: int, config: Optional[dict] = None
-) -> np.ndarray:
+def get_full_dwt_features(signal: np.ndarray, fs: int, config: Optional[dict] = None) -> np.ndarray:
     """
 
     compute the full DWT features using Springer's algorithm
@@ -87,9 +80,7 @@ def get_full_dwt_features(
     cfg.update(config or {})
     siglen = len(signal)
 
-    detail_coefs = pywt.wavedec(signal, cfg.wavelet_name, level=cfg.wavelet_level)[
-        :0:-1
-    ]
+    detail_coefs = pywt.wavedec(signal, cfg.wavelet_name, level=cfg.wavelet_level)[:0:-1]
     dwt_features = np.zeros((cfg.wavelet_level, siglen), dtype=signal.dtype)
     for i, detail_coef in enumerate(detail_coefs):
         dwt_features[i] = _wkeep1(np.repeat(detail_coef, 2 ** (i + 1)), siglen)

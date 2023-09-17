@@ -27,9 +27,7 @@ CPSC2019TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
 CPSC2019TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 CPSC2019TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 
-CPSC2019TrainCfg.bias_thr = (
-    0.075 * CPSC2019TrainCfg.fs
-)  # keep the same with `THR` in `cpsc2019_score.py`
+CPSC2019TrainCfg.bias_thr = 0.075 * CPSC2019TrainCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 CPSC2019TrainCfg.skip_dist = 0.5 * CPSC2019TrainCfg.fs
@@ -78,9 +76,7 @@ CPSC2019TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimi
 CPSC2019TrainCfg.learning_rate = 1e-3  # 1e-4
 CPSC2019TrainCfg.lr = CPSC2019TrainCfg.learning_rate
 
-CPSC2019TrainCfg.lr_scheduler = (
-    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
-)
+CPSC2019TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 CPSC2019TrainCfg.lr_step_size = 50
 CPSC2019TrainCfg.lr_gamma = 0.1
 CPSC2019TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments

@@ -12,11 +12,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.model_configs import (
-    ECG_SEQ_LAB_NET_CONFIG,
-    ECG_SUBTRACT_UNET_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
-)
+from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG, ECG_SUBTRACT_UNET_CONFIG, ECG_UNET_VANILLA_CONFIG
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 __all__ = [

@@ -6,11 +6,10 @@ import re
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import MutableMapping, Optional, Any, Union
+from typing import Any, MutableMapping, Optional, Union
 
 import numpy as np
 import torch
-
 
 __all__ = [
     "CFG",
@@ -65,10 +64,7 @@ class CFG(dict):
         # Class attributes
         exclude_fields = ["update", "pop"]
         for k in self.__class__.__dict__:
-            if (
-                not (k.startswith("__") and k.endswith("__"))
-                and k not in exclude_fields
-            ):
+            if not (k.startswith("__") and k.endswith("__")) and k not in exclude_fields:
                 setattr(self, k, getattr(self, k))
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -204,9 +200,7 @@ DEFAULTS.str_dtype = str(DEFAULTS.DTYPE.TORCH).replace("torch.", "")
 DEFAULTS.np_dtype = np.dtype(DEFAULTS.str_dtype)
 DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH
 
-DEFAULTS.device = (
-    torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-)
+DEFAULTS.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 DEFAULTS.eps = 1e-7
 
@@ -266,9 +260,7 @@ def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> None:
         try:
             _dtype = dtype.__name__
         except AttributeError:
-            raise TypeError(
-                f"`dtype` must be a str or np.dtype or torch.dtype, got {type(dtype)}"
-            )
+            raise TypeError(f"`dtype` must be a str or np.dtype or torch.dtype, got {type(dtype)}")
     assert _dtype in _dtypes, f"`dtype` must be one of {_dtypes}, got {_dtype}"
     DEFAULTS.DTYPE = DTYPE(_dtype)
     DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH

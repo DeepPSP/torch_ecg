@@ -5,17 +5,8 @@ from copy import deepcopy
 
 import torch
 
-from torch_ecg.models.cnn.mobilenet import (
-    MobileNetV1,
-    MobileNetV2,
-    MobileNetV3,
-)
-from torch_ecg.model_configs.cnn.mobilenet import (
-    mobilenet_v1_vanilla,
-    mobilenet_v2_vanilla,
-    mobilenet_v3_small,
-)
-
+from torch_ecg.model_configs.cnn.mobilenet import mobilenet_v1_vanilla, mobilenet_v2_vanilla, mobilenet_v3_small
+from torch_ecg.models.cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
 
 IN_CHANNELS = 12
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,9 +20,7 @@ def test_mobilenet():
     model = MobileNetV1(in_channels=IN_CHANNELS, **config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[-1], batch_size=inp.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
     assert model.in_channels == IN_CHANNELS
     assert isinstance(model.doi, list)
 
@@ -39,9 +28,7 @@ def test_mobilenet():
     model = MobileNetV2(in_channels=IN_CHANNELS, **config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[-1], batch_size=inp.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
     assert model.in_channels == IN_CHANNELS
     assert isinstance(model.doi, list)
 
@@ -49,8 +36,6 @@ def test_mobilenet():
     model = MobileNetV3(in_channels=IN_CHANNELS, **config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[-1], batch_size=inp.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
     assert model.in_channels == IN_CHANNELS
     assert isinstance(model.doi, list)

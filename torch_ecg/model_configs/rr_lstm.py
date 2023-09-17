@@ -4,8 +4,7 @@
 from copy import deepcopy
 
 from ..cfg import CFG
-from .attn import non_local, squeeze_excitation, global_context
-
+from .attn import global_context, non_local, squeeze_excitation
 
 __all__ = [
     "RR_AF_VANILLA_CONFIG",

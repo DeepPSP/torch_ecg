@@ -9,7 +9,6 @@ import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
 
-
 __all__ = [
     "BaselineRemove",
 ]
@@ -37,23 +36,14 @@ class BaselineRemove(torch.nn.Module):
 
     __name__ = "BaselineRemove"
 
-    def __init__(
-        self,
-        fs: Real,
-        window1: float = 0.2,
-        window2: float = 0.6,
-        inplace: bool = True,
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, fs: Real, window1: float = 0.2, window2: float = 0.6, inplace: bool = True, **kwargs: Any) -> None:
         super().__init__()
         self.fs = fs
         self.window1 = window1
         self.window2 = window2
         if self.window2 < self.window1:
             self.window1, self.window2 = self.window2, self.window1
-            warnings.warn(
-                "values of `window1` and `window2` are switched", RuntimeWarning
-            )
+            warnings.warn("values of `window1` and `window2` are switched", RuntimeWarning)
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:

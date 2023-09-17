@@ -2,30 +2,22 @@
 """
 
 import json
-from random import shuffle, sample
 from copy import deepcopy
-from typing import Optional, List, Sequence, Dict
+from random import sample, shuffle
+from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 import torch
+from cfg import BaseCfg, ModelCfg, TrainCfg  # noqa: F401
+from data_reader import CINC2022Reader, PCGDataBase
+from inputs import InputConfig, MelSpectrogramInput, MFCCInput, SpectralInput, SpectrogramInput, WaveformInput  # noqa: F401
 from torch.utils.data.dataset import Dataset
+from tqdm.auto import tqdm
+
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import ensure_siglen, stratified_train_test_split
-from torch_ecg._preprocessors import PreprocManager
-from tqdm.auto import tqdm
-
-from cfg import BaseCfg, TrainCfg, ModelCfg  # noqa: F401
-from inputs import (  # noqa: F401
-    InputConfig,
-    WaveformInput,
-    SpectrogramInput,
-    MelSpectrogramInput,
-    MFCCInput,
-    SpectralInput,
-)  # noqa: F401
-from data_reader import PCGDataBase, CINC2022Reader
-
 
 __all__ = [
     "CinC2022Dataset",
@@ -37,9 +29,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
 
     __name__ = "CinC2022Dataset"
 
-    def __init__(
-        self, config: CFG, task: str, training: bool = True, lazy: bool = True
-    ) -> None:
+    def __init__(self, config: CFG, task: str, training: bool = True, lazy: bool = True) -> None:
         """ """
         super().__init__()
         self.config = CFG(deepcopy(config))
@@ -53,12 +43,8 @@ class CinC2022Dataset(Dataset, ReprMixin):
         )
 
         self.subjects = self._train_test_split()
-        df = self.reader.df_stats[
-            self.reader.df_stats["Patient ID"].isin(self.subjects)
-        ]
-        self.records = list_sum(
-            [self.reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()]
-        )
+        df = self.reader.df_stats[self.reader.df_stats["Patient ID"].isin(self.subjects)]
+        self.records = list_sum([self.reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()])
         if self.config.get("entry_test_flag", False):
             self.records = sample(self.records, int(len(self.records) * 0.2))
         if self.training:
@@ -94,12 +80,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
     def __set_task(self, task: str, lazy: bool) -> None:
         """ """
         assert task.lower() in TrainCfg.tasks, f"illegal task \042{task}\042"
-        if (
-            hasattr(self, "task")
-            and self.task == task.lower()
-            and self.cache is not None
-            and len(self.cache["waveforms"]) > 0
-        ):
+        if hasattr(self, "task") and self.task == task.lower() and self.cache is not None and len(self.cache["waveforms"]) > 0:
             return
         self.task = task.lower()
         self.siglen = int(self.config[self.task].fs * self.config[self.task].siglen)
@@ -108,17 +89,11 @@ class CinC2022Dataset(Dataset, ReprMixin):
         self.lazy = lazy
 
         if self.task in ["classification"]:
-            self.fdr = FastDataReader(
-                self.reader, self.records, self.config, self.task, self.ppm
-            )
+            self.fdr = FastDataReader(self.reader, self.records, self.config, self.task, self.ppm)
         elif self.task in ["segmentation"]:
-            self.fdr = FastDataReader(
-                self.reader, self.records, self.config, self.task, self.seg_ppm
-            )
+            self.fdr = FastDataReader(self.reader, self.records, self.config, self.task, self.seg_ppm)
         elif self.task in ["multi_task"]:
-            self.fdr = MutiTaskFastDataReader(
-                self.reader, self.records, self.config, self.task, self.ppm
-            )
+            self.fdr = MutiTaskFastDataReader(self.reader, self.records, self.config, self.task, self.ppm)
         else:
             raise ValueError("Illegal task")
 
@@ -145,9 +120,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
         """ """
         self.__set_task(self.task, lazy=False)
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """ """
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
@@ -155,9 +128,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
 
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
         test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
-        aux_train_file = (
-            BaseCfg.project_dir / "utils" / f"train_ratio_{_train_ratio}.json"
-        )
+        aux_train_file = BaseCfg.project_dir / "utils" / f"train_ratio_{_train_ratio}.json"
         aux_test_file = BaseCfg.project_dir / "utils" / f"test_ratio_{_test_ratio}.json"
 
         if not force_recompute and train_file.exists() and test_file.exists():
@@ -265,10 +236,7 @@ class FastDataReader(ReprMixin, Dataset):
                 )
             else:
                 label = np.array(
-                    [
-                        self.config[self.task].class_map[label]
-                        for _ in range(n_segments)
-                    ],
+                    [self.config[self.task].class_map[label] for _ in range(n_segments)],
                     dtype=int,
                 )
             out = {"waveforms": waveforms, "murmur": label}
@@ -282,10 +250,7 @@ class FastDataReader(ReprMixin, Dataset):
                     )
                 else:
                     outcome = np.array(
-                        [
-                            self.config[self.task].outcome_map[outcome]
-                            for _ in range(n_segments)
-                        ],
+                        [self.config[self.task].outcome_map[outcome] for _ in range(n_segments)],
                         dtype=int,
                     )
                 out["outcome"] = outcome
@@ -365,9 +330,7 @@ class MutiTaskFastDataReader(ReprMixin, Dataset):
         label = self.reader.load_ann(rec)
         if self.config[self.task].loss["murmur"] != "CrossEntropyLoss":
             label = (
-                np.isin(self.config[self.task].classes, label)
-                .astype(self.dtype)[np.newaxis, ...]
-                .repeat(n_segments, axis=0)
+                np.isin(self.config[self.task].classes, label).astype(self.dtype)[np.newaxis, ...].repeat(n_segments, axis=0)
             )
         else:
             label = np.array(
@@ -389,10 +352,7 @@ class MutiTaskFastDataReader(ReprMixin, Dataset):
                 )
             else:
                 outcome = np.array(
-                    [
-                        self.config[self.task].outcome_map[outcome]
-                        for _ in range(n_segments)
-                    ],
+                    [self.config[self.task].outcome_map[outcome] for _ in range(n_segments)],
                     dtype=int,
                 )
             out_tensors["outcome"] = outcome

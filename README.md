@@ -128,7 +128,7 @@ Augmenters can be stochastic along the batch dimension and (or) the channel dime
 :point_right: [Back to TOC](#torch_ecg)
 
 </details>
-  
+
 ### [Preprocessors](torch_ecg/preprocessors)
 
 <details>

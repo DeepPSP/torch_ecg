@@ -7,7 +7,7 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 import torch
 from torch import Tensor
 
-from ..utils.misc import default_class_repr, add_docstring
+from ..utils.misc import add_docstring, default_class_repr
 from .base import Augmenter, _augmenter_forward_doc
 from .baseline_wander import BaselineWanderAugmenter
 from .label_smooth import LabelSmooth
@@ -16,7 +16,6 @@ from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress
-
 
 __all__ = [
     "AugmenterManager",
@@ -63,9 +62,7 @@ class AugmenterManager(torch.nn.Module):
 
     __name__ = "AugmenterManager"
 
-    def __init__(
-        self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False
-    ) -> None:
+    def __init__(self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False) -> None:
         super().__init__()
         self.random = random
         self._augmenters = list(augs)
@@ -167,9 +164,7 @@ class AugmenterManager(torch.nn.Module):
         if self.random:
             ordering = sample(ordering, len(ordering))
         for idx in ordering:
-            sig, label, *extra_tensors = self.augmenters[idx](
-                sig, label, *extra_tensors, **kwargs
-            )
+            sig, label, *extra_tensors = self.augmenters[idx](sig, label, *extra_tensors, **kwargs)
         return (sig, label, *extra_tensors)
 
     @property
@@ -182,9 +177,7 @@ class AugmenterManager(torch.nn.Module):
         indent = 4 * " "
         s = (
             f"augmenters = [\n{indent}"
-            + f",\n{2*indent}".join(
-                default_class_repr(aug, depth=2) for aug in self.augmenters
-            )
+            + f",\n{2*indent}".join(default_class_repr(aug, depth=2) for aug in self.augmenters)
             + f"{indent}\n]"
         )
         return s
@@ -240,30 +233,21 @@ class AugmenterManager(torch.nn.Module):
         """
         if self.random:
             warnings.warn(
-                "The augmenters are applied in random order, "
-                "rearranging the augmenters will not take effect.",
+                "The augmenters are applied in random order, " "rearranging the augmenters will not take effect.",
                 RuntimeWarning,
             )
         _mapping = {  # built-in augmenters
             "".join([w.capitalize() for w in k.split("_")]): k
-            for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(
-                ","
-            )
+            for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
         }
         _mapping.update({"BaselineWanderAugmenter": "baseline_wander"})
         _mapping.update({v: k for k, v in _mapping.items()})
         for k in new_ordering:
             if k not in _mapping:
                 # allow custom augmenters
-                assert k in [
-                    am.__class__.__name__ for am in self._augmenters
-                ], f"Unknown augmenter name: `{k}`"
+                assert k in [am.__class__.__name__ for am in self._augmenters], f"Unknown augmenter name: `{k}`"
                 _mapping.update({k: k})
         assert len(new_ordering) == len(set(new_ordering)), "Duplicate augmenter names."
-        assert len(new_ordering) == len(
-            self._augmenters
-        ), "Number of augmenters mismatch."
+        assert len(new_ordering) == len(self._augmenters), "Number of augmenters mismatch."
 
-        self._augmenters.sort(
-            key=lambda aug: new_ordering.index(_mapping[aug.__class__.__name__])
-        )
+        self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__class__.__name__]))

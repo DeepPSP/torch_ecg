@@ -3,7 +3,7 @@
 from collections import defaultdict
 from numbers import Real
 from pathlib import Path
-from typing import Any, Optional, Union, Sequence, List, Dict, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -12,13 +12,8 @@ import wfdb
 from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
-from ...utils import (
-    add_docstring,
-    get_record_list_recursive3,
-    generalized_intervals_intersection,
-)
-from ..base import PhysioNetDataBase, DataBaseInfo, PSGDataBaseMixin
-
+from ...utils import add_docstring, generalized_intervals_intersection, get_record_list_recursive3
+from ..base import DataBaseInfo, PhysioNetDataBase, PSGDataBaseMixin
 
 __all__ = [
     "CINC2018",
@@ -154,15 +149,9 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         for k in records:
             df_tmp = pd.DataFrame(sorted(records[k]), columns=["path"])
             df_tmp["subset"] = k
-            self._df_records = pd.concat(
-                [self._df_records, df_tmp], axis=0, ignore_index=True
-            )
-        self._df_records["record"] = self._df_records["path"].apply(
-            lambda x: Path(x).stem
-        )
-        self._df_records["subject_id"] = self._df_records["record"].apply(
-            self.get_subject_id
-        )
+            self._df_records = pd.concat([self._df_records, df_tmp], axis=0, ignore_index=True)
+        self._df_records["record"] = self._df_records["path"].apply(lambda x: Path(x).stem)
+        self._df_records["subject_id"] = self._df_records["record"].apply(self.get_subject_id)
         self._df_records.set_index("record", inplace=True)
 
         self._df_records["fs"] = None
@@ -182,9 +171,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
                 self._df_records.at[idx, "available_signals"] = header.sig_name
 
         if self._subset is not None:
-            self._df_records = self._df_records[
-                self._df_records["subset"] == self._subset
-            ]
+            self._df_records = self._df_records[self._df_records["subset"] == self._subset]
 
         if self._subsample is not None:
             if self._subset is None:
@@ -195,9 +182,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
                         df_tmp = pd.concat(
                             [
                                 df_tmp,
-                                self._df_records[
-                                    self._df_records["subset"] == k
-                                ].sample(
+                                self._df_records[self._df_records["subset"] == k].sample(
                                     size, random_state=DEFAULTS.SEED, replace=False
                                 ),
                             ],
@@ -209,9 +194,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
                         len(self._df_records),
                         max(1, int(round(self._subsample * len(self._df_records)))),
                     )
-                    df_tmp = self._df_records.sample(
-                        size, random_state=DEFAULTS.SEED, replace=False
-                    )
+                    df_tmp = self._df_records.sample(size, random_state=DEFAULTS.SEED, replace=False)
                 del self._df_records
                 self._df_records = df_tmp.copy()
                 del df_tmp
@@ -221,17 +204,11 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
                 if size > 0:
-                    self._df_records = self._df_records.sample(
-                        size, random_state=DEFAULTS.SEED, replace=False
-                    )
+                    self._df_records = self._df_records.sample(size, random_state=DEFAULTS.SEED, replace=False)
 
         self._all_records = self._df_records.index.tolist()
-        self.training_records = self._df_records[
-            self._df_records["subset"] == "training"
-        ].index.tolist()
-        self.test_records = self._df_records[
-            self._df_records["subset"] == "test"
-        ].index.tolist()
+        self.training_records = self._df_records[self._df_records["subset"] == "training"].index.tolist()
+        self.test_records = self._df_records[self._df_records["subset"] == "test"].index.tolist()
 
     def get_subject_id(self, rec: str) -> int:
         """Attach a unique subject ID for the record.
@@ -369,9 +346,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         chn = available_signals if channel is None else channel
         if isinstance(chn, str):
             chn = [chn]
-        assert set(chn).issubset(
-            set(available_signals)
-        ), f"`channel` should be one of `{available_signals}`, but got `{chn}`"
+        assert set(chn).issubset(set(available_signals)), f"`channel` should be one of `{available_signals}`, but got `{chn}`"
 
         allowed_data_format = [
             "channel_first",
@@ -385,12 +360,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             data_format.lower() in allowed_data_format
         ), f"`data_format` should be one of `{allowed_data_format}`, but got `{data_format}`"
         if len(chn) > 1:
-            assert data_format.lower() in [
-                "channel_first",
-                "lead_first",
-                "channel_last",
-                "lead_last",
-            ], (
+            assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], (
                 "`data_format` should be one of "
                 "`['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
                 f"when the passed number of `channel` is larger than 1, but got `{data_format}`"
@@ -400,9 +370,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         wfdb_header = wfdb.rdheader(frp)
         sampfrom = max(0, sampfrom or 0)
         sampto = min(sampto or wfdb_header.sig_len, wfdb_header.sig_len)
-        wfdb_rec = wfdb.rdrecord(
-            frp, sampfrom=sampfrom, sampto=sampto, channel_names=chn, physical=physical
-        )
+        wfdb_rec = wfdb.rdrecord(frp, sampfrom=sampfrom, sampto=sampto, channel_names=chn, physical=physical)
 
         ret_data = wfdb_rec.p_signal.T if physical else wfdb_rec.d_signal.T
 
@@ -470,9 +438,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
 
         """
         available_signals = self.get_available_signals(rec)
-        assert (
-            "ECG" in available_signals
-        ), f"the record `{rec}` does not have ECG signal"
+        assert "ECG" in available_signals, f"the record `{rec}` does not have ECG signal"
         allowed_units = ["mv", "uv", "μv", "muv"]
         assert (
             units is None or units.lower() in allowed_units
@@ -556,48 +522,31 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         for aux_note, sample in zip(wfdb_ann.aux_note, wfdb_ann.sample.tolist()):
             if aux_note in self.sleep_stage_names:
                 if current_sleep_stage is not None:
-                    sleep_stages[current_sleep_stage].append(
-                        [current_sleep_stage_start, sample]
-                    )
+                    sleep_stages[current_sleep_stage].append([current_sleep_stage_start, sample])
                 current_sleep_stage = aux_note
                 current_sleep_stage_start = sample
             else:
                 if "(" in aux_note:
                     current_arousal_start = sample
                 else:
-                    arousals[aux_note.strip(")")].append(
-                        [current_arousal_start, sample]
-                    )
+                    arousals[aux_note.strip(")")].append([current_arousal_start, sample])
         siglen = self.get_siglen(rec)
         if current_sleep_stage_start < siglen:
-            sleep_stages[current_sleep_stage].append(
-                [current_sleep_stage_start, siglen]
-            )
+            sleep_stages[current_sleep_stage].append([current_sleep_stage_start, siglen])
         sampfrom = max(0, sampfrom or 0)
         sampto = min(sampto or siglen, siglen)
         sleep_stages = {
-            k: generalized_intervals_intersection(
-                v, [[sampfrom, sampto]], drop_degenerate=True
-            )
+            k: generalized_intervals_intersection(v, [[sampfrom, sampto]], drop_degenerate=True)
             for k, v in sleep_stages.items()
         }
         sleep_stages = {k: v for k, v in sleep_stages.items() if len(v) > 0}
         arousals = {
-            k: generalized_intervals_intersection(
-                v, [[sampfrom, sampto]], drop_degenerate=True
-            )
-            for k, v in arousals.items()
+            k: generalized_intervals_intersection(v, [[sampfrom, sampto]], drop_degenerate=True) for k, v in arousals.items()
         }
         arousals = {k: v for k, v in arousals.items() if len(v) > 0}
         if not keep_original:
-            sleep_stages = {
-                k: [[s - sampfrom, e - sampfrom] for s, e in v]
-                for k, v in sleep_stages.items()
-            }
-            arousals = {
-                k: [[s - sampfrom, e - sampfrom] for s, e in v]
-                for k, v in arousals.items()
-            }
+            sleep_stages = {k: [[s - sampfrom, e - sampfrom] for s, e in v] for k, v in sleep_stages.items()}
+            arousals = {k: [[s - sampfrom, e - sampfrom] for s, e in v] for k, v in arousals.items()}
         return {
             "sleep_stages": sleep_stages,
             "arousals": arousals,

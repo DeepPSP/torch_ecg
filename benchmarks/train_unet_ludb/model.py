@@ -35,9 +35,7 @@ class ECG_UNET_LUDB(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_LUDB"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -53,9 +51,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             model_config.update(deepcopy(config[config.model_name]))
             ModelCfg.update(deepcopy(config))
         _inv_class_map = {v: k for k, v in ModelCfg.class_map.items()}
-        self._mask_map = CFG(
-            {k: _inv_class_map[v] for k, v in ModelCfg.mask_class_map.items()}
-        )
+        self._mask_map = CFG({k: _inv_class_map[v] for k, v in ModelCfg.mask_class_map.items()})
         super().__init__(ModelCfg.mask_classes, n_leads, model_config)
 
     @torch.no_grad()

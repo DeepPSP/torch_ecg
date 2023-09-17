@@ -15,12 +15,11 @@ References
 
 from numbers import Real
 
+import biosppy.signals.ecg as BSE
 import numpy as np
 from wfdb.processing.qrs import GQRS, XQRS  # noqa: F401
 from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
-import biosppy.signals.ecg as BSE
-
 
 __all__ = [
     "xqrs_detect",

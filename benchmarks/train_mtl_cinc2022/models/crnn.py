@@ -2,24 +2,21 @@
 """
 
 from copy import deepcopy
-from typing import Union, Optional, Any, Dict
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
-from torch import Tensor
+from cfg import ModelCfg
 from einops import rearrange
+from outputs import CINC2022Outputs
+from torch import Tensor
+
 from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
 from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.components.outputs import (
-    ClassificationOutput,
-    SequenceLabellingOutput,
-)
 from torch_ecg.utils import add_docstring
 
-from cfg import ModelCfg
-from outputs import CINC2022Outputs
 from .heads import MultiTaskHead
-
 
 __all__ = ["CRNN_CINC2022"]
 
@@ -241,9 +238,7 @@ class CRNN_CINC2022(ECG_CRNN):
                 pred = torch.argmax(prob, dim=-1)
             else:
                 prob = self.sigmoid(forward_output["segmentation"])
-                pred = (prob > seg_thr).int() * (
-                    prob == prob.max(dim=-1, keepdim=True).values
-                ).int()
+                pred = (prob > seg_thr).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
             prob = prob.cpu().detach().numpy()
             pred = pred.cpu().detach().numpy()
             segmentation_output = SequenceLabellingOutput(

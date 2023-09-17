@@ -4,8 +4,8 @@ basic building blocks, for 1d signal (time series)
 
 import warnings
 from copy import deepcopy
-from itertools import repeat
 from inspect import isclass
+from itertools import repeat
 from math import sqrt
 from numbers import Real
 from typing import Any, List, Optional, Sequence, Tuple, Union
@@ -19,14 +19,9 @@ from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
-from ..utils.misc import (
-    list_sum,
-    get_required_args,
-    get_kwargs,
-    add_docstring,
-)
-from ..utils.utils_nn import SizeMixin
+from ..utils.misc import add_docstring, get_kwargs, get_required_args, list_sum
 from ..utils.utils_nn import (
+    SizeMixin,
     compute_avgpool_output_shape,
     compute_conv_output_shape,
     compute_maxpool_output_shape,
@@ -126,9 +121,7 @@ Activations.softmax = nn.Softmax
 # Activations.linear = None
 
 
-def get_activation(
-    act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None
-) -> Optional[nn.Module]:
+def get_activation(act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None) -> Optional[nn.Module]:
     """Get the class or instance of the activation.
 
     Parameters
@@ -196,9 +189,7 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 # problem: parameters of different normalizations are different
 
 
-def get_normalization(
-    norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None
-) -> Optional[nn.Module]:
+def get_normalization(norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None) -> Optional[nn.Module]:
     """Get the class or instance of the normalization.
 
     Parameters
@@ -347,14 +338,10 @@ class Bn_Activation(nn.Sequential, SizeMixin):
             if bn_cls in [nn.BatchNorm1d, nn.InstanceNorm1d]:
                 kw_norm["num_features"] = self.__num_features
             elif bn_cls == nn.GroupNorm:
-                assert (
-                    "num_groups" in kw_norm
-                ), "`num_groups` must be specified for `GroupNorm`"
+                assert "num_groups" in kw_norm, "`num_groups` must be specified for `GroupNorm`"
                 kw_norm["num_channels"] = self.__num_features
             elif bn_cls == nn.LayerNorm:
-                assert (
-                    "normalized_shape" in kw_norm
-                ), "`normalized_shape` must be specified for `LayerNorm`"
+                assert "normalized_shape" in kw_norm, "`normalized_shape` must be specified for `LayerNorm`"
             else:
                 raise ValueError(f"normalization `{batch_norm}` not supported yet!")
             bn_layer = get_normalization(batch_norm, kw_norm)
@@ -381,9 +368,7 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(
-        self, input_len: Optional[int] = None, fs: Optional[Real] = None
-    ) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
         return 1
 
 
@@ -489,9 +474,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         self.__conv_type = kwargs.get("conv_type", None)
         if isinstance(self.__conv_type, str):
             self.__conv_type = self.__conv_type.lower()
-        self.__width_multiplier = (
-            kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
-        )
+        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, (
             f"`width_multiplier` (input is `{self.__width_multiplier}`) makes "
@@ -514,17 +497,10 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if kernel_initializer:
                 if callable(kernel_initializer):
                     kernel_initializer(conv_layer.weight)
-                elif (
-                    isinstance(kernel_initializer, str)
-                    and kernel_initializer.lower() in Initializers.keys()
-                ):
-                    Initializers[kernel_initializer.lower()](
-                        conv_layer.weight, **kw_initializer
-                    )
+                elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
+                    Initializers[kernel_initializer.lower()](conv_layer.weight, **kw_initializer)
                 else:  # TODO: add more initializers
-                    raise ValueError(
-                        f"initializer `{kernel_initializer}` not supported"
-                    )
+                    raise ValueError(f"initializer `{kernel_initializer}` not supported")
         elif self.__conv_type == "separable":
             conv_layer = SeparableConv(
                 in_channels=self.__in_channels,
@@ -555,14 +531,10 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 **kwargs,
             )
         else:
-            raise NotImplementedError(
-                f"convolution of type `{self.__conv_type}` not implemented yet!"
-            )
+            raise NotImplementedError(f"convolution of type `{self.__conv_type}` not implemented yet!")
 
         # validate the normalization layer
-        if "b" in self.__ordering and self.__ordering.index(
-            "c"
-        ) < self.__ordering.index("b"):
+        if "b" in self.__ordering and self.__ordering.index("c") < self.__ordering.index("b"):
             bn_in_channels = self.__out_channels
         elif batch_norm and "b" not in self.__ordering:
             warnings.warn(
@@ -585,9 +557,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                     kw_bn["num_channels"] = bn_in_channels
                     kw_bn["num_groups"] = self.__groups
                 elif bn_cls == nn.LayerNorm:
-                    assert (
-                        "normalized_shape" in kw_bn
-                    ), "`normalized_shape` must be specified for `LayerNorm`"
+                    assert "normalized_shape" in kw_bn, "`normalized_shape` must be specified for `LayerNorm`"
                 else:
                     raise ValueError(f"normalization `{batch_norm}` not supported yet!")
                 bn_layer = get_normalization(batch_norm, kw_bn)
@@ -599,8 +569,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             bn_layer = None
             if "b" in self.__ordering:
                 warnings.warn(
-                    "normalization is specified in `ordering` but not by `norm`, "
-                    "so `norm` is removed from `ordering`",
+                    "normalization is specified in `ordering` but not by `norm`, " "so `norm` is removed from `ordering`",
                     RuntimeWarning,
                 )
                 self.__ordering = self.__ordering.replace("b", "")
@@ -618,8 +587,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 self.__ordering = self.__ordering + "a"
         elif "a" in self.__ordering:
             warnings.warn(
-                "activation is specified in `ordering` but not by `activation`, "
-                "so `activation` is removed from `ordering`",
+                "activation is specified in `ordering` but not by `activation`, " "so `activation` is removed from `ordering`",
                 RuntimeWarning,
             )
             self.__ordering = self.__ordering.replace("a", "")
@@ -677,9 +645,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         else:
             raise ValueError(f"`ordering` ({self.__ordering}) not supported!")
 
-    def _assign_weights_lead_wise(
-        self, other: "Conv_Bn_Activation", indices: Sequence[int]
-    ) -> None:
+    def _assign_weights_lead_wise(self, other: "Conv_Bn_Activation", indices: Sequence[int]) -> None:
         """Assign weights lead-wise.
 
         This method is used to assign weights from a model with
@@ -719,21 +685,15 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         tensor(True)
 
         """
-        assert (
-            self.conv_type is None and other.conv_type is None
-        ), "only normal convolution supported!"
+        assert self.conv_type is None and other.conv_type is None, "only normal convolution supported!"
         assert (
             self.in_channels * other.groups == other.in_channels * self.groups
         ), "in_channels should be in proportion to groups"
         assert (
             self.out_channels * other.groups == other.out_channels * self.groups
         ), "out_channels should be in proportion to groups"
-        assert (
-            len(indices) == other.groups
-        ), "`indices` should have length equal to `groups` of `other`"
-        assert len(set(indices)) == len(
-            indices
-        ), "`indices` should not contain duplicates"
+        assert len(indices) == other.groups, "`indices` should have length equal to `groups` of `other`"
+        assert len(set(indices)) == len(indices), "`indices` should not contain duplicates"
         assert not any([isinstance(m, nn.LayerNorm) for m in self]) and not any(
             [isinstance(m, nn.LayerNorm) for m in other]
         ), "Lead-wise assignment of weights is not supported for the existence of `LayerNorm` layers"
@@ -753,9 +713,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         units = self.out_channels // self.groups
         out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
         for m, om in zip(self, other):
-            if isinstance(
-                m, (nn.Conv1d, nn.BatchNorm1d, nn.GroupNorm, nn.InstanceNorm1d)
-            ):
+            if isinstance(m, (nn.Conv1d, nn.BatchNorm1d, nn.GroupNorm, nn.InstanceNorm1d)):
                 om.weight.data = m.weight.data[out_indices].clone()
                 if m.bias is not None:
                     om.bias.data = m.bias.data[out_indices].clone()
@@ -790,9 +748,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(
-        self, input_len: Optional[int] = None, fs: Optional[Real] = None
-    ) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
         return compute_receptive_field(
             kernel_sizes=self.__kernel_size,
             strides=self.__stride,
@@ -948,9 +904,7 @@ class MultiConv(nn.Sequential, SizeMixin):
             in_activation = True
 
         conv_in_channels = self.__in_channels
-        for idx, (oc, ks, sd, dl, dp) in enumerate(
-            zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)
-        ):
+        for idx, (oc, ks, sd, dl, dp) in enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
             activation = self.config.activation
             if idx == 0 and not in_activation:
                 activation = None
@@ -999,24 +953,16 @@ class MultiConv(nn.Sequential, SizeMixin):
     ) -> Sequence[Union[int, None]]:
         _seq_len = seq_len
         for module in self:
-            if (
-                hasattr(module, "__name__")
-                and module.__name__ == Conv_Bn_Activation.__name__
-            ):
+            if hasattr(module, "__name__") and module.__name__ == Conv_Bn_Activation.__name__:
                 output_shape = module.compute_output_shape(_seq_len, batch_size)
                 _, _, _seq_len = output_shape
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(
-        self, input_len: Optional[int] = None, fs: Optional[Real] = None
-    ) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
         kernel_sizes, strides, dilations = [], [], []
         for module in self:
-            if (
-                hasattr(module, "__name__")
-                and module.__name__ == Conv_Bn_Activation.__name__
-            ):
+            if hasattr(module, "__name__") and module.__name__ == Conv_Bn_Activation.__name__:
                 kernel_sizes.append(module.kernel_size)
                 strides.append(module.stride)
                 dilations.append(module.dilation)
@@ -1120,9 +1066,7 @@ class BranchedConv(nn.Module, SizeMixin):
         ), f"`dilations` must be of type int or sequence of int of length {self.__num_branches}"
 
         self.branches = nn.ModuleDict()
-        for idx, (oc, ks, sd, dl, dp) in enumerate(
-            zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)
-        ):
+        for idx, (oc, ks, sd, dl, dp) in enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
             self.branches[f"multi_conv_{idx}"] = MultiConv(
                 in_channels=self.__in_channels,
                 out_channels=oc,
@@ -1150,10 +1094,7 @@ class BranchedConv(nn.Module, SizeMixin):
             each of shape ``(batch_size, out_channels, seq_len)``.
 
         """
-        out = [
-            self.branches[f"multi_conv_{idx}"](input)
-            for idx in range(self.__num_branches)
-        ]
+        out = [self.branches[f"multi_conv_{idx}"](input) for idx in range(self.__num_branches)]
         return out
 
     def compute_output_shape(
@@ -1176,15 +1117,11 @@ class BranchedConv(nn.Module, SizeMixin):
         """
         output_shapes = []
         for idx in range(self.__num_branches):
-            branch_output_shape = self.branches[
-                f"multi_conv_{idx}"
-            ].compute_output_shape(seq_len, batch_size)
+            branch_output_shape = self.branches[f"multi_conv_{idx}"].compute_output_shape(seq_len, batch_size)
             output_shapes.append(branch_output_shape)
         return output_shapes
 
-    def compute_receptive_field(
-        self, input_len: Optional[int] = None, fs: Optional[Real] = None
-    ) -> Tuple[Union[int, float]]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Tuple[Union[int, float]]:
         """Compute the receptive field of each branch.
 
         Parameters
@@ -1204,9 +1141,7 @@ class BranchedConv(nn.Module, SizeMixin):
         """
         receptive_fields = []
         for idx in range(self.__num_branches):
-            branch_receptive_field = self.branches[
-                f"multi_conv_{idx}"
-            ].compute_receptive_field(input_len, fs)
+            branch_receptive_field = self.branches[f"multi_conv_{idx}"].compute_receptive_field(input_len, fs)
             receptive_fields.append(branch_receptive_field)
         return tuple(receptive_fields)
 
@@ -1291,9 +1226,7 @@ class SeparableConv(nn.Sequential, SizeMixin):
         assert (
             dc_out_channels % self.__in_channels == 0
         ), f"`depth_multiplier` (input is `{self.__depth_multiplier}`) should be positive integers"
-        self.__width_multiplier = (
-            kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
-        )
+        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, (
             f"`width_multiplier` (input is `{self.__width_multiplier}`) "
@@ -1331,14 +1264,9 @@ class SeparableConv(nn.Sequential, SizeMixin):
             if callable(kernel_initializer):
                 for module in self:
                     kernel_initializer(module.weight)
-            elif (
-                isinstance(kernel_initializer, str)
-                and kernel_initializer.lower() in Initializers.keys()
-            ):
+            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
                 for module in self:
-                    Initializers[kernel_initializer.lower()](
-                        module.weight, **kw_initializer
-                    )
+                    Initializers[kernel_initializer.lower()](module.weight, **kw_initializer)
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
@@ -1386,9 +1314,7 @@ class SeparableConv(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(
-        self, input_len: Optional[int] = None, fs: Optional[Real] = None
-    ) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
         return compute_receptive_field(
             kernel_sizes=[self.__kernel_size, 1],
             strides=[self.__stride, 1],
@@ -1543,9 +1469,7 @@ class DownSample(nn.Sequential, SizeMixin):
     ) -> None:
         super().__init__()
         self.__mode = mode.lower()
-        assert (
-            self.__mode in self.__MODES__
-        ), f"`mode` should be one of `{self.__MODES__}`, but got `{mode}`"
+        assert self.__mode in self.__MODES__, f"`mode` should be one of `{self.__MODES__}`, but got `{mode}`"
         self.__down_scale = down_scale
         self.__kernel_size = kernel_size or down_scale
         self.__in_channels = in_channels
@@ -1671,11 +1595,7 @@ class DownSample(nn.Sequential, SizeMixin):
             )
 
         if batch_norm:
-            bn_layer = (
-                nn.BatchNorm1d(self.__out_channels)
-                if isinstance(batch_norm, bool)
-                else batch_norm(self.__out_channels)
-            )
+            bn_layer = nn.BatchNorm1d(self.__out_channels) if isinstance(batch_norm, bool) else batch_norm(self.__out_channels)
             self.add_module(
                 "batch_normalization",
                 bn_layer,
@@ -1728,13 +1648,9 @@ class DownSample(nn.Sequential, SizeMixin):
             )[-1]
         elif self.__mode == "blur":
             if self.__in_channels == self.__out_channels:
-                out_seq_len = self.down_sample.compute_output_shape(
-                    seq_len, batch_size
-                )[-1]
+                out_seq_len = self.down_sample.compute_output_shape(seq_len, batch_size)[-1]
             else:
-                out_seq_len = self.down_sample[0].compute_output_shape(
-                    seq_len, batch_size
-                )[-1]
+                out_seq_len = self.down_sample[0].compute_output_shape(seq_len, batch_size)[-1]
         elif self.__mode in ["avg", "nearest", "area", "linear", "lp"]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
@@ -1802,9 +1718,7 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
             Output shape of the module.
 
         """
-        assert any(
-            [seq_len is not None, batch_size is not None, in_channels is not None]
-        ), (
+        assert any([seq_len is not None, batch_size is not None, in_channels is not None]), (
             "at least one of `seq_len`, `batch_size` and `in_channels` must be provided, "
             "otherwise the output shape is the meaningless `(None, None, None)`"
         )
@@ -1884,16 +1798,12 @@ class BlurPool(nn.Module, SizeMixin):
         elif self.__filt_size == 7:
             a = np.array([1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0])
         else:
-            raise NotImplementedError(
-                f"Filter size of `{self.__filt_size}` is not implemented"
-            )
+            raise NotImplementedError(f"Filter size of `{self.__filt_size}` is not implemented")
 
         # saved and restored in the state_dict, but not trained by the optimizer
         filt = Tensor(a)
         filt = filt / torch.sum(filt)
-        self.register_buffer(
-            "filt", filt.unsqueeze(0).unsqueeze(0).repeat((self.__in_channels, 1, 1))
-        )
+        self.register_buffer("filt", filt.unsqueeze(0).unsqueeze(0).repeat((self.__in_channels, 1, 1)))
 
         self.pad = self._get_pad_layer()
 
@@ -1943,9 +1853,7 @@ class BlurPool(nn.Module, SizeMixin):
         elif self.__pad_type == "zero":
             PadLayer = ZeroPad1d
         else:
-            raise NotImplementedError(
-                f"Padding type of `{self.__pad_type}` is not implemented"
-            )
+            raise NotImplementedError(f"Padding type of `{self.__pad_type}` is not implemented")
         return PadLayer(self.__pad_sizes)
 
     @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
@@ -1959,8 +1867,7 @@ class BlurPool(nn.Module, SizeMixin):
                 output_shape = (
                     batch_size,
                     self.__in_channels,
-                    (np.sum(self.__pad_sizes) + seq_len - 1).item() // self.__down_scale
-                    + 1,
+                    (np.sum(self.__pad_sizes) + seq_len - 1).item() // self.__down_scale + 1,
                 )
             return output_shape
         if seq_len is None:
@@ -2036,9 +1943,7 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
         self.__out_channels = out_channels
         self.__kernel_size = kernel_size
         self.__stride = stride
-        self.__padding = (
-            dilation * (kernel_size - 1) // 2 if padding is None else padding
-        )
+        self.__padding = dilation * (kernel_size - 1) // 2 if padding is None else padding
         self.__dilation = dilation
         self.__groups = groups
         self.add_module(
@@ -2222,16 +2127,8 @@ class StackedLSTM(nn.Sequential, SizeMixin):
         super().__init__()
         self.__hidden_sizes = hidden_sizes
         self.num_lstm_layers = len(hidden_sizes)
-        l_bias = (
-            bias
-            if isinstance(bias, Sequence)
-            else list(repeat(bias, self.num_lstm_layers))
-        )
-        self.__dropouts = (
-            dropouts
-            if isinstance(dropouts, Sequence)
-            else list(repeat(dropouts, self.num_lstm_layers))
-        )
+        l_bias = bias if isinstance(bias, Sequence) else list(repeat(bias, self.num_lstm_layers))
+        self.__dropouts = dropouts if isinstance(dropouts, Sequence) else list(repeat(dropouts, self.num_lstm_layers))
         self.bidirectional = bidirectional
         self.batch_first = False
         self.return_sequences = return_sequences
@@ -2337,9 +2234,7 @@ class AttentionWithContext(nn.Module, SizeMixin):
 
     __name__ = "AttentionWithContext"
 
-    def __init__(
-        self, in_channels: int, bias: bool = True, initializer: str = "glorot_uniform"
-    ) -> None:
+    def __init__(self, in_channels: int, bias: bool = True, initializer: str = "glorot_uniform") -> None:
         super().__init__()
         self.supports_masking = True
         self.init = Initializers[initializer.lower()]
@@ -2438,16 +2333,12 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
 
     __name__ = "_ScaledDotProductAttention"
 
-    def forward(
-        self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None
-    ) -> Tensor:
+    def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None) -> Tensor:
         """
         all tensors of shape ``(batch_size, seq_len, features)``.
         """
         dk = query.shape[-1]
-        scores = query.matmul(key.transpose(-2, -1)) / sqrt(
-            dk
-        )  # -> (batch_size, seq_len, seq_len)
+        scores = query.matmul(key.transpose(-2, -1)) / sqrt(dk)  # -> (batch_size, seq_len, seq_len)
         if mask is not None:
             scores = scores.masked_fill(mask == 0, -1e9)
         attention = F.softmax(scores, dim=-1)
@@ -2730,9 +2621,7 @@ class AttentivePooling(nn.Module, SizeMixin):
         scores = self.contraction(scores)  # -> (batch_size, seq_len, 1)
         scores = scores.squeeze(-1)  # -> (batch_size, seq_len)
         scores = self.softmax(scores)  # -> (batch_size, seq_len)
-        weighted_input = input * (
-            scores[..., np.newaxis]
-        )  # -> (batch_size, seq_len, n_channels)
+        weighted_input = input * (scores[..., np.newaxis])  # -> (batch_size, seq_len, n_channels)
         output = weighted_input.sum(1)  # -> (batch_size, n_channels)
         return output
 
@@ -2776,9 +2665,7 @@ class ZeroPadding(nn.Module, SizeMixin):
         self.__increase_channels = out_channels - in_channels
         assert self.__increase_channels >= 0, "`out_channels` must be >= `in_channels`"
         self.__loc = loc.lower()
-        assert (
-            self.__loc in self.__LOC__
-        ), f"`loc` must be in `{self.__LOC__}`, but got `{loc}`"
+        assert self.__loc in self.__LOC__, f"`loc` must be in `{self.__LOC__}`, but got `{loc}`"
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if self.__loc == "head":
             self.__padding = (0, 0, self.__increase_channels, 0)
@@ -3074,8 +2961,7 @@ class NonLocalBlock(nn.Module, SizeMixin):
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
             assert set(filter_lengths.keys()) <= set(self.__MID_LAYERS__), (
-                f"`filter_lengths` keys must be a subset of `{self.__MID_LAYERS__}`, "
-                f"but got `{filter_lengths.keys()}`"
+                f"`filter_lengths` keys must be a subset of `{self.__MID_LAYERS__}`, " f"but got `{filter_lengths.keys()}`"
             )
             self.__kernel_sizes = CFG({k: 1 for k in self.__MID_LAYERS__})
             self.__kernel_sizes.update({k: v for k, v in filter_lengths.items()})
@@ -3103,9 +2989,7 @@ class NonLocalBlock(nn.Module, SizeMixin):
             )
             if self.__subsample_length > 1 and k != "theta":
                 # for "g" and "phi" layers
-                self.mid_layers[k].add_module(
-                    "max_pool", nn.MaxPool1d(kernel_size=self.__subsample_length)
-                )
+                self.mid_layers[k].add_module("max_pool", nn.MaxPool1d(kernel_size=self.__subsample_length))
 
         self.W = Conv_Bn_Activation(
             in_channels=self.__mid_channels,
@@ -3193,9 +3077,7 @@ class SEBlock(nn.Module, SizeMixin):
     """
 
     __name__ = "SEBlock"
-    __DEFAULT_CONFIG__ = CFG(
-        bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
-    )
+    __DEFAULT_CONFIG__ = CFG(bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0)
 
     def __init__(self, in_channels: int, reduction: int = 16, **config) -> None:
         super().__init__()
@@ -3402,9 +3284,7 @@ class GlobalContextBlock(nn.Module, SizeMixin):
             context = self.softmax(context)  # --> (batch_size, 1, seq_len)
             context = context.unsqueeze(3)  # --> (batch_size, 1, seq_len, 1)
             # matmul: (batch_size, 1, n_channels, seq_len) x (batch_size, 1, seq_len, 1)
-            context = torch.matmul(
-                input_x, context
-            )  # --> (batch_size, 1, n_channels, 1)
+            context = torch.matmul(input_x, context)  # --> (batch_size, 1, n_channels, 1)
             context = context.squeeze(1)  # --> (batch_size, n_channels, 1)
         elif self.__pooling_type == "avg":
             context = self.avg_pool(x)  # --> (batch_size, n_channels, 1)
@@ -3426,18 +3306,12 @@ class GlobalContextBlock(nn.Module, SizeMixin):
         context = self.spatial_pool(input)  # --> (batch_size, n_channels, 1)
         output = input
         if self.channel_mul_conv is not None:
-            channel_mul_term = self.channel_mul_conv(
-                context
-            )  # --> (batch_size, n_channels, 1)
-            channel_mul_term = torch.sigmoid(
-                channel_mul_term
-            )  # --> (batch_size, n_channels, 1)
+            channel_mul_term = self.channel_mul_conv(context)  # --> (batch_size, n_channels, 1)
+            channel_mul_term = torch.sigmoid(channel_mul_term)  # --> (batch_size, n_channels, 1)
             # (batch_size, n_channels, seq_len) x (batch_size, n_channels, 1)
             output = output * channel_mul_term  # --> (batch_size, n_channels, seq_len)
         if self.channel_add_conv is not None:
-            channel_add_term = self.channel_add_conv(
-                context
-            )  # --> (batch_size, n_channels, 1)
+            channel_add_term = self.channel_add_conv(context)  # --> (batch_size, n_channels, 1)
             output = output + channel_add_term  # --> (batch_size, n_channels, seq_len)
         return output
 
@@ -3615,9 +3489,7 @@ class CBAMBlock(nn.Module, SizeMixin):
         if self.spatial_gate_conv is None:
             return input
         # channel pool, `scale` has n_channels = 2
-        scale = torch.cat(
-            (input.max(dim=1, keepdim=True)[0], input.mean(dim=1, keepdim=True)), dim=1
-        )
+        scale = torch.cat((input.max(dim=1, keepdim=True)[0], input.mean(dim=1, keepdim=True)), dim=1)
         scale = self.spatial_gate_conv(scale)
         output = scale * input
         return output
@@ -3637,9 +3509,7 @@ class CBAMBlock(nn.Module, SizeMixin):
             of shape (batch_size, n_channels, 1)
 
         """
-        return F.lp_pool1d(
-            input, norm_type=self.__lp_norm_type, kernel_size=input.shape[-1]
-        )
+        return F.lp_pool1d(input, norm_type=self.__lp_norm_type, kernel_size=input.shape[-1])
 
     def _lse_pool(self, input: Tensor) -> Tensor:
         """
@@ -3823,9 +3693,7 @@ class CRF(nn.Module, SizeMixin):
         _device = next(self.parameters()).device
         _reduction = reduction.lower()
         if _reduction not in ("none", "sum", "mean", "token_mean"):
-            raise ValueError(
-                f"`reduction` should be one of `none|sum|mean|token_mean`, but got `{reduction}`"
-            )
+            raise ValueError(f"`reduction` should be one of `none|sum|mean|token_mean`, but got `{reduction}`")
         if mask is None:
             mask = torch.ones_like(tags, dtype=torch.uint8, device=_device)
 
@@ -3853,9 +3721,7 @@ class CRF(nn.Module, SizeMixin):
             nll = nll.sum() / mask.float().sum()
         return nll
 
-    def forward(
-        self, emissions: Tensor, mask: Optional[torch.ByteTensor] = None
-    ) -> Tensor:
+    def forward(self, emissions: Tensor, mask: Optional[torch.ByteTensor] = None) -> Tensor:
         """
         Find the most likely tag sequence using Viterbi algorithm.
 
@@ -3880,16 +3746,12 @@ class CRF(nn.Module, SizeMixin):
         self._validate(emissions, mask=mask)
         _device = next(self.parameters()).device
         if mask is None:
-            mask = emissions.new_ones(
-                emissions.shape[:2], dtype=torch.uint8, device=_device
-            )
+            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=_device)
         if self.batch_first:
             emissions = emissions.transpose(0, 1)
             mask = mask.transpose(0, 1)
         best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
-        output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(
-            *self.__permute_tuple
-        )
+        output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(*self.__permute_tuple)
         return output
 
     def _validate(
@@ -3900,14 +3762,9 @@ class CRF(nn.Module, SizeMixin):
     ) -> None:
         """Check validity of input :class:`~torch.Tensor`."""
         if emissions.dim() != 3:
-            raise ValueError(
-                f"`emissions` must have dimension of 3, but got `{emissions.dim()}`"
-            )
+            raise ValueError(f"`emissions` must have dimension of 3, but got `{emissions.dim()}`")
         if emissions.shape[2] != self.num_tags:
-            raise ValueError(
-                f"expected last dimension of `emissions` is `{self.num_tags}`, "
-                f"but got `{emissions.shape[2]}`"
-            )
+            raise ValueError(f"expected last dimension of `emissions` is `{self.num_tags}`, " f"but got `{emissions.shape[2]}`")
 
         if tags is not None:
             if emissions.shape[:2] != tags.shape:
@@ -3927,9 +3784,7 @@ class CRF(nn.Module, SizeMixin):
             if not no_empty_seq and not no_empty_seq_bf:
                 raise ValueError("mask of the first timestep must all be on")
 
-    def _compute_score(
-        self, emissions: Tensor, tags: torch.LongTensor, mask: torch.ByteTensor
-    ) -> Tensor:
+    def _compute_score(self, emissions: Tensor, tags: torch.LongTensor, mask: torch.ByteTensor) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # tags: (seq_len, batch_size)
@@ -3939,9 +3794,7 @@ class CRF(nn.Module, SizeMixin):
             emissions.dim() == 3 and tags.dim() == 2
         ), "`emissions` must have dimension of 3, and `tags` must have dimension of 2"
         seq_len, batch_size, num_tags = emissions.shape
-        assert (
-            emissions.shape[:2] == tags.shape
-        ), "the first two dimensions of `emissions` and `tags` must match"
+        assert emissions.shape[:2] == tags.shape, "the first two dimensions of `emissions` and `tags` must match"
         assert (
             emissions.shape[2] == self.num_tags
         ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
@@ -3975,9 +3828,7 @@ class CRF(nn.Module, SizeMixin):
 
         return score
 
-    def _compute_normalizer(
-        self, emissions: torch.Tensor, mask: torch.ByteTensor
-    ) -> Tensor:
+    def _compute_normalizer(self, emissions: torch.Tensor, mask: torch.ByteTensor) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -3985,9 +3836,7 @@ class CRF(nn.Module, SizeMixin):
         assert (
             emissions.dim() == 3 and mask.dim() == 2
         ), "`emissions` must have dimension of 3, and `mask` must have dimension of 2"
-        assert (
-            emissions.shape[:2] == mask.shape
-        ), "the first two dimensions of `emissions` and `mask` must match"
+        assert emissions.shape[:2] == mask.shape, "the first two dimensions of `emissions` and `mask` must match"
         assert (
             emissions.shape[2] == self.num_tags
         ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
@@ -4036,9 +3885,7 @@ class CRF(nn.Module, SizeMixin):
         # shape: (batch_size,)
         return torch.logsumexp(score, dim=1)
 
-    def _viterbi_decode(
-        self, emissions: torch.FloatTensor, mask: torch.ByteTensor
-    ) -> List[List[int]]:
+    def _viterbi_decode(self, emissions: torch.FloatTensor, mask: torch.ByteTensor) -> List[List[int]]:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -4046,9 +3893,7 @@ class CRF(nn.Module, SizeMixin):
         assert (
             emissions.dim() == 3 and mask.dim() == 2
         ), "`emissions` must have dimension of 3, and `mask` must have dimension of 2"
-        assert (
-            emissions.shape[:2] == mask.shape
-        ), "the first two dimensions of `emissions` and `mask` must match"
+        assert emissions.shape[:2] == mask.shape, "the first two dimensions of `emissions` and `mask` must match"
         assert (
             emissions.shape[2] == self.num_tags
         ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
@@ -4254,9 +4099,7 @@ class SpaceToDepth(nn.Module, SizeMixin):
 
     __name__ = "SpaceToDepth"
 
-    def __init__(
-        self, in_channels: int, out_channels: int, block_size: int = 4
-    ) -> None:
+    def __init__(self, in_channels: int, out_channels: int, block_size: int = 4) -> None:
         """
         Parameters
         ----------
@@ -4324,9 +4167,7 @@ class _GroupFC(object):
     def __init__(self, embed_len_decoder: int):
         self.embed_len_decoder = embed_len_decoder
 
-    def __call__(
-        self, h: torch.Tensor, duplicate_pooling: torch.Tensor, out_extrap: torch.Tensor
-    ):
+    def __call__(self, h: torch.Tensor, duplicate_pooling: torch.Tensor, out_extrap: torch.Tensor):
         for i in range(h.shape[1]):
             h_i = h[:, i, :]
             if len(duplicate_pooling.shape) == 3:
@@ -4399,9 +4240,7 @@ class MLDecoder(nn.Module, SizeMixin):
             dim_feedforward=dim_feedforward,
             dropout=decoder_dropout,
         )
-        self.decoder = nn.TransformerDecoder(
-            layer_decode, num_layers=num_layers_decoder
-        )
+        self.decoder = nn.TransformerDecoder(layer_decode, num_layers=num_layers_decoder)
         self.decoder.embed_standart = embed_standart
         self.decoder.query_embed = query_embed
         self.zsl = zsl
@@ -4417,13 +4256,9 @@ class MLDecoder(nn.Module, SizeMixin):
         else:
             # group fully-connected
             self.decoder.out_channels = out_channels
-            self.decoder.duplicate_factor = int(
-                out_channels / embed_len_decoder + 0.999
-            )
+            self.decoder.duplicate_factor = int(out_channels / embed_len_decoder + 0.999)
             self.decoder.duplicate_pooling = Parameter(
-                Tensor(
-                    embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor
-                )
+                Tensor(embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor)
             )
             self.decoder.duplicate_pooling_bias = Parameter(Tensor(out_channels))
         nn.init.xavier_normal_(self.decoder.duplicate_pooling)
@@ -4445,9 +4280,7 @@ class MLDecoder(nn.Module, SizeMixin):
             of shape (batch, out_channels)
 
         """
-        embedding_spatial = x.permute(
-            0, 2, 1
-        )  # (batch, channel, seqlen) -> (batch, seqlen, channel)
+        embedding_spatial = x.permute(0, 2, 1)  # (batch, channel, seqlen) -> (batch, seqlen, channel)
         embedding_spatial = self.decoder.embed_standart(embedding_spatial)
         embedding_spatial = F.relu(embedding_spatial, inplace=True)
 
@@ -4457,12 +4290,8 @@ class MLDecoder(nn.Module, SizeMixin):
         else:
             query_embed = self.decoder.query_embed.weight
         # tgt = query_embed.unsqueeze(1).repeat(1, batch_size, 1)
-        tgt = query_embed.unsqueeze(1).expand(
-            -1, batch_size, -1
-        )  # no allocation of memory with expand
-        h = self.decoder(
-            tgt, embedding_spatial.transpose(0, 1)
-        )  # (embed_len_decoder, batch, decoder_embedding)
+        tgt = query_embed.unsqueeze(1).expand(-1, batch_size, -1)  # no allocation of memory with expand
+        h = self.decoder(tgt, embedding_spatial.transpose(0, 1))  # (embed_len_decoder, batch, decoder_embedding)
         h = h.transpose(0, 1)
 
         out_extrap = torch.zeros(
@@ -4523,9 +4352,7 @@ class DropPath(nn.Module, SizeMixin):
     def extra_repr(self) -> str:
         return f"p={self.p}, inplace={self.inplace}"
 
-    def compute_output_shape(
-        self, input_shape: Union[torch.Size, Sequence[Union[int, None]]]
-    ) -> Sequence[Union[int, None]]:
+    def compute_output_shape(self, input_shape: Union[torch.Size, Sequence[Union[int, None]]]) -> Sequence[Union[int, None]]:
         """Compute the output shape given the input shape.
 
         Parameters
@@ -4542,9 +4369,7 @@ class DropPath(nn.Module, SizeMixin):
         return tuple(input_shape)
 
 
-def drop_path(
-    x: Tensor, p: float = 0.2, training: bool = False, inplace: bool = False
-) -> Tensor:
+def drop_path(x: Tensor, p: float = 0.2, training: bool = False, inplace: bool = False) -> Tensor:
     """Function to drop paths.
 
     Modified from :func:`timm.models.layers.drop_path`.

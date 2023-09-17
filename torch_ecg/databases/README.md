@@ -77,7 +77,7 @@ array([[ 28.,   7.],
  V4   A0001.mat  16           24  ...        49          0         V4
  V5   A0001.mat  16           24  ...      -321          0         V5
  V6   A0001.mat  16           24  ...     -3112          0         V6
- 
+
  [12 rows x 12 columns]}
 >>> dr.get_labels(30000, scored_only=True, fmt="f")  # full names
 ['sinus arrhythmia',

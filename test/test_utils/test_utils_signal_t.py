@@ -1,10 +1,10 @@
 """
 """
 
-import torch
 import pytest
+import torch
 
-from torch_ecg.utils.utils_signal_t import normalize, resample, Spectrogram
+from torch_ecg.utils.utils_signal_t import Spectrogram, normalize, resample
 
 
 def test_normalize():
@@ -44,9 +44,7 @@ def test_normalize():
         nm_sig = normalize(torch.randn(b, l, s), method="not-supported")
     with pytest.raises(AssertionError, match="standard deviation should be positive"):
         nm_sig = normalize(torch.randn(b, l, s), std=0)
-    with pytest.raises(
-        AssertionError, match="standard deviations should all be positive"
-    ):
+    with pytest.raises(AssertionError, match="standard deviations should all be positive"):
         nm_sig = normalize(
             torch.randn(b, l, s),
             std=torch.zeros(
@@ -60,19 +58,11 @@ def test_normalize():
             "or of shape \\(batch, 1\\), or \\(batch, 1, 1\\), or \\(1,\\)"
         ),
     ):
-        nm_sig = normalize(
-            torch.randn(b, l, s), per_channel=False, std=torch.rand(b, l)
-        )
+        nm_sig = normalize(torch.randn(b, l, s), per_channel=False, std=torch.rand(b, l))
     with pytest.raises(ValueError, match="shape of `sig` = .+ and `std` = .+ mismatch"):
-        nm_sig = normalize(
-            torch.randn(b, l, s), std=torch.rand(b, l, s), per_channel=True
-        )
-    with pytest.raises(
-        ValueError, match="shape of `sig` = .+ and `mean` = .+ mismatch"
-    ):
-        nm_sig = normalize(
-            torch.randn(b, l, s), mean=torch.rand(b, l, s), per_channel=True
-        )
+        nm_sig = normalize(torch.randn(b, l, s), std=torch.rand(b, l, s), per_channel=True)
+    with pytest.raises(ValueError, match="shape of `sig` = .+ and `mean` = .+ mismatch"):
+        nm_sig = normalize(torch.randn(b, l, s), mean=torch.rand(b, l, s), per_channel=True)
 
 
 def test_resample():
@@ -83,13 +73,9 @@ def test_resample():
     assert resample(sig, siglen=5000, inplace=True).shape == (2, 12, 5000)
     assert resample(sig[0], siglen=500).shape == (12, 500)
 
-    with pytest.raises(
-        AssertionError, match="one and only one of `dst_fs` and `siglen` should be set"
-    ):
+    with pytest.raises(AssertionError, match="one and only one of `dst_fs` and `siglen` should be set"):
         resample(sig, dst_fs=500, siglen=1000)
-    with pytest.raises(
-        AssertionError, match="if `dst_fs` is set, `fs` should also be set"
-    ):
+    with pytest.raises(AssertionError, match="if `dst_fs` is set, `fs` should also be set"):
         resample(sig, dst_fs=500)
 
 

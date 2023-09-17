@@ -3,38 +3,32 @@
 
 from copy import deepcopy
 from pathlib import Path
-from typing import Union, Optional, Any, Tuple, Dict
+from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
-from einops.layers.torch import Rearrange
 import torch
 import torch.nn as nn
-from torch import Tensor
-from torch_ecg.cfg import CFG
-from torch_ecg.models.cnn.vgg import VGG16
-from torch_ecg.models.cnn.resnet import ResNet
-from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
-from torch_ecg.models.cnn.densenet import DenseNet
-from torch_ecg.models._nets import MLP
-from torch_ecg.components.outputs import (
-    ClassificationOutput,
-    SequenceLabellingOutput,
-)
-from torch_ecg.utils import add_docstring, SizeMixin, CkptMixin
-from transformers import (
-    Wav2Vec2Model as HFWav2Vec2Model,
-    Wav2Vec2PreTrainedModel as HFWav2Vec2PreTrainedModel,
-)
-from transformers.models.wav2vec2.modeling_wav2vec2 import (
-    _HIDDEN_STATES_START_POSITION as _HF_HIDDEN_STATES_START_POSITION,
-)
-
 from cfg import ModelCfg
+from einops.layers.torch import Rearrange
 from outputs import CINC2022Outputs
-from wav2vec2_ta import Wav2Vec2Model, components as w2v2_components
+from torch import Tensor
+from transformers import Wav2Vec2Model as HFWav2Vec2Model
+from transformers import Wav2Vec2PreTrainedModel as HFWav2Vec2PreTrainedModel
+from transformers.models.wav2vec2.modeling_wav2vec2 import _HIDDEN_STATES_START_POSITION as _HF_HIDDEN_STATES_START_POSITION
 from wav2vec2_hf import PreTrainModelCfg as HFPreTrainModelCfg
-from .heads import MultiTaskHead
+from wav2vec2_ta import Wav2Vec2Model
+from wav2vec2_ta import components as w2v2_components
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
+from torch_ecg.models._nets import MLP
+from torch_ecg.models.cnn.densenet import DenseNet
+from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
+from torch_ecg.models.cnn.resnet import ResNet
+from torch_ecg.models.cnn.vgg import VGG16
+from torch_ecg.utils import CkptMixin, SizeMixin, add_docstring
+
+from .heads import MultiTaskHead
 
 __all__ = [
     "Wav2Vec2_CINC2022",
@@ -95,14 +89,10 @@ class Wav2Vec2_CINC2022(Wav2Vec2Model):
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             cnn = DenseNet(_config.num_channels, **cnn_config)
         else:
-            raise NotImplementedError(
-                f"the CNN \042{cnn_choice}\042 not implemented yet"
-            )
+            raise NotImplementedError(f"the CNN \042{cnn_choice}\042 not implemented yet")
         if encoder_in_features is None:
             _, encoder_in_features, _ = cnn.compute_output_shape()
-            cnn = nn.Sequential(
-                cnn, Rearrange("batch chan seqlen -> batch seqlen chan")
-            )
+            cnn = nn.Sequential(cnn, Rearrange("batch chan seqlen -> batch seqlen chan"))
 
         encoder_config = self.config.encoder[self.config.encoder.name]
         encoder = w2v2_components._get_encoder(
@@ -219,9 +209,7 @@ class Wav2Vec2_CINC2022(Wav2Vec2Model):
         pred = self.clf(pooled_features)
 
         if self.extra_heads is not None:
-            out = self.extra_heads(
-                features.permute(0, 2, 1), pooled_features, seq_len, labels
-            )
+            out = self.extra_heads(features.permute(0, 2, 1), pooled_features, seq_len, labels)
             out["murmur"] = pred
         else:
             out = {"murmur": pred}
@@ -329,9 +317,7 @@ class Wav2Vec2_CINC2022(Wav2Vec2Model):
                 pred = torch.argmax(prob, dim=-1)
             else:
                 prob = self.sigmoid(forward_output["segmentation"])
-                pred = (prob > seg_thr).int() * (
-                    prob == prob.max(dim=-1, keepdim=True).values
-                ).int()
+                pred = (prob > seg_thr).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
             prob = prob.cpu().detach().numpy()
             pred = pred.cpu().detach().numpy()
             segmentation_output = SequenceLabellingOutput(
@@ -409,9 +395,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
 
         self.dropout = nn.Dropout(self.backbone_config.final_dropout)
 
-        num_layers = (
-            self.backbone_config.num_hidden_layers + 1
-        )  # transformer layers + input embeddings
+        num_layers = self.backbone_config.num_hidden_layers + 1  # transformer layers + input embeddings
         if self.backbone_config.use_weighted_layer_sum:
             self.layer_weights = nn.Parameter(torch.ones(num_layers) / num_layers)
 
@@ -478,9 +462,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
         for param in self.backbone.parameters():
             param.requires_grad = not freeze
 
-    def load_pretrained_backbone(
-        self, path_or_model: Union[str, Path, HFWav2Vec2PreTrainedModel]
-    ) -> None:
+    def load_pretrained_backbone(self, path_or_model: Union[str, Path, HFWav2Vec2PreTrainedModel]) -> None:
         """
         load the pretrained backbone from a given path
 
@@ -492,9 +474,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
 
         """
         if isinstance(path_or_model, (str, Path)):
-            state_dict = self.backbone.__class__.from_pretrained(
-                path_or_model
-            ).state_dict()
+            state_dict = self.backbone.__class__.from_pretrained(path_or_model).state_dict()
         elif isinstance(path_or_model, HFWav2Vec2PreTrainedModel):
             state_dict = path_or_model.state_dict()
         else:
@@ -549,9 +529,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
         pred = self.clf(pooled_features)
 
         if self.extra_heads is not None:
-            out = self.extra_heads(
-                features.permute(0, 2, 1), pooled_features, seq_len, labels
-            )
+            out = self.extra_heads(features.permute(0, 2, 1), pooled_features, seq_len, labels)
             out["murmur"] = pred
         else:
             out = {"murmur": pred}
@@ -659,9 +637,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
                 pred = torch.argmax(prob, dim=-1)
             else:
                 prob = self.sigmoid(forward_output["segmentation"])
-                pred = (prob > seg_thr).int() * (
-                    prob == prob.max(dim=-1, keepdim=True).values
-                ).int()
+                pred = (prob > seg_thr).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
             prob = prob.cpu().detach().numpy()
             pred = pred.cpu().detach().numpy()
             segmentation_output = SequenceLabellingOutput(

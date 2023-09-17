@@ -9,14 +9,7 @@ from copy import deepcopy
 
 from ..cfg import CFG
 from ..utils.utils_nn import adjust_cnn_filter_lengths
-from .cnn import (
-    vgg16,
-    vgg16_leadwise,
-    vgg_block_basic,
-    vgg_block_mish,
-    resnet_nature_comm_bottle_neck_se,
-)
-
+from .cnn import resnet_nature_comm_bottle_neck_se, vgg16, vgg16_leadwise, vgg_block_basic, vgg_block_mish
 
 __all__ = [
     "ATI_CNN_CONFIG",
@@ -37,14 +30,10 @@ ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_basic)
 ATI_CNN_CONFIG.cnn.vgg16_mish = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
 ATI_CNN_CONFIG.cnn.vgg16_mish.block = deepcopy(vgg_block_mish)
 
-ATI_CNN_CONFIG.cnn.vgg16_leadwise = adjust_cnn_filter_lengths(
-    vgg16_leadwise, ATI_CNN_CONFIG.fs
-)
+ATI_CNN_CONFIG.cnn.vgg16_leadwise = adjust_cnn_filter_lengths(vgg16_leadwise, ATI_CNN_CONFIG.fs)
 ATI_CNN_CONFIG.cnn.vgg16_leadwise.block = deepcopy(vgg_block_mish)
 
-ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(
-    resnet_nature_comm_bottle_neck_se, ATI_CNN_CONFIG.fs
-)
+ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet_nature_comm_bottle_neck_se, ATI_CNN_CONFIG.fs)
 
 
 # rnn part

@@ -5,13 +5,8 @@ from pathlib import Path
 
 import numpy as np
 
-from torch_ecg.utils._preproc import (
-    preprocess_multi_lead_signal,
-    preprocess_single_lead_signal,
-    rpeaks_detect_multi_leads,
-)
 from torch_ecg.databases import CINC2021
-
+from torch_ecg.utils._preproc import preprocess_multi_lead_signal, preprocess_single_lead_signal, rpeaks_detect_multi_leads
 
 _SAMPLE_DATA_DIR = Path(__file__).resolve().parents[2] / "sample-data" / "cinc2021"
 

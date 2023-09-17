@@ -4,15 +4,14 @@ import math
 import time
 import warnings
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union, List
+from typing import Any, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
 from ...cfg import DEFAULTS
-from ...utils.misc import get_record_list_recursive3, add_docstring
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
-
+from ...utils.misc import add_docstring, get_record_list_recursive3
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, DataBaseInfo, PhysioNetDataBase
 
 __all__ = [
     "CINC2017",
@@ -131,34 +130,21 @@ class CINC2017(PhysioNetDataBase):
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
-            self._df_records["record"] = [
-                item
-                for item in record_list_fp.read_text().splitlines()
-                if len(item) > 0
-            ]
+            self._df_records["record"] = [item for item in record_list_fp.read_text().splitlines() if len(item) > 0]
             if len(self._df_records) > 0:
                 if self._subsample is not None:
                     size = min(
                         len(self._df_records),
                         max(1, int(round(self._subsample * len(self._df_records)))),
                     )
-                    self._df_records = self._df_records.sample(
-                        n=size, random_state=DEFAULTS.SEED, replace=False
-                    )
-                self._df_records["path"] = self._df_records["record"].apply(
-                    lambda x: (self.db_dir / x).resolve()
-                )
-                self._df_records = self._df_records[
-                    self._df_records["path"].apply(lambda x: x.is_file())
-                ]
-                self._df_records["record"] = self._df_records["path"].apply(
-                    lambda x: x.name
-                )
+                    self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+                self._df_records["path"] = self._df_records["record"].apply(lambda x: (self.db_dir / x).resolve())
+                self._df_records = self._df_records[self._df_records["path"].apply(lambda x: x.is_file())]
+                self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
 
         if len(self._df_records) == 0:
             self.logger.info(
-                "Please wait patiently to let the reader find "
-                "all records of the database from local storage..."
+                "Please wait patiently to let the reader find " "all records of the database from local storage..."
             )
             start = time.time()
             self._df_records["path"] = get_record_list_recursive3(
@@ -171,14 +157,10 @@ class CINC2017(PhysioNetDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
 
@@ -203,16 +185,9 @@ class CINC2017(PhysioNetDataBase):
                 RuntimeWarning,
             )
         # ["N", "A", "O", "~"]
-        self._all_ann = list(
-            set(
-                self._df_ann.ann.unique().tolist()
-                + self._df_ann_ori.ann.unique().tolist()
-            )
-        )
+        self._all_ann = list(set(self._df_ann.ann.unique().tolist() + self._df_ann_ori.ann.unique().tolist()))
 
-    def load_ann(
-        self, rec: Union[str, int], original: bool = False, ann_format: str = "a"
-    ) -> str:
+    def load_ann(self, rec: Union[str, int], original: bool = False, ann_format: str = "a") -> str:
         """Load the annotation of the record.
 
         Parameters

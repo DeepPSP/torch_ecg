@@ -79,9 +79,7 @@ def evaluate_scores_detailed(
     f_beta_measure, g_beta_measure = compute_beta_measures(_truth, _binary_pred, beta=2)
 
     print("- Challenge metric...")
-    challenge_metric = compute_challenge_metric(
-        weights, _truth, _binary_pred, classes, sinus_rhythm
-    )
+    challenge_metric = compute_challenge_metric(weights, _truth, _binary_pred, classes, sinus_rhythm)
 
     print("Done.")
 
@@ -167,9 +165,7 @@ def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
 
 
 # Compute confusion matrices.
-def compute_confusion_matrices(
-    labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
-) -> np.ndarray:
+def compute_confusion_matrices(labels: np.ndarray, outputs: np.ndarray, normalize: bool = False) -> np.ndarray:
     """checked,"""
     # Compute a binary confusion matrix for each class k:
     #
@@ -214,9 +210,7 @@ def compute_confusion_matrices(
 
 
 # Compute macro F-measure.
-def compute_f_measure(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """checked,"""
     num_recordings, num_classes = np.shape(labels)
 
@@ -239,9 +233,7 @@ def compute_f_measure(
 
 
 # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
-def compute_beta_measures(
-    labels: np.ndarray, outputs: np.ndarray, beta: Real
-) -> Tuple[float, float]:
+def compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) -> Tuple[float, float]:
     """checked,"""
     num_recordings, num_classes = np.shape(labels)
 
@@ -252,9 +244,7 @@ def compute_beta_measures(
     for k in range(num_classes):
         tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
         if (1 + beta**2) * tp + fp + beta**2 * fn:
-            f_beta_measure[k] = float((1 + beta**2) * tp) / float(
-                (1 + beta**2) * tp + fp + beta**2 * fn
-            )
+            f_beta_measure[k] = float((1 + beta**2) * tp) / float((1 + beta**2) * tp + fp + beta**2 * fn)
         else:
             f_beta_measure[k] = float("nan")
         if tp + fp + beta * fn:
@@ -269,9 +259,7 @@ def compute_beta_measures(
 
 
 # Compute macro AUROC and macro AUPRC.
-def compute_auc(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
+def compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """checked,"""
     num_recordings, num_classes = np.shape(labels)
 
@@ -356,9 +344,7 @@ def compute_auc(
 
 
 # Compute modified confusion matrix for multi-class, multi-label tasks.
-def compute_modified_confusion_matrix(
-    labels: np.ndarray, outputs: np.ndarray
-) -> np.ndarray:
+def compute_modified_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndarray:
     """checked,
 
     Compute a binary multi-class, multi-label confusion matrix,
@@ -370,9 +356,7 @@ def compute_modified_confusion_matrix(
     # Iterate over all of the recordings.
     for i in range(num_recordings):
         # Calculate the number of positive labels and/or outputs.
-        normalization = float(
-            max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1)
-        )
+        normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
         # Iterate over all of the classes.
         for j in range(num_classes):
             # Assign full and/or partial credit for each positive class.
@@ -415,9 +399,7 @@ def compute_challenge_metric(
     inactive_score = np.nansum(weights * A)
 
     if correct_score != inactive_score:
-        normalized_score = float(observed_score - inactive_score) / float(
-            correct_score - inactive_score
-        )
+        normalized_score = float(observed_score - inactive_score) / float(correct_score - inactive_score)
     else:
         normalized_score = 0.0
 

@@ -124,18 +124,14 @@ class LUDBTrainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
@@ -172,9 +168,7 @@ class LUDBTrainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -233,9 +227,7 @@ class LUDBTrainer(BaseTrainer):
         all_labels = np.concatenate(all_labels, axis=0)
 
         if self.train_config.loss != "CrossEntropyLoss":
-            all_labels = all_labels.argmax(
-                axis=-1
-            )  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
+            all_labels = all_labels.argmax(axis=-1)  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
 
         # print(f"all_labels.shape: {all_labels.shape}, nan: {np.isnan(all_labels).any()}, inf: {np.isinf(all_labels).any()}")
         # print(f"all_scalar_preds.shape: {all_scalar_preds.shape}, nan: {np.isnan(all_scalar_preds).any()}, inf: {np.isinf(all_scalar_preds).any()}")
@@ -246,22 +238,14 @@ class LUDBTrainer(BaseTrainer):
         # sensitivity, precision, f1_score, mean_error, standard_deviation
         eval_res_split = compute_metrics(
             np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),
-            np.repeat(
-                all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1
-            ),
+            np.repeat(all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1),
             self._cm,
             self.train_config.fs,
         )
 
         # TODO: provide numerical values for the metrics from all of the dicts of eval_res
         eval_res = {
-            metric: np.nanmean(
-                [
-                    eval_res_split[f"{wf}_{pos}"][metric]
-                    for wf in self._cm
-                    for pos in ["onset", "offset"]
-                ]
-            )
+            metric: np.nanmean([eval_res_split[f"{wf}_{pos}"][metric] for wf in self._cm for pos in ["onset", "offset"]])
             for metric in [
                 "sensitivity",
                 "precision",

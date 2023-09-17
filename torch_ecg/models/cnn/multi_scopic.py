@@ -7,7 +7,7 @@ import textwrap
 from collections import OrderedDict
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -15,13 +15,8 @@ from torch import Tensor, nn
 
 from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample
-from ...utils.misc import list_sum, add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-
+from ...utils.misc import CitationMixin, add_docstring, list_sum
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
 
 __all__ = [
     "MultiScopicCNN",
@@ -189,9 +184,7 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
             _, _, _seq_len = output_shape
         return output_shape
 
-    def _assign_weights_lead_wise(
-        self, other: "MultiScopicBasicBlock", indices: Sequence[int]
-    ) -> None:
+    def _assign_weights_lead_wise(self, other: "MultiScopicBasicBlock", indices: Sequence[int]) -> None:
         """Assign weights lead-wise.
 
         This method is used to assign weights from a model with
@@ -222,9 +215,7 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
                 else:  # group norm
                     out_channels = blk.num_channels
                 units = out_channels // self.groups
-                out_indices = list_sum(
-                    [[i * units + j for j in range(units)] for i in indices]
-                )
+                out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
                 o_blk.weight.data = blk.weight.data[out_indices].clone()
                 if blk.bias is not None:
                     o_blk.bias.data = blk.bias.data[out_indices].clone()
@@ -296,9 +287,7 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
             f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
         )
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(subsample_lengths, self.__num_blocks)
-            )
+            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
         else:
             self.__subsample_lengths = filter_lengths
             assert len(self.__subsample_lengths) == self.__num_blocks, (
@@ -335,9 +324,7 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         """Compute the output shape of the branch."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
-    def _assign_weights_lead_wise(
-        self, other: "MultiScopicBranch", indices: Sequence[int]
-    ) -> None:
+    def _assign_weights_lead_wise(self, other: "MultiScopicBranch", indices: Sequence[int]) -> None:
         """Assign weights lead-wise.
 
         This method is used to assign weights from a model with
@@ -484,16 +471,12 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         out_channels = 0
         for idx in range(self.__num_branches):
             key = f"branch_{idx}"
-            _, _branch_oc, _seq_len = self.branches[key].compute_output_shape(
-                seq_len, batch_size
-            )
+            _, _branch_oc, _seq_len = self.branches[key].compute_output_shape(seq_len, batch_size)
             out_channels += _branch_oc
         output_shape = (batch_size, out_channels, _seq_len)
         return output_shape
 
-    def assign_weights_lead_wise(
-        self, other: "MultiScopicCNN", indices: Sequence[int]
-    ) -> None:
+    def assign_weights_lead_wise(self, other: "MultiScopicCNN", indices: Sequence[int]) -> None:
         """Assign weights to the `other` :class:`MultiScopicCNN`
         module in the lead-wise manner
 
@@ -547,23 +530,14 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         tensor(True)  # identical feature maps
 
         """
+        assert self.in_channels == self.config.groups, "the current model is not lead-wise"
+        assert other.in_channels == other.config.groups, "the other model is not lead-wise"
+        assert other.in_channels == len(indices), "the length of indices should match the number of channels of the other model"
         assert (
-            self.in_channels == self.config.groups
-        ), "the current model is not lead-wise"
-        assert (
-            other.in_channels == other.config.groups
-        ), "the other model is not lead-wise"
-        assert other.in_channels == len(
-            indices
-        ), "the length of indices should match the number of channels of the other model"
-        assert (
-            np.array(self.config.num_filters) * other.in_channels
-            == np.array(other.config.num_filters) * self.in_channels
+            np.array(self.config.num_filters) * other.in_channels == np.array(other.config.num_filters) * self.in_channels
         ).all(), "the number of filters of the two models should be proportional to the number of channels of the other model"
         for idx in range(self.num_branches):
-            for b, ob in zip(
-                self.branches[f"branch_{idx}"], other.branches[f"branch_{idx}"]
-            ):
+            for b, ob in zip(self.branches[f"branch_{idx}"], other.branches[f"branch_{idx}"]):
                 b._assign_weights_lead_wise(ob, indices)
 
     @property

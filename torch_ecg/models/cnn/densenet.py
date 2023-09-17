@@ -16,20 +16,15 @@ import math
 import textwrap
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import torch
 from torch import Tensor, nn
 
 from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample
-from ...utils.misc import list_sum, add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-
+from ...utils.misc import CitationMixin, add_docstring, list_sum
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
 
 __all__ = [
     "DenseNet",
@@ -102,12 +97,8 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         self.__groups = groups
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
-        assert (
-            in_channels % groups == 0
-        ), f"`in_channels` (= `{in_channels}`) must be divisible by `groups` (= `{groups}`)"
-        assert (
-            growth_rate % groups == 0
-        ), f"`growth_rate` (= `{growth_rate}`) must be divisible by `groups` (= `{groups}`)"
+        assert in_channels % groups == 0, f"`in_channels` (= `{in_channels}`) must be divisible by `groups` (= `{groups}`)"
+        assert growth_rate % groups == 0, f"`growth_rate` (= `{growth_rate}`) must be divisible by `groups` (= `{groups}`)"
 
         self.bac = Conv_Bn_Activation(
             in_channels=self.__in_channels,
@@ -164,9 +155,7 @@ class DenseBasicBlock(nn.Module, SizeMixin):
                     [
                         [
                             input[:, iw_per_group * i : iw_per_group * (i + 1), :],
-                            new_features[
-                                :, nfw_per_group * i : nfw_per_group * (i + 1), :
-                            ],
+                            new_features[:, nfw_per_group * i : nfw_per_group * (i + 1), :],
                         ]
                         for i in range(self.__groups)
                     ]
@@ -353,9 +342,7 @@ class DenseBottleNeck(nn.Module, SizeMixin):
                     [
                         [
                             input[:, iw_per_group * i : iw_per_group * (i + 1), :],
-                            new_features[
-                                :, nfw_per_group * i : nfw_per_group * (i + 1), :
-                            ],
+                            new_features[:, nfw_per_group * i : nfw_per_group * (i + 1), :],
                         ]
                         for i in range(self.__groups)
                     ]
@@ -709,9 +696,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
         )
 
         if isinstance(self.config.growth_rates, int):
-            self.__growth_rates = list(
-                repeat(self.config.growth_rates, self.__num_blocks)
-            )
+            self.__growth_rates = list(repeat(self.config.growth_rates, self.__num_blocks))
         else:
             self.__growth_rates = list(self.config.growth_rates)
         assert len(self.__growth_rates) == self.__num_blocks, (
@@ -719,9 +704,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
             f"while `config.num_layers` indicates {self.__num_blocks}"
         )
         if isinstance(self.config.filter_lengths, int):
-            self.__filter_lengths = list(
-                repeat(self.config.filter_lengths, self.__num_blocks)
-            )
+            self.__filter_lengths = list(repeat(self.config.filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(self.config.filter_lengths)
             assert len(self.__filter_lengths) == self.__num_blocks, (
@@ -729,9 +712,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
                 f"while `config.num_layers` indicates {self.__num_blocks}"
             )
         if isinstance(self.config.subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(self.config.subsample_lengths, self.__num_blocks - 1)
-            )
+            self.__subsample_lengths = list(repeat(self.config.subsample_lengths, self.__num_blocks - 1))
         else:
             self.__subsample_lengths = list(self.config.subsample_lengths)
             assert len(self.__subsample_lengths) == self.__num_blocks - 1, (

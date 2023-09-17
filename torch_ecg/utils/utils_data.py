@@ -9,25 +9,17 @@ from copy import deepcopy
 from dataclasses import dataclass
 from numbers import Real
 from pathlib import Path
-from typing import (
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from sklearn.utils import compute_class_weight
 from torch import Tensor, from_numpy
 from torch.nn.functional import interpolate
-from sklearn.utils import compute_class_weight
 from wfdb import MultiRecord, Record
 from wfdb.io import _header
 
 from ..cfg import CFG, DEFAULTS
-
 
 __all__ = [
     "get_mask",
@@ -93,10 +85,7 @@ def get_mask(
     """
     if isinstance(shape, int):
         shape = (shape,)
-    l_itv = [
-        [max(0, cp - left_bias), min(shape[-1], cp + right_bias)]
-        for cp in critical_points
-    ]
+    l_itv = [[max(0, cp - left_bias), min(shape[-1], cp + right_bias)] for cp in critical_points]
     if return_fmt.lower() == "mask":
         mask = np.zeros(shape=shape, dtype=int)
         for itv in l_itv:
@@ -166,9 +155,7 @@ def class_weight_to_sample_weight(
     return sample_weight
 
 
-def rdheader(
-    header_data: Union[Path, str, Sequence[str]]
-) -> Union[Record, MultiRecord]:
+def rdheader(header_data: Union[Path, str, Sequence[str]]) -> Union[Record, MultiRecord]:
     """Modified from `wfdb.rdheader`.
 
     Parameters
@@ -196,9 +183,7 @@ def rdheader(
     elif isinstance(header_data, Sequence):
         _header_data = header_data
     else:
-        raise TypeError(
-            f"header_data must be str or sequence of str, but got {type(header_data)}"
-        )
+        raise TypeError(f"header_data must be str or sequence of str, but got {type(header_data)}")
     # Read the header file. Separate comment and non-comment lines
     header_lines, comment_lines = [], []
     for line in _header_data:
@@ -263,9 +248,7 @@ def rdheader(
     return record
 
 
-def ensure_lead_fmt(
-    values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first"
-) -> np.ndarray:
+def ensure_lead_fmt(values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first") -> np.ndarray:
     """Ensure the multi-lead (ECG) signal to be of specified format.
 
     Parameters
@@ -384,9 +367,7 @@ def ensure_siglen(
             pad_len = siglen - original_siglen
             pad_left = pad_len // 2
             pad_right = pad_len - pad_left
-            out_values = np.pad(
-                _values, ((0, 0), (pad_left, pad_right)), "constant", constant_values=0
-            ).astype(dtype)
+            out_values = np.pad(_values, ((0, 0), (pad_left, pad_right)), "constant", constant_values=0).astype(dtype)
 
         if fmt.lower() in ["channel_last", "lead_last"]:
             out_values = out_values.T
@@ -524,13 +505,9 @@ def masks_to_waveforms(
         else:
             _masks = masks.copy()
     else:
-        raise ValueError(
-            f"masks should be of dim 1 or 2, but got a {masks.ndim}d array"
-        )
+        raise ValueError(f"masks should be of dim 1 or 2, but got a {masks.ndim}d array")
 
-    _leads = (
-        [f"lead_{idx+1}" for idx in range(_masks.shape[0])] if leads is None else leads
-    )
+    _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])] if leads is None else leads
     assert len(_leads) == _masks.shape[0]
 
     _class_map = CFG(deepcopy(class_map))
@@ -703,15 +680,10 @@ def stratified_train_test_split(
         The dataframe of the test set.
 
     """
-    invalid_cols = [
-        col
-        for col in stratified_cols
-        if not all([v > 1 for v in Counter(df[col].apply(str)).values()])
-    ]
+    invalid_cols = [col for col in stratified_cols if not all([v > 1 for v in Counter(df[col].apply(str)).values()])]
     if len(invalid_cols) > 0:
         warnings.warn(
-            f"invalid columns: {invalid_cols}, "
-            "each of which has classes with only one member (row).",
+            f"invalid columns: {invalid_cols}, " "each of which has classes with only one member (row).",
             RuntimeWarning,
         )
     stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
@@ -722,18 +694,13 @@ def stratified_train_test_split(
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
         df_inspection[item] = df_inspection[item].apply(lambda e: entities_dict[e])
 
-    inspection_col_name = "Inspection" * (
-        max([len(c) for c in stratified_cols]) // 10 + 1
-    )
+    inspection_col_name = "Inspection" * (max([len(c) for c in stratified_cols]) // 10 + 1)
     df_inspection[inspection_col_name] = ""
     for idx, row in df_inspection.iterrows():
         cn = "-".join([row[sc] for sc in stratified_cols])
         df_inspection.loc[idx, inspection_col_name] = cn
     item_names = df_inspection[inspection_col_name].unique().tolist()
-    item_indices = {
-        n: df_inspection.index[df_inspection[inspection_col_name] == n].tolist()
-        for n in item_names
-    }
+    item_indices = {n: df_inspection.index[df_inspection[inspection_col_name] == n].tolist() for n in item_names}
     for n in item_names:
         DEFAULTS.RNG.shuffle(item_indices[n])
 
@@ -749,9 +716,7 @@ def stratified_train_test_split(
     return df_train, df_test
 
 
-def cls_to_bin(
-    cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None
-) -> np.ndarray:
+def cls_to_bin(cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None) -> np.ndarray:
     """Convert a categorical array to a one-hot array.
 
     Convert a categorical (class indices) array of shape ``(n,)``
@@ -784,9 +749,7 @@ def cls_to_bin(
     if isinstance(cls_array, Tensor):
         cls_array = cls_array.cpu().numpy()
     if num_classes is None:
-        assert (
-            cls_array.ndim == 1
-        ), "`cls_array` should be 1D if num_classes is not specified"
+        assert cls_array.ndim == 1, "`cls_array` should be 1D if num_classes is not specified"
         num_classes = cls_array.max() + 1
     if cls_array.ndim == 1:
         assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
@@ -862,12 +825,8 @@ def generate_weight_mask(
 
     """
     assert target_mask.ndim == 1, "`target_mask` should be 1D"
-    assert set(np.unique(target_mask)).issubset(
-        {0, 1}
-    ), "`target_mask` should be binary"
-    assert (
-        isinstance(reduction, Real) and reduction >= 1
-    ), "`reduction` should be a real number greater than 1"
+    assert set(np.unique(target_mask)).issubset({0, 1}), "`target_mask` should be binary"
+    assert isinstance(reduction, Real) and reduction >= 1, "`reduction` should be a real number greater than 1"
     if reduction > 1:
         # downsample the target mask
         target_mask = (
@@ -891,9 +850,7 @@ def generate_weight_mask(
         # weight = np.zeros_like(target_mask, dtype=DEFAULTS.DTYPE.NP)
         # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
         weight = np.full_like(target_mask, boundary_weight, dtype=DEFAULTS.DTYPE.NP)
-        weight = weight * np.exp(
-            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
-        )
+        weight = weight * np.exp(-np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2)
         weight_mask += weight
     if plot:
         import matplotlib.pyplot as plt

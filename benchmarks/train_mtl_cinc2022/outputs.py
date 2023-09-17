@@ -4,11 +4,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from torch_ecg.components.outputs import (
-    ClassificationOutput,
-    SequenceLabellingOutput,
-)
-
+from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
 
 __all__ = ["CINC2022Outputs"]
 

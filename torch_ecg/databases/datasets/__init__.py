@@ -31,6 +31,7 @@ from .cinc2021.cinc2021_cfg import CINC2021TrainCfg
 from .cinc2021.cinc2021_dataset import CINC2021Dataset
 from .cpsc2019.cpsc2019_cfg import CPSC2019TrainCfg
 from .cpsc2019.cpsc2019_dataset import CPSC2019Dataset
+
 # from .cpsc2020.cpsc2020_cfg import CPSC2020TrainCfg
 # from .cpsc2020.cpsc2020_dataset import CPSC2020Dataset
 from .cpsc2021.cpsc2021_cfg import CPSC2021TrainCfg

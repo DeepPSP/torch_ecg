@@ -22,26 +22,19 @@ from copy import deepcopy  # noqa: E402
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
-from torch.utils.data import Dataset, DataLoader  # noqa: F401, E402
-from torch.nn.parallel import (  # noqa: F401 E402
-    DistributedDataParallel as DDP,
-    DataParallel as DP,
-)  # noqa: F401 E402
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn  # noqa: E402
-from torch_ecg.components.outputs import ClassificationOutput  # noqa: E402
-
-from cfg import TrainCfg, ModelCfg, _BASE_DIR  # noqa: E402
-from utils.scoring_metrics import compute_challenge_metrics  # noqa: E402
-from data_reader import (  # noqa: F401 E402
-    CINC2022Reader,
-    CINC2016Reader,
-    EPHNOGRAMReader,
-)  # noqa: F401 E402
+from cfg import _BASE_DIR, ModelCfg, TrainCfg  # noqa: E402
+from data_reader import CINC2016Reader, CINC2022Reader, EPHNOGRAMReader  # noqa: F401 E402
 from dataset import CinC2022Dataset  # noqa: E402
 from models import CRNN_CINC2022, SEQ_LAB_NET_CINC2022, UNET_CINC2022  # noqa: E402
 from outputs import CINC2022Outputs  # noqa: E402
-from trainer import CINC2022Trainer, _set_task, _MODEL_MAP  # noqa: E402
+from torch.nn.parallel import DataParallel as DP  # noqa: E402
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401 E402
+from torch.utils.data import DataLoader, Dataset  # noqa: F401, E402
+from trainer import _MODEL_MAP, CINC2022Trainer, _set_task  # noqa: E402
+from utils.scoring_metrics import compute_challenge_metrics  # noqa: E402
 
+from torch_ecg.components.outputs import ClassificationOutput  # noqa: E402
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn  # noqa: E402
 
 CRNN_CINC2022.__DEBUG__ = False
 SEQ_LAB_NET_CINC2022.__DEBUG__ = False
@@ -213,8 +206,8 @@ def test_trainer() -> None:
     print("trainer test passed")
 
 
-from train_model import train_challenge_model  # noqa: E402
 from run_model import run_model  # noqa: E402
+from train_model import train_challenge_model  # noqa: E402
 
 
 def test_entry() -> None:

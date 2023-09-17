@@ -6,8 +6,8 @@ deprecated and overrided by ./augmentations.py
 """
 
 import re
-from typing import Union
 from collections import OrderedDict
+from typing import Union
 
 from torch.nn import Module, Sequential
 from torchaudio import transforms as TT

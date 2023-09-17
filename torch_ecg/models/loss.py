@@ -30,7 +30,6 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-
 __all__ = [
     "WeightedBCELoss",
     "BCEWithLogitsWithClassWeightLoss",
@@ -83,13 +82,9 @@ def weighted_binary_cross_entropy(
 
     """
     if not (targets.size() == sigmoid_x.size()):
-        raise ValueError(
-            f"Target size ({targets.size()}) must be the same as input size ({sigmoid_x.size()})"
-        )
+        raise ValueError(f"Target size ({targets.size()}) must be the same as input size ({sigmoid_x.size()})")
 
-    loss = (
-        -pos_weight * targets * sigmoid_x.log() - (1 - targets) * (1 - sigmoid_x).log()
-    )
+    loss = -pos_weight * targets * sigmoid_x.log() - (1 - targets) * (1 - sigmoid_x).log()
     # print(pos_weight, targets, sigmoid_x)
 
     if weight is not None:
@@ -351,9 +346,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             w = class_weight
         if not multi_label and w.ndim == 2:
             w = w.squeeze(0)
-        super().__init__(
-            weight=w, size_average=size_average, reduce=reduce, reduction=reduction
-        )
+        super().__init__(weight=w, size_average=size_average, reduce=reduce, reduction=reduction)
         # In practice `alpha` may be set by inverse class frequency or treated as a hyperparameter
         # the `class_weight` are usually inverse class frequencies
         # self.alpha = alpha
@@ -491,18 +484,12 @@ class AsymmetricLoss(nn.Module):
         self.reduction = reduction.lower()
 
         if self.implementation == "alibaba-miil":
-            self.targets = (
-                self.anti_targets
-            ) = self.xs_pos = self.xs_neg = self.asymmetric_w = self.loss = None
+            self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.asymmetric_w = self.loss = None
         elif self.implementation in [
             "deep-psp",
             "deeppsp",
         ]:
-            self.targets = (
-                self.anti_targets
-            ) = (
-                self.xs_pos
-            ) = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
+            self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """Forward pass.

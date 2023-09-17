@@ -7,27 +7,15 @@ import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import torch.nn.functional as F
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (
-    Activations,
-    Conv_Bn_Activation,
-    DownSample,
-    SpaceToDepth,
-    ZeroPadding,
-    make_attention_layer,
-)
-from ...utils.misc import add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-
+from ...models._nets import Activations, Conv_Bn_Activation, DownSample, SpaceToDepth, ZeroPadding, make_attention_layer
+from ...utils.misc import CitationMixin, add_docstring
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
 
 __all__ = [
     "ResNet",
@@ -117,13 +105,8 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         self.config = CFG(self.__DEFAULT_CONFIG__.copy())
         self.config.update(config)
 
-        if (
-            self.config.increase_channels_method.lower() == "zero_padding"
-            and self.__groups != 1
-        ):
-            raise ValueError(
-                "zero padding for increasing channels can not be used with groups != 1"
-            )
+        if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
+            raise ValueError("zero padding for increasing channels can not be used with groups != 1")
 
         self.__attn = attn
         if self.__attn:
@@ -136,9 +119,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         conv_in_channels = self.__in_channels
         dropout_config = self.config.get("dropout", 0)
         for i in range(self.__num_convs):
-            conv_activation = (
-                self.config.activation if i < self.__num_convs - 1 else None
-            )
+            conv_activation = self.config.activation if i < self.__num_convs - 1 else None
             if self.__attn and self.__attn["pos"] == i:
                 self.main_stream.add_module(
                     self.__attn["name"],
@@ -164,17 +145,11 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
             if i < self.__num_convs - 1:
                 if isinstance(dropout_config, dict):
                     if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
-                        self.main_stream.add_module(
-                            f"dropout_{i}", nn.Dropout1d(dropout_config["p"])
-                        )
+                        self.main_stream.add_module(f"dropout_{i}", nn.Dropout1d(dropout_config["p"]))
                     elif dropout_config["type"] is None and dropout_config["p"] > 0:
-                        self.main_stream.add_module(
-                            f"dropout_{i}", nn.Dropout(dropout_config["p"])
-                        )
+                        self.main_stream.add_module(f"dropout_{i}", nn.Dropout(dropout_config["p"]))
                 elif dropout_config > 0:  # float
-                    self.main_stream.add_module(
-                        f"dropout_{i}", nn.Dropout(dropout_config)
-                    )
+                    self.main_stream.add_module(f"dropout_{i}", nn.Dropout(dropout_config))
             conv_in_channels = self.__out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -183,9 +158,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
             )
 
         if isinstance(self.config.activation, str):
-            self.out_activation = Activations[self.config.activation.lower()](
-                **self.config.kw_activation
-            )
+            self.out_activation = Activations[self.config.activation.lower()](**self.config.kw_activation)
         else:
             self.out_activation = self.config.activation(**self.config.kw_activation)
 
@@ -213,9 +186,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
                     filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
             elif self.config.increase_channels_method.lower() == "zero_padding":
-                batch_norm = (
-                    False if self.config.subsample_mode.lower() != "conv" else True
-                )
+                batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
                 shortcut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
@@ -256,9 +227,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
             # downsampling using "avg" or "max" adopts no padding
             # hence shape[-1] of identity might be smaller by 1 than shape[-1] of out
             diff_sig_len = out.shape[-1] - identity.shape[-1]
-            identity = F.pad(
-                identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2]
-            )
+            identity = F.pad(identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
 
         out += identity
         out = self.out_activation(out)
@@ -369,12 +338,8 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
         self.__in_channels = in_channels
         # update denominator of computing neck_num_filters by init_num_filters
-        self.__DEFAULT_BASE_WIDTH__ = self.config.get(
-            "init_num_filters", self.__DEFAULT_BASE_WIDTH__
-        )
-        neck_num_filters = (
-            int(num_filters * (base_width / self.__DEFAULT_BASE_WIDTH__)) * groups
-        )
+        self.__DEFAULT_BASE_WIDTH__ = self.config.get("init_num_filters", self.__DEFAULT_BASE_WIDTH__)
+        neck_num_filters = int(num_filters * (base_width / self.__DEFAULT_BASE_WIDTH__)) * groups
         self.__out_channels = [
             neck_num_filters,
             neck_num_filters,
@@ -400,13 +365,8 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         if self.__attn:
             self.__attn = CFG(self.__attn)
 
-        if (
-            self.config.increase_channels_method.lower() == "zero_padding"
-            and self.__groups != 1
-        ):
-            raise ValueError(
-                "zero padding for increasing channels can not be used with groups != 1"
-            )
+        if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
+            raise ValueError("zero padding for increasing channels can not be used with groups != 1")
 
         self.__increase_channels = self.__out_channels[-1] > self.__in_channels
         self.shortcut = self._make_shortcut_layer()
@@ -425,9 +385,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
                     self.__attn["name"],
                     make_attention_layer(conv_in_channels, **self.__attn),
                 )
-            conv_activation = (
-                self.config.activation if i < self.__num_convs - 1 else None
-            )
+            conv_activation = self.config.activation if i < self.__num_convs - 1 else None
             conv_out_channels = self.__out_channels[i]
             conv_type = self.config.get("conv_type", None)
             if self.__kernel_size[i] == 1 and conv_type == "separable":
@@ -452,17 +410,11 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             if i < self.__num_convs - 1:
                 if isinstance(dropout_config, dict):
                     if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
-                        self.main_stream.add_module(
-                            f"dropout_{i}", nn.Dropout1d(dropout_config["p"])
-                        )
+                        self.main_stream.add_module(f"dropout_{i}", nn.Dropout1d(dropout_config["p"]))
                     elif dropout_config["type"] is None and dropout_config["p"] > 0:
-                        self.main_stream.add_module(
-                            f"dropout_{i}", nn.Dropout(dropout_config["p"])
-                        )
+                        self.main_stream.add_module(f"dropout_{i}", nn.Dropout(dropout_config["p"]))
                 elif dropout_config > 0:  # float
-                    self.main_stream.add_module(
-                        f"dropout_{i}", nn.Dropout(dropout_config)
-                    )
+                    self.main_stream.add_module(f"dropout_{i}", nn.Dropout(dropout_config))
             conv_in_channels = conv_out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -471,9 +423,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             )
 
         if isinstance(self.config.activation, str):
-            self.out_activation = Activations[self.config.activation.lower()](
-                **self.config.kw_activation
-            )
+            self.out_activation = Activations[self.config.activation.lower()](**self.config.kw_activation)
         else:
             self.out_activation = self.config.activation(**self.config.kw_activation)
 
@@ -501,9 +451,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
                     filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
             elif self.config.increase_channels_method.lower() == "zero_padding":
-                batch_norm = (
-                    False if self.config.subsample_mode.lower() != "conv" else True
-                )
+                batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
                 shortcut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
@@ -544,9 +492,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             # downsampling using "avg" or "max" adopts no padding
             # hence shape[-1] of identity might be smaller by 1 than shape[-1] of out
             diff_sig_len = out.shape[-1] - identity.shape[-1]
-            identity = F.pad(
-                identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2]
-            )
+            identity = F.pad(identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
 
         out += identity
         out = self.out_activation(out)
@@ -631,9 +577,7 @@ class ResNetStem(nn.Sequential, SizeMixin):
         if subsample_mode.lower() in ["s2d", "space_to_depth", "SpaceToDepth"]:
             self.add_module(
                 "s2d",
-                SpaceToDepth(
-                    self.__in_channels, self.__out_channels, config.get("block_size", 4)
-                ),
+                SpaceToDepth(self.__in_channels, self.__out_channels, config.get("block_size", 4)),
             )
             return
         if isinstance(self.__filter_lengths, int):
@@ -776,9 +720,9 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
                 else:
                     self.building_block.append(ResNetBasicBlock)
                     self.additional_kw.append(CFG())
-            assert isinstance(self.config.block, Sequence) and len(
-                self.config.block
-            ) == len(self.config.building_block) == len(self.config.num_blocks)
+            assert isinstance(self.config.block, Sequence) and len(self.config.block) == len(self.config.building_block) == len(
+                self.config.num_blocks
+            )
         elif self.config.get("building_block", "").lower() in [
             "bottleneck",
             "bottle_neck",
@@ -814,9 +758,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         )
 
         if isinstance(self.config.filter_lengths, int):
-            self.__filter_lengths = list(
-                repeat(self.config.filter_lengths, len(self.config.num_blocks))
-            )
+            self.__filter_lengths = list(repeat(self.config.filter_lengths, len(self.config.num_blocks)))
         else:
             self.__filter_lengths = self.config.filter_lengths
         assert len(self.__filter_lengths) == len(self.config.num_blocks), (
@@ -824,9 +766,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
             f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         )
         if isinstance(self.config.subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(self.config.subsample_lengths, len(self.config.num_blocks))
-            )
+            self.__subsample_lengths = list(repeat(self.config.subsample_lengths, len(self.config.num_blocks)))
         else:
             self.__subsample_lengths = self.config.subsample_lengths
         assert len(self.__subsample_lengths) == len(self.config.num_blocks), (
@@ -835,19 +775,14 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         )
         self.__num_filters = self.config.get(
             "num_filters",
-            [
-                (2**i) * self.input_stem.compute_output_shape()[1]
-                for i in range(len(self.config.num_blocks))
-            ],
+            [(2**i) * self.input_stem.compute_output_shape()[1] for i in range(len(self.config.num_blocks))],
         )
         assert len(self.__num_filters) == len(self.config.num_blocks), (
             f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, "
             f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         )
         if isinstance(self.config.dropouts, (Real, dict)):
-            self.__dropouts = list(
-                repeat(self.config.dropouts, len(self.config.num_blocks))
-            )
+            self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
         else:
             self.__dropouts = self.config.dropouts
         assert len(self.__dropouts) == len(self.config.num_blocks), (

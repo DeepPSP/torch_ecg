@@ -30,7 +30,6 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.utils_data import mask_to_intervals
 
-
 __all__ = [
     "ecg_denoise",
 ]

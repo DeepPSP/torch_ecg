@@ -14,12 +14,8 @@ long_description = (cwd / "README.md").read_text(encoding="utf-8")
 install_requires = (cwd / "requirements.txt").read_text(encoding="utf-8").splitlines()
 
 extras = {}
-extras["test"] = (
-    (cwd / "test/requirements.txt").read_text(encoding="utf-8").splitlines()
-)
-extras["docs"] = (
-    (cwd / "docs/requirements.txt").read_text(encoding="utf-8").splitlines()
-)
+extras["test"] = (cwd / "test/requirements.txt").read_text(encoding="utf-8").splitlines()
+extras["docs"] = (cwd / "docs/requirements.txt").read_text(encoding="utf-8").splitlines()
 extras["dev"] = extras["docs"] + extras["test"]
 
 

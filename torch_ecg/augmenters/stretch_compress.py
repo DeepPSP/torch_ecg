@@ -15,7 +15,6 @@ from ..cfg import DEFAULTS
 from ..utils.misc import ReprMixin, add_docstring
 from .base import Augmenter
 
-
 __all__ = [
     "StretchCompress",
     "StretchCompressOffline",
@@ -57,9 +56,7 @@ class StretchCompress(Augmenter):
 
     __name__ = "StretchCompress"
 
-    def __init__(
-        self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any
-    ) -> None:
+    def __init__(self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any) -> None:
         super().__init__()
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
@@ -67,13 +64,9 @@ class StretchCompress(Augmenter):
         self.ratio = ratio
         if self.ratio > 1:
             self.ratio = self.ratio / 100
-        assert (
-            0 <= self.ratio <= 1
-        ), "Ratio must be between 0 and 1, or between 0 and 100"
+        assert 0 <= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
 
-    def forward(
-        self, sig: Tensor, *labels: Optional[Sequence[Tensor]], **kwargs: Any
-    ) -> Tuple[Tensor, ...]:
+    def forward(self, sig: Tensor, *labels: Optional[Sequence[Tensor]], **kwargs: Any) -> Tuple[Tensor, ...]:
         """Forward method of the augmenter.
 
         Parameters
@@ -109,14 +102,10 @@ class StretchCompress(Augmenter):
             if labels[idx].ndim < 3:
                 label_len.append(None)
                 continue
-            labels[idx] = labels[idx].permute(
-                0, 2, 1
-            )  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
+            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
             ll = labels[idx].shape[-1]
             if ll != siglen:
-                labels[idx] = F.interpolate(
-                    labels[idx], size=(siglen,), mode="linear", align_corners=True
-                )
+                labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
             label_len.append(ll)
         for batch_idx in self.get_indices(prob=self.prob, pop_size=batch):
             sign = choice([-1, 1])
@@ -171,23 +160,15 @@ class StretchCompress(Augmenter):
             if labels[idx].ndim < 3:
                 continue
             if ll != siglen:
-                labels[idx] = F.interpolate(
-                    label, size=(ll,), mode="linear", align_corners=True
-                )
-            labels[idx] = labels[idx].permute(
-                0, 2, 1
-            )  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
+                labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
+            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
         return (sig, *labels)
 
     def _sample_ratio(self) -> float:
         """Sample the ratio of stretching or compressing."""
-        return np.clip(
-            DEFAULTS.RNG.normal(self.ratio, 0.382 * self.ratio), 0, 2 * self.ratio
-        )
+        return np.clip(DEFAULTS.RNG.normal(self.ratio, 0.382 * self.ratio), 0, 2 * self.ratio)
 
-    def _generate(
-        self, sig: Tensor, *labels: Optional[Sequence[Tensor]]
-    ) -> Union[Tuple[Tensor, ...], Tensor]:
+    def _generate(self, sig: Tensor, *labels: Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor, ...], Tensor]:
         """NOT finished, NOT checked,
 
         parallel version of `self.generate`, NOT tested yet!
@@ -256,9 +237,7 @@ class StretchCompress(Augmenter):
         ] + super().extra_repr_keys()
 
 
-def _stretch_compress_one_batch_element(
-    ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
-) -> Tensor:
+def _stretch_compress_one_batch_element(ratio: Real, sig: Tensor, *labels: Sequence[Tensor]) -> Tensor:
     """Stretch or compress one batch element of the ECGs.
 
     Parameters
@@ -292,14 +271,10 @@ def _stretch_compress_one_batch_element(
         if labels[idx].ndim < 3:
             label_len.append(0)
             continue
-        labels[idx] = labels[idx].permute(
-            0, 2, 1
-        )  # (1, label_len, n_classes) -> (1, n_classes, label_len)
+        labels[idx] = labels[idx].permute(0, 2, 1)  # (1, label_len, n_classes) -> (1, n_classes, label_len)
         ll = labels[idx].shape[-1]
         if ll != siglen:
-            labels[idx] = F.interpolate(
-                labels[idx], size=(siglen,), mode="linear", align_corners=True
-            )
+            labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
         label_len.append(ll)
     sign = choice([-1, 1])
     ratio = np.clip(DEFAULTS.RNG.normal(ratio, 0.382 * ratio), 0, 2 * ratio)
@@ -351,12 +326,8 @@ def _stretch_compress_one_batch_element(
             labels[idx] = labels[idx].squeeze(0)
             continue
         if ll != siglen:
-            labels[idx] = F.interpolate(
-                label, size=(ll,), mode="linear", align_corners=True
-            )
-        labels[idx] = (
-            labels[idx].squeeze(0).permute(1, 0)
-        )  # (n_classes, label_len) -> (label_len, n_classes)
+            labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
+        labels[idx] = labels[idx].squeeze(0).permute(1, 0)  # (n_classes, label_len) -> (label_len, n_classes)
     if len(labels) > 0:
         return (sig, *labels)
     return sig
@@ -410,17 +381,11 @@ class StretchCompressOffline(ReprMixin):
         self.ratio = ratio
         if self.ratio > 1:
             self.ratio = self.ratio / 100
-        assert (
-            0 <= self.ratio <= 1
-        ), "Ratio must be between 0 and 1, or between 0 and 100"
+        assert 0 <= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
         self.overlap = overlap
-        assert (
-            0 <= self.overlap < 1
-        ), "Overlap ratio must be between 0 and 1 (1 not included)"
+        assert 0 <= self.overlap < 1, "Overlap ratio must be between 0 and 1 (1 not included)"
         self.critical_overlap = critical_overlap
-        assert (
-            0 <= self.critical_overlap < 1
-        ), "Critical overlap ratio must be between 0 and 1 (1 not included)"
+        assert 0 <= self.critical_overlap < 1, "Critical overlap ratio must be between 0 and 1 (1 not included)"
 
     def generate(
         self,
@@ -541,9 +506,7 @@ class StretchCompressOffline(ReprMixin):
             ``(seg, label1, label2, ..., start_idx, end_idx)``.
 
         """
-        assert not all(
-            [start_idx is None, end_idx is None]
-        ), "at least one of `start_idx` and `end_idx` should be set"
+        assert not all([start_idx is None, end_idx is None]), "at least one of `start_idx` and `end_idx` should be set"
 
         siglen = sig.shape[1]
         ratio = self._sample_ratio()
@@ -565,9 +528,7 @@ class StretchCompressOffline(ReprMixin):
                 dtype = lb.dtype
                 aug_labels.append(
                     F.interpolate(
-                        torch.from_numpy(
-                            lb[start_idx:end_idx, ...].T.astype(np.float32)
-                        ).unsqueeze(0),
+                        torch.from_numpy(lb[start_idx:end_idx, ...].T.astype(np.float32)).unsqueeze(0),
                         size=seglen,
                         mode="nearest",
                     )

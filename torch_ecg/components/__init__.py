@@ -62,28 +62,18 @@ Trainer
 
 """
 
-from .inputs import (
-    InputConfig,
-    WaveformInput,
-    FFTInput,
-    SpectrogramInput,
-)
+from .inputs import FFTInput, InputConfig, SpectrogramInput, WaveformInput
 from .loggers import LoggerManager
-from .metrics import (
-    ClassificationMetrics,
-    RPeaksDetectionMetrics,
-    WaveDelineationMetrics,
-)
+from .metrics import ClassificationMetrics, RPeaksDetectionMetrics, WaveDelineationMetrics
 from .outputs import (
     ClassificationOutput,
     MultiLabelClassificationOutput,
-    SequenceTaggingOutput,
-    SequenceLabellingOutput,
-    WaveDelineationOutput,
     RPeaksDetectionOutput,
+    SequenceLabellingOutput,
+    SequenceTaggingOutput,
+    WaveDelineationOutput,
 )
 from .trainer import BaseTrainer
-
 
 __all__ = [
     "InputConfig",

@@ -14,7 +14,6 @@ from .baseline_remove import BaselineRemove
 from .normalize import Normalize
 from .resample import Resample
 
-
 __all__ = [
     "PreprocManager",
 ]
@@ -164,9 +163,7 @@ class PreprocManager(ReprMixin, nn.Module):
             A new instance of :class:`PreprocManager`.
 
         """
-        ppm = cls(
-            random=config.get("random", False), inplace=config.get("inplace", True)
-        )
+        ppm = cls(random=config.get("random", False), inplace=config.get("inplace", True))
         _mapping = {
             "bandpass": ppm._add_bandpass,
             "baseline_remove": ppm._add_baseline_remove,
@@ -207,8 +204,7 @@ class PreprocManager(ReprMixin, nn.Module):
         """
         if self.random:
             warnings.warn(
-                "The preprocessors are applied in random order, "
-                "rearranging the preprocessors will not take effect.",
+                "The preprocessors are applied in random order, " "rearranging the preprocessors will not take effect.",
                 RuntimeWarning,
             )
         _mapping = {  # built-in preprocessors
@@ -221,19 +217,11 @@ class PreprocManager(ReprMixin, nn.Module):
         for k in new_ordering:
             if k not in _mapping:
                 # allow custom preprocessors
-                assert k in [
-                    item.__class__.__name__ for item in self._preprocessors
-                ], f"Unknown preprocessor name: `{k}`"
+                assert k in [item.__class__.__name__ for item in self._preprocessors], f"Unknown preprocessor name: `{k}`"
                 _mapping.update({k: k})
-        assert len(new_ordering) == len(
-            set(new_ordering)
-        ), "Duplicate preprocessor names."
-        assert len(new_ordering) == len(
-            self._preprocessors
-        ), "Number of preprocessors mismatch."
-        self._preprocessors.sort(
-            key=lambda item: new_ordering.index(_mapping[item.__class__.__name__])
-        )
+        assert len(new_ordering) == len(set(new_ordering)), "Duplicate preprocessor names."
+        assert len(new_ordering) == len(self._preprocessors), "Number of preprocessors mismatch."
+        self._preprocessors.sort(key=lambda item: new_ordering.index(_mapping[item.__class__.__name__]))
 
     def add_(self, pp: nn.Module, pos: int = -1) -> None:
         """Add a (custom) preprocessor to the manager.
@@ -255,9 +243,7 @@ class PreprocManager(ReprMixin, nn.Module):
         assert pp.__class__.__name__ not in [
             p.__class__.__name__ for p in self.preprocessors
         ], f"Preprocessor {pp.__class__.__name__} already exists."
-        assert (
-            isinstance(pos, int) and pos >= -1
-        ), f"pos must be an integer >= -1, but got {pos}."
+        assert isinstance(pos, int) and pos >= -1, f"pos must be an integer >= -1, but got {pos}."
         if pos == -1:
             self._preprocessors.append(pp)
         else:

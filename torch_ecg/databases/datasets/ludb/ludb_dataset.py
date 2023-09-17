@@ -5,7 +5,7 @@ import json
 import warnings
 from copy import deepcopy
 from random import randint, shuffle
-from typing import List, Optional, Sequence, Tuple, Any
+from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -15,7 +15,6 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import LUDB as LR
 from ....utils.misc import ReprMixin
-
 
 __all__ = [
     "LUDBDataset",
@@ -53,9 +52,7 @@ class LUDBDataset(ReprMixin, Dataset):
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
-            warnings.warn(
-                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
-            )
+            warnings.warn("`db_dir` is specified in both config and reader_kwargs", RuntimeWarning)
         self.reader = LR(db_dir=self.config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir
         self.training = training
@@ -104,9 +101,7 @@ class LUDBDataset(ReprMixin, Dataset):
             # merge labels in all leads to one
             # TODO: map via self.waveform_priority
             labels = np.max(labels, axis=0)
-        sampfrom = randint(
-            self.config.start_from, signals.shape[1] - self.config.end_at - self.siglen
-        )
+        sampfrom = randint(self.config.start_from, signals.shape[1] - self.config.end_at - self.siglen)
         sampto = sampfrom + self.siglen
         signals = signals[..., sampfrom:sampto]
         labels = labels[sampfrom:sampto, ...]
@@ -117,9 +112,7 @@ class LUDBDataset(ReprMixin, Dataset):
         """Load all data into memory."""
         self._signals, self._labels = [], []
 
-        with tqdm(
-            self.fdr, total=len(self.fdr), dynamic_ncols=True, mininterval=1.0
-        ) as bar:
+        with tqdm(self.fdr, total=len(self.fdr), dynamic_ncols=True, mininterval=1.0) as bar:
             for signals, labels in bar:
                 self._signals.append(signals)
                 self._labels.append(labels)
@@ -141,9 +134,7 @@ class LUDBDataset(ReprMixin, Dataset):
         """
         return self._labels
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """Perform train-test split.
 
         Parameters
@@ -254,14 +245,10 @@ class _FastDataReader(ReprMixin, Dataset):
         if self.config.loss == "CrossEntropyLoss":
             return signals, masks
         # expand masks to have n vectors, with n = n_classes
-        labels = np.ones(
-            (*masks.shape, len(self.config.mask_class_map)), dtype=self.dtype
-        )
+        labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=self.dtype)
         for i in range(len(self.leads)):
             for key, val in self.config.mask_class_map.items():
-                labels[i, ..., val] = (
-                    masks[i, ...] == self.config.class_map[key]
-                ).astype(self.dtype)
+                labels[i, ..., val] = (masks[i, ...] == self.config.class_map[key]).astype(self.dtype)
         return signals, labels
 
     def extra_repr_keys(self) -> List[str]:

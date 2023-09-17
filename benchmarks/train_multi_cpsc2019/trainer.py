@@ -24,11 +24,7 @@ except ModuleNotFoundError:
 from cfg import ModelCfg, TrainCfg
 from dataset import CPSC2019
 from metrics import compute_metrics
-from model import (
-    ECG_SEQ_LAB_NET_CPSC2019,
-    ECG_SUBTRACT_UNET_CPSC2019,
-    ECG_UNET_CPSC2019,
-)
+from model import ECG_SEQ_LAB_NET_CPSC2019, ECG_SUBTRACT_UNET_CPSC2019, ECG_UNET_CPSC2019
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.trainer import BaseTrainer
@@ -122,18 +118,14 @@ class CPSC2019Trainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
@@ -170,9 +162,7 @@ class CPSC2019Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -211,23 +201,15 @@ class CPSC2019Trainer(BaseTrainer):
         for signals, labels in data_loader:
             signals = signals.to(device=self.device, dtype=self.dtype)
             labels = labels.numpy()
-            labels = [
-                mask_to_intervals(item, 1) for item in labels
-            ]  # intervals of qrs complexes
+            labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
             labels = [  # to indices of rpeaks in the original signal sequence
-                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(
-                    int
-                )
-                for item in labels
+                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(int) for item in labels
             ]
             labels = [
                 item[
                     np.where(
                         (item >= self.train_config.skip_dist)
-                        & (
-                            item
-                            < self.train_config.input_len - self.train_config.skip_dist
-                        )
+                        & (item < self.train_config.input_len - self.train_config.skip_dist)
                     )[0]
                 ]
                 for item in labels

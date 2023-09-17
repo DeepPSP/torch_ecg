@@ -14,10 +14,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from torch_ecg.databases import MITDB, WFDB_Rhythm_Annotations, DataBaseInfo
+from torch_ecg.databases import MITDB, DataBaseInfo, WFDB_Rhythm_Annotations
 from torch_ecg.databases.datasets import MITDBDataset, MITDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
-
 
 ###############################################################################
 # set paths
@@ -46,17 +45,11 @@ class TestMITDB:
         reader_ss = MITDB(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             MITDB(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             MITDB(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             MITDB(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -97,9 +90,7 @@ class TestMITDB:
         rpeaks = reader.load_rpeak_indices(0)
         assert rpeaks.ndim == 1
         rpeaks = reader.load_rpeak_indices(0, sampfrom=2000, sampto=4000)
-        rpeaks_1 = reader.load_rpeak_indices(
-            0, sampfrom=2000, sampto=4000, keep_original=True
-        )
+        rpeaks_1 = reader.load_rpeak_indices(0, sampfrom=2000, sampto=4000, keep_original=True)
         assert np.allclose(rpeaks, rpeaks_1 - 2000)
 
     def test_get_lead_names(self):
@@ -108,9 +99,7 @@ class TestMITDB:
         assert all(isinstance(lead_name, str) for lead_name in lead_names)
 
     def test_meta_data(self):
-        assert isinstance(reader.version, str) and re.match(
-            PHYSIONET_DB_VERSION_PATTERN, reader.version
-        )
+        assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
@@ -135,24 +124,16 @@ config.stretch_compress = 5  # 5%
 # tasks: "qrs_detection", "rhythm_segmentation", "af_event", "beat_classification", "rr_lstm"
 TASK = "qrs_detection"
 
-with pytest.warns(
-    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
-):
-    ds = MITDBDataset(
-        config, task=TASK, training=True, lazy=True, subsample=0.2, db_dir=_CWD
-    )
+with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
+    ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2, db_dir=_CWD)
 ds.persistence(verbose=2)
 ds.reset_task(TASK, lazy=False)
 
-ds_rhythm = MITDBDataset(
-    config, task="rhythm_segmentation", training=True, lazy=False, subsample=0.2
-)
+ds_rhythm = MITDBDataset(config, task="rhythm_segmentation", training=True, lazy=False, subsample=0.2)
 
 ds_af = MITDBDataset(config, task="af_event", training=True, lazy=False, subsample=0.2)
 
-ds_beat = MITDBDataset(
-    config, task="beat_classification", training=True, lazy=False, subsample=0.2
-)
+ds_beat = MITDBDataset(config, task="beat_classification", training=True, lazy=False, subsample=0.2)
 
 ds_rr = MITDBDataset(config, task="rr_lstm", training=True, lazy=False, subsample=0.2)
 

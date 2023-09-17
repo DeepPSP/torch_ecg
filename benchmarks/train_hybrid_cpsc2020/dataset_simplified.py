@@ -16,8 +16,8 @@ from random import randint, sample, shuffle, uniform
 from typing import Dict, Tuple
 
 import numpy as np
-from scipy.io import loadmat
 import torch
+from scipy.io import loadmat
 from torch.utils.data.dataset import Dataset
 
 try:
@@ -87,9 +87,7 @@ class CPSC2020(Dataset):
         self.n_classes = len(self.config.classes)
 
         self.training = training
-        split_res = self.reader.train_test_split_rec(
-            test_rec_num=self.config.test_rec_num
-        )
+        split_res = self.reader.train_test_split_rec(test_rec_num=self.config.test_rec_num)
 
         self.seglen = self.config.input_len  # alias, for simplicity
 
@@ -106,20 +104,14 @@ class CPSC2020(Dataset):
             self._ls_segments()
 
             if self.training:
-                self.segments = list_sum(
-                    [self.__all_segments[rec] for rec in split_res.train]
-                )
+                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.train])
                 shuffle(self.segments)
             else:
-                self.segments = list_sum(
-                    [self.__all_segments[rec] for rec in split_res.test]
-                )
+                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.test])
         # elif self.config.model_name.lower() == "od":  # object detection
         #     pass
         else:
-            raise NotImplementedError(
-                f"data generator for model \042{self.config.model_name}\042 not implemented"
-            )
+            raise NotImplementedError(f"data generator for model \042{self.config.model_name}\042 not implemented")
 
         if self.config.bw:
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
@@ -135,22 +127,16 @@ class CPSC2020(Dataset):
         if self.segments_json.is_file():
             self.__all_segments = json.loads(self.segments_json.read_text())
             return
-        print(
-            f"please allow the reader a few minutes to collect the segments from {self.segments_dir}..."
-        )
+        print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
         seg_filename_pattern = f"S\\d{{2}}_\\d{{7}}\\.{self.reader.rec_ext}"
         self.__all_segments = CFG(
             {
-                rec: get_record_list_recursive3(
-                    str(self.segments_dirs.data[rec]), seg_filename_pattern
-                )
+                rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern)
                 for rec in self.reader.all_records
             }
         )
         if all([len(self.__all_segments[rec]) > 0 for rec in self.reader.all_records]):
-            self.segments_json.write_text(
-                json.dumps(self.__all_segments, ensure_ascii=False)
-            )
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     @property
     def all_segments(self):
@@ -198,13 +184,9 @@ class CPSC2020(Dataset):
                     self.config.random_normalize_std[0],
                     self.config.random_normalize_std[1],
                 )
-                seg_data = (
-                    (seg_data - np.mean(seg_data) + rn_mean) / np.std(seg_data) * rn_std
-                )
+                seg_data = (seg_data - np.mean(seg_data) + rn_mean) / np.std(seg_data) * rn_std
             if self.config.label_smoothing > 0:
-                seg_label = (
-                    1 - self.config.label_smoothing
-                ) * seg_label + self.config.label_smoothing / self.n_classes
+                seg_label = (1 - self.config.label_smoothing) * seg_label + self.config.label_smoothing / self.n_classes
 
         if self.__DEBUG__:
             self.reader.plot(
@@ -329,11 +311,7 @@ class CPSC2020(Dataset):
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_beat_ann = loadmat(str(seg_ann_fp))
-        seg_beat_ann = {
-            k: v.flatten()
-            for k, v in seg_beat_ann.items()
-            if k in ["SPB_indices", "PVC_indices"]
-        }
+        seg_beat_ann = {k: v.flatten() for k, v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]}
         return seg_beat_ann
 
     def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
@@ -353,10 +331,7 @@ class CPSC2020(Dataset):
             label of the sequence,
             of shape (self.seglen//reduction, self.n_classes)
         """
-        seg_beat_ann = {
-            k: np.round(v / reduction).astype(int)
-            for k, v in self._load_seg_beat_ann(seg).items()
-        }
+        seg_beat_ann = {k: np.round(v / reduction).astype(int) for k, v in self._load_seg_beat_ann(seg).items()}
         bias_thr = int(round(self.config.bias_thr / reduction))
         seq_lab = np.zeros(
             shape=(self.seglen // reduction, self.n_classes),

@@ -6,16 +6,15 @@ from copy import deepcopy
 
 from ...cfg import CFG
 from .resnet import (
-    resnet_stem,
-    resnet_stem_C,
     resnet_bottle_neck,
     resnet_bottle_neck_B,
     resnet_bottle_neck_D,
-    resnet_bottle_neck_se,
-    resnet_bottle_neck_nl,
     resnet_bottle_neck_gc,
+    resnet_bottle_neck_nl,
+    resnet_bottle_neck_se,
+    resnet_stem,
+    resnet_stem_C,
 )
-
 
 __all__ = [
     "regnet_16_8",

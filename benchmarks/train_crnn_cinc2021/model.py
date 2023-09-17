@@ -35,9 +35,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
     __DEBUG__ = False
     __name__ = "ECG_CRNN_CINC2021"
 
-    def __init__(
-        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None) -> None:
         """
         Parameters
         ----------
@@ -110,10 +108,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
                 pred[row_idx, nsr_cid] = 1
             elif row.sum() == 0:
                 pred[row_idx, ...] = (
-                    (
-                        (prob[row_idx, ...] + ModelCfg.bin_pred_look_again_tol)
-                        >= row_max_prob
-                    )
+                    ((prob[row_idx, ...] + ModelCfg.bin_pred_look_again_tol) >= row_max_prob)
                     & (prob[row_idx, ...] >= ModelCfg.bin_pred_nsr_thr)
                 ).astype(int)
         if class_names:
@@ -121,9 +116,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             prob.columns = self.classes
             prob["pred"] = ""
             for row_idx in range(len(prob)):
-                prob.at[row_idx, "pred"] = np.array(self.classes)[
-                    np.where(pred[row_idx] == 1)[0]
-                ].tolist()
+                prob.at[row_idx, "pred"] = np.array(self.classes)[np.where(pred[row_idx] == 1)[0]].tolist()
         return MultiLabelClassificationOutput(
             classes=self.classes,
             thr=bin_pred_thr,

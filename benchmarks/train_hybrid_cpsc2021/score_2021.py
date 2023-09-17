@@ -76,51 +76,29 @@ class RefInfo:
                 if max(af_start - 1, 0) == 0:
                     onset_range[: self.beat_loc[af_start + 2]] += 1
                 elif max(af_start - 2, 0) == 0:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
                     onset_range[: self.beat_loc[af_start - 1]] += 0.5
                 else:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
-                    onset_range[
-                        self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]
-                    ] += 0.5
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
+                    onset_range[self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]] += 0.5
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
             elif self.class_true == 1:
                 onset_range[: self.beat_loc[af_start + 2]] += 1
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
         for i, af_end in enumerate(self.af_ends):
             if self.class_true == 2:
                 if min(af_end + 1, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
                     offset_range[self.beat_loc[af_end - 2] :] += 1
                 elif min(af_end + 2, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
                     offset_range[self.beat_loc[af_end + 1] :] += 0.5
                 else:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
-                    offset_range[
-                        self.beat_loc[af_end + 1] : min(
-                            self.beat_loc[af_end + 2], self.len_sig - 1
-                        )
-                    ] += 0.5
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
+                    offset_range[self.beat_loc[af_end + 1] : min(self.beat_loc[af_end + 2], self.len_sig - 1)] += 0.5
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
             elif self.class_true == 1:
                 offset_range[self.beat_loc[af_end - 2] :] += 1
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
 
         return onset_range, offset_range
 
@@ -181,10 +159,7 @@ def score(data_path, ans_path):
 
         if len(endpoints_pred) == 0:
             class_pred = 0
-        elif (
-            len(endpoints_pred) == 1
-            and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1
-        ):
+        elif len(endpoints_pred) == 1 and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1:
             class_pred = 1
         else:
             class_pred = 2

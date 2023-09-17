@@ -433,8 +433,7 @@ LQT = CFG(
             "https://en.wikipedia.org/wiki/Long_QT_syndrome",
         ],
         "knowledge": [
-            "LQT is measured by QTc (see ref url)"
-            "QTc is prolonged if > 440ms in men or > 460ms in women (or > 480ms?)",
+            "LQT is measured by QTc (see ref url)" "QTc is prolonged if > 440ms in men or > 460ms in women (or > 480ms?)",
         ],
     }
 )

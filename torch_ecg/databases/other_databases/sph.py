@@ -3,18 +3,17 @@
 import time
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Optional, Sequence, Dict, List, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
 
 from ...cfg import DEFAULTS
-from ...utils.download import http_get
-from ...utils.misc import get_record_list_recursive3, ms2samples, add_docstring
 from ...utils import EAK
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, _DataBase, DataBaseInfo, _PlotCfg
-
+from ...utils.download import http_get
+from ...utils.misc import add_docstring, get_record_list_recursive3, ms2samples
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, DataBaseInfo, _DataBase, _PlotCfg
 
 __all__ = [
     "SPH",
@@ -106,60 +105,39 @@ class SPH(_DataBase):
         self._df_records = pd.DataFrame()
         write_file = False
         if record_list_fp.is_file():
-            self._df_records["record"] = [
-                item
-                for item in record_list_fp.read_text().splitlines()
-                if len(item) > 0
-            ]
+            self._df_records["record"] = [item for item in record_list_fp.read_text().splitlines() if len(item) > 0]
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: (self.db_dir / x).resolve()
-            )
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: (self.db_dir / x).resolve())
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
             indices = self._df_records["path"].apply(lambda x: x.is_file())
             self._df_records = self._df_records.loc[indices]
         if len(self._df_records) == 0:
             write_file = True
             self.logger.info(
-                "Please wait patiently to let the reader find "
-                "all records of the database from local storage..."
+                "Please wait patiently to let the reader find " "all records of the database from local storage..."
             )
             start = time.time()
             record_pattern = "A[\\d]{5}\\.h5"
-            self._df_records["path"] = get_record_list_recursive3(
-                self.db_dir, record_pattern, relative=False
-            )
+            self._df_records["path"] = get_record_list_recursive3(self.db_dir, record_pattern, relative=False)
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
         if write_file and self._subsample is None:
             record_list_fp.write_text(
-                "\n".join(
-                    self._df_records["path"]
-                    .apply(lambda x: x.relative_to(self.db_dir).as_posix())
-                    .tolist()
-                )
+                "\n".join(self._df_records["path"].apply(lambda x: x.relative_to(self.db_dir).as_posix()).tolist())
             )
 
         if (self.db_dir / "code.csv").is_file():
@@ -183,9 +161,7 @@ class SPH(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        sid = self._df_metadata.loc[self._df_metadata["ECG_ID"] == rec][
-            "Patient_ID"
-        ].iloc[0]
+        sid = self._df_metadata.loc[self._df_metadata["ECG_ID"] == rec]["Patient_ID"].iloc[0]
         return sid
 
     def load_data(
@@ -247,9 +223,7 @@ class SPH(_DataBase):
             return data, self.fs
         return data
 
-    def load_ann(
-        self, rec: Union[str, int], ann_format: str = "c", ignore_modifier: bool = True
-    ) -> List[str]:
+    def load_ann(self, rec: Union[str, int], ann_format: str = "c", ignore_modifier: bool = True) -> List[str]:
         """Load annotation from the metadata file.
 
         Parameters
@@ -275,12 +249,7 @@ class SPH(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        labels = [
-            lb.strip()
-            for lb in self._df_metadata[self._df_metadata["ECG_ID"] == rec]["AHA_Code"]
-            .iloc[0]
-            .split(";")
-        ]
+        labels = [lb.strip() for lb in self._df_metadata[self._df_metadata["ECG_ID"] == rec]["AHA_Code"].iloc[0].split(";")]
         modifiers = [lb.split("+")[1] if "+" in lb else "" for lb in labels]
         if ignore_modifier:
             labels = [lb.split("+")[0] for lb in labels]
@@ -288,17 +257,10 @@ class SPH(_DataBase):
         if ann_format.lower() == "c":
             pass  # default format
         elif ann_format.lower() == "f":
-            labels = [
-                self._df_code[self._df_code["Code"] == lb.split("+")[0]][
-                    "Description"
-                ].iloc[0]
-                for lb in labels
-            ]
+            labels = [self._df_code[self._df_code["Code"] == lb.split("+")[0]]["Description"].iloc[0] for lb in labels]
             if not ignore_modifier:
                 labels = [
-                    f"""{self._df_code[self._df_code["Code"] == m]["Description"].iloc[0]} {lb}"""
-                    if len(m) > 0
-                    else lb
+                    f"""{self._df_code[self._df_code["Code"] == m]["Description"].iloc[0]} {lb}""" if len(m) > 0 else lb
                     for lb, m in zip(labels, modifiers)
                 ]
         elif ann_format.lower() == "a":
@@ -307,9 +269,7 @@ class SPH(_DataBase):
             raise ValueError(f"Unknown annotation format: `{ann_format}`")
         return labels
 
-    def get_subject_info(
-        self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None
-    ) -> dict:
+    def get_subject_info(self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None) -> dict:
         """Read auxiliary information of a subject (a record)
         from the header files.
 
@@ -333,13 +293,9 @@ class SPH(_DataBase):
             row = self._df_metadata[self._df_metadata["ECG_ID"] == rec_or_sid].iloc[0]
         else:
             if rec_or_sid.startswith("A"):
-                row = self._df_metadata[self._df_metadata["ECG_ID"] == rec_or_sid].iloc[
-                    0
-                ]
+                row = self._df_metadata[self._df_metadata["ECG_ID"] == rec_or_sid].iloc[0]
             else:
-                row = self._df_metadata[
-                    self._df_metadata["Patient_ID"] == rec_or_sid
-                ].iloc[0]
+                row = self._df_metadata[self._df_metadata["Patient_ID"] == rec_or_sid].iloc[0]
         if items is None or len(items) == 0:
             info_items = [
                 "age",
@@ -367,9 +323,7 @@ class SPH(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        age = (
-            self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"].iloc[0].item()
-        )
+        age = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"].iloc[0].item()
         return age
 
     def get_sex(self, rec: Union[str, int]) -> str:
@@ -407,9 +361,7 @@ class SPH(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        siglen = (
-            self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"].iloc[0].item()
-        )
+        siglen = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"].iloc[0].item()
         return siglen
 
     @property
@@ -426,9 +378,7 @@ class SPH(_DataBase):
             files = self.url.keys()
         if isinstance(files, str):
             files = [files]
-        assert set(files).issubset(
-            self.url
-        ), f"`files` should be a subset of {list(self.url)}"
+        assert set(files).issubset(self.url), f"`files` should be a subset of {list(self.url)}"
         for filename in files:
             url = self.url[filename]
             if not (self.db_dir / filename).is_file():
@@ -506,9 +456,7 @@ class SPH(_DataBase):
         lead_indices = [self.all_leads.index(ld) for ld in _leads]
 
         if data is None:
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[
-                lead_indices
-            ]
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[lead_indices]
         else:
             units = self._auto_infer_units(data)
             self.logger.info(f"input data is auto detected to have units in `{units}`")
@@ -528,10 +476,7 @@ class SPH(_DataBase):
 
         if waves:
             if waves.get("p_onsets", None) and waves.get("p_offsets", None):
-                p_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])
-                ]
+                p_waves = [[onset, offset] for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])]
             elif waves.get("p_peaks", None):
                 p_waves = [
                     [
@@ -546,10 +491,7 @@ class SPH(_DataBase):
             else:
                 p_waves = []
             if waves.get("q_onsets", None) and waves.get("s_offsets", None):
-                qrs = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])
-                ]
+                qrs = [[onset, offset] for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])]
             elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
                 qrs = [
                     [
@@ -575,10 +517,7 @@ class SPH(_DataBase):
             else:
                 qrs = []
             if waves.get("t_onsets", None) and waves.get("t_offsets", None):
-                t_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])
-                ]
+                t_waves = [[onset, offset] for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])]
             elif waves.get("t_peaks", None):
                 t_waves = [
                     [
@@ -613,9 +552,7 @@ class SPH(_DataBase):
         duration = len(t) / self.fs
         fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
         fig_sz_h = 6 * np.maximum(y_ranges, 750) / 1500
-        fig, axes = plt.subplots(
-            nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h))
-        )
+        fig, axes = plt.subplots(nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         if nb_leads == 1:
             axes = [axes]
         for idx in range(nb_leads):
@@ -631,23 +568,17 @@ class SPH(_DataBase):
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(
-                    which="major", linestyle="-", linewidth="0.4", color="red"
-                )
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.4", color="red")
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(
-                    which="minor", linestyle=":", linewidth="0.2", color="gray"
-                )
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.2", color="gray")
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             axes[idx].plot([], [], " ", label=f"labels - {','.join(ann)}")
             for w in ["p_waves", "qrs", "t_waves"]:
                 for itv in eval(w):
-                    axes[idx].axvspan(
-                        t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha
-                    )
+                    axes[idx].axvspan(t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha)
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])
             axes[idx].set_ylim(min(-600, -y_ranges[idx]), max(600, y_ranges[idx]))

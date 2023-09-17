@@ -66,9 +66,7 @@ class RandomMasking(Augmenter):
             self.prob = np.array([self.prob, self.prob])
         else:
             self.prob = np.array(self.prob)
-        assert (self.prob >= 0).all() and (
-            self.prob <= 1
-        ).all(), "Probability must be between 0 and 1"
+        assert (self.prob >= 0).all() and (self.prob <= 1).all(), "Probability must be between 0 and 1"
         self.mask_value = mask_value
         self.mask_width = (np.array(mask_width) * self.fs).round().astype(int)
         self.inplace = inplace
@@ -118,9 +116,7 @@ class RandomMasking(Augmenter):
         mask = torch.full_like(sig, 1, dtype=sig.dtype, device=sig.device)
         for batch_idx in self.get_indices(prob=self.prob[0], pop_size=batch):
             if critical_points is not None:
-                indices = self.get_indices(
-                    prob=self.prob[1], pop_size=len(critical_points[batch_idx])
-                )
+                indices = self.get_indices(prob=self.prob[1], pop_size=len(critical_points[batch_idx]))
                 indices = np.arange(siglen)[indices]
             else:
                 indices = np.array(
@@ -133,9 +129,7 @@ class RandomMasking(Augmenter):
                 indices += self.mask_width[1] // 2
             for j in indices:
                 masked_radius = randint(self.mask_width[0], self.mask_width[1]) // 2
-                mask[
-                    batch_idx, :, j - masked_radius : j + masked_radius
-                ] = self.mask_value
+                mask[batch_idx, :, j - masked_radius : j + masked_radius] = self.mask_value
             # print(f"batch_idx = {batch_idx}, len(indices) = {len(indices)}")
         sig = sig.mul_(mask)
         return (sig, label, *extra_tensors)

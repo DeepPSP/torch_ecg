@@ -73,9 +73,7 @@ __all__ = [
 
 resnet_block_basic = CFG()
 resnet_block_basic.increase_channels_method = "conv"  # or "zero_padding"
-resnet_block_basic.subsample_mode = (
-    "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
-)
+resnet_block_basic.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
 resnet_block_basic.kernel_initializer = "he_normal"
 resnet_block_basic.kw_initializer = {}
 resnet_block_basic.activation = "relu"  # "mish", "swish"
@@ -85,12 +83,8 @@ resnet_block_basic.bias = False
 resnet_bottle_neck = CFG()
 resnet_bottle_neck.expansion = 4
 resnet_bottle_neck.increase_channels_method = "conv"  # or "zero_padding"
-resnet_bottle_neck.subsample_mode = (
-    "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
-)
-resnet_bottle_neck.subsample_at = (
-    0  # or 0  # 0 is for the original paper, 1 for ResNet-B
-)
+resnet_bottle_neck.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
+resnet_bottle_neck.subsample_at = 0  # or 0  # 0 is for the original paper, 1 for ResNet-B
 resnet_bottle_neck.kernel_initializer = "he_normal"
 resnet_bottle_neck.kw_initializer = {}
 resnet_bottle_neck.activation = "relu"  # "mish", "swish"

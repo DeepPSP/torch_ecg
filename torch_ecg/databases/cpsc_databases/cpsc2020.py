@@ -15,7 +15,6 @@ from ...utils.misc import add_docstring
 from ...utils.utils_interval import get_optimal_covering
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
 
-
 __all__ = [
     "CPSC2020",
     "compute_metrics",
@@ -291,21 +290,13 @@ class CPSC2020(CPSCDataBase):
         self._df_records = pd.DataFrame()
         n_records = 10
         all_records = [f"A{i:02d}" for i in range(1, 1 + n_records)]
-        self._df_records["path"] = [
-            path
-            for path in self.db_dir.rglob(f"*.{self.rec_ext}")
-            if path.stem in all_records
-        ]
+        self._df_records["path"] = [path for path in self.db_dir.rglob(f"*.{self.rec_ext}") if path.stem in all_records]
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
         self._df_records.set_index("record", inplace=True)
 
         all_annotations = [f"R{i:02d}" for i in range(1, 1 + n_records)]
         df_ann = pd.DataFrame()
-        df_ann["ann_path"] = [
-            path
-            for path in self.db_dir.rglob(f"*.{self.ann_ext}")
-            if path.stem in all_annotations
-        ]
+        df_ann["ann_path"] = [path for path in self.db_dir.rglob(f"*.{self.ann_ext}") if path.stem in all_annotations]
         df_ann["record"] = df_ann["ann_path"].apply(lambda x: x.stem.replace("R", "A"))
         df_ann.set_index("record", inplace=True)
         # take the intersection by the index of `df_ann` and `self._df_records`
@@ -317,14 +308,10 @@ class CPSC2020(CPSCDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
 
         self._all_records = self._df_records.index.tolist()
-        self._all_annotations = (
-            self._df_records["ann_path"].apply(lambda x: x.stem).tolist()
-        )
+        self._all_annotations = self._df_records["ann_path"].apply(lambda x: x.stem).tolist()
 
     @property
     def all_annotations(self):
@@ -513,13 +500,11 @@ class CPSC2020(CPSCDataBase):
             test_records = DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
         elif test_rec_num == 2:
             test_records = (
-                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
-                + DEFAULTS.RNG_sample(self.subgroups.N, 1).tolist()
+                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist() + DEFAULTS.RNG_sample(self.subgroups.N, 1).tolist()
             )
         elif test_rec_num == 3:
             test_records = (
-                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
-                + DEFAULTS.RNG_sample(self.subgroups.N, 2).tolist()
+                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist() + DEFAULTS.RNG_sample(self.subgroups.N, 2).tolist()
             )
         elif test_rec_num == 4:
             test_records = []
@@ -645,9 +630,7 @@ class CPSC2020(CPSCDataBase):
         patches = {}
 
         if data is None:
-            _data = self.load_data(
-                rec, units="μV", sampfrom=sampfrom, sampto=sampto, data_format="flat"
-            )
+            _data = self.load_data(rec, units="μV", sampfrom=sampfrom, sampto=sampto, data_format="flat")
         else:
             units = self._auto_infer_units(data)
             if units == "mV":
@@ -668,9 +651,7 @@ class CPSC2020(CPSCDataBase):
                 rpeak_secs = np.array(rpeak_inds) / self.fs
             else:
                 rpeak_secs = np.array(rpeak_inds)
-                rpeak_secs = rpeak_secs[
-                    np.where((rpeak_secs >= sf) & (rpeak_secs < st))[0]
-                ]
+                rpeak_secs = rpeak_secs[np.where((rpeak_secs >= sf) & (rpeak_secs < st))[0]]
                 rpeak_secs = (rpeak_secs - sf) / self.fs
 
         line_len = self.fs * 25  # 25 seconds
@@ -702,16 +683,12 @@ class CPSC2020(CPSCDataBase):
                 ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
                 ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
-            seg_spb = np.where(
-                (spb_indices >= idx * line_len) & (spb_indices < (idx + 1) * line_len)
-            )[0]
+            seg_spb = np.where((spb_indices >= idx * line_len) & (spb_indices < (idx + 1) * line_len))[0]
             # print(f"spb_indices = {spb_indices}, seg_spb = {seg_spb}")
             if len(seg_spb) > 0:
                 seg_spb = spb_indices[seg_spb] / self.fs
                 patches["SPB"] = mpatches.Patch(color=self.palette["spb"], label="SPB")
-            seg_pvc = np.where(
-                (pvc_indices >= idx * line_len) & (pvc_indices < (idx + 1) * line_len)
-            )[0]
+            seg_pvc = np.where((pvc_indices >= idx * line_len) & (pvc_indices < (idx + 1) * line_len))[0]
             # print(f"pvc_indices = {pvc_indices}, seg_pvc = {seg_pvc}")
             if len(seg_pvc) > 0:
                 seg_pvc = pvc_indices[seg_pvc] / self.fs
@@ -749,9 +726,7 @@ class CPSC2020(CPSCDataBase):
                     prop={"size": 16},
                 )
             if rpeak_inds is not None:
-                seg_rpeak_secs = rpeak_secs[
-                    np.where((rpeak_secs >= secs[0]) & (rpeak_secs < secs[-1]))[0]
-                ]
+                seg_rpeak_secs = rpeak_secs[np.where((rpeak_secs >= secs[0]) & (rpeak_secs < secs[-1]))[0]]
                 for r in seg_rpeak_secs:
                     ax.axvspan(r - 0.01, r + 0.01, color="green", alpha=0.7)
             ax.set_xlim(secs[0], secs[-1])
@@ -762,9 +737,7 @@ class CPSC2020(CPSCDataBase):
 
     @property
     def url(self) -> str:
-        return (
-            "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
-        )
+        return "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
 
     @property
     def database_info(self) -> DataBaseInfo:
@@ -819,9 +792,7 @@ def compute_metrics(
         dtype=int,
     )
     # Scoring
-    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(
-        zip(sbp_true, pvc_true, sbp_pred, pvc_pred)
-    ):
+    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(sbp_true, pvc_true, sbp_pred, pvc_pred)):
         s_tp = 0
         s_fp = 0
         s_fn = 0

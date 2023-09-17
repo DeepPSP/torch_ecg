@@ -2,8 +2,8 @@
 """
 
 from transformers import Wav2Vec2ForPreTraining as HFWav2Vec2ForPreTraining
-from torch_ecg.utils import SizeMixin, add_docstring
 
+from torch_ecg.utils import SizeMixin, add_docstring
 
 __all__ = [
     "Wav2Vec2ForPreTraining",

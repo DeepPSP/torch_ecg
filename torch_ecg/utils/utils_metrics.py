@@ -14,10 +14,9 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from .misc import add_docstring
 from .utils_data import ECGWaveForm, ECGWaveFormNames, masks_to_waveforms
-from ..cfg import DEFAULTS
-
 
 __all__ = [
     "top_n_accuracy",
@@ -63,9 +62,7 @@ def top_n_accuracy(
     {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}
 
     """
-    assert (
-        outputs.shape[0] == labels.shape[0]
-    ), "outputs and labels must have the same batch size"
+    assert outputs.shape[0] == labels.shape[0], "outputs and labels must have the same batch size"
     labels, outputs = torch.as_tensor(labels), torch.as_tensor(outputs)
     batch_size, n_classes, *extra_dims = outputs.shape
     if isinstance(n, int):
@@ -75,9 +72,7 @@ def top_n_accuracy(
     acc = {}
     for _n in ln:
         key = f"top_{_n}_acc"
-        _, indices = torch.topk(
-            outputs, _n, dim=1
-        )  # of shape (batch_size, n) or (batch_size, n, d_1, ..., d_n)
+        _, indices = torch.topk(outputs, _n, dim=1)  # of shape (batch_size, n) or (batch_size, n, d_1, ..., d_n)
         pattern = " ".join([f"d_{i+1}" for i in range(len(extra_dims))])
         pattern = f"batch_size {pattern} -> batch_size n {pattern}"
         correct = torch.sum(indices == einops.repeat(labels, pattern, n=_n))
@@ -118,13 +113,9 @@ def confusion_matrix(
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    assert np.shape(labels) == np.shape(
-        outputs
-    ), "labels and outputs must have the same shape"
+    assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
     assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
-    assert all(
-        value in (0, 1) for value in np.unique(outputs)
-    ), "outputs must be binary"
+    assert all(value in (0, 1) for value in np.unique(outputs)), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 
@@ -166,13 +157,9 @@ def one_vs_rest_confusion_matrix(
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    assert np.shape(labels) == np.shape(
-        outputs
-    ), "labels and outputs must have the same shape"
+    assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
     assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
-    assert all(
-        value in (0, 1) for value in np.unique(outputs)
-    ), "outputs must be binary"
+    assert all(value in (0, 1) for value in np.unique(outputs)), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 
@@ -266,9 +253,7 @@ def metrics_from_confusion_matrix(
     bin_outputs[outputs >= thr] = 1
     bin_outputs[outputs < thr] = 0
     if np.unique(outputs).size == 2:
-        warnings.warn(
-            "`outputs` is probably binary, AUC may be incorrect", RuntimeWarning
-        )
+        warnings.warn("`outputs` is probably binary, AUC may be incorrect", RuntimeWarning)
 
     ovr_cm = ovr_confusion_matrix(labels, bin_outputs)
 
@@ -282,9 +267,7 @@ def metrics_from_confusion_matrix(
     # NOTE: never use repeat here, because it will cause bugs
     # sens, spec, prec, npv, jac, acc, phi = list(repeat(np.zeros(num_classes), 7))
     sens, spec, prec, npv, jac, acc, phi = [np.zeros(num_classes) for _ in range(7)]
-    auroc = np.zeros(
-        num_classes
-    )  # area under the receiver-operater characteristic curve (ROC AUC)
+    auroc = np.zeros(num_classes)  # area under the receiver-operater characteristic curve (ROC AUC)
     auprc = np.zeros(num_classes)  # area under the precision-recall curve
     for k in range(num_classes):
         tp, fp, fn, tn = (
@@ -314,9 +297,7 @@ def metrics_from_confusion_matrix(
         else:
             jac[k] = float("nan")
         acc[k] = (tp + tn) / num_samples
-        phi[k] = (tp * tn - fp * fn) / np.sqrt(
-            (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
-        )
+        phi[k] = (tp * tn - fp * fn) / np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
 
         if outputs_ndim == 1:
             auroc[k] = np.nan
@@ -427,18 +408,12 @@ def metrics_from_confusion_matrix(
         "auprc",  # area under the precision-recall curve
     ]:
         metrics[m.strip("_")] = eval(m)
-        metrics[f"macro_{m}".strip("_")] = (
-            np.nanmean(eval(m) * _weights)
-            if np.any(np.isfinite(eval(m)))
-            else float("nan")
-        )
+        metrics[f"macro_{m}".strip("_")] = np.nanmean(eval(m) * _weights) if np.any(np.isfinite(eval(m))) else float("nan")
     return metrics
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="F1-measure", metrics="F1-measures"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="F1-measure", metrics="F1-measures"),
     "prepend",
 )
 def f_measure(
@@ -463,9 +438,7 @@ def f_measure(
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="sensitivity", metrics="sensitivities"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="sensitivity", metrics="sensitivities"),
     "prepend",
 )
 def sensitivity(
@@ -496,9 +469,7 @@ hit_rate = sensitivity
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="precision", metrics="precisions"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="precision", metrics="precisions"),
     "prepend",
 )
 def precision(
@@ -527,9 +498,7 @@ positive_predictive_value = precision
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="specificity", metrics="specificities"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="specificity", metrics="specificities"),
     "prepend",
 )
 def specificity(
@@ -559,9 +528,7 @@ true_negative_rate = specificity
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="AUROC and macro AUPRC", metrics="AUPRCs, AUPRCs"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="AUROC and macro AUPRC", metrics="AUPRCs, AUPRCs"),
     "prepend",
 )
 def auc(
@@ -585,18 +552,14 @@ def auc(
 
     """
     if outputs.ndim == 1:
-        raise ValueError(
-            "outputs must be of shape (n_samples, n_classes) to compute AUC"
-        )
+        raise ValueError("outputs must be of shape (n_samples, n_classes) to compute AUC")
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
-        metric="accuracy", metrics="accuracies"
-    ),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="accuracy", metrics="accuracies"),
     "prepend",
 )
 def accuracy(
@@ -665,16 +628,12 @@ def QRS_score(
             next_t_ind = extended_truth_arr[j + 1]
             loc = np.where(np.abs(pred_arr - t_ind) <= thr_)[0]
             if j == 0:
-                err = np.where(
-                    (pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_)
-                )[0]
+                err = np.where((pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_))[0]
             else:
                 err = np.array([], dtype=int)
             err = np.append(
                 err,
-                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[
-                    0
-                ],
+                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[0],
             )
 
             false_positive += len(err)
@@ -730,9 +689,7 @@ def cls_to_bin(
     if isinstance(outputs, Tensor):
         outputs = outputs.cpu().numpy()
     if labels.ndim == outputs.ndim == 1:
-        assert (
-            num_classes is not None
-        ), "num_classes is required if both labels and outputs are categorical"
+        assert num_classes is not None, "num_classes is required if both labels and outputs are categorical"
         shape = (labels.shape[0], num_classes)
         labels = _cls_to_bin(labels, shape)
         outputs = _cls_to_bin(outputs, shape)
@@ -814,28 +771,18 @@ def compute_wave_delineation_metrics(
         sensitivity, precision, f1_score, mean_error, standard_deviation
 
     """
-    assert len(truth_masks) == len(
-        pred_masks
-    ), "length of truth_masks and pred_masks should be the same"
+    assert len(truth_masks) == len(pred_masks), "length of truth_masks and pred_masks should be the same"
     truth_waveforms, pred_waveforms = [], []
     # compute for each element
     for tm, pm in zip(truth_masks, pred_masks):
-        n_masks = (
-            tm.shape[0]
-            if mask_format.lower() in ["channel_first", "lead_first"]
-            else tm.shape[1]
-        )
+        n_masks = tm.shape[0] if mask_format.lower() in ["channel_first", "lead_first"] else tm.shape[1]
 
         new_t = masks_to_waveforms(tm, class_map, fs, mask_format)
-        new_t = [
-            new_t[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_t = [new_t[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         truth_waveforms += new_t
 
         new_p = masks_to_waveforms(pm, class_map, fs, mask_format)
-        new_p = [
-            new_p[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_p = [new_p[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         pred_waveforms += new_p
 
     scorings = compute_metrics_waveform(truth_waveforms, pred_waveforms, fs, tol)
@@ -878,34 +825,10 @@ def compute_metrics_waveform(
         sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
-    truth_positive = dict(
-        {
-            f"{wave}_{term}": 0
-            for wave in ECGWaveFormNames
-            for term in ["onset", "offset"]
-        }
-    )
-    false_positive = dict(
-        {
-            f"{wave}_{term}": 0
-            for wave in ECGWaveFormNames
-            for term in ["onset", "offset"]
-        }
-    )
-    false_negative = dict(
-        {
-            f"{wave}_{term}": 0
-            for wave in ECGWaveFormNames
-            for term in ["onset", "offset"]
-        }
-    )
-    errors = dict(
-        {
-            f"{wave}_{term}": []
-            for wave in ECGWaveFormNames
-            for term in ["onset", "offset"]
-        }
-    )
+    truth_positive = dict({f"{wave}_{term}": 0 for wave in ECGWaveFormNames for term in ["onset", "offset"]})
+    false_positive = dict({f"{wave}_{term}": 0 for wave in ECGWaveFormNames for term in ["onset", "offset"]})
+    false_negative = dict({f"{wave}_{term}": 0 for wave in ECGWaveFormNames for term in ["onset", "offset"]})
+    errors = dict({f"{wave}_{term}": [] for wave in ECGWaveFormNames for term in ["onset", "offset"]})
     # accumulating results
     for tw, pw in zip(truth_waveforms, pred_waveforms):
         s = _compute_metrics_waveform(tw, pw, fs, tol)
@@ -915,15 +838,9 @@ def compute_metrics_waveform(
             "twave",
         ]:
             for term in ["onset", "offset"]:
-                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "truth_positive"
-                ]
-                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_positive"
-                ]
-                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_negative"
-                ]
+                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["truth_positive"]
+                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_positive"]
+                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_negative"]
                 errors[f"{wave}_{term}"] += s[f"{wave}_{term}"]["errors"]
     scorings = dict()
     for wave in ECGWaveFormNames:
@@ -934,9 +851,7 @@ def compute_metrics_waveform(
             err = errors[f"{wave}_{term}"]
             sensitivity = tp / (tp + fn + DEFAULTS.eps)
             precision = tp / (tp + fp + DEFAULTS.eps)
-            f1_score = (
-                2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
-            )
+            f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
             mean_error = np.mean(err) * 1000 / fs if len(err) > 0 else np.nan
             standard_deviation = np.std(err) * 1000 / fs if len(err) > 0 else np.nan
             scorings[f"{wave}_{term}"] = dict(
@@ -1021,9 +936,7 @@ def _compute_metrics_waveform(
                 f1_score,
                 mean_error,
                 standard_deviation,
-            ) = _compute_metrics_base(
-                eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs, tol
-            )
+            ) = _compute_metrics_base(eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs, tol)
             scorings[f"{wave}_{term}"] = dict(
                 truth_positive=truth_positive,
                 false_negative=false_negative,
@@ -1038,9 +951,7 @@ def _compute_metrics_waveform(
     return scorings
 
 
-def _compute_metrics_base(
-    truths: Sequence[Real], preds: Sequence[Real], fs: Real, tol: Real = 0.15
-) -> Dict[str, float]:
+def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Real, tol: Real = 0.15) -> Dict[str, float]:
     r"""Base function for computing the metrics of the onset and offset of a waveform.
 
     Parameters

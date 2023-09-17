@@ -15,20 +15,9 @@ import scipy.io as sio
 import wfdb
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.misc import (
-    get_record_list_recursive3,
-    ms2samples,
-    add_docstring,
-)
+from ...utils.misc import add_docstring, get_record_list_recursive3, ms2samples
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import (
-    DEFAULT_FIG_SIZE_PER_SEC,
-    DataBaseInfo,
-    PhysioNetDataBase,
-    WFDB_Beat_Annotations,
-    _PlotCfg,
-)
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, DataBaseInfo, PhysioNetDataBase, WFDB_Beat_Annotations, _PlotCfg
 
 __all__ = [
     "CPSC2021",
@@ -217,32 +206,20 @@ class CPSC2021(PhysioNetDataBase):
         and store them (path, metadata, etc.) in some private attributes.
         """
         self._df_records = pd.DataFrame()
-        self._df_records["path"] = get_record_list_recursive3(
-            self.db_dir_base, self.rec_patterns_with_ext, relative=False
-        )
+        self._df_records["path"] = get_record_list_recursive3(self.db_dir_base, self.rec_patterns_with_ext, relative=False)
         self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-        self._df_records["subject_id"] = self._df_records["record"].apply(
-            lambda rec: int(rec.split("_")[1])
-        )
-        self._df_records["record_id"] = self._df_records["record"].apply(
-            lambda rec: int(rec.split("_")[2])
-        )
-        self._df_records["tranche"] = self._df_records["subject_id"].apply(
-            lambda x: "training_I" if x <= 53 else "training_II"
-        )
+        self._df_records["subject_id"] = self._df_records["record"].apply(lambda rec: int(rec.split("_")[1]))
+        self._df_records["record_id"] = self._df_records["record"].apply(lambda rec: int(rec.split("_")[2]))
+        self._df_records["tranche"] = self._df_records["subject_id"].apply(lambda x: "training_I" if x <= 53 else "training_II")
 
         if self._subsample is not None:
             size = min(
                 len(self._df_records),
                 max(1, int(round(self._subsample * len(self._df_records)))),
             )
-            self.logger.debug(
-                f"subsample `{size}` records from `{len(self._df_records)}`"
-            )
-            self._df_records = self._df_records.sample(
-                n=size, random_state=DEFAULTS.SEED, replace=False
-            )
+            self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
 
         self._df_records.set_index("record", inplace=True)
 
@@ -251,34 +228,19 @@ class CPSC2021(PhysioNetDataBase):
         self._subject_records = CFG({t: [] for t in self.db_tranches})
 
         for t in self.db_tranches:
-            self._all_records[t] = sorted(
-                self._df_records[self._df_records["tranche"] == t].index.tolist()
-            )
+            self._all_records[t] = sorted(self._df_records[self._df_records["tranche"] == t].index.tolist())
             self._all_subjects[t] = sorted(
                 list(set([self.get_subject_id(rec) for rec in self._all_records[t]])),
                 key=lambda s: int(s),
             )
             self._subject_records[t] = CFG(
-                {
-                    sid: [
-                        rec
-                        for rec in self._all_records[t]
-                        if self.get_subject_id(rec) == sid
-                    ]
-                    for sid in self._all_subjects[t]
-                }
+                {sid: [rec for rec in self._all_records[t] if self.get_subject_id(rec) == sid] for sid in self._all_subjects[t]}
             )
 
-        self._all_records_inv = {
-            r: t for t, l_r in self._all_records.items() for r in l_r
-        }
-        self._all_subjects_inv = {
-            s: t for t, l_s in self._all_subjects.items() for s in l_s
-        }
+        self._all_records_inv = {r: t for t, l_r in self._all_records.items() for r in l_r}
+        self._all_subjects_inv = {s: t for t, l_s in self._all_subjects.items() for s in l_s}
         self.__all_records = sorted(self._df_records.index.tolist())
-        self.__all_subjects = sorted(
-            self._df_records["subject_id"].apply(str).unique().tolist()
-        )
+        self.__all_subjects = sorted(self._df_records["subject_id"].apply(str).unique().tolist())
 
     def _aggregate_stats(self) -> None:
         """Aggregate stats on the whole dataset."""
@@ -288,36 +250,20 @@ class CPSC2021(PhysioNetDataBase):
             self._stats = pd.read_csv(stats_file_fp)
 
         if self._stats.empty or set(self._stats_columns) != set(self._stats.columns):
-            self.logger.info(
-                "Please wait patiently to let the reader aggregate statistics on the whole dataset..."
-            )
+            self.logger.info("Please wait patiently to let the reader aggregate statistics on the whole dataset...")
             start = time.time()
-            self._stats = pd.DataFrame(
-                self.all_records, columns=["record"]
-            )  # use self.all_records to ensure it's computed
-            self._stats["tranche"] = self._stats["record"].apply(
-                lambda s: self._all_records_inv[s]
-            )
-            self._stats["subject_id"] = self._stats["record"].apply(
-                lambda s: int(s.split("_")[1])
-            )
-            self._stats["record_id"] = self._stats["record"].apply(
-                lambda s: int(s.split("_")[2])
-            )
-            self._stats["label"] = self._stats["record"].apply(
-                lambda s: self.load_label(s)
-            )
+            self._stats = pd.DataFrame(self.all_records, columns=["record"])  # use self.all_records to ensure it's computed
+            self._stats["tranche"] = self._stats["record"].apply(lambda s: self._all_records_inv[s])
+            self._stats["subject_id"] = self._stats["record"].apply(lambda s: int(s.split("_")[1]))
+            self._stats["record_id"] = self._stats["record"].apply(lambda s: int(s.split("_")[2]))
+            self._stats["label"] = self._stats["record"].apply(lambda s: self.load_label(s))
             self._stats["fs"] = self.fs
             self._stats["sig_len"] = self._stats["record"].apply(
                 lambda s: wfdb.rdheader(str(self.get_absolute_path(s))).sig_len
             )
             self._stats["sig_len_sec"] = self._stats["sig_len"] / self._stats["fs"]
-            self._stats["revised"] = self._stats["record"].apply(
-                lambda s: 1 if s in self.__revised_records else 0
-            )
-            self._stats = self._stats.sort_values(
-                by=["subject_id", "record_id"], ignore_index=True
-            )
+            self._stats["revised"] = self._stats["record"].apply(lambda s: 1 if s in self.__revised_records else 0)
+            self._stats = self._stats.sort_values(by=["subject_id", "record_id"], ignore_index=True)
             self._stats = self._stats[self._stats_columns]
             if self._subsample is None:
                 self._stats.to_csv(stats_file_fp, index=False)
@@ -347,25 +293,18 @@ class CPSC2021(PhysioNetDataBase):
         else:
             start = time.time()
             if self.df_stats.empty:
-                self.logger.info(
-                    "Please wait several minutes patiently to let the reader list records for each diagnosis..."
-                )
-                self._diagnoses_records_list = {
-                    d: [] for d in self._labels_f2a.values()
-                }
+                self.logger.info("Please wait several minutes patiently to let the reader list records for each diagnosis...")
+                self._diagnoses_records_list = {d: [] for d in self._labels_f2a.values()}
                 for rec in self.all_records:
                     lb = self.load_label(rec)
                     self._diagnoses_records_list[lb].append(rec)
                 self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
             else:
                 self._diagnoses_records_list = {
-                    d: self.df_stats[self.df_stats["label"] == d]["record"].tolist()
-                    for d in self._labels_f2a.values()
+                    d: self.df_stats[self.df_stats["label"] == d]["record"].tolist() for d in self._labels_f2a.values()
                 }
             if self._subsample is None:
-                dr_fp.write_text(
-                    json.dumps(self._diagnoses_records_list, ensure_ascii=False)
-                )
+                dr_fp.write_text(json.dumps(self._diagnoses_records_list, ensure_ascii=False))
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
@@ -393,9 +332,7 @@ class CPSC2021(PhysioNetDataBase):
         sid = rec.split("_")[1]
         return sid
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """Get the absolute path of the record.
 
         Parameters
@@ -454,8 +391,7 @@ class CPSC2021(PhysioNetDataBase):
         )
         if sampto is not None and sampto > sig_len:
             warnings.warn(
-                f"the end index {sampto} is larger than the signal length {sig_len}, "
-                f"so it is set to {sig_len}",
+                f"the end index {sampto} is larger than the signal length {sig_len}, " f"so it is set to {sig_len}",
                 RuntimeWarning,
             )
         if sf >= st:
@@ -588,9 +524,7 @@ class CPSC2021(PhysioNetDataBase):
         if sampfrom and not keep_original:
             critical_points = critical_points - sampfrom
         if fs is not None and fs != self.fs:
-            critical_points = np.round(
-                critical_points * fs / self.fs + self._epsilon
-            ).astype(int)
+            critical_points = np.round(critical_points * fs / self.fs + self._epsilon).astype(int)
         if valid_only:
             rpeaks_valid = np.isin(symbols, list(WFDB_Beat_Annotations.keys()))
             rpeaks = critical_points[rpeaks_valid]
@@ -670,24 +604,16 @@ class CPSC2021(PhysioNetDataBase):
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         aux_note = np.array(_ann.aux_note)
         critical_points = _ann.sample
-        af_start_inds = np.where((aux_note == "(AFIB") | (aux_note == "(AFL"))[
-            0
-        ]  # ref. NOTE 3.
+        af_start_inds = np.where((aux_note == "(AFIB") | (aux_note == "(AFL"))[0]  # ref. NOTE 3.
         af_end_inds = np.where(aux_note == "(N")[0]
-        assert len(af_start_inds) == len(
-            af_end_inds
-        ), "unequal number of af period start indices and af period end indices"
+        assert len(af_start_inds) == len(af_end_inds), "unequal number of af period start indices and af period end indices"
 
         if fmt.lower() in [
             "c_intervals",
         ]:
             if sf > 0 or st < siglen:
-                raise ValueError(
-                    "when `fmt` is `c_intervals`, `sampfrom` and `sampto` should never be used!"
-                )
-            af_episodes = [
-                [start, end] for start, end in zip(af_start_inds, af_end_inds)
-            ]
+                raise ValueError("when `fmt` is `c_intervals`, `sampfrom` and `sampto` should never be used!")
+            af_episodes = [[start, end] for start, end in zip(af_start_inds, af_end_inds)]
             return af_episodes
 
         intervals = []
@@ -813,9 +739,7 @@ class CPSC2021(PhysioNetDataBase):
             rec = self[rec]
         masks = gen_endpoint_score_mask(
             siglen=self.df_stats[self.df_stats.record == rec].iloc[0].sig_len,
-            critical_points=wfdb.rdann(
-                str(self.get_absolute_path(rec)), extension=self.ann_ext
-            ).sample,
+            critical_points=wfdb.rdann(str(self.get_absolute_path(rec)), extension=self.ann_ext).sample,
             af_intervals=self.load_af_episodes(rec, fmt="c_intervals"),
             bias=bias,
             verbose=verbose or self.verbose,
@@ -917,10 +841,7 @@ class CPSC2021(PhysioNetDataBase):
 
         if waves:
             if waves.get("p_onsets", None) and waves.get("p_offsets", None):
-                p_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])
-                ]
+                p_waves = [[onset, offset] for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])]
             elif waves.get("p_peaks", None):
                 p_waves = [
                     [
@@ -935,10 +856,7 @@ class CPSC2021(PhysioNetDataBase):
             else:
                 p_waves = []
             if waves.get("q_onsets", None) and waves.get("s_offsets", None):
-                qrs = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])
-                ]
+                qrs = [[onset, offset] for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])]
             elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
                 qrs = [
                     [
@@ -964,10 +882,7 @@ class CPSC2021(PhysioNetDataBase):
             else:
                 qrs = []
             if waves.get("t_onsets", None) and waves.get("t_offsets", None):
-                t_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])
-                ]
+                t_waves = [[onset, offset] for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])]
             elif waves.get("t_peaks", None):
                 t_waves = [
                     [
@@ -1019,44 +934,28 @@ class CPSC2021(PhysioNetDataBase):
             # else:
             #     y_ranges = np.max(np.abs(seg), axis=1) + 100
             # fig_sz_h = 6 * y_ranges / 1500
-            fig_sz_h = (
-                6
-                * sum([seg_lead.max() - seg_lead.min() + 200 for seg_lead in seg])
-                / 1500
-            )
-            fig, axes = plt.subplots(
-                nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
-            )
+            fig_sz_h = 6 * sum([seg_lead.max() - seg_lead.min() + 200 for seg_lead in seg]) / 1500
+            fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
             if nb_leads == 1:
                 axes = [axes]
 
             for ax_idx in range(nb_leads):
-                axes[ax_idx].plot(
-                    secs, seg[ax_idx], color="black", label=f"lead - {_leads[ax_idx]}"
-                )
+                axes[ax_idx].plot(secs, seg[ax_idx], color="black", label=f"lead - {_leads[ax_idx]}")
                 # axes[ax_idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
                 # NOTE that `Locator` has default `MAXTICKS` equal to 1000
                 if ticks_granularity >= 1:
                     axes[ax_idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                     axes[ax_idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                    axes[ax_idx].grid(
-                        which="major", linestyle="-", linewidth="0.5", color="red"
-                    )
+                    axes[ax_idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
                 if ticks_granularity >= 2:
                     axes[ax_idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                     axes[ax_idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                    axes[ax_idx].grid(
-                        which="minor", linestyle=":", linewidth="0.5", color="black"
-                    )
+                    axes[ax_idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
                 # add extra info. to legend
                 # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
                 if label:
                     axes[ax_idx].plot([], [], " ", label=f"label - {label}")
-                seg_rpeaks = [
-                    r / self.fs
-                    for r in rpeaks
-                    if idx * line_len <= r < (idx + 1) * line_len
-                ]
+                seg_rpeaks = [r / self.fs for r in rpeaks if idx * line_len <= r < (idx + 1) * line_len]
                 for r in seg_rpeaks:
                     axes[ax_idx].axvspan(
                         max(secs[0], r - bias_thr),
@@ -1068,10 +967,7 @@ class CPSC2021(PhysioNetDataBase):
                     af_episodes,
                     [[idx * line_len, (idx + 1) * line_len]],
                 )
-                seg_af_episodes = [
-                    [itv[0] - idx * line_len, itv[1] - idx * line_len]
-                    for itv in seg_af_episodes
-                ]
+                seg_af_episodes = [[itv[0] - idx * line_len, itv[1] - idx * line_len] for itv in seg_af_episodes]
                 for itv_start, itv_end in seg_af_episodes:
                     axes[ax_idx].plot(
                         secs[itv_start:itv_end],
@@ -1128,9 +1024,7 @@ class CPSC2021(PhysioNetDataBase):
 # copied and modified from the official scoring code
 ###################################################################
 
-R = np.array(
-    [[1, -1, -0.5], [-2, 1, 0], [-1, 0, 1]]
-)  # scoring matrix for classification
+R = np.array([[1, -1, -0.5], [-2, 1, 0], [-1, 0, 1]])  # scoring matrix for classification
 
 
 class RefInfo:
@@ -1191,59 +1085,35 @@ class RefInfo:
                 if max(af_start - 1, 0) == 0:
                     onset_range[: self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): 0 --- {af_start+2}"
-                        )
-                        print(
-                            f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): 0 --- {af_start+2}")
+                        print(f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}")
                 elif max(af_start - 2, 0) == 0:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}")
                         print(
                             f"official --- onset (sample, score 1): {self.beat_loc[af_start-1]} --- {self.beat_loc[af_start+2]}"
                         )
                     onset_range[: self.beat_loc[af_start - 1]] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 0.5): 0 --- {af_start-1}"
-                        )
-                        print(
-                            f"official --- onset (sample, score 0.5): 0 --- {self.beat_loc[af_start-1]}"
-                        )
+                        print(f"official --- onset (c_ind, score 0.5): 0 --- {af_start-1}")
+                        print(f"official --- onset (sample, score 0.5): 0 --- {self.beat_loc[af_start-1]}")
                 else:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}")
                         print(
                             f"official --- onset (sample, score 1): {self.beat_loc[af_start-1]} --- {self.beat_loc[af_start+2]}"
                         )
-                    onset_range[
-                        self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]
-                    ] += 0.5
+                    onset_range[self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 0.5): {af_start-2} --- {af_start-1}"
-                        )
+                        print(f"official --- onset (c_ind, score 0.5): {af_start-2} --- {af_start-1}")
                         print(
                             f"official --- onset (sample, score 0.5): {self.beat_loc[af_start-2]} --- {self.beat_loc[af_start-1]}"
                         )
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}"
-                    )
+                    print(f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}")
                     print(
                         f"official --- onset (sample, score 0.5): {self.beat_loc[af_start+2]} --- {self.beat_loc[af_start+3]}"
                     )
@@ -1251,16 +1121,10 @@ class RefInfo:
                 onset_range[: self.beat_loc[af_start + 2]] += 1
                 if verbose > 0:
                     print(f"official --- onset (c_ind, score 1): 0 --- {af_start+2}")
-                    print(
-                        f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}"
-                    )
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                    print(f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}")
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}"
-                    )
+                    print(f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}")
                     print(
                         f"official --- onset (sample, score 0.5): {self.beat_loc[af_start+2]} --- {self.beat_loc[af_start+3]}"
                     )
@@ -1269,81 +1133,41 @@ class RefInfo:
                 if min(af_end + 1, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
                     offset_range[self.beat_loc[af_end - 2] :] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- -1"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- -1")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1")
                 elif min(af_end + 2, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}"
-                        )
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}")
                     offset_range[self.beat_loc[af_end + 1] :] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1"
-                        )
-                        print(
-                            f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1")
+                        print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- -1")
                 else:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}"
-                        )
-                    offset_range[
-                        self.beat_loc[af_end + 1] : min(
-                            self.beat_loc[af_end + 2], self.len_sig - 1
-                        )
-                    ] += 0.5
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}")
+                    offset_range[self.beat_loc[af_end + 1] : min(self.beat_loc[af_end + 2], self.len_sig - 1)] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1")
                         print(
                             f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- {min(self.beat_loc[af_end+2], self.len_sig-1)}"
                         )
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}"
-                    )
-                    print(
-                        f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}"
-                    )
+                    print(f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}")
+                    print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}")
             elif self.class_true == 1:
                 offset_range[self.beat_loc[af_end - 2] :] += 1
                 if verbose > 0:
                     print(f"official --- offset (c_ind, score 1): {af_end-2} --- -1")
-                    print(
-                        f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1"
-                    )
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                    print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1")
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}"
-                    )
-                    print(
-                        f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}"
-                    )
+                    print(f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}")
+                    print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}")
 
         return onset_range, offset_range
 
@@ -1403,10 +1227,7 @@ def score(data_path, ans_path):
 
         if len(endpoints_pred) == 0:
             class_pred = 0
-        elif (
-            len(endpoints_pred) == 1
-            and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1
-        ):
+        elif len(endpoints_pred) == 1 and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1:
             class_pred = 1
         else:
             class_pred = 2
@@ -1469,9 +1290,7 @@ def compute_challenge_metric(
 
     """
     ur_score = ur_calculate(class_true, class_pred)
-    ue_score = ue_calculate(
-        endpoints_pred, endpoints_true, onset_score_range, offset_score_range
-    )
+    ue_score = ue_calculate(endpoints_pred, endpoints_true, onset_score_range, offset_score_range)
     u = ur_score + ue_score
     return u
 
@@ -1522,9 +1341,7 @@ def gen_endpoint_score_mask(
         _critical_points.insert(0, 0)
         _af_intervals = [[itv[0] + 1, itv[1] + 1] for itv in af_intervals]
         if verbose >= 2:
-            print(
-                f"0 added to _critical_points, len(_critical_points): {len(_critical_points)-1} ==> {len(_critical_points)}"
-            )
+            print(f"0 added to _critical_points, len(_critical_points): {len(_critical_points)-1} ==> {len(_critical_points)}")
     else:
         _af_intervals = [[itv[0], itv[1]] for itv in af_intervals]
     # records with AFf mostly have `_critical_points` ending with `siglen-1`
@@ -1532,9 +1349,7 @@ def gen_endpoint_score_mask(
     if siglen - 1 in _critical_points:
         _critical_points[-1] = siglen
         if verbose >= 2:
-            print(
-                f"in _critical_points siglen-1 (={siglen-1}) changed to siglen (={siglen})"
-            )
+            print(f"in _critical_points siglen-1 (={siglen-1}) changed to siglen (={siglen})")
     elif siglen in _critical_points:
         pass
     else:
@@ -1551,9 +1366,7 @@ def gen_endpoint_score_mask(
             # note that the onsets and offsets in `_af_intervals` already occupy positions in `_critical_points`
             onset_end = _critical_points[min(itv[0] + 1 + b, len(_critical_points) - 1)]
             if verbose > 0:
-                print(
-                    f"custom --- onset (c_ind, score {v}): {max(0, itv[0]-b)} --- {min(itv[0]+1+b, len(_critical_points)-1)}"
-                )
+                print(f"custom --- onset (c_ind, score {v}): {max(0, itv[0]-b)} --- {min(itv[0]+1+b, len(_critical_points)-1)}")
                 print(
                     f"custom --- onset (sample, score {v}): {_critical_points[max(0, itv[0]-b)]} --- {_critical_points[min(itv[0]+1+b, len(_critical_points)-1)]}"
                 )

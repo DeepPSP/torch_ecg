@@ -7,14 +7,8 @@ import pytest
 import torch
 from tqdm.auto import tqdm
 
+from torch_ecg.model_configs.cnn.regnet import regnet_16_8, regnet_23_168, regnet_27_24, regnet_S
 from torch_ecg.models.cnn.regnet import RegNet
-from torch_ecg.model_configs.cnn.regnet import (
-    regnet_16_8,
-    regnet_27_24,
-    regnet_23_168,
-    regnet_S,
-)
-
 
 IN_CHANNELS = 12
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")

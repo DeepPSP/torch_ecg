@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Union, Sequence, Set, Dict
+from typing import Any, Dict, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
@@ -10,12 +10,7 @@ import pandas as pd
 from ..cfg import CFG
 from ..utils.misc import add_docstring
 from ..utils.utils_data import ECGWaveFormNames
-from .metrics import (
-    ClassificationMetrics,
-    RPeaksDetectionMetrics,
-    WaveDelineationMetrics,
-)
-
+from .metrics import ClassificationMetrics, RPeaksDetectionMetrics, WaveDelineationMetrics
 
 __all__ = [
     "BaseOutput",
@@ -119,12 +114,7 @@ class BaseOutput(CFG, ABC):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        pop_fields = [
-            k
-            for k in self
-            if k in ["required_fields", "append", "compute_metrics"]
-            or k.startswith("_abc")
-        ]
+        pop_fields = [k for k in self if k in ["required_fields", "append", "compute_metrics"] or k.startswith("_abc")]
         for f in pop_fields:
             self.pop(f, None)
         assert all(field in self.keys() for field in self.required_fields()), (
@@ -156,17 +146,11 @@ class BaseOutput(CFG, ABC):
         if not isinstance(values, Sequence):
             values = [values]
         for v in values:
-            assert (
-                v.__class__ == self.__class__
-            ), "`values` must be of the same type as `self`"
-            assert set(v.keys()) == set(
-                self.keys()
-            ), "`values` must have the same fields as `self`"
+            assert v.__class__ == self.__class__, "`values` must be of the same type as `self`"
+            assert set(v.keys()) == set(self.keys()), "`values` must have the same fields as `self`"
             for k, v_ in v.items():
                 if k in ["classes"]:
-                    assert (
-                        v_ == self[k]
-                    ), f"the field of ordered sequence `{k}` must be the identical"
+                    assert v_ == self[k], f"the field of ordered sequence `{k}` must be the identical"
                     continue
                 if isinstance(v_, np.ndarray):
                     self[k] = np.concatenate((self[k], v_))
@@ -175,9 +159,7 @@ class BaseOutput(CFG, ABC):
                 elif isinstance(v_, Sequence):  # list, tuple, etc.
                     self[k] += v_
                 else:
-                    raise ValueError(
-                        f"field `{k}` of type `{type(v_)}` is not supported"
-                    )
+                    raise ValueError(f"field `{k}` of type `{type(v_)}` is not supported")
 
 
 @add_docstring(_KNOWN_ISSUES.format(_ClassificationOutput_ISSUE_EXAMPLE), "append")
@@ -223,14 +205,10 @@ class ClassificationOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         clf_met = ClassificationMetrics(multi_label=False, macro=True)
-        return clf_met.compute(
-            self.get("labels", self.get("label")), self.pred, len(self.classes)
-        )
+        return clf_met.compute(self.get("labels", self.get("label")), self.pred, len(self.classes))
 
 
-@add_docstring(
-    _KNOWN_ISSUES.format(_MultiLabelClassificationOutput_ISSUE_EXAMPLE), "append"
-)
+@add_docstring(_KNOWN_ISSUES.format(_MultiLabelClassificationOutput_ISSUE_EXAMPLE), "append")
 class MultiLabelClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a multi-label classification task.
@@ -281,9 +259,7 @@ class MultiLabelClassificationOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         clf_met = ClassificationMetrics(multi_label=True, macro=macro)
-        return clf_met.compute(
-            self.get("labels", self.get("label")), self.pred, len(self.classes)
-        )
+        return clf_met.compute(self.get("labels", self.get("label")), self.pred, len(self.classes))
 
 
 @add_docstring(_KNOWN_ISSUES.format(_SequenceTaggingOutput_ISSUE_EXAMPLE), "append")
@@ -463,6 +439,4 @@ class RPeaksDetectionOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         rpd_met = RPeaksDetectionMetrics(thr=thr)
-        return rpd_met.compute(
-            self.get("labels", self.get("label")), self.rpeak_indices, fs=fs
-        )
+        return rpd_met.compute(self.get("labels", self.get("label")), self.rpeak_indices, fs=fs)

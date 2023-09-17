@@ -39,9 +39,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -156,9 +154,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET_CPSC2019"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -270,9 +266,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_CPSC2019"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -404,13 +398,7 @@ def _inference_post_process(
         b_prob = prob[b_idx, ...]
         b_mask = (b_prob > bin_pred_thr).astype(int)
         b_qrs_intervals = mask_to_intervals(b_mask, 1)
-        b_rpeaks = np.array(
-            [
-                (itv[0] + itv[1]) // 2
-                for itv in b_qrs_intervals
-                if itv[1] - itv[0] >= _duration_thr
-            ]
-        )
+        b_rpeaks = np.array([(itv[0] + itv[1]) // 2 for itv in b_qrs_intervals if itv[1] - itv[0] >= _duration_thr])
         # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
         # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
@@ -431,11 +419,7 @@ def _inference_post_process(
                     check = True
                     break
         if len(_dist_thr) == 1:
-            b_rpeaks = b_rpeaks[
-                np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[
-                    0
-                ]
-            ]
+            b_rpeaks = b_rpeaks[np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]]
             rpeaks.append(b_rpeaks)
             continue
         check = True
@@ -450,37 +434,23 @@ def _inference_post_process(
                 if b_rpeaks_diff[r] >= dist_thr_inds:  # 1200 ms
                     prev_r_ind = b_rpeaks[r]
                     next_r_ind = b_rpeaks[r + 1]
-                    prev_qrs = [
-                        itv for itv in b_qrs_intervals if itv[0] <= prev_r_ind <= itv[1]
-                    ][0]
-                    next_qrs = [
-                        itv for itv in b_qrs_intervals if itv[0] <= next_r_ind <= itv[1]
-                    ][0]
+                    prev_qrs = [itv for itv in b_qrs_intervals if itv[0] <= prev_r_ind <= itv[1]][0]
+                    next_qrs = [itv for itv in b_qrs_intervals if itv[0] <= next_r_ind <= itv[1]][0]
                     check_itv = [prev_qrs[1], next_qrs[0]]
-                    l_new_itv = mask_to_intervals(
-                        b_mask[check_itv[0] : check_itv[1]], 1
-                    )
+                    l_new_itv = mask_to_intervals(b_mask[check_itv[0] : check_itv[1]], 1)
                     if len(l_new_itv) == 0:
                         continue
-                    l_new_itv = [
-                        [itv[0] + check_itv[0], itv[1] + check_itv[0]]
-                        for itv in l_new_itv
-                    ]
+                    l_new_itv = [[itv[0] + check_itv[0], itv[1] + check_itv[0]] for itv in l_new_itv]
                     new_itv = max(l_new_itv, key=lambda itv: itv[1] - itv[0])
                     new_max_prob = (b_prob[new_itv[0] : new_itv[1]]).max()
                     for itv in l_new_itv:
                         itv_prob = (b_prob[itv[0] : itv[1]]).max()
-                        if (
-                            itv[1] - itv[0] == new_itv[1] - new_itv[0]
-                            and itv_prob > new_max_prob
-                        ):
+                        if itv[1] - itv[0] == new_itv[1] - new_itv[0] and itv_prob > new_max_prob:
                             new_itv = itv
                             new_max_prob = itv_prob
                     b_rpeaks = np.insert(b_rpeaks, r + 1, 4 * (new_itv[0] + new_itv[1]))
                     check = True
                     break
-        b_rpeaks = b_rpeaks[
-            np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]
-        ]
+        b_rpeaks = b_rpeaks[np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]]
         rpeaks.append(b_rpeaks)
     return rpeaks

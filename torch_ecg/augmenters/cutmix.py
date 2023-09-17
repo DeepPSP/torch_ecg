@@ -10,9 +10,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .base import Augmenter
 from ..cfg import DEFAULTS
-
+from .base import Augmenter
 
 __all__ = [
     "CutMix",
@@ -157,19 +156,13 @@ class CutMix(Augmenter):
                 label = label * lam.view(-1, 1) + label[indices] * (1 - lam.view(-1, 1))
             else:
                 # segmentation masks, shape (batch, siglen, num_classes)
-                label = label * lam.view(-1, 1, 1) + label[indices] * (
-                    1 - lam.view(-1, 1, 1)
-                )
+                label = label * lam.view(-1, 1, 1) + label[indices] * (1 - lam.view(-1, 1, 1))
 
             for i, t in enumerate(extra_tensors):
                 if t.ndim == 2:
-                    extra_tensors[i] = t * lam.view(-1, 1) + t[indices] * (
-                        1 - lam.view(-1, 1)
-                    )
+                    extra_tensors[i] = t * lam.view(-1, 1) + t[indices] * (1 - lam.view(-1, 1))
                 else:
-                    extra_tensors[i] = t * lam.view(-1, 1, 1) + t[indices] * (
-                        1 - lam.view(-1, 1, 1)
-                    )
+                    extra_tensors[i] = t * lam.view(-1, 1, 1) + t[indices] * (1 - lam.view(-1, 1, 1))
 
         return (sig, label, *extra_tensors)
 
@@ -200,8 +193,6 @@ def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
     """
     _lam = (lam.numpy() * siglen).astype(int)
     intervals = np.zeros((lam.shape[0], 2), dtype=int)
-    intervals[:, 0] = np.minimum(
-        DEFAULTS.RNG_randint(0, siglen, size=lam.shape[0]), siglen - _lam
-    )
+    intervals[:, 0] = np.minimum(DEFAULTS.RNG_randint(0, siglen, size=lam.shape[0]), siglen - _lam)
     intervals[:, 1] = intervals[:, 0] + _lam
     return intervals

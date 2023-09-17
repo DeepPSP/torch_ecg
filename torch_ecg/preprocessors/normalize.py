@@ -128,12 +128,8 @@ class MinMaxNormalize(Normalize):
 
     __name__ = "MinMaxNormalize"
 
-    def __init__(
-        self, per_channel: bool = False, inplace: bool = True, **kwargs: Any
-    ) -> None:
-        super().__init__(
-            method="min-max", per_channel=per_channel, inplace=inplace, **kwargs
-        )
+    def __init__(self, per_channel: bool = False, inplace: bool = True, **kwargs: Any) -> None:
+        super().__init__(method="min-max", per_channel=per_channel, inplace=inplace, **kwargs)
 
 
 class NaiveNormalize(Normalize):
@@ -211,11 +207,4 @@ class ZScoreNormalize(Normalize):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        super().__init__(
-            method="z-score",
-            mean=mean,
-            std=std,
-            per_channel=per_channel,
-            inplace=inplace,
-            **kwargs
-        )
+        super().__init__(method="z-score", mean=mean, std=std, per_channel=per_channel, inplace=inplace, **kwargs)

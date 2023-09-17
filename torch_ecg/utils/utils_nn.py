@@ -6,11 +6,11 @@ utilities for nn models
 import re
 import warnings
 from copy import deepcopy
-from itertools import repeat, chain
+from itertools import chain, repeat
 from math import floor
 from numbers import Real
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple, Union, Dict
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -19,7 +19,6 @@ from torch import Tensor, nn
 from ..cfg import CFG, DEFAULTS
 from .misc import add_docstring, make_serializable
 from .utils_data import cls_to_bin
-
 
 __all__ = [
     "extend_predictions",
@@ -39,9 +38,7 @@ __all__ = [
 ]
 
 
-def extend_predictions(
-    preds: Sequence, classes: List[str], extended_classes: List[str]
-) -> np.ndarray:
+def extend_predictions(preds: Sequence, classes: List[str], extended_classes: List[str]) -> np.ndarray:
     """Extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
@@ -94,9 +91,7 @@ def extend_predictions(
         extended_preds = np.where(extended_preds == 1)[1]
         return extended_preds
 
-    assert _preds.shape[1] == len(
-        classes
-    ), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
+    assert _preds.shape[1] == len(classes), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
 
     extended_preds = np.zeros((_preds.shape[0], len(extended_classes)))
 
@@ -184,9 +179,7 @@ def compute_output_shape(
         "averagepooling",
     ]
     lt = "".join(layer_type.lower().split("_"))
-    assert (
-        lt in __TYPES__
-    ), f"Unknown layer type `{layer_type}`, should be one of: {__TYPES__}"
+    assert lt in __TYPES__, f"Unknown layer type `{layer_type}`, should be one of: {__TYPES__}"
 
     def assert_positive_integer(num):
         return isinstance(num, int) and num > 0
@@ -204,23 +197,18 @@ def compute_output_shape(
     ), "`input_shape` should be a sequence containing only `None` and positive integers"
 
     if num_filters is not None:
-        assert assert_positive_integer(
-            num_filters
-        ), "`num_filters` should be `None` or positive integer"
+        assert assert_positive_integer(num_filters), "`num_filters` should be `None` or positive integer"
     assert all(
-        assert_positive_integer(num)
-        for num in np.asarray(kernel_size).flatten().tolist()
+        assert_positive_integer(num) for num in np.asarray(kernel_size).flatten().tolist()
     ), "`kernel_size` should contain only positive integers"
     assert all(
         assert_positive_integer(num) for num in np.asarray(stride).flatten().tolist()
     ), "`stride` should contain only positive integers"
     assert all(
-        assert_non_negative_integer(num)
-        for num in np.asarray(padding).flatten().tolist()
+        assert_non_negative_integer(num) for num in np.asarray(padding).flatten().tolist()
     ), "`padding` should contain only non-negative integers"
     assert all(
-        assert_non_negative_integer(num)
-        for num in np.asarray(output_padding).flatten().tolist()
+        assert_non_negative_integer(num) for num in np.asarray(output_padding).flatten().tolist()
     ), "`output_padding` should contain only non-negative integers"
     assert all(
         assert_positive_integer(num) for num in np.asarray(dilation).flatten().tolist()
@@ -264,9 +252,7 @@ def compute_output_shape(
         out_channels = num_filters
 
     def check_output_validity(shape):
-        assert all(
-            p is None or p > 0 for p in shape
-        ), f"output shape `{shape}` is illegal, please check input arguments"
+        assert all(p is None or p > 0 for p in shape), f"output shape `{shape}` is illegal, please check input arguments"
         return shape
 
     # none_dim_msg = "only batch and channel dimension can be `None`"
@@ -278,9 +264,7 @@ def compute_output_shape(
     if channel_last:
         if all([n is None for n in input_shape[1:-1]]):
             if out_channels is None:
-                raise ValueError(
-                    "out channel dimension and spatial dimensions are all `None`"
-                )
+                raise ValueError("out channel dimension and spatial dimensions are all `None`")
             output_shape = tuple(list(input_shape[:-1]) + [out_channels])
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[1:-1]]):
@@ -288,9 +272,7 @@ def compute_output_shape(
     else:
         if all([n is None for n in input_shape[2:]]):
             if out_channels is None:
-                raise ValueError(
-                    "out channel dimension and spatial dimensions are all `None`"
-                )
+                raise ValueError("out channel dimension and spatial dimensions are all `None`")
             output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[2:]]):
@@ -339,14 +321,11 @@ def compute_output_shape(
     if asymmetric_padding is not None:
         assert hasattr(asymmetric_padding, "__len__"), "Invalid `asymmetric_padding`"
         if isinstance(asymmetric_padding[0], int):
-            assert len(asymmetric_padding) == 2 and isinstance(
-                asymmetric_padding[1], int
-            ), "Invalid `asymmetric_padding`"
+            assert len(asymmetric_padding) == 2 and isinstance(asymmetric_padding[1], int), "Invalid `asymmetric_padding`"
             _asymmetric_padding = list(repeat(asymmetric_padding, dim))
         else:
             assert len(asymmetric_padding) == dim and all(
-                len(ap) == 2 and all(isinstance(p, int) for p in ap)
-                for ap in asymmetric_padding
+                len(ap) == 2 and all(isinstance(p, int) for p in ap) for ap in asymmetric_padding
             ), "Invalid `asymmetric_padding`"
             _asymmetric_padding = asymmetric_padding
         for idx in range(dim):
@@ -398,9 +377,7 @@ def compute_output_shape(
     else:
         output_shape = [
             floor(((i + sum(p) - minus_term(d, k)) / s) + 1)
-            for i, p, d, k, s in zip(
-                _input_shape, _padding, _dilation, _kernel_size, _stride
-            )
+            for i, p, d, k, s in zip(_input_shape, _padding, _dilation, _kernel_size, _stride)
         ]
     if channel_last:
         output_shape = tuple([input_shape[0]] + output_shape + [out_channels])
@@ -654,9 +631,7 @@ def compute_sequential_output_shape(
     batch_size: Optional[int] = None,
 ) -> Sequence[Union[int, None]]:
     """Compute the output shape of a sequential model."""
-    assert issubclass(
-        type(model), nn.Sequential
-    ), f"model should be nn.Sequential, but got {type(model)}"
+    assert issubclass(type(model), nn.Sequential), f"model should be nn.Sequential, but got {type(model)}"
     _seq_len = seq_len
     for module in model:
         output_shape = module.compute_output_shape(_seq_len, batch_size)
@@ -738,12 +713,7 @@ def compute_module_size(
             "torch.int64": 8,
             "torch.uint8": 1,
         }
-        n_params = sum(
-            [
-                np.prod(item.size()) * size_dict[str(item.dtype)]
-                for item in tensor_containers
-            ]
-        )
+        n_params = sum([np.prod(item.size()) * size_dict[str(item.dtype)] for item in tensor_containers])
         div_count = 0
         while n_params >= 1024 * 0.1:
             n_params /= 1024
@@ -840,18 +810,10 @@ def compute_receptive_field(
     .. footbibliography::
 
     """
-    _kernel_sizes = (
-        [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
-    )
+    _kernel_sizes = [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
     num_layers = len(_kernel_sizes)
-    _strides = (
-        list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
-    )
-    _dilations = (
-        list(repeat(dilations, num_layers))
-        if isinstance(dilations, int)
-        else list(dilations)
-    )
+    _strides = list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
+    _dilations = list(repeat(dilations, num_layers)) if isinstance(dilations, int) else list(dilations)
     assert num_layers == len(_strides) == len(_dilations)
     receptive_field = 1
     for idx, (k, d) in enumerate(zip(_kernel_sizes, _dilations)):
@@ -971,9 +933,7 @@ def _adjust_cnn_filter_lengths(
         elif re.findall(pattern, k):
             if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
                 config[k] = [
-                    _adjust_cnn_filter_lengths(
-                        {"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd
-                    )["filter_length"]
+                    _adjust_cnn_filter_lengths({"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd)["filter_length"]
                     for fl in v
                 ]
             elif isinstance(v, Real):
@@ -983,12 +943,7 @@ def _adjust_cnn_filter_lengths(
                     if ensure_odd:
                         config[k] = config[k] - config[k] % 2 + 1
         elif isinstance(v, Sequence) and not isinstance(v, (str, bytes)):
-            tmp_configs = [
-                _adjust_cnn_filter_lengths(
-                    {k: item, "fs": config["fs"]}, fs, ensure_odd, pattern
-                )
-                for item in v
-            ]
+            tmp_configs = [_adjust_cnn_filter_lengths({k: item, "fs": config["fs"]}, fs, ensure_odd, pattern) for item in v]
             config[k] = [item[k] for item in tmp_configs]
     return config
 
@@ -1038,15 +993,11 @@ class SizeMixin(object):
 
     @property
     def sizeof(self) -> int:
-        return compute_module_size(
-            self, requires_grad=False, include_buffers=True, human=False
-        )
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)
 
     @property
     def sizeof_(self) -> str:
-        return compute_module_size(
-            self, requires_grad=False, include_buffers=True, human=True
-        )
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)
 
     @property
     def dtype(self) -> torch.dtype:
@@ -1079,9 +1030,7 @@ class CkptMixin(object):
     """Mixin class for loading from checkpoint class methods"""
 
     @classmethod
-    def from_checkpoint(
-        cls, path: Union[str, Path], device: Optional[torch.device] = None
-    ) -> Tuple[nn.Module, dict]:
+    def from_checkpoint(cls, path: Union[str, Path], device: Optional[torch.device] = None) -> Tuple[nn.Module, dict]:
         """Load a model from a checkpoint.
 
         Parameters
@@ -1103,9 +1052,7 @@ class CkptMixin(object):
         _device = device or DEFAULTS.device
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
-        assert (
-            aux_config is not None
-        ), "input checkpoint has no sufficient data to recover a model"
+        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
         kwargs = dict(
             config=ckpt["model_config"],
         )

@@ -13,7 +13,6 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-
 __all__ = [
     "GradCam",
 ]
@@ -63,9 +62,7 @@ class ModelOutputs(object):
 
     """
 
-    def __init__(
-        self, model: nn.Module, feature_module: nn.Module, target_layers: Sequence[str]
-    ) -> None:
+    def __init__(self, model: nn.Module, feature_module: nn.Module, target_layers: Sequence[str]) -> None:
         """ """
         self.model = model
         self.feature_module = feature_module
@@ -116,9 +113,7 @@ class GradCam(object):
 
         self.model.eval()
         self.model.to(self.device)
-        self.extractor = ModelOutputs(
-            self.model, self.feature_module, self.target_layer_names
-        )
+        self.extractor = ModelOutputs(self.model, self.feature_module, self.target_layer_names)
 
     def forward(self, input: Tensor) -> Tensor:
         """ """

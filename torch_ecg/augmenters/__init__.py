@@ -40,7 +40,6 @@ from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress, StretchCompressOffline
 
-
 __all__ = [
     "Augmenter",
     "BaselineWanderAugmenter",

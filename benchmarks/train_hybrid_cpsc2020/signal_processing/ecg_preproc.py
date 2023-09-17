@@ -34,20 +34,12 @@ except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
+from cfg import PreprocCfg
+
 from torch_ecg.cfg import CFG
 
-from cfg import PreprocCfg
-from .ecg_rpeaks import (
-    christov_detect,
-    engzee_detect,
-    gamboa_detect,
-    gqrs_detect,
-    hamilton_detect,
-    ssf_detect,
-    xqrs_detect,
-)
+from .ecg_rpeaks import christov_detect, engzee_detect, gamboa_detect, gqrs_detect, hamilton_detect, ssf_detect, xqrs_detect
 from .ecg_rpeaks_dl import seq_lab_net_detect
-
 
 __all__ = [
     "preprocess_signal",
@@ -70,9 +62,7 @@ DL_QRS_DETECTORS = [
 ]
 
 
-def preprocess_signal(
-    raw_sig: np.ndarray, fs: Real, config: Optional[CFG] = None
-) -> Dict[str, np.ndarray]:
+def preprocess_signal(raw_sig: np.ndarray, fs: Real, config: Optional[CFG] = None) -> Dict[str, np.ndarray]:
     """
 
     Parameters
@@ -103,9 +93,7 @@ def preprocess_signal(
     cfg.update(deepcopy(config) or {})
 
     if fs != cfg.fs:
-        filtered_ecg = resample(
-            filtered_ecg, int(round(len(filtered_ecg) * cfg.fs / fs))
-        )
+        filtered_ecg = resample(filtered_ecg, int(round(len(filtered_ecg) * cfg.fs / fs)))
 
     # remove baseline
     if "baseline" in cfg.preproc:
@@ -191,9 +179,7 @@ def parallel_preprocess_signal(
     if len(raw_sig) <= 3 * epoch_len:  # too short, no need for parallel computing
         retval = preprocess_signal(raw_sig, fs, cfg)
         if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
-            rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](
-                sig=raw_sig, fs=fs, verbose=verbose
-            ).astype(int)
+            rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
             retval.rpeaks = rpeaks
         return retval
 
@@ -223,47 +209,30 @@ def parallel_preprocess_signal(
         result = result[:-1]
 
     filtered_ecg = result[0]["filtered_ecg"][: epoch_len - epoch_overlap_half]
-    rpeaks = result[0]["rpeaks"][
-        np.where(result[0]["rpeaks"] < epoch_len - epoch_overlap_half)[0]
-    ]
+    rpeaks = result[0]["rpeaks"][np.where(result[0]["rpeaks"] < epoch_len - epoch_overlap_half)[0]]
     for idx, e in enumerate(result[1:]):
-        filtered_ecg = np.append(
-            filtered_ecg, e["filtered_ecg"][epoch_overlap_half:-epoch_overlap_half]
-        )
+        filtered_ecg = np.append(filtered_ecg, e["filtered_ecg"][epoch_overlap_half:-epoch_overlap_half])
         epoch_rpeaks = e["rpeaks"][
-            np.where(
-                (e["rpeaks"] >= epoch_overlap_half)
-                & (e["rpeaks"] < epoch_len - epoch_overlap_half)
-            )[0]
+            np.where((e["rpeaks"] >= epoch_overlap_half) & (e["rpeaks"] < epoch_len - epoch_overlap_half))[0]
         ]
         rpeaks = np.append(rpeaks, (idx + 1) * epoch_forward + epoch_rpeaks)
 
     if cfg.parallel_keep_tail:
-        filtered_ecg = np.append(
-            filtered_ecg, tail_result["filtered_ecg"][epoch_overlap_half:]
-        )
-        tail_rpeaks = tail_result["rpeaks"][
-            np.where(tail_result["rpeaks"] >= epoch_overlap_half)[0]
-        ]
+        filtered_ecg = np.append(filtered_ecg, tail_result["filtered_ecg"][epoch_overlap_half:])
+        tail_rpeaks = tail_result["rpeaks"][np.where(tail_result["rpeaks"] >= epoch_overlap_half)[0]]
         rpeaks = np.append(rpeaks, len(result) * epoch_forward + tail_rpeaks)
 
     if verbose >= 1:
         if cfg.rpeaks.lower() in DL_QRS_DETECTORS:
             print(f"signal processing took {round(time.time()-start_time, 3)} seconds")
         else:
-            print(
-                f"signal processing and R peaks detection took {round(time.time()-start_time, 3)} seconds"
-            )
+            print(f"signal processing and R peaks detection took {round(time.time()-start_time, 3)} seconds")
         start_time = time.time()
 
     if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
-        rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](
-            sig=raw_sig, fs=fs, verbose=verbose
-        ).astype(int)
+        rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
         if verbose >= 1:
-            print(
-                f"R peaks detection using {cfg.rpeaks} took {round(time.time()-start_time, 3)} seconds"
-            )
+            print(f"R peaks detection using {cfg.rpeaks} took {round(time.time()-start_time, 3)} seconds")
 
     if save_dir:
         # NOTE: this part is not tested
@@ -278,9 +247,7 @@ def parallel_preprocess_signal(
                 {"filtered_ecg": filtered_ecg},
                 format="5",
             )
-            savemat(
-                os.path.join(save_dir, "rpeaks.mat"), {"rpeaks": rpeaks}, format="5"
-            )
+            savemat(os.path.join(save_dir, "rpeaks.mat"), {"rpeaks": rpeaks}, format="5")
 
     retval = CFG(
         {

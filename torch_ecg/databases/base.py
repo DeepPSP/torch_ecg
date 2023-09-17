@@ -25,10 +25,10 @@ import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
+from numbers import Real
 from pathlib import Path
 from string import punctuation
-from typing import Any, List, Optional, Union, Sequence, Dict, Tuple
-from numbers import Real
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -37,18 +37,11 @@ import scipy.signal as SS
 import wfdb
 from pyedflib import EdfReader
 
-from ..cfg import CFG, DEFAULTS, _DATA_CACHE
+from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
 from ..utils.download import http_get
-from ..utils.misc import (
-    dict_to_str,
-    get_record_list_recursive,
-    init_logger,
-    ReprMixin,
-    CitationMixin,
-)
+from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from .aux_data import get_physionet_dbs
-
 
 __all__ = [
     "WFDB_Beat_Annotations",
@@ -159,8 +152,7 @@ class _DataBase(ReprMixin, ABC):
         if db_dir is None:
             db_dir = _DATA_CACHE / db_name
             warnings.warn(
-                f"`db_dir` is not specified, "
-                f"using default `{db_dir}` as the storage path",
+                f"`db_dir` is not specified, " f"using default `{db_dir}` as the storage path",
                 RuntimeWarning,
             )
         self.db_dir = Path(db_dir).expanduser().resolve().absolute()
@@ -173,10 +165,7 @@ class _DataBase(ReprMixin, ABC):
                 "please use the `download()` method.",
                 RuntimeWarning,
             )
-        self.working_dir = (
-            Path(working_dir or DEFAULTS.working_dir).expanduser().resolve().absolute()
-            / self.db_name
-        )
+        self.working_dir = Path(working_dir or DEFAULTS.working_dir).expanduser().resolve().absolute() / self.db_name
         self.working_dir.mkdir(parents=True, exist_ok=True)
 
         self.logger = kwargs.get("logger", None)
@@ -187,9 +176,7 @@ class _DataBase(ReprMixin, ABC):
                 verbose=verbose,
             )
         else:
-            assert isinstance(
-                self.logger, logging.Logger
-            ), "logger must be a `logging.Logger` instance"
+            assert isinstance(self.logger, logging.Logger), "logger must be a `logging.Logger` instance"
 
         self.data_ext = None
         self.ann_ext = None
@@ -227,9 +214,7 @@ class _DataBase(ReprMixin, ABC):
         """The :class:`DataBaseInfo` object of the database."""
         raise NotImplementedError
 
-    def get_citation(
-        self, format: Optional[str] = None, style: Optional[str] = None
-    ) -> None:
+    def get_citation(self, format: Optional[str] = None, style: Optional[str] = None) -> None:
         """Get the citations of the papers related to the database.
 
         Parameters
@@ -252,9 +237,7 @@ class _DataBase(ReprMixin, ABC):
         None
 
         """
-        self.database_info.get_citation(
-            lookup=True, format=format, style=style, timeout=10.0, print_result=True
-        )
+        self.database_info.get_citation(lookup=True, format=format, style=style, timeout=10.0, print_result=True)
 
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
         """Automatically infer the units of the signal.
@@ -291,9 +274,7 @@ class _DataBase(ReprMixin, ABC):
             self._ls_rec()
         return self._all_records
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """Get the absolute path of the record.
 
         Parameters
@@ -313,9 +294,7 @@ class _DataBase(ReprMixin, ABC):
             rec = self[rec]
         path = self._df_records.loc[rec].path
         if extension is not None:
-            path = path.with_suffix(
-                extension if extension.startswith(".") else f".{extension}"
-            )
+            path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
         return path
 
     def _normalize_leads(
@@ -510,18 +489,12 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._df_records = pd.DataFrame()
             self._df_records["record"] = wfdb.get_record_list(db_name or self.db_name)
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: (self.db_dir / x).resolve()
-            )
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: (self.db_dir / x).resolve())
             # keep only the records that exist in `self.db_dir`
             # NOTE
             # 1. data files might be in some subdirectories of `self.db_dir`
             # 2. `wfdb.get_record_list` will return records without file extension
-            self._df_records = self._df_records[
-                self._df_records["path"].apply(
-                    lambda x: len(x.parent.glob(f"{x.name}.*")) > 0
-                )
-            ]
+            self._df_records = self._df_records[self._df_records["path"].apply(lambda x: len(x.parent.glob(f"{x.name}.*")) > 0)]
             # if no record found,
             # search locally and recursively inside `self.db_dir`
             if len(self._df_records) == 0:
@@ -535,12 +508,8 @@ class PhysioNetDataBase(_DataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self.logger.debug(
-                    f"subsample `{size}` records from `{len(self._df_records)}`"
-                )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._all_records = self._df_records.index.tolist()
         except Exception:
             self._ls_rec_local()
@@ -552,58 +521,33 @@ class PhysioNetDataBase(_DataBase):
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
-            self._df_records["record"] = [
-                item
-                for item in record_list_fp.read_text().splitlines()
-                if len(item) > 0
-            ]
+            self._df_records["record"] = [item for item in record_list_fp.read_text().splitlines() if len(item) > 0]
             if len(self._df_records) > 0:
                 if self._subsample is not None:
                     size = min(
                         len(self._df_records),
                         max(1, int(round(self._subsample * len(self._df_records)))),
                     )
-                    self.logger.debug(
-                        f"subsample `{size}` records from `{len(self._df_records)}`"
-                    )
-                    self._df_records = self._df_records.sample(
-                        n=size, random_state=DEFAULTS.SEED, replace=False
-                    )
-                self._df_records["path"] = self._df_records["record"].apply(
-                    lambda x: (self.db_dir / x).resolve()
-                )
-                self._df_records = self._df_records[
-                    self._df_records["path"].apply(lambda x: x.is_file())
-                ]
-                self._df_records["record"] = self._df_records["path"].apply(
-                    lambda x: x.name
-                )
+                    self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                    self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+                self._df_records["path"] = self._df_records["record"].apply(lambda x: (self.db_dir / x).resolve())
+                self._df_records = self._df_records[self._df_records["path"].apply(lambda x: x.is_file())]
+                self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
 
         if len(self._df_records) == 0:
-            print(
-                "Please wait patiently to let the reader find "
-                "all records of the database from local storage..."
-            )
+            print("Please wait patiently to let the reader find " "all records of the database from local storage...")
             start = time.time()
-            self._df_records["path"] = get_record_list_recursive(
-                self.db_dir, self.data_ext, relative=False
-            )
+            self._df_records["path"] = get_record_list_recursive(self.db_dir, self.data_ext, relative=False)
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self.logger.debug(
-                    f"subsample `{size}` records from `{len(self._df_records)}`"
-                )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
 
@@ -695,12 +639,7 @@ class PhysioNetDataBase(_DataBase):
             data_format.lower() in allowed_data_format
         ), f"`data_format` should be one of `{allowed_data_format}`, but got `{data_format}`"
         if len(_leads) > 1:
-            assert data_format.lower() in [
-                "channel_first",
-                "lead_first",
-                "channel_last",
-                "lead_last",
-            ], (
+            assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], (
                 "`data_format` should be one of `['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
                 f"when the passed number of `leads` is larger than 1, but got `{data_format}`"
             )
@@ -734,9 +673,7 @@ class PhysioNetDataBase(_DataBase):
         else:
             data_fs = wfdb_rec.fs
         if data_fs != wfdb_rec.fs:
-            data = SS.resample_poly(data, data_fs, wfdb_rec.fs, axis=0).astype(
-                data.dtype
-            )
+            data = SS.resample_poly(data, data_fs, wfdb_rec.fs, axis=0).astype(data.dtype)
 
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
@@ -771,10 +708,7 @@ class PhysioNetDataBase(_DataBase):
         """
         attrs = vars(self)
         methods = [
-            func
-            for func in dir(self)
-            if callable(getattr(self, func))
-            and not (func.startswith("__") and func.endswith("__"))
+            func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))
         ]
 
         beat_annotations = deepcopy(WFDB_Beat_Annotations)
@@ -878,16 +812,12 @@ class PhysioNetDataBase(_DataBase):
     @property
     def webpage(self) -> str:
         """URL of the database webpage"""
-        return posixpath.join(
-            wfdb.io.download.PN_CONTENT_URL, f"{self.db_name}/{self.version}"
-        )
+        return posixpath.join(wfdb.io.download.PN_CONTENT_URL, f"{self.db_name}/{self.version}")
 
     @property
     def url(self) -> str:
         """URL of the database index page for downloading."""
-        return posixpath.join(
-            wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}"
-        )
+        return posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}")
 
     @property
     def url_(self) -> Union[str, type(None)]:
@@ -897,13 +827,9 @@ class PhysioNetDataBase(_DataBase):
         domain = "https://physionet.org/static/published-projects/"
         punct = re.sub("[\\-:]", "", punctuation)
         try:
-            db_desc = self.df_all_db_info[
-                self.df_all_db_info["db_name"] == self.db_name
-            ].iloc[0]["db_description"]
+            db_desc = self.df_all_db_info[self.df_all_db_info["db_name"] == self.db_name].iloc[0]["db_description"]
         except IndexError:
-            self.logger.info(
-                f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!"
-            )
+            self.logger.info(f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!")
             return None
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
@@ -911,9 +837,7 @@ class PhysioNetDataBase(_DataBase):
         if requests.head(url).headers.get("Content-Type") == "application/zip":
             self._url_compressed = url
         else:
-            new_url = posixpath.join(
-                wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}"
-            )
+            new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
             print(f"{url} is not available, try {new_url} instead")
         return self._url_compressed
 
@@ -925,9 +849,7 @@ class PhysioNetDataBase(_DataBase):
                 self._ls_rec()
                 return
             else:
-                self.logger.info(
-                    "No compressed database available! Downloading the uncompressed version..."
-                )
+                self.logger.info("No compressed database available! Downloading the uncompressed version...")
         wfdb.dl_database(
             self.db_name,
             self.db_dir,
@@ -990,8 +912,7 @@ class NSRRDataBase(_DataBase):
             ["oya", ""],
             [
                 "chat",
-                "Multi-center randomized trial comparing early adenotonsillectomy to "
-                "watchful waiting plus supportive care",
+                "Multi-center randomized trial comparing early adenotonsillectomy to " "watchful waiting plus supportive care",
             ],
             [
                 "heartbeat",
@@ -1094,10 +1015,7 @@ class NSRRDataBase(_DataBase):
 
         attrs = vars(self)
         methods = [
-            func
-            for func in dir(self)
-            if callable(getattr(self, func))
-            and not (func.startswith("__") and func.endswith("__"))
+            func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))
         ]
 
         if items is None:
@@ -1193,10 +1111,7 @@ class CPSCDataBase(_DataBase):
 
         attrs = vars(self)
         methods = [
-            func
-            for func in dir(self)
-            if callable(getattr(self, func))
-            and not (func.startswith("__") and func.endswith("__"))
+            func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))
         ]
 
         if items is None:
@@ -1291,9 +1206,7 @@ class DataBaseInfo(CitationMixin):
         if isinstance(self.about, str):
             about = "ABOUT\n-----\n" + textwrap.dedent(self.about).strip("\n ")
         else:
-            about = ["ABOUT", "-----"] + [
-                f"{idx+1}. {line}" for idx, line in enumerate(self.about)
-            ]
+            about = ["ABOUT", "-----"] + [f"{idx+1}. {line}" for idx, line in enumerate(self.about)]
             about = "\n".join(about)
         if self.note is None:
             # note = "NOTE\n----"
@@ -1301,9 +1214,7 @@ class DataBaseInfo(CitationMixin):
         elif isinstance(self.note, str):
             note = "NOTE\n----\n" + textwrap.dedent(self.note).strip("\n ")
         else:
-            note = ["NOTE", "----"] + [
-                f"{idx+1}. {line}" for idx, line in enumerate(self.note)
-            ]
+            note = ["NOTE", "----"] + [f"{idx+1}. {line}" for idx, line in enumerate(self.note)]
             note = "\n".join(note)
         if self.issues is None:
             # issues = "Issues\n------"
@@ -1311,9 +1222,7 @@ class DataBaseInfo(CitationMixin):
         elif isinstance(self.issues, str):
             issues = "Issues\n------\n" + textwrap.dedent(self.issues).strip("\n ")
         else:
-            issues = ["Issues", "-" * 6] + [
-                f"{idx+1}. {line}" for idx, line in enumerate(self.issues)
-            ]
+            issues = ["Issues", "-" * 6] + [f"{idx+1}. {line}" for idx, line in enumerate(self.issues)]
             issues = "\n".join(issues)
         references = ["References", "-" * 10] + [
             # f"""{idx+1}. <a name="ref{idx+1}"></a> {line}"""
@@ -1321,9 +1230,7 @@ class DataBaseInfo(CitationMixin):
             for idx, line in enumerate(self.references)
         ]
         references = "\n".join(references)
-        usage = ["Usage", "------"] + [
-            f"{idx+1}. {line}" for idx, line in enumerate(self.usage)
-        ]
+        usage = ["Usage", "------"] + [f"{idx+1}. {line}" for idx, line in enumerate(self.usage)]
         usage = "\n".join(usage)
 
         docstring = textwrap.indent(
@@ -1338,9 +1245,7 @@ class DataBaseInfo(CitationMixin):
         citation = self.get_citation(lookup=lookup, print_result=False)
         if citation.startswith("@"):
             citation = textwrap.indent(citation, indent)
-            citation = textwrap.indent(
-                f"""Citation\n--------\n.. code-block:: bibtex\n\n{citation}""", indent
-            )
+            citation = textwrap.indent(f"""Citation\n--------\n.. code-block:: bibtex\n\n{citation}""", indent)
             docstring = f"{docstring}\n\n{citation}\n"
         elif not lookup:
             citation = textwrap.indent(f"""Citation\n--------\n{citation}""", indent)
@@ -1396,15 +1301,9 @@ class PSGDataBaseMixin:
         if not hasattr(self, "sleep_stage_names"):
             assert class_map is not None, "`class_map` must be provided"
         else:
-            class_map = class_map or {
-                k: len(self.sleep_stage_names) - i - 1
-                for i, k in enumerate(self.sleep_stage_names)
-            }
+            class_map = class_map or {k: len(self.sleep_stage_names) - i - 1 for i, k in enumerate(self.sleep_stage_names)}
         intervals = {
-            class_map[k]: [
-                [int(round(s / fs / granularity)), int(round(e / fs / granularity))]
-                for s, e in v
-            ]
+            class_map[k]: [[int(round(s / fs / granularity)), int(round(e / fs / granularity))] for s, e in v]
             for k, v in intervals.items()
         }
         intervals = {k: [[s, e] for s, e in v if s < e] for k, v in intervals.items()}
@@ -1450,17 +1349,12 @@ class PSGDataBaseMixin:
         if not hasattr(self, "sleep_stage_names"):
             pass
         else:
-            class_map = class_map or {
-                k: len(self.sleep_stage_names) - i - 1
-                for i, k in enumerate(self.sleep_stage_names)
-            }
+            class_map = class_map or {k: len(self.sleep_stage_names) - i - 1 for i, k in enumerate(self.sleep_stage_names)}
 
         if "plt" not in globals():
             import matplotlib.pyplot as plt
 
-        fig_width = (
-            len(mask) * granularity / 3600 / 6 * 20
-        )  # stardard width is 20 for 6 hours
+        fig_width = len(mask) * granularity / 3600 / 6 * 20  # stardard width is 20 for 6 hours
 
         fig, ax = plt.subplots(figsize=(fig_width, 4))
         color = kwargs.pop("color", "black")
@@ -1468,10 +1362,7 @@ class PSGDataBaseMixin:
 
         # xticks to the format of HH:MM, every half hour
         xticks = np.arange(0, len(mask), 1800 / granularity)
-        xticklabels = [
-            f"{int(i * granularity / 3600):02d}:{int(i * granularity / 60 % 60):02d}"
-            for i in xticks
-        ]
+        xticklabels = [f"{int(i * granularity / 3600):02d}:{int(i * granularity / 60 % 60):02d}" for i in xticks]
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticklabels, fontsize=14)
         ax.set_xlabel("Time", fontsize=18)

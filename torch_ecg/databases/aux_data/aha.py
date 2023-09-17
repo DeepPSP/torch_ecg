@@ -11,7 +11,6 @@ import io
 
 import pandas as pd
 
-
 __all__ = [
     "df_primary_statements",
     "df_secondary_statements",
@@ -356,10 +355,6 @@ General Modifier Code,May (May Not) Accompany These Primary Codes or May Be Betw
     dtype=str,
 )
 
-df_general_modifier_primary_statement_pairing_rules[
+df_general_modifier_primary_statement_pairing_rules["Location"] = df_general_modifier_primary_statement_pairing_rules[
     "Location"
-] = df_general_modifier_primary_statement_pairing_rules["Location"].apply(
-    lambda location: location.replace("b", "before")
-    .replace("a", "after")
-    .replace("i", "between")
-)
+].apply(lambda location: location.replace("b", "before").replace("a", "after").replace("i", "between"))

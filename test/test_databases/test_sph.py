@@ -13,7 +13,6 @@ import pytest
 from torch_ecg.databases import SPH, DataBaseInfo
 from torch_ecg.utils.download import http_get
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "sph"
@@ -46,17 +45,11 @@ class TestSPH:
         reader_ss = SPH(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SPH(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SPH(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SPH(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -91,9 +84,7 @@ class TestSPH:
 
         with pytest.raises(ValueError, match="Unknown annotation format: `flat`"):
             reader.load_ann(rec, ann_format="flat")
-        with pytest.raises(
-            NotImplementedError, match="Abbreviations are not supported yet"
-        ):
+        with pytest.raises(NotImplementedError, match="Abbreviations are not supported yet"):
             reader.load_ann(rec, ann_format="a")
 
     def test_get_subject_info(self):

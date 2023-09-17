@@ -74,11 +74,7 @@ class RandomRenormalize(Augmenter):
         self.inplace = inplace
 
     def forward(
-        self,
-        sig: Tensor,
-        label: Optional[Tensor],
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        self, sig: Tensor, label: Optional[Tensor], *extra_tensors: Sequence[Tensor], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """Forward function of the RandomRenormalize augmenter.
 
@@ -115,19 +111,11 @@ class RandomRenormalize(Augmenter):
             return (sig, label, *extra_tensors)
         indices = self.get_indices(self.prob, pop_size=batch)
         if self.per_channel:
-            mean = DEFAULTS.RNG.normal(
-                self.mean_mean, self.mean_scale, size=(len(indices), lead, 1)
-            )
-            std = DEFAULTS.RNG.normal(
-                self.std_mean, self.std_scale, size=(len(indices), lead, 1)
-            )
+            mean = DEFAULTS.RNG.normal(self.mean_mean, self.mean_scale, size=(len(indices), lead, 1))
+            std = DEFAULTS.RNG.normal(self.std_mean, self.std_scale, size=(len(indices), lead, 1))
         else:
-            mean = DEFAULTS.RNG.normal(
-                self.mean_mean, self.mean_scale, size=(len(indices), 1, 1)
-            )
-            std = DEFAULTS.RNG.normal(
-                self.std_mean, self.std_scale, size=(len(indices), 1, 1)
-            )
+            mean = DEFAULTS.RNG.normal(self.mean_mean, self.mean_scale, size=(len(indices), 1, 1))
+            std = DEFAULTS.RNG.normal(self.std_mean, self.std_scale, size=(len(indices), 1, 1))
         sig[indices, ...] = normalize_t(
             sig[indices, ...],
             method="z-score",

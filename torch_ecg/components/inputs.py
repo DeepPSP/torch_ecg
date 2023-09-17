@@ -3,20 +3,19 @@
 
 import inspect
 import math
-from copy import deepcopy
 from abc import ABC, abstractmethod
-from typing import Union, List, Sequence, Tuple
+from copy import deepcopy
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-from torch.nn import functional as F
 from einops.layers.torch import Rearrange
+from torch.nn import functional as F
 
 from ..cfg import CFG, DEFAULTS
 from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_nn import compute_conv_output_shape
 from ..utils.utils_signal_t import Spectrogram
-
 
 __all__ = [
     "InputConfig",
@@ -71,9 +70,7 @@ class InputConfig(CFG):
             ensure_batch_dim=ensure_batch_dim,
             **kwargs,
         )
-        assert (
-            "n_channels" in self and self.n_channels > 0
-        ), f"`n_channels` must be positive, got {self.n_channels}"
+        assert "n_channels" in self and self.n_channels > 0, f"`n_channels` must be positive, got {self.n_channels}"
         assert "n_samples" in self and (
             self.n_samples > 0 or self.n_samples == -1
         ), f"`n_samples` must be positive or -1, got {self.n_samples}"
@@ -86,12 +83,8 @@ class InputConfig(CFG):
         if self.input_type in [
             "spectrogram",
         ]:
-            assert (
-                "n_bins" in self
-            ), f"`n_bins` must be specified for {self.input_type} input"
-            assert (
-                "fs" in self or "sample_rate" in self
-            ), f"`fs` or `sample_rate` must be specified for {self.input_type} input"
+            assert "n_bins" in self, f"`n_bins` must be specified for {self.input_type} input"
+            assert "fs" in self or "sample_rate" in self, f"`fs` or `sample_rate` must be specified for {self.input_type} input"
 
 
 class BaseInput(ReprMixin, ABC):
@@ -108,9 +101,7 @@ class BaseInput(ReprMixin, ABC):
 
     def __init__(self, config: InputConfig) -> None:
         """ """
-        assert isinstance(
-            config, InputConfig
-        ), "`config` must be an instance of `InputConfig`"
+        assert isinstance(config, InputConfig), "`config` must be an instance of `InputConfig`"
         self._config = deepcopy(config)
         self._values = None
         self._dtype = self._config.get("dtype", DEFAULTS.DTYPE.TORCH)
@@ -187,9 +178,7 @@ class BaseInput(ReprMixin, ABC):
         }
         if self.values is not None:
             return self.values.shape[channel_dim[self.input_type]]
-        return self.compute_input_shape((self.n_channels, self.n_samples))[
-            channel_dim[self.input_type]
-        ]
+        return self.compute_input_shape((self.n_channels, self.n_samples))[channel_dim[self.input_type]]
 
     @property
     def input_samples(self) -> int:
@@ -209,9 +198,7 @@ class BaseInput(ReprMixin, ABC):
     def device(self) -> torch.device:
         return self._device
 
-    def compute_input_shape(
-        self, waveform_shape: Union[Sequence[int], torch.Size]
-    ) -> Tuple[Union[type(None), int], ...]:
+    def compute_input_shape(self, waveform_shape: Union[Sequence[int], torch.Size]) -> Tuple[Union[type(None), int], ...]:
         """Computes the input shape of the model based on
         the input type and the waveform shape.
 
@@ -236,9 +223,7 @@ class BaseInput(ReprMixin, ABC):
             input_shape = (*waveform_shape[:-2], 2 * waveform_shape[-2], seq_len)
         elif self.input_type == "spectrogram":
             n_samples = compute_conv_output_shape(
-                waveform_shape
-                if len(waveform_shape) == 3
-                else [None] + list(waveform_shape),
+                waveform_shape if len(waveform_shape) == 3 else [None] + list(waveform_shape),
                 kernel_size=self.win_length,
                 stride=self.hop_length,
                 asymmetric_padding=[self.hop_length, self.win_length - self.hop_length],
@@ -421,9 +406,7 @@ class FFTInput(BaseInput):
         )
         if self.drop_dc:
             self._values = self._values[..., 1:]
-        self._values = torch.cat(
-            [torch.abs(self._values), torch.angle(self._values)], dim=-2
-        )
+        self._values = torch.cat([torch.abs(self._values), torch.angle(self._values)], dim=-2)
         return self._values
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
@@ -496,9 +479,7 @@ class _SpectralInput(BaseInput):
         self.feature_fs = self._config.get("feature_fs", None)
         if "window_size" not in self._config:
             self._config.window_size = 1 / 20
-        assert (
-            0 < self._config.window_size < 0.2
-        ), f"`window_size` must be in (0, 0.2), got {self._config.window_size}"
+        assert 0 < self._config.window_size < 0.2, f"`window_size` must be in (0, 0.2), got {self._config.window_size}"
         if "overlap_size" not in self._config:
             self._config.overlap_size = 1 / 40
         # TODO: consider negative overlap_size, i.e. positive gaps between windows
@@ -589,9 +570,7 @@ class SpectrogramInput(_SpectralInput):
     def _post_init(self) -> None:
         """Make sure the input type is `spectrogram` and set the parameters."""
         super()._post_init()
-        assert self.input_type in [
-            "spectrogram"
-        ], f"`input_type` must be one of [`spectrogram`], got {self.input_type}"
+        assert self.input_type in ["spectrogram"], f"`input_type` must be one of [`spectrogram`], got {self.input_type}"
         args = inspect.getfullargspec(Spectrogram.__init__).args
         for k in ["self", "n_fft", "win_length", "hop_length"]:
             args.remove(k)
@@ -600,9 +579,7 @@ class SpectrogramInput(_SpectralInput):
         kwargs["win_length"] = self.win_length
         kwargs["hop_length"] = self.hop_length
         self._transform = torch.nn.Sequential()
-        self._transform.add_module(
-            "spectrogram", Spectrogram(**kwargs).to(self.device, self.dtype)
-        )
+        self._transform.add_module("spectrogram", Spectrogram(**kwargs).to(self.device, self.dtype))
         if self.to1d:
             self._transform.add_module(
                 "to1d",
@@ -611,9 +588,7 @@ class SpectrogramInput(_SpectralInput):
 
     def _from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """Internal method to convert the waveform to the input tensor."""
-        self._values = self._transform(
-            torch.as_tensor(waveform).to(self.device, self.dtype)
-        )
+        self._values = self._transform(torch.as_tensor(waveform).to(self.device, self.dtype))
         if self.feature_fs is not None:
             # self.values.ndim can be 2, 3, or 4
             scale_factor = [1] * (self.values.ndim - 3) + [self.feature_fs / self.fs]
@@ -624,9 +599,7 @@ class SpectrogramInput(_SpectralInput):
                     recompute_scale_factor=True,
                 ).squeeze(0)
             else:
-                self._values = F.interpolate(
-                    self._values, scale_factor=scale_factor, recompute_scale_factor=True
-                )
+                self._values = F.interpolate(self._values, scale_factor=scale_factor, recompute_scale_factor=True)
         return self._values
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:

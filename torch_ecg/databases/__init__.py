@@ -79,32 +79,20 @@ Miscellaneous
 
 from . import aux_data
 from .base import (
-    PhysioNetDataBase,
-    NSRRDataBase,
+    BeatAnn,
     CPSCDataBase,
     DataBaseInfo,
-    BeatAnn,
+    NSRRDataBase,
+    PhysioNetDataBase,
+    PSGDataBaseMixin,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
-    PSGDataBaseMixin,
 )
 from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
 from .nsrr_databases import SHHS
 from .other_databases import CACHET_CADB, SPH
-from .physionet_databases import (
-    AFDB,
-    ApneaECG,
-    CINC2017,
-    CINC2018,
-    CINC2020,
-    CINC2021,
-    LTAFDB,
-    LUDB,
-    MITDB,
-    QTDB,
-)
-
+from .physionet_databases import AFDB, CINC2017, CINC2018, CINC2020, CINC2021, LTAFDB, LUDB, MITDB, QTDB, ApneaECG
 
 __all__ = [
     # from physionet

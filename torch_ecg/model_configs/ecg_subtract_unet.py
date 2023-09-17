@@ -44,9 +44,7 @@ ECG_SUBTRACT_UNET_CONFIG.down_num_filters = [
     for idx in range(0, ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)
 ]
 ECG_SUBTRACT_UNET_CONFIG.down_filter_lengths = [11, 5]
-ECG_SUBTRACT_UNET_CONFIG.down_dropouts = list(
-    repeat([0.0, 0.15, 0.0], ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)
-)
+ECG_SUBTRACT_UNET_CONFIG.down_dropouts = list(repeat([0.0, 0.15, 0.0], ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1))
 
 
 # bottom, double conv
@@ -54,16 +52,14 @@ ECG_SUBTRACT_UNET_CONFIG.bottom_num_filters = [
     # branch 1
     list(
         repeat(
-            init_down_num_filters
-            * (2 ** (ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)),
+            init_down_num_filters * (2 ** (ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)),
             2,
         )
     ),
     # branch 2
     list(
         repeat(
-            init_down_num_filters
-            * (2 ** (ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)),
+            init_down_num_filters * (2 ** (ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)),
             2,
         )
     ),
@@ -93,9 +89,7 @@ ECG_SUBTRACT_UNET_CONFIG.up_num_filters = [
     list(repeat(24, _num_convs)),
     list(repeat(16, _num_convs)),
 ]
-ECG_SUBTRACT_UNET_CONFIG.up_deconv_filter_lengths = list(
-    repeat(9, ECG_SUBTRACT_UNET_CONFIG.down_up_block_num)
-)
+ECG_SUBTRACT_UNET_CONFIG.up_deconv_filter_lengths = list(repeat(9, ECG_SUBTRACT_UNET_CONFIG.down_up_block_num))
 ECG_SUBTRACT_UNET_CONFIG.up_conv_filter_lengths = [5, 11, 21]
 ECG_SUBTRACT_UNET_CONFIG.up_dropouts = [
     [0.15, 0.15, 0.0],

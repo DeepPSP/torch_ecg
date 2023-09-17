@@ -42,12 +42,7 @@ class LabelSmooth(Augmenter):
     __name__ = "LabelSmooth"
 
     def __init__(
-        self,
-        fs: Optional[int] = None,
-        smoothing: float = 0.1,
-        prob: float = 0.5,
-        inplace: bool = True,
-        **kwargs: Any
+        self, fs: Optional[int] = None, smoothing: float = 0.1, prob: float = 0.5, inplace: bool = True, **kwargs: Any
     ) -> None:
         super().__init__()
         self.fs = fs
@@ -57,11 +52,7 @@ class LabelSmooth(Augmenter):
         self.inplace = inplace
 
     def forward(
-        self,
-        sig: Optional[Tensor],
-        label: Tensor,
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        self, sig: Optional[Tensor], label: Tensor, *extra_tensors: Sequence[Tensor], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """Forward method to perform label smoothing.
 
@@ -100,9 +91,7 @@ class LabelSmooth(Augmenter):
         eps = self.smoothing / max(1, n_classes)
         indices = self.get_indices(prob=self.prob, pop_size=batch_size)
         # print(f"indices = {indices}, len(indices) = {len(indices)}")
-        label[indices, ...] = (1 - self.smoothing) * label[
-            indices, ...
-        ] + torch.full_like(label[indices, ...], eps)
+        label[indices, ...] = (1 - self.smoothing) * label[indices, ...] + torch.full_like(label[indices, ...], eps)
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:

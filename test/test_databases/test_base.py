@@ -5,18 +5,18 @@ from pathlib import Path
 
 import pytest
 
+from torch_ecg.databases import AFDB, list_databases
 from torch_ecg.databases.base import (
-    _DataBase,
-    PhysioNetDataBase,
-    NSRRDataBase,
-    CPSCDataBase,
     BeatAnn,
+    CPSCDataBase,
     DataBaseInfo,
+    NSRRDataBase,
+    PhysioNetDataBase,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
+    _DataBase,
 )
-from torch_ecg.databases import AFDB, list_databases
 from torch_ecg.databases.datasets import list_datasets
 
 
@@ -75,10 +75,7 @@ def test_database_meta():
     with pytest.warns(RuntimeWarning, match="`db_dir` is not specified"):
         reader = AFDB()
 
-    assert (
-        reader.db_dir
-        == Path("~").expanduser() / ".cache" / "torch_ecg" / "data" / "afdb"
-    )
+    assert reader.db_dir == Path("~").expanduser() / ".cache" / "torch_ecg" / "data" / "afdb"
 
     assert reader.helper() is None  # printed
     for item in ["attributes", "methods", "beat", "non-beat", "rhythm"]:
@@ -86,17 +83,11 @@ def test_database_meta():
     assert reader.helper(["methods", "beat"]) is None  # printed
 
     for k in WFDB_Beat_Annotations:
-        assert (
-            reader.helper(k) is None
-        )  # printed: `{k}` stands for `{WFDB_Beat_Annotations[k]}`
+        assert reader.helper(k) is None  # printed: `{k}` stands for `{WFDB_Beat_Annotations[k]}`
     for k in WFDB_Non_Beat_Annotations:
-        assert (
-            reader.helper(k) is None
-        )  # printed: `{k}` stands for `{WFDB_Non_Beat_Annotations[k]}`
+        assert reader.helper(k) is None  # printed: `{k}` stands for `{WFDB_Non_Beat_Annotations[k]}`
     for k in WFDB_Rhythm_Annotations:
-        assert (
-            reader.helper(k) is None
-        )  # printed: `{k}` stands for `{WFDB_Rhythm_Annotations[k]}`
+        assert reader.helper(k) is None  # printed: `{k}` stands for `{WFDB_Rhythm_Annotations[k]}`
 
 
 def test_database_info():

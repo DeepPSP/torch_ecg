@@ -2,41 +2,36 @@
 Currently NOT used, NOT tested.
 """
 
-import pickle
 import json
 import multiprocessing as mp
+import pickle
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import Any, Dict, Optional, List, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-import pandas as pd
 import numpy as np
-from sklearn.base import BaseEstimator
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.model_selection import ParameterGrid, GridSearchCV
-
-# from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
-from sklearn.ensemble import (
-    RandomForestClassifier,
-    GradientBoostingClassifier,
-    BaggingClassifier,
-)
-from xgboost import XGBClassifier
-from torch_ecg.cfg import CFG
-from torch_ecg.components.outputs import ClassificationOutput
-from torch_ecg.components.loggers import LoggerManager
-from torch_ecg.utils.utils_data import stratified_train_test_split
-from torch_ecg.utils.utils_metrics import _cls_to_bin
-from tqdm.auto import tqdm
-
+import pandas as pd
 from cfg import BaseCfg
 from data_reader import CINC2022Reader
 from outputs import CINC2022Outputs
-from utils.scoring_metrics import compute_challenge_metrics
+from sklearn.base import BaseEstimator
+from sklearn.ensemble import BaggingClassifier, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import GridSearchCV, ParameterGrid
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+# from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+from tqdm.auto import tqdm
+from utils.scoring_metrics import compute_challenge_metrics
+from xgboost import XGBClassifier
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.loggers import LoggerManager
+from torch_ecg.components.outputs import ClassificationOutput
+from torch_ecg.utils.utils_data import stratified_train_test_split
+from torch_ecg.utils.utils_metrics import _cls_to_bin
 
 __all__ = [
     "OutComeClassifier_CINC2022",
@@ -120,13 +115,9 @@ class OutComeClassifier_CINC2022(object):
         self.config.db_dir = Path(self.config.db_dir).resolve().absolute()
         self.reader = CINC2022Reader(self.config.db_dir)
 
-        self.__df_features = self.reader.df_stats[
-            [self.config.split_col, self.config.y_col] + self.config.x_cols
-        ]
+        self.__df_features = self.reader.df_stats[[self.config.split_col, self.config.y_col] + self.config.x_cols]
         # to ordinal
-        self.__df_features.loc[:, self.config.y_col] = self.__df_features[
-            self.config.y_col
-        ].map(self.config.class_map)
+        self.__df_features.loc[:, self.config.y_col] = self.__df_features[self.config.y_col].map(self.config.class_map)
         for col in self.config.x_cols_cate:
             if self.__df_features[col].dtype == "bool":
                 self.__df_features.loc[:, col] = self.__df_features[col].astype(int)
@@ -137,27 +128,21 @@ class OutComeClassifier_CINC2022(object):
             self.__df_features.loc[:, col] = self.__df_features.loc[:, col].apply(
                 lambda x: np.nan if x == CINC2022Reader.stats_fillna_val else x
             )
-        self.__df_features.loc[
-            :, self.config.x_cols_cont
-        ] = self.__imputer.fit_transform(self.__df_features[self.config.x_cols_cont])
-        self.__df_features.loc[
-            :, self.config.x_cols_cont
-        ] = self.__scaler.fit_transform(self.__df_features[self.config.x_cols_cont])
+        self.__df_features.loc[:, self.config.x_cols_cont] = self.__imputer.fit_transform(
+            self.__df_features[self.config.x_cols_cont]
+        )
+        self.__df_features.loc[:, self.config.x_cols_cont] = self.__scaler.fit_transform(
+            self.__df_features[self.config.x_cols_cont]
+        )
 
         for loc in self.config.location_list:
             self.__df_features.loc[:, f"Location-{loc}"] = self.__df_features.apply(
-                lambda row: -1
-                if loc not in row["Locations"]
-                else 0
-                if loc not in row["Murmur locations"]
-                else 1,
+                lambda row: -1 if loc not in row["Locations"] else 0 if loc not in row["Murmur locations"] else 1,
                 axis=1,
             )
 
         self.__df_features.set_index(self.config.split_col, inplace=True)
-        self.__df_features = self.__df_features[
-            [self.config.y_col] + self.config.feature_list
-        ]
+        self.__df_features = self.__df_features[[self.config.y_col] + self.config.feature_list]
 
         train_set, test_set = self._train_test_split()
         df_train = self.__df_features.loc[train_set]
@@ -167,9 +152,7 @@ class OutComeClassifier_CINC2022(object):
         self.X_test = df_test[self.config.feature_list].values
         self.y_test = df_test[self.config.y_col].values
 
-    def get_model(
-        self, model_name: str, params: Optional[dict] = None
-    ) -> BaseEstimator:
+    def get_model(self, model_name: str, params: Optional[dict] = None) -> BaseEstimator:
         """
         Returns a model instance.
 
@@ -274,9 +257,7 @@ class OutComeClassifier_CINC2022(object):
         clf.best_clf = loaded["outcome_classifier"]
         return clf
 
-    def inference(
-        self, patient_data: str, murmur_pred: Dict[str, int]
-    ) -> ClassificationOutput:
+    def inference(self, patient_data: str, murmur_pred: Dict[str, int]) -> ClassificationOutput:
         """
         Helper function to infer the outcome of a patient.
 
@@ -326,28 +307,18 @@ class OutComeClassifier_CINC2022(object):
                     features[k] = 1
                 elif v.lower() == "false":  # pregnancy status
                     features[k] = 0
-                elif (
-                    v == CINC2022Reader.stats_fillna_val
-                ):  # pregnancy status missing values
+                elif v == CINC2022Reader.stats_fillna_val:  # pregnancy status missing values
                     features[k] = 0
                 else:
                     raise ValueError(f"Unknown value {v} for {k}")
         df_features = pd.DataFrame(features, index=[0])[self.config.feature_list]
-        df_features.loc[:, self.config.x_cols_cont] = self.__imputer.transform(
-            df_features[self.config.x_cols_cont]
-        )
-        df_features.loc[:, self.config.x_cols_cont] = self.__scaler.transform(
-            df_features[self.config.x_cols_cont]
-        )
+        df_features.loc[:, self.config.x_cols_cont] = self.__imputer.transform(df_features[self.config.x_cols_cont])
+        df_features.loc[:, self.config.x_cols_cont] = self.__scaler.transform(df_features[self.config.x_cols_cont])
         X = df_features.values
         y_prob = self.best_clf.predict_proba(X)
         y_pred = self.best_clf.predict(X)
-        bin_pred = _cls_to_bin(
-            self.best_clf.predict(X), shape=(1, len(self.config.class_map))
-        )
-        return ClassificationOutput(
-            classes=self.config.classes, prob=y_prob, pred=y_pred, bin_pred=bin_pred
-        )
+        bin_pred = _cls_to_bin(self.best_clf.predict(X), shape=(1, len(self.config.class_map)))
+        return ClassificationOutput(classes=self.config.classes, prob=y_prob, pred=y_pred, bin_pred=bin_pred)
 
     def search(
         self,
@@ -385,11 +356,7 @@ class OutComeClassifier_CINC2022(object):
         if cv is None:
             msg = "Performing grid search with no cross validation."
             self.logger_manager.log_message(msg)
-            (
-                self.best_clf,
-                self.best_params,
-                self.best_score,
-            ) = self._perform_grid_search_no_cv(
+            (self.best_clf, self.best_params, self.best_score,) = self._perform_grid_search_no_cv(
                 model_name,
                 self.config.grids[model_name],
                 self.X_train,
@@ -411,11 +378,7 @@ class OutComeClassifier_CINC2022(object):
         else:
             msg = f"Performing grid search with {cv}-fold cross validation."
             self.logger_manager.log_message(msg)
-            (
-                self.best_clf,
-                self.best_params,
-                self.best_score,
-            ) = self._perform_grid_search_cv(
+            (self.best_clf, self.best_params, self.best_score,) = self._perform_grid_search_cv(
                 model_name,
                 self.config.grids[model_name],
                 self.X_train,
@@ -488,9 +451,7 @@ class OutComeClassifier_CINC2022(object):
 
                 y_prob = clf_gs.predict_proba(X_val)
                 y_pred = clf_gs.predict(X_val)
-                bin_pred = _cls_to_bin(
-                    y_pred, shape=(y_pred.shape[0], len(self.config.classes))
-                )
+                bin_pred = _cls_to_bin(y_pred, shape=(y_pred.shape[0], len(self.config.classes)))
                 outputs = CINC2022Outputs(
                     outcome_output=ClassificationOutput(
                         classes=self.config.classes,
@@ -507,9 +468,7 @@ class OutComeClassifier_CINC2022(object):
                     outputs=[outputs],
                 )
 
-                msg = (
-                    f"""Model - {self.model_map[model_name].__name__}\nParameters:\n"""
-                )
+                msg = f"""Model - {self.model_map[model_name].__name__}\nParameters:\n"""
                 for k, v in params.items():
                     msg += f"""{k} = {v}\n"""
                 self.logger_manager.log_message(msg)
@@ -581,9 +540,7 @@ class OutComeClassifier_CINC2022(object):
         # best_score = gscv.best_score_
         y_prob = best_clf.predict_proba(X_val)
         y_pred = best_clf.predict(X_val)
-        bin_pred = _cls_to_bin(
-            y_pred, shape=(y_pred.shape[0], len(self.config.classes))
-        )
+        bin_pred = _cls_to_bin(y_pred, shape=(y_pred.shape[0], len(self.config.classes)))
         outputs = CINC2022Outputs(
             outcome_output=ClassificationOutput(
                 classes=self.config.classes,
@@ -711,9 +668,7 @@ class OutComeClassifier_CINC2022(object):
             "xgb": XGBClassifier,
         }
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """
         Stratified train/test split.
 
@@ -726,26 +681,20 @@ class OutComeClassifier_CINC2022(object):
 
         """
         if self.reader is None:
-            print(
-                "No training data available. Please call `_prepare_training_data` first."
-            )
+            print("No training data available. Please call `_prepare_training_data` first.")
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
         assert _train_ratio * _test_ratio > 0
 
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
         test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
-        aux_train_file = (
-            BaseCfg.project_dir / "utils" / f"train_ratio_{_train_ratio}.json"
-        )
+        aux_train_file = BaseCfg.project_dir / "utils" / f"train_ratio_{_train_ratio}.json"
         aux_test_file = BaseCfg.project_dir / "utils" / f"test_ratio_{_test_ratio}.json"
 
         if not force_recompute and train_file.exists() and test_file.exists():
             return json.loads(train_file.read_text()), json.loads(test_file.read_text())
         if not force_recompute and aux_train_file.exists() and aux_test_file.exists():
-            return json.loads(aux_train_file.read_text()), json.loads(
-                aux_test_file.read_text()
-            )
+            return json.loads(aux_train_file.read_text()), json.loads(aux_test_file.read_text())
 
         df_train, df_test = stratified_train_test_split(
             self.reader.df_stats,

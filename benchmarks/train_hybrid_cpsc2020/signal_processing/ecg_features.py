@@ -15,7 +15,7 @@ import multiprocessing as mp
 import operator
 import os
 from copy import deepcopy
-from typing import Optional, Union, Sequence
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pywt
@@ -32,7 +32,6 @@ from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import list_sum
 
 from ..cfg import FeatureCfg
-
 
 __all__ = [
     "compute_ecg_features",
@@ -71,9 +70,7 @@ def compute_ecg_features(
     cfg = deepcopy(FeatureCfg)
     cfg.update(deepcopy(config) or {})
 
-    filtered_rpeaks = rpeaks[
-        np.where((rpeaks >= cfg.beat_winL) & (rpeaks < len(sig) - cfg.beat_winR))[0]
-    ]
+    filtered_rpeaks = rpeaks[np.where((rpeaks >= cfg.beat_winL) & (rpeaks < len(sig) - cfg.beat_winR))[0]]
 
     beats = []
     for r in filtered_rpeaks:
@@ -97,9 +94,7 @@ def compute_ecg_features(
 
     if save_dir:
         save_suffix = "-".join(cfg.features)
-        save_path = os.path.join(
-            save_dir, f"ecg-features-{save_suffix}.{save_fmt.lower()}"
-        )
+        save_path = os.path.join(save_dir, f"ecg-features-{save_suffix}.{save_fmt.lower()}")
         if save_fmt.lower() == "npy":
             np.save(save_path, features)
         elif save_fmt.lower() == "mat":
@@ -133,9 +128,7 @@ def compute_wavelet_descriptor(beat: np.ndarray, config: CFG) -> np.ndarray:
     return coeffs
 
 
-def compute_rr_descriptor(
-    rpeaks: np.ndarray, config: Optional[CFG] = None
-) -> np.ndarray:
+def compute_rr_descriptor(rpeaks: np.ndarray, config: Optional[CFG] = None) -> np.ndarray:
     """
 
     Parameters
@@ -172,9 +165,7 @@ def compute_rr_descriptor(
         pre_rr = pre_rr / compute_local_average(pre_rr, cfg.rr_normalize_radius)
         post_rr = post_rr / compute_local_average(post_rr, cfg.rr_normalize_radius)
         local_rr = local_rr / compute_local_average(local_rr, cfg.rr_normalize_radius)
-        global_rr = global_rr / compute_local_average(
-            global_rr, cfg.rr_normalize_radius
-        )
+        global_rr = global_rr / compute_local_average(global_rr, cfg.rr_normalize_radius)
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
     else:
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
@@ -245,12 +236,7 @@ def _compute_local_rr(prev_rr: np.ndarray, config: CFG) -> np.ndarray:
     local_rr = np.append(
         local_rr,
         np.mean(
-            np.array(
-                [
-                    prev_rr[i : len(prev_rr) - (config.rr_local_range - i - 1)]
-                    for i in range(config.rr_local_range)
-                ]
-            ),
+            np.array([prev_rr[i : len(prev_rr) - (config.rr_local_range - i - 1)] for i in range(config.rr_local_range)]),
             axis=0,
         ),
     )
@@ -291,9 +277,7 @@ def _compute_global_rr_epoch(
     return global_rr
 
 
-def _compute_global_rr(
-    rpeaks: np.ndarray, prev_rr: np.ndarray, config: CFG
-) -> np.ndarray:
+def _compute_global_rr(rpeaks: np.ndarray, prev_rr: np.ndarray, config: CFG) -> np.ndarray:
     """
 
     Parameters
@@ -363,9 +347,7 @@ def compute_morph_descriptor(beat: np.ndarray, config: CFG) -> np.ndarray:
     x_values = np.zeros(itv_num)
     # Obtain (max/min) values and index from the intervals
     for n in range(itv_num):
-        [x_values[n], y_values[n]] = max(
-            enumerate(beat[itv[n][0] : itv[n][1]]), key=operator.itemgetter(1)
-        )
+        [x_values[n], y_values[n]] = max(enumerate(beat[itv[n][0] : itv[n][1]]), key=operator.itemgetter(1))
 
     for n in range(1, itv_num):
         x_values[n] = x_values[n] + itv[n][0]
@@ -419,12 +401,7 @@ def compute_local_average(arr: Union[Sequence, np.ndarray], radius: int) -> np.n
         tail = np.array([np.mean(_arr[i - radius :]) for i in range(radius, len(_arr))])
         res = np.concatenate((head, tail))
         return res
-    body = np.vstack(
-        [
-            np.concatenate((np.zeros((i,)), _arr, np.zeros((window - 1 - i,))))
-            for i in range(window)
-        ]
-    )
+    body = np.vstack([np.concatenate((np.zeros((i,)), _arr, np.zeros((window - 1 - i,)))) for i in range(window)])
     body = np.mean(body, axis=0)[2 * radius : -2 * radius]
     head = np.array([np.mean(_arr[: i + radius + 1]) for i in range(radius)])
     tail = np.array([np.mean(_arr[i - 2 * radius :]) for i in range(radius)])

@@ -4,36 +4,28 @@ C(R)NN structure models, for classifying ECG arrhythmias, and other tasks.
 
 import warnings
 from copy import deepcopy
-from typing import Any, Optional, Sequence, Union, List
+from typing import Any, List, Optional, Sequence, Union
 
 import numpy as np
 import torch
-from torch import Tensor, nn
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from torch import Tensor, nn
 
 from ..cfg import CFG
 from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
-from ._nets import (
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
-    SelfAttention,
-    MLP,
-    StackedLSTM,
-)
+from ._nets import MLP, GlobalContextBlock, NonLocalBlock, SEBlock, SelfAttention, StackedLSTM
 from .cnn.densenet import DenseNet
-from .cnn.multi_scopic import MultiScopicCNN
-from .cnn.resnet import ResNet
-from .cnn.regnet import RegNet
 from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
+from .cnn.multi_scopic import MultiScopicCNN
+from .cnn.regnet import RegNet
+from .cnn.resnet import ResNet
 from .cnn.vgg import VGG16
 from .cnn.xception import Xception
 from .transformers import Transformer
-
 
 __all__ = [
     "ECG_CRNN",
@@ -84,9 +76,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.n_leads = n_leads
         self.config = deepcopy(ECG_CRNN_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
 
         cnn_choice = self.config.cnn.name.lower()
@@ -105,9 +95,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             elif "v3" in cnn_choice:
                 self.cnn = MobileNetV3(self.n_leads, **cnn_config)
             else:
-                raise ValueError(
-                    f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}"
-                )
+                raise ValueError(f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}")
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **cnn_config)
         elif "vgg16" in cnn_choice:
@@ -119,17 +107,13 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
 
         if self.config.rnn.name.lower() == "none":
-            self.rnn_in_rearrange = Rearrange(
-                "batch_size channels seq_len -> seq_len batch_size channels"
-            )
+            self.rnn_in_rearrange = Rearrange("batch_size channels seq_len -> seq_len batch_size channels")
             self.rnn = nn.Identity()
             self.__rnn_seqlen_dim = 0
             self.rnn_out_rearrange = nn.Identity()
             attn_input_size = rnn_input_size
         elif self.config.rnn.name.lower() == "lstm":
-            self.rnn_in_rearrange = Rearrange(
-                "batch_size channels seq_len -> seq_len batch_size channels"
-            )
+            self.rnn_in_rearrange = Rearrange("batch_size channels seq_len -> seq_len batch_size channels")
             self.rnn = StackedLSTM(
                 input_size=rnn_input_size,
                 hidden_sizes=self.config.rnn.lstm.hidden_sizes,
@@ -143,9 +127,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         elif self.config.rnn.name.lower() == "linear":
             # abuse of notation, to put before the global attention module
-            self.rnn_in_rearrange = Rearrange(
-                "batch_size channels seq_len -> batch_size seq_len channels"
-            )
+            self.rnn_in_rearrange = Rearrange("batch_size channels seq_len -> batch_size seq_len channels")
             self.rnn = MLP(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
@@ -154,14 +136,10 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 dropouts=self.config.rnn.linear.dropouts,
             )
             self.__rnn_seqlen_dim = 1
-            self.rnn_out_rearrange = Rearrange(
-                "batch_size seq_len channels -> seq_len batch_size channels"
-            )
+            self.rnn_out_rearrange = Rearrange("batch_size seq_len channels -> seq_len batch_size channels")
             attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"RNN \042{self.config.rnn.name}\042 not implemented yet"
-            )
+            raise NotImplementedError(f"RNN \042{self.config.rnn.name}\042 not implemented yet")
 
         # attention
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
@@ -176,17 +154,13 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     RuntimeWarning,
                 )
         elif self.config.attn.name.lower() == "none":
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             self.attn = nn.Identity()
             self.__attn_seqlen_dim = -1
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = attn_input_size
         elif self.config.attn.name.lower() == "nl":  # non_local
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             self.attn = NonLocalBlock(
                 in_channels=attn_input_size,
                 filter_lengths=self.config.attn.nl.filter_lengths,
@@ -197,9 +171,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = self.attn.compute_output_shape(None, None)[1]
         elif self.config.attn.name.lower() == "se":  # squeeze_exitation
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             self.attn = SEBlock(
                 in_channels=attn_input_size,
                 reduction=self.config.attn.se.reduction,
@@ -211,9 +183,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = self.attn.compute_output_shape(None, None)[1]
         elif self.config.attn.name.lower() == "gc":  # global_context
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             self.attn = GlobalContextBlock(
                 in_channels=attn_input_size,
                 ratio=self.config.attn.gc.ratio,
@@ -229,16 +199,12 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_in_rearrange = nn.Identity()
             self.attn = SelfAttention(
                 embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get(
-                    "num_heads", self.config.attn.sa.get("head_num")
-                ),
+                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
             self.__attn_seqlen_dim = 0
-            self.attn_out_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         elif self.config.attn.name.lower() == "transformer":
             self.attn = Transformer(
@@ -250,24 +216,16 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 activation=self.config.attn.transformer.activation,
             )
             if self.attn.batch_first:
-                self.attn_in_rearrange = Rearrange(
-                    "seq_len batch_size channels -> batch_size seq_len channels"
-                )
-                self.attn_out_rearrange = Rearrange(
-                    "batch_size seq_len channels -> batch_size channels seq_len"
-                )
+                self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size seq_len channels")
+                self.attn_out_rearrange = Rearrange("batch_size seq_len channels -> batch_size channels seq_len")
                 self.__attn_seqlen_dim = 1
             else:
                 self.attn_in_rearrange = nn.Identity()
-                self.attn_out_rearrange = Rearrange(
-                    "seq_len batch_size channels -> batch_size channels seq_len"
-                )
+                self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
                 self.__attn_seqlen_dim = 0
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"Attention \042{self.config.attn.name}\042 not implemented yet"
-            )
+            raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")
 
         # global pooling
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
@@ -280,33 +238,23 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.pool_rearrange = nn.Identity()
             self.__clf_input_seq = False
         elif self.config.global_pool.lower() == "max":
-            self.pool = nn.AdaptiveMaxPool1d(
-                (self.config.global_pool_size,), return_indices=False
-            )
+            self.pool = nn.AdaptiveMaxPool1d((self.config.global_pool_size,), return_indices=False)
             clf_input_size *= self.config.global_pool_size
-            self.pool_rearrange = Rearrange(
-                "batch_size channels pool_size -> batch_size (channels pool_size)"
-            )
+            self.pool_rearrange = Rearrange("batch_size channels pool_size -> batch_size (channels pool_size)")
             self.__clf_input_seq = False
         elif self.config.global_pool.lower() == "avg":
             self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
             clf_input_size *= self.config.global_pool_size
-            self.pool_rearrange = Rearrange(
-                "batch_size channels pool_size -> batch_size (channels pool_size)"
-            )
+            self.pool_rearrange = Rearrange("batch_size channels pool_size -> batch_size (channels pool_size)")
             self.__clf_input_seq = False
         elif self.config.global_pool.lower() == "attn":
             raise NotImplementedError("Attentive pooling not implemented yet!")
         elif self.config.global_pool.lower() == "none":
             self.pool = nn.Identity()
-            self.pool_rearrange = Rearrange(
-                "batch_size channels seq_len -> batch_size seq_len channels"
-            )
+            self.pool_rearrange = Rearrange("batch_size channels seq_len -> batch_size seq_len channels")
             self.__clf_input_seq = True
         else:
-            raise NotImplementedError(
-                f"Global Pooling \042{self.config.global_pool}\042 not implemented yet!"
-            )
+            raise NotImplementedError(f"Global Pooling \042{self.config.global_pool}\042 not implemented yet!")
 
         # input of `self.clf` has shape: batch_size, channels
         self.clf = MLP(
@@ -444,9 +392,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             output_shape = self.attn.compute_output_shape(_seq_len, batch_size)
             _seq_len = output_shape[self.__attn_seqlen_dim]
         if self.clf.__class__.__name__ != "Identity":
-            output_shape = self.clf.compute_output_shape(
-                _seq_len, batch_size, input_seq=self.__clf_input_seq
-            )
+            output_shape = self.clf.compute_output_shape(_seq_len, batch_size, input_seq=self.__clf_input_seq)
         return output_shape
 
     @property
@@ -465,9 +411,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     if isinstance(v, CFG):
                         new_candidates.append(v)
             candidates = new_candidates
-        doi = list(
-            set(doi + ["10.1016/j.inffus.2019.06.024", "10.1088/1361-6579/ac6aa3"])
-        )
+        doi = list(set(doi + ["10.1016/j.inffus.2019.06.024", "10.1088/1361-6579/ac6aa3"]))
         return doi
 
     @classmethod
@@ -486,9 +430,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         """
         v1_model, _ = ECG_CRNN_v1.from_checkpoint(v1_ckpt, device=device)
-        model = cls(
-            classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config
-        )
+        model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config)
         model = model.to(v1_model.device)
         model.cnn.load_state_dict(v1_model.cnn.state_dict())
         if model.rnn.__class__.__name__ != "Identity":
@@ -556,9 +498,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.n_leads = n_leads
         self.config = deepcopy(ECG_CRNN_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
 
         cnn_choice = self.config.cnn.name.lower()
@@ -577,9 +517,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             elif "v3" in cnn_choice:
                 self.cnn = MobileNetV3(self.n_leads, **cnn_config)
             else:
-                raise ValueError(
-                    f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}"
-                )
+                raise ValueError(f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}")
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **cnn_config)
         elif "vgg16" in cnn_choice:
@@ -614,9 +552,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
             attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"RNN \042{self.config.rnn.name}\042 not implemented yet"
-            )
+            raise NotImplementedError(f"RNN \042{self.config.rnn.name}\042 not implemented yet")
 
         # attention
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
@@ -660,9 +596,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
                 embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get(
-                    "num_heads", self.config.attn.sa.get("head_num")
-                ),
+                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
@@ -678,9 +612,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"Attention \042{self.config.attn.name}\042 not implemented yet"
-            )
+            raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")
 
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
             self.pool = None
@@ -690,9 +622,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     RuntimeWarning,
                 )
         elif self.config.global_pool.lower() == "max":
-            self.pool = nn.AdaptiveMaxPool1d(
-                (self.config.global_pool_size,), return_indices=False
-            )
+            self.pool = nn.AdaptiveMaxPool1d((self.config.global_pool_size,), return_indices=False)
             clf_input_size *= self.config.global_pool_size
         elif self.config.global_pool.lower() == "avg":
             self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
@@ -702,9 +632,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         elif self.config.global_pool.lower() == "none":
             self.pool = None
         else:
-            raise NotImplementedError(
-                f"Global Pooling \042{self.config.global_pool}\042 not implemented yet!"
-            )
+            raise NotImplementedError(f"Global Pooling \042{self.config.global_pool}\042 not implemented yet!")
 
         # input of `self.clf` has shape: batch_size, channels
         self.clf = MLP(
@@ -747,9 +675,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         if self.config.rnn.name.lower() in ["lstm"]:
             # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
             features = features.permute(2, 0, 1)
-            features = self.rnn(
-                features
-            )  # (seq_len, batch_size, channels) or (batch_size, channels)
+            features = self.rnn(features)  # (seq_len, batch_size, channels) or (batch_size, channels)
         elif self.config.rnn.name.lower() in ["linear"]:
             # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
             features = features.permute(0, 2, 1)
@@ -895,7 +821,5 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     if isinstance(v, CFG):
                         new_candidates.append(v)
             candidates = new_candidates
-        doi = list(
-            set(doi + ["10.1016/j.inffus.2019.06.024", "10.1088/1361-6579/ac6aa3"])
-        )
+        doi = list(set(doi + ["10.1016/j.inffus.2019.06.024", "10.1088/1361-6579/ac6aa3"]))
         return doi

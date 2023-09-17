@@ -7,9 +7,8 @@ from pathlib import Path
 import pytest
 
 from torch_ecg.databases import CINC2021
-from torch_ecg.utils.rpeaks import xqrs_detect
 from torch_ecg.utils._edr import phs_edr
-
+from torch_ecg.utils.rpeaks import xqrs_detect
 
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
 

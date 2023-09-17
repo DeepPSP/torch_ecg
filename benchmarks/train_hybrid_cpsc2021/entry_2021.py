@@ -26,10 +26,7 @@ from model import (
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils._preproc import preprocess_multi_lead_signal
-from torch_ecg.utils.utils_interval import (
-    generalized_intervals_intersection,
-    generalized_intervals_union,
-)
+from torch_ecg.utils.utils_interval import generalized_intervals_intersection, generalized_intervals_union
 from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 
 """
@@ -182,15 +179,11 @@ def challenge_entry(sample_path):
     if sig.shape[1] > seglen:
         sig = sig[
             ...,
-            : sig.shape[1]
-            // main_task_cfg[main_task_cfg.task].reduction
-            * main_task_cfg[main_task_cfg.task].reduction,
+            : sig.shape[1] // main_task_cfg[main_task_cfg.task].reduction * main_task_cfg[main_task_cfg.task].reduction,
         ]
 
     if _VERBOSE >= 2:
-        print(
-            f"seglen = {seglen}, overlap_len = {overlap_len}, forward_len = {forward_len}"
-        )
+        print(f"seglen = {seglen}, overlap_len = {overlap_len}, forward_len = {forward_len}")
 
     for idx in range((sig.shape[1] - seglen) // forward_len + 1):
         seg_data = sig[..., forward_len * idx : forward_len * idx + seglen]
@@ -295,9 +288,7 @@ def challenge_entry(sample_path):
 
     # main_task
     # finished, checked,
-    if any(
-        [_ENTRY_CONFIG.use_main_seq_lab_model, _ENTRY_CONFIG.use_main_seq_lab_model]
-    ):
+    if any([_ENTRY_CONFIG.use_main_seq_lab_model, _ENTRY_CONFIG.use_main_seq_lab_model]):
         main_pred = _main_task(
             model=main_task_model,
             sig=dl_input,
@@ -353,9 +344,7 @@ def challenge_entry(sample_path):
     pred_dict = {"predict_endpoints": final_pred}
 
     if _VERBOSE >= 1:
-        print(
-            f"processing of {sample_path} totally cost {time.time()-start_time:.2f} seconds"
-        )
+        print(f"processing of {sample_path} totally cost {time.time()-start_time:.2f} seconds")
 
     del rpeak_model
     del rr_lstm_model
@@ -408,9 +397,7 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
     if _VERBOSE >= 2:
         print("\nin function _detect_rpeaks...")
         print(f"pred.shape = {pred.shape}")
-        print(
-            f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}"
-        )
+        print(f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}")
 
     merged_pred = np.zeros((_siglen,))
     if pred.shape[0] > 1:
@@ -420,9 +407,7 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
             to_compare = np.zeros((_siglen,))
             start_idx = forward_len * idx + qua_overlap_len
             end_idx = forward_len * idx + seglen - qua_overlap_len
-            to_compare[start_idx:end_idx] = pred[
-                idx, qua_overlap_len : seglen - qua_overlap_len
-            ]
+            to_compare[start_idx:end_idx] = pred[idx, qua_overlap_len : seglen - qua_overlap_len]
             merged_pred = np.maximum(merged_pred, to_compare)
         # tail
         to_compare = np.zeros((_siglen,))
@@ -506,9 +491,7 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
     if _VERBOSE >= 2:
         print("\nin function _main_task...")
         print(f"pred.shape = {pred.shape}")
-        print(
-            f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}"
-        )
+        print(f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}")
 
     merged_pred = np.zeros((_siglen,))
     if pred.shape[0] > 1:
@@ -518,9 +501,7 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
             to_compare = np.zeros((_siglen,))
             start_idx = forward_len * idx + qua_overlap_len
             end_idx = forward_len * idx + seglen - qua_overlap_len
-            to_compare[start_idx:end_idx] = pred[
-                idx, qua_overlap_len : seglen - qua_overlap_len
-            ]
+            to_compare[start_idx:end_idx] = pred[idx, qua_overlap_len : seglen - qua_overlap_len]
             merged_pred = np.maximum(merged_pred, to_compare)
         # tail
         to_compare = np.zeros((_siglen,))
@@ -557,9 +538,7 @@ def _merge_rule_union(rr_pred, rr_pred_cls, main_pred, main_pred_cls):
         return main_pred
     if main_pred_cls is None:
         return rr_pred
-    if (rr_pred_cls == "N" and main_pred_cls != "AFf") or (
-        main_pred_cls == "N" and rr_pred_cls != "AFf"
-    ):
+    if (rr_pred_cls == "N" and main_pred_cls != "AFf") or (main_pred_cls == "N" and rr_pred_cls != "AFf"):
         return []
     final_pred = generalized_intervals_union(
         [

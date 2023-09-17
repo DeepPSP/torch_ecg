@@ -28,9 +28,7 @@ Written by:  Xingyao Wang, Chengyu Liu
              chengyu@seu.edu.cn
 """
 
-R = np.array(
-    [[1, -1, -0.5], [-2, 1, 0], [-1, 0, 1]]
-)  # scoring matrix for classification
+R = np.array([[1, -1, -0.5], [-2, 1, 0], [-1, 0, 1]])  # scoring matrix for classification
 
 
 class RefInfo:
@@ -91,59 +89,35 @@ class RefInfo:
                 if max(af_start - 1, 0) == 0:
                     onset_range[: self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): 0 --- {af_start+2}"
-                        )
-                        print(
-                            f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): 0 --- {af_start+2}")
+                        print(f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}")
                 elif max(af_start - 2, 0) == 0:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}")
                         print(
                             f"official --- onset (sample, score 1): {self.beat_loc[af_start-1]} --- {self.beat_loc[af_start+2]}"
                         )
                     onset_range[: self.beat_loc[af_start - 1]] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 0.5): 0 --- {af_start-1}"
-                        )
-                        print(
-                            f"official --- onset (sample, score 0.5): 0 --- {self.beat_loc[af_start-1]}"
-                        )
+                        print(f"official --- onset (c_ind, score 0.5): 0 --- {af_start-1}")
+                        print(f"official --- onset (sample, score 0.5): 0 --- {self.beat_loc[af_start-1]}")
                 else:
-                    onset_range[
-                        self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]
-                    ] += 1
+                    onset_range[self.beat_loc[af_start - 1] : self.beat_loc[af_start + 2]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}"
-                        )
+                        print(f"official --- onset (c_ind, score 1): {af_start-1} --- {af_start+2}")
                         print(
                             f"official --- onset (sample, score 1): {self.beat_loc[af_start-1]} --- {self.beat_loc[af_start+2]}"
                         )
-                    onset_range[
-                        self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]
-                    ] += 0.5
+                    onset_range[self.beat_loc[af_start - 2] : self.beat_loc[af_start - 1]] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- onset (c_ind, score 0.5): {af_start-2} --- {af_start-1}"
-                        )
+                        print(f"official --- onset (c_ind, score 0.5): {af_start-2} --- {af_start-1}")
                         print(
                             f"official --- onset (sample, score 0.5): {self.beat_loc[af_start-2]} --- {self.beat_loc[af_start-1]}"
                         )
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}"
-                    )
+                    print(f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}")
                     print(
                         f"official --- onset (sample, score 0.5): {self.beat_loc[af_start+2]} --- {self.beat_loc[af_start+3]}"
                     )
@@ -151,16 +125,10 @@ class RefInfo:
                 onset_range[: self.beat_loc[af_start + 2]] += 1
                 if verbose > 0:
                     print(f"official --- onset (c_ind, score 1): 0 --- {af_start+2}")
-                    print(
-                        f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}"
-                    )
-                onset_range[
-                    self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]
-                ] += 0.5
+                    print(f"official --- onset (sample, score 1): 0 --- {self.beat_loc[af_start+2]}")
+                onset_range[self.beat_loc[af_start + 2] : self.beat_loc[af_start + 3]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}"
-                    )
+                    print(f"official --- onset (c_ind, score 0.5): {af_start+2} --- {af_start+3}")
                     print(
                         f"official --- onset (sample, score 0.5): {self.beat_loc[af_start+2]} --- {self.beat_loc[af_start+3]}"
                     )
@@ -169,81 +137,41 @@ class RefInfo:
                 if min(af_end + 1, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
                     offset_range[self.beat_loc[af_end - 2] :] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- -1"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- -1")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1")
                 elif min(af_end + 2, len(self.beat_loc) - 1) == len(self.beat_loc) - 1:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}"
-                        )
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}")
                     offset_range[self.beat_loc[af_end + 1] :] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1"
-                        )
-                        print(
-                            f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1")
+                        print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- -1")
                 else:
-                    offset_range[
-                        self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]
-                    ] += 1
+                    offset_range[self.beat_loc[af_end - 2] : self.beat_loc[af_end + 1]] += 1
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}"
-                        )
-                        print(
-                            f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}"
-                        )
-                    offset_range[
-                        self.beat_loc[af_end + 1] : min(
-                            self.beat_loc[af_end + 2], self.len_sig - 1
-                        )
-                    ] += 0.5
+                        print(f"official --- offset (c_ind, score 1): {af_end-2} --- {af_end+1}")
+                        print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- {self.beat_loc[af_end+1]}")
+                    offset_range[self.beat_loc[af_end + 1] : min(self.beat_loc[af_end + 2], self.len_sig - 1)] += 0.5
                     if verbose > 0:
-                        print(
-                            f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1"
-                        )
+                        print(f"official --- offset (c_ind, score 0.5): {af_end+1} --- -1")
                         print(
                             f"official --- offset (sample, score 0.5): {self.beat_loc[af_end+1]} --- {min(self.beat_loc[af_end+2], self.len_sig-1)}"
                         )
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}"
-                    )
-                    print(
-                        f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}"
-                    )
+                    print(f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}")
+                    print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}")
             elif self.class_true == 1:
                 offset_range[self.beat_loc[af_end - 2] :] += 1
                 if verbose > 0:
                     print(f"official --- offset (c_ind, score 1): {af_end-2} --- -1")
-                    print(
-                        f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1"
-                    )
-                offset_range[
-                    self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]
-                ] += 0.5
+                    print(f"official --- offset (sample, score 1): {self.beat_loc[af_end-2]} --- -1")
+                offset_range[self.beat_loc[af_end - 3] : self.beat_loc[af_end - 2]] += 0.5
                 if verbose > 0:
-                    print(
-                        f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}"
-                    )
-                    print(
-                        f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}"
-                    )
+                    print(f"official --- offset (c_ind, score 0.5): {af_end-3} --- {af_end-2}")
+                    print(f"official --- offset (sample, score 0.5): {self.beat_loc[af_end-3]} --- {self.beat_loc[af_end-2]}")
 
         return onset_range, offset_range
 
@@ -303,10 +231,7 @@ def score(data_path, ans_path):
 
         if len(endpoints_pred) == 0:
             class_pred = 0
-        elif (
-            len(endpoints_pred) == 1
-            and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1
-        ):
+        elif len(endpoints_pred) == 1 and np.diff(endpoints_pred)[-1] == TrueRef.len_sig - 1:
             class_pred = 1
         else:
             class_pred = 2
@@ -369,9 +294,7 @@ def compute_challenge_metric(
         the final score for the prediction
     """
     ur_score = ur_calculate(class_true, class_pred)
-    ue_score = ue_calculate(
-        endpoints_pred, endpoints_true, onset_score_range, offset_score_range
-    )
+    ue_score = ue_calculate(endpoints_pred, endpoints_true, onset_score_range, offset_score_range)
     u = ur_score + ue_score
     return u
 
@@ -422,9 +345,7 @@ def gen_endpoint_score_mask(
         _critical_points.insert(0, 0)
         _af_intervals = [[itv[0] + 1, itv[1] + 1] for itv in af_intervals]
         if verbose >= 2:
-            print(
-                f"0 added to _critical_points, len(_critical_points): {len(_critical_points)-1} ==> {len(_critical_points)}"
-            )
+            print(f"0 added to _critical_points, len(_critical_points): {len(_critical_points)-1} ==> {len(_critical_points)}")
     else:
         _af_intervals = [[itv[0], itv[1]] for itv in af_intervals]
     # records with AFf mostly have `_critical_points` ending with `siglen-1`
@@ -432,9 +353,7 @@ def gen_endpoint_score_mask(
     if siglen - 1 in _critical_points:
         _critical_points[-1] = siglen
         if verbose >= 2:
-            print(
-                f"in _critical_points siglen-1 (={siglen-1}) changed to siglen (={siglen})"
-            )
+            print(f"in _critical_points siglen-1 (={siglen-1}) changed to siglen (={siglen})")
     elif siglen in _critical_points:
         pass
     else:
@@ -451,9 +370,7 @@ def gen_endpoint_score_mask(
             # note that the onsets and offsets in `_af_intervals` already occupy positions in `_critical_points`
             onset_end = _critical_points[min(itv[0] + 1 + b, len(_critical_points) - 1)]
             if verbose > 0:
-                print(
-                    f"custom --- onset (c_ind, score {v}): {max(0, itv[0]-b)} --- {min(itv[0]+1+b, len(_critical_points)-1)}"
-                )
+                print(f"custom --- onset (c_ind, score {v}): {max(0, itv[0]-b)} --- {min(itv[0]+1+b, len(_critical_points)-1)}")
                 print(
                     f"custom --- onset (sample, score {v}): {_critical_points[max(0, itv[0]-b)]} --- {_critical_points[min(itv[0]+1+b, len(_critical_points)-1)]}"
                 )

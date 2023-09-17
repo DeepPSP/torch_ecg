@@ -5,28 +5,27 @@ https://github.com/huggingface/transformers/blob/main/examples/pytorch/speech-pr
 """
 
 import re
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import (  # noqa: F401
-    DistributedDataParallel as DDP,
-    DataParallel as DP,
-)  # noqa: F401
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 from tqdm.auto import tqdm
 
 # from accelerate import Accelerator  # noqa: F401
 from transformers import (  # noqa: F401
     AdamW,
-    Trainer,
     SchedulerType,
+    Trainer,
     Wav2Vec2Config,
     Wav2Vec2FeatureExtractor,
     get_scheduler,
     is_wandb_available,
     set_seed,
 )
+
 from torch_ecg.components.trainer import BaseTrainer
 
 try:
@@ -35,9 +34,8 @@ except ImportError:
     from .utils import get_kwargs
 
 from .pretraining_cfg import PreTrainCfg, PreTrainModelCfg
-from .pretraining_data import get_pretraining_datacollator, Wav2Vec2PretrainingDataset
+from .pretraining_data import Wav2Vec2PretrainingDataset, get_pretraining_datacollator
 from .pretraining_models import Wav2Vec2ForPreTraining
-
 
 __all__ = [
     "Wav2Vec2PreTrainingTrainer",
@@ -170,9 +168,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         if re.sub("[\\-_]*", "", self.train_config.optimizer.lower()) == "hfadamw":
             # AdamW from huggingface
             optimizer_kwargs = get_kwargs(AdamW)
-            optimizer_kwargs.update(
-                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
-            )
+            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
             self.optimizer = AdamW(
                 params=self.model.parameters(),
@@ -183,23 +179,17 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
 
     def _setup_scheduler(self) -> None:
         """ """
-        if (
-            self.train_config.lr_scheduler is not None
-            and self.train_config.lr_scheduler.upper() in SchedulerType.__members__
-        ):
+        if self.train_config.lr_scheduler is not None and self.train_config.lr_scheduler.upper() in SchedulerType.__members__:
             scheduler_type = SchedulerType[self.train_config.lr_scheduler.upper()]
             scheduler_kwargs = get_kwargs(get_scheduler)
             scheduler_kwargs["num_training_steps"] = (
                 max(
                     1,
-                    len(self.train_loader)
-                    // self.train_config.gradient_accumulation_steps,
+                    len(self.train_loader) // self.train_config.gradient_accumulation_steps,
                 )
                 * self.train_config.n_epochs
             )
-            scheduler_kwargs.update(
-                {k: self.train_config.get(k, v) for k, v in scheduler_kwargs.items()}
-            )
+            scheduler_kwargs.update({k: self.train_config.get(k, v) for k, v in scheduler_kwargs.items()})
             self.scheduler = get_scheduler(
                 scheduler_type,
                 self.optimizer,
@@ -230,9 +220,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
             num_losses = batch["mask_time_indices"].sum()
             sub_attention_mask = batch.pop("sub_attention_mask", None)
             sub_attention_mask = (
-                sub_attention_mask
-                if sub_attention_mask is not None
-                else torch.ones_like(batch["mask_time_indices"])
+                sub_attention_mask if sub_attention_mask is not None else torch.ones_like(batch["mask_time_indices"])
             )
             percent_masked = num_losses / sub_attention_mask.sum()
 
@@ -247,10 +235,9 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
             multiply_grads(self.model.parameters(), 1 / num_losses)
 
             # update step
-            if (
-                (epoch_step + 1) % self.train_config.gradient_accumulation_steps == 0
-                or epoch_step == len(self.train_loader) - 1
-            ):
+            if (epoch_step + 1) % self.train_config.gradient_accumulation_steps == 0 or epoch_step == len(
+                self.train_loader
+            ) - 1:
 
                 # compute grad norm for monitoring
                 scale = 1
@@ -258,9 +245,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
 
                 # update parameters
                 if self.train_config.flooding_level > 0:
-                    flood = (
-                        loss - self.train_config.flooding_level
-                    ).abs() + self.train_config.flooding_level
+                    flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
                     self.epoch_loss += loss.item()
                     self.optimizer.step()
                     self.optimizer.zero_grad()
@@ -276,8 +261,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
 
                 # update gumbel temperature
                 gumbel_temperature = max(
-                    self.train_config.max_gumbel_temperature
-                    * self.train_config.gumbel_temperature_decay**self.global_step,
+                    self.train_config.max_gumbel_temperature * self.train_config.gumbel_temperature_decay**self.global_step,
                     self.train_config.min_gumbel_temperature,
                 )
                 self._model.set_gumbel_temperature(gumbel_temperature)
@@ -386,10 +370,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         return f"HF-Wav2Vec2-Pretrain-{self.model_config.model_name}"
 
     def extra_log_suffix(self) -> str:
-        return (
-            super().extra_log_suffix()
-            + f"-HF-Wav2Vec2-Pretrain-{self.model_config.model_name}"
-        )
+        return super().extra_log_suffix() + f"-HF-Wav2Vec2-Pretrain-{self.model_config.model_name}"
 
 
 def parse_args() -> dict:

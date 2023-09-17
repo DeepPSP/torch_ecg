@@ -66,7 +66,7 @@ This technique randomly masks a small proportion of the signal with zeros, as si
 
 ## random renormalize
 
-This method renormalizes the ECG signal to some random mean and standard deviation. One can find literature using this method for ECG augmentation. 
+This method renormalizes the ECG signal to some random mean and standard deviation. One can find literature using this method for ECG augmentation.
 
 ## stretch-or-compress
 

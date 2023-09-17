@@ -14,11 +14,10 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.misc import dict_to_str
-
 from cfg import BaseCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.misc import dict_to_str
 
 __all__ = [
     "CPSC2020_loss",
@@ -84,13 +83,7 @@ def CPSC2020_loss(
         print(f"false_positive = {dict_to_str(false_positive)}")
         print(f"false_negative = {dict_to_str(false_negative)}")
 
-    total_loss = sum(
-        [
-            false_positive[c] * false_positive_loss[c]
-            + false_negative[c] * false_negative_loss[c]
-            for c in classes
-        ]
-    )
+    total_loss = sum([false_positive[c] * false_positive_loss[c] + false_negative[c] * false_negative_loss[c] for c in classes])
 
     return total_loss
 
@@ -137,9 +130,7 @@ def CPSC2020_score(
     false_positive = CFG({"S": 0, "V": 0})
     false_negative = CFG({"S": 0, "V": 0})
     # Scoring
-    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(
-        zip(spb_true, pvc_true, spb_pred, pvc_pred)
-    ):
+    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(spb_true, pvc_true, spb_pred, pvc_pred)):
         s_tp = 0
         s_fp = 0
         s_fn = 0
@@ -207,9 +198,7 @@ def CPSC2020_score(
 # for classification of segments of ECGs using ECG_CRNN
 
 
-def eval_score(
-    classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
-) -> Tuple[float]:
+def eval_score(classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence) -> Tuple[float]:
     """
 
     for classification of segments of ECGs
@@ -270,9 +259,7 @@ def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
 
 
 # Compute confusion matrices.
-def compute_confusion_matrices(
-    labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
-) -> np.ndarray:
+def compute_confusion_matrices(labels: np.ndarray, outputs: np.ndarray, normalize: bool = False) -> np.ndarray:
     """checked,"""
     # Compute a binary confusion matrix for each class k:
     #
@@ -337,9 +324,7 @@ def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
 
 
 # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
-def compute_beta_measures(
-    labels: np.ndarray, outputs: np.ndarray, beta: Real
-) -> Tuple[float, float]:
+def compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) -> Tuple[float, float]:
     """checked,"""
     num_recordings, num_classes = np.shape(labels)
 
@@ -350,9 +335,7 @@ def compute_beta_measures(
     for k in range(num_classes):
         tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
         if (1 + beta**2) * tp + fp + beta**2 * fn:
-            f_beta_measure[k] = float((1 + beta**2) * tp) / float(
-                (1 + beta**2) * tp + fp + beta**2 * fn
-            )
+            f_beta_measure[k] = float((1 + beta**2) * tp) / float((1 + beta**2) * tp + fp + beta**2 * fn)
         else:
             f_beta_measure[k] = float("nan")
         if tp + fp + beta * fn:

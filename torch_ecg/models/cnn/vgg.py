@@ -2,20 +2,19 @@
 
 import textwrap
 from copy import deepcopy
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 from torch import nn
 
 from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation
-from ...utils.misc import add_docstring, CitationMixin
+from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import (
     SizeMixin,
     compute_maxpool_output_shape,
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
 
 __all__ = [
     "VGG16",
@@ -92,9 +91,7 @@ class VGGBlock(nn.Sequential, SizeMixin):
                     norm=self.config.get("norm", self.config.get("batch_norm")),
                 ),
             )
-        self.add_module(
-            "max_pool", nn.MaxPool1d(self.config.pool_size, self.config.pool_stride)
-        )
+        self.add_module("max_pool", nn.MaxPool1d(self.config.pool_size, self.config.pool_stride))
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
@@ -165,9 +162,7 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
         self.config = CFG(deepcopy(config))
 
         module_in_channels = in_channels
-        for idx, (nc, nf) in enumerate(
-            zip(self.config.num_convs, self.config.num_filters)
-        ):
+        for idx, (nc, nf) in enumerate(zip(self.config.num_convs, self.config.num_filters)):
             module_name = f"vgg_block_{idx+1}"
             self.add_module(
                 name=module_name,
@@ -197,9 +192,4 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
 
     @property
     def doi(self) -> List[str]:
-        return list(
-            set(
-                self.config.get("doi", [])
-                + ["10.48550/ARXIV.1409.1556", "10.1016/j.inffus.2019.06.024"]
-            )
-        )
+        return list(set(self.config.get("doi", []) + ["10.48550/ARXIV.1409.1556", "10.1016/j.inffus.2019.06.024"]))

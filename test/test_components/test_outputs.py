@@ -4,21 +4,17 @@
 import numpy as np
 import pytest
 
+from torch_ecg.cfg import DEFAULTS
+from torch_ecg.components.metrics import ClassificationMetrics, RPeaksDetectionMetrics, WaveDelineationMetrics
 from torch_ecg.components.outputs import (
     BaseOutput,
     ClassificationOutput,
     MultiLabelClassificationOutput,
-    SequenceTaggingOutput,
-    SequenceLabellingOutput,
-    WaveDelineationOutput,
     RPeaksDetectionOutput,
+    SequenceLabellingOutput,
+    SequenceTaggingOutput,
+    WaveDelineationOutput,
 )
-from torch_ecg.components.metrics import (
-    ClassificationMetrics,
-    RPeaksDetectionMetrics,
-    WaveDelineationMetrics,
-)
-from torch_ecg.cfg import DEFAULTS
 
 
 class TestClassificationOutput:
@@ -73,9 +69,7 @@ class TestClassificationOutput:
         assert output.pred.shape == (self.batch_size * 3 + 1, self.num_classes)
         assert output.prob.shape == (self.batch_size * 3 + 1, self.num_classes)
 
-        with pytest.raises(
-            AssertionError, match="`values` must be of the same type as `self`"
-        ):
+        with pytest.raises(AssertionError, match="`values` must be of the same type as `self`"):
             output_4 = MultiLabelClassificationOutput(
                 classes=self.classes,
                 pred=np.ones((self.batch_size, self.num_classes)),
@@ -106,9 +100,7 @@ class TestMultiLabelClassificationOutput:
     def test_multilabel_classification_output(self):
         prob = DEFAULTS.RNG.random((self.batch_size, self.num_classes))
         pred = (prob > self.thr).astype(int)
-        output = MultiLabelClassificationOutput(
-            classes=self.classes, thr=self.thr, pred=pred, prob=prob
-        )
+        output = MultiLabelClassificationOutput(classes=self.classes, thr=self.thr, pred=pred, prob=prob)
         with pytest.raises(
             AssertionError,
             match="`labels` or `label` must be stored in the output for computing metrics",
@@ -128,9 +120,7 @@ class TestSequenceTaggingOutput:
     num_classes = len(classes)
 
     def test_sequence_tagging_output(self):
-        prob = DEFAULTS.RNG.random(
-            (self.batch_size, self.signal_length, self.num_classes)
-        )
+        prob = DEFAULTS.RNG.random((self.batch_size, self.signal_length, self.num_classes))
         pred = (prob == prob.max(axis=2, keepdims=True)).astype(int)
         output = SequenceTaggingOutput(classes=self.classes, pred=pred, prob=prob)
         with pytest.raises(
@@ -139,9 +129,7 @@ class TestSequenceTaggingOutput:
         ):
             output.compute_metrics()
 
-        tmp = DEFAULTS.RNG.random(
-            (self.batch_size, self.signal_length, self.num_classes)
-        )
+        tmp = DEFAULTS.RNG.random((self.batch_size, self.signal_length, self.num_classes))
         output.label = (tmp == tmp.max(axis=2, keepdims=True)).astype(int)
         metrics = output.compute_metrics()
         assert isinstance(metrics, ClassificationMetrics)
@@ -155,9 +143,7 @@ class TestSequenceLabellingOutput:
     num_classes = len(classes)
 
     def test_sequence_labelling_output(self):
-        prob = DEFAULTS.RNG.random(
-            (self.batch_size, self.signal_length, self.num_classes)
-        )
+        prob = DEFAULTS.RNG.random((self.batch_size, self.signal_length, self.num_classes))
         pred = (prob == prob.max(axis=2, keepdims=True)).astype(int)
         output = SequenceLabellingOutput(classes=self.classes, pred=pred, prob=prob)
         with pytest.raises(
@@ -166,9 +152,7 @@ class TestSequenceLabellingOutput:
         ):
             output.compute_metrics()
 
-        tmp = DEFAULTS.RNG.random(
-            (self.batch_size, self.signal_length, self.num_classes)
-        )
+        tmp = DEFAULTS.RNG.random((self.batch_size, self.signal_length, self.num_classes))
         output.label = (tmp == tmp.max(axis=2, keepdims=True)).astype(int)
         metrics = output.compute_metrics()
         assert isinstance(metrics, ClassificationMetrics)
@@ -188,14 +172,10 @@ class TestWaveDelineationOutput:
             self.num_classes - 1,
             (self.batch_size, self.num_leads, self.signal_length),
         )
-        pred_probs = DEFAULTS.RNG_randint(
-            0, 1, (self.batch_size, self.signal_length, self.num_classes)
-        )
+        pred_probs = DEFAULTS.RNG_randint(0, 1, (self.batch_size, self.signal_length, self.num_classes))
         pred_masks = np.argmax(pred_probs, axis=2)
         pred_masks = np.repeat(pred_masks[:, np.newaxis, :], self.num_leads, axis=1)
-        output = WaveDelineationOutput(
-            classes=self.classes, mask=pred_masks, prob=pred_probs
-        )
+        output = WaveDelineationOutput(classes=self.classes, mask=pred_masks, prob=pred_probs)
         class_map = {
             "pwave": 1,
             "qrs": 2,
@@ -235,7 +215,5 @@ class TestRPeaksDetectionOutput:
 
 
 def test_base_output():
-    with pytest.raises(
-        NotImplementedError, match="Subclass must implement method `required_fields`"
-    ):
+    with pytest.raises(NotImplementedError, match="Subclass must implement method `required_fields`"):
         BaseOutput()

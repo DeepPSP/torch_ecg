@@ -11,8 +11,8 @@ from typing import Sequence
 
 import torch_audiomentations as TA
 from torch_audiomentations.core.transforms_interface import BaseWaveformTransform
-from torch_ecg.utils.misc import get_kwargs
 
+from torch_ecg.utils.misc import get_kwargs
 
 __all__ = ["AugmenterManager"]
 

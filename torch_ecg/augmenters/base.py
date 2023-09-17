@@ -8,9 +8,8 @@ import numpy as np
 import torch.nn as nn
 from torch import Tensor
 
-from ..utils.misc import ReprMixin, add_docstring
 from ..cfg import DEFAULTS
-
+from ..utils.misc import ReprMixin, add_docstring
 
 __all__ = [
     "Augmenter",
@@ -51,11 +50,7 @@ class Augmenter(ReprMixin, nn.Module, ABC):
     @add_docstring(_augmenter_forward_doc)
     @abstractmethod
     def forward(
-        self,
-        sig: Tensor,
-        label: Optional[Tensor] = None,
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        self, sig: Tensor, label: Optional[Tensor] = None, *extra_tensors: Sequence[Tensor], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         raise NotImplementedError
 
@@ -65,9 +60,7 @@ class Augmenter(ReprMixin, nn.Module, ABC):
     #     """
     #     return self.generate(sig, label, *extra_tensors, **kwargs)
 
-    def get_indices(
-        self, prob: float, pop_size: int, scale_ratio: float = 0.1
-    ) -> List[int]:
+    def get_indices(self, prob: float, pop_size: int, scale_ratio: float = 0.1) -> List[int]:
         """Get a list of indices to be selected.
 
         A random list of indices in the range ``[0, pop_size-1]``

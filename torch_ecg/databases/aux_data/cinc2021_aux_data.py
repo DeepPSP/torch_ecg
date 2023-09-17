@@ -11,8 +11,7 @@ from typing import Dict, List, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 
-from ...cfg import CFG, _DATA_CACHE
-
+from ...cfg import _DATA_CACHE, CFG
 
 __all__ = [
     "df_weights",
@@ -146,9 +145,7 @@ ventricular premature beats,17338001,VPB,0,8,0,0,0,357,294,0,659,We score 427172
 )
 dx_mapping_scored = dx_mapping_scored.fillna("")
 dx_mapping_scored["SNOMEDCTCode"] = dx_mapping_scored["SNOMEDCTCode"].apply(str)
-dx_mapping_scored["CUSPHNFH"] = (
-    dx_mapping_scored["Chapman_Shaoxing"].values + dx_mapping_scored["Ningbo"].values
-)
+dx_mapping_scored["CUSPHNFH"] = dx_mapping_scored["Chapman_Shaoxing"].values + dx_mapping_scored["Ningbo"].values
 dx_mapping_scored = dx_mapping_scored[
     "Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH,Chapman_Shaoxing,Ningbo,Total,Notes".split(
         ","
@@ -265,10 +262,7 @@ wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,4,68,160"""
     )
 )
 dx_mapping_unscored["SNOMEDCTCode"] = dx_mapping_unscored["SNOMEDCTCode"].apply(str)
-dx_mapping_unscored["CUSPHNFH"] = (
-    dx_mapping_unscored["Chapman_Shaoxing"].values
-    + dx_mapping_unscored["Ningbo"].values
-)
+dx_mapping_unscored["CUSPHNFH"] = dx_mapping_unscored["Chapman_Shaoxing"].values + dx_mapping_unscored["Ningbo"].values
 dx_mapping_unscored = dx_mapping_unscored[
     "Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH,Chapman_Shaoxing,Ningbo,Total".split(
         ","
@@ -287,61 +281,41 @@ dx_mapping_all = pd.concat([dms, dmn], ignore_index=True).fillna("")
 df_weights_snomed = df_weights_expanded  # alias
 
 
-snomed_ct_code_to_abbr = CFG(
-    {row["SNOMEDCTCode"]: row["Abbreviation"] for _, row in dx_mapping_all.iterrows()}
-)
+snomed_ct_code_to_abbr = CFG({row["SNOMEDCTCode"]: row["Abbreviation"] for _, row in dx_mapping_all.iterrows()})
 abbr_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_abbr.items()})
 
 df_weights_abbr = df_weights_expanded.copy()
 
-df_weights_abbr.columns = df_weights_abbr.columns.map(
-    lambda i: snomed_ct_code_to_abbr.get(i, i)
-)
+df_weights_abbr.columns = df_weights_abbr.columns.map(lambda i: snomed_ct_code_to_abbr.get(i, i))
 # df_weights_abbr.columns.map(lambda i: snomed_ct_code_to_abbr[i])
 
-df_weights_abbr.index = df_weights_abbr.index.map(
-    lambda i: snomed_ct_code_to_abbr.get(i, i)
-)
+df_weights_abbr.index = df_weights_abbr.index.map(lambda i: snomed_ct_code_to_abbr.get(i, i))
 # df_weights_abbr.index.map(lambda i: snomed_ct_code_to_abbr[i])
 
-df_weights_abbreviations = (
-    df_weights.copy()
-)  # corresponding to weights_abbreviations.csv
+df_weights_abbreviations = df_weights.copy()  # corresponding to weights_abbreviations.csv
 df_weights_abbreviations.columns = df_weights_abbreviations.columns.map(
-    lambda i: "|".join(
-        [snomed_ct_code_to_abbr.get(item, item) for item in i.split("|")]
-    )
+    lambda i: "|".join([snomed_ct_code_to_abbr.get(item, item) for item in i.split("|")])
 )
 # df_weights_abbreviations.columns.map(lambda i: "|".join([snomed_ct_code_to_abbr[item] for item in i.split("|")]))
 df_weights_abbreviations.index = df_weights_abbreviations.index.map(
-    lambda i: "|".join(
-        [snomed_ct_code_to_abbr.get(item, item) for item in i.split("|")]
-    )
+    lambda i: "|".join([snomed_ct_code_to_abbr.get(item, item) for item in i.split("|")])
 )
 # df_weights_abbreviations.index.map(lambda i: "|".join([snomed_ct_code_to_abbr[item] for item in i.split("|")]))
 
 
-snomed_ct_code_to_fullname = CFG(
-    {row["SNOMEDCTCode"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
-)
+snomed_ct_code_to_fullname = CFG({row["SNOMEDCTCode"]: row["Dx"] for _, row in dx_mapping_all.iterrows()})
 fullname_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_fullname.items()})
 
 df_weights_fullname = df_weights_expanded.copy()
 
-df_weights_fullname.columns = df_weights_fullname.columns.map(
-    lambda i: snomed_ct_code_to_fullname.get(i, i)
-)
+df_weights_fullname.columns = df_weights_fullname.columns.map(lambda i: snomed_ct_code_to_fullname.get(i, i))
 # df_weights_fullname.columns.map(lambda i: snomed_ct_code_to_fullname[i])
 
-df_weights_fullname.index = df_weights_fullname.index.map(
-    lambda i: snomed_ct_code_to_fullname.get(i, i)
-)
+df_weights_fullname.index = df_weights_fullname.index.map(lambda i: snomed_ct_code_to_fullname.get(i, i))
 # df_weights_fullname.index.map(lambda i: snomed_ct_code_to_fullname[i])
 
 
-abbr_to_fullname = CFG(
-    {row["Abbreviation"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
-)
+abbr_to_fullname = CFG({row["Abbreviation"]: row["Dx"] for _, row in dx_mapping_all.iterrows()})
 fullname_to_abbr = CFG({v: k for k, v in abbr_to_fullname.items()})
 
 
@@ -537,9 +511,7 @@ def get_class_count(
             tmp[abbr_to_fullname[key]] = val
         class_count = tmp.copy()
     else:
-        class_count = {
-            key: val for key, val in class_count.items() if val >= _threshold
-        }
+        class_count = {key: val for key, val in class_count.items() if val >= _threshold}
     del tmp
     return class_count
 
@@ -594,15 +566,8 @@ def get_class_weight(
         threshold=threshold,
         fmt=fmt,
     )
-    class_weight = CFG(
-        {key: sum(class_count.values()) / val for key, val in class_count.items()}
-    )
-    class_weight = CFG(
-        {
-            key: min_weight * val / min(class_weight.values())
-            for key, val in class_weight.items()
-        }
-    )
+    class_weight = CFG({key: sum(class_count.values()) / val for key, val in class_count.items()})
+    class_weight = CFG({key: min_weight * val / min(class_weight.values()) for key, val in class_weight.items()})
     return class_weight
 
 
@@ -610,17 +575,13 @@ def get_class_weight(
 dx_cooccurrence_all_fp = _DATA_CACHE / "dx_cooccurrence_all_cinc2021.csv"
 if dx_cooccurrence_all_fp.is_file():
     dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
-    dx_cooccurrence_scored = dx_cooccurrence_all.loc[
-        dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation
-    ]
+    dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation]
 else:
     dx_cooccurrence_all = None
     dx_cooccurrence_scored = None
 
 
-def get_cooccurrence(
-    c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
-) -> int:
+def get_cooccurrence(c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False) -> int:
     """Get the co-occurrence count between two diagnoses.
 
     Parameters
@@ -642,13 +603,9 @@ def get_cooccurrence(
     if dx_cooccurrence_all is None or dx_cooccurrence_all.empty:
         if dx_cooccurrence_all_fp.is_file():
             dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
-            dx_cooccurrence_scored = dx_cooccurrence_all.loc[
-                dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation
-            ]
+            dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation]
         if dx_cooccurrence_all is None or dx_cooccurrence_all.empty:
-            raise ValueError(
-                "`dx_cooccurrence_all` is not found, pre-compute it first!"
-            )
+            raise ValueError("`dx_cooccurrence_all` is not found, pre-compute it first!")
     _c1 = normalize_class(c1, ensure_scored=ensure_scored)
     _c2 = normalize_class(c2, ensure_scored=ensure_scored)
     cooccurrence = dx_cooccurrence_all.loc[_c1, _c2].item()

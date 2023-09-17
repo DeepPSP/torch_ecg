@@ -6,12 +6,11 @@ from copy import deepcopy
 import numpy as np
 import torch
 
-from torch_ecg.models import ECG_CRNN
 from torch_ecg.model_configs import ECG_CRNN_CONFIG
-from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
 from torch_ecg.model_configs.cnn.multi_scopic import multi_scopic, multi_scopic_leadwise
+from torch_ecg.models import ECG_CRNN
+from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
 from torch_ecg.utils.misc import list_sum
-
 
 IN_CHANNELS = 12
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -31,9 +30,7 @@ def test_multi_scopic():
         model = MultiScopicCNN(in_channels=IN_CHANNELS, **config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[-1], batch_size=inp.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
         assert model.in_channels == IN_CHANNELS
         assert isinstance(model.doi, list)
 
@@ -51,9 +48,7 @@ def test_assign_weights_lead_wise():
     lead_6_config.cnn.multi_scopic_leadwise.groups = 6
     # numbers of filters should be proportional to numbers of groups
     lead_6_config.cnn.multi_scopic_leadwise.num_filters = (
-        (np.array([[192, 384, 768], [192, 384, 768], [192, 384, 768]]) / 2)
-        .astype(int)
-        .tolist()
+        (np.array([[192, 384, 768], [192, 384, 768], [192, 384, 768]]) / 2).astype(int).tolist()
     )
     # we assume that model12 is a trained model on 12-lead ECGs
     model12 = ECG_CRNN(["AF", "PVC", "NSR"], 12, lead_12_config).to(DEVICE)
@@ -72,15 +67,9 @@ def test_assign_weights_lead_wise():
     out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
 
     # different feature maps
-    assert (
-        model6.cnn.branches[b](tensor6)
-        == model12.cnn.branches[b](tensor12)[:, out_indices, :]
-    ).all().item() is False
+    assert (model6.cnn.branches[b](tensor6) == model12.cnn.branches[b](tensor12)[:, out_indices, :]).all().item() is False
 
     # here, we assign weights from model12 that correspond to the given leads to model6
     model12.cnn.assign_weights_lead_wise(model6.cnn, indices)
     # identical feature maps
-    assert (
-        model6.cnn.branches[b](tensor6)
-        == model12.cnn.branches[b](tensor12)[:, out_indices, :]
-    ).all().item() is True
+    assert (model6.cnn.branches[b](tensor6) == model12.cnn.branches[b](tensor12)[:, out_indices, :]).all().item() is True

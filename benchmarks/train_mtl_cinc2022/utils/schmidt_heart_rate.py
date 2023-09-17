@@ -5,20 +5,18 @@ from typing import Optional, Tuple
 
 import numpy as np
 from easydict import EasyDict as ED
+
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 
 from .schmidt_spike_removal import schmidt_spike_removal
 from .springer_features import homomorphic_envelope_with_hilbert
-
 
 __all__ = [
     "get_schmidt_heart_rate",
 ]
 
 
-def get_schmidt_heart_rate(
-    signal: np.ndarray, fs: int, config: Optional[dict] = None
-) -> Tuple[float, float]:
+def get_schmidt_heart_rate(signal: np.ndarray, fs: int, config: Optional[dict] = None) -> Tuple[float, float]:
     """
 
     compute heart rate from (ECG) signal using Schmidt algorithm (using autocorrelation)
@@ -65,9 +63,7 @@ def get_schmidt_heart_rate(
     )
     filtered_signal = schmidt_spike_removal(filtered_signal, fs)
 
-    homomorphic_envelope = homomorphic_envelope_with_hilbert(
-        filtered_signal, fs, cfg.lpf_freq
-    )
+    homomorphic_envelope = homomorphic_envelope_with_hilbert(filtered_signal, fs, cfg.lpf_freq)
     y = homomorphic_envelope - np.mean(homomorphic_envelope)
     auto_corr = np.correlate(y, y, mode="full")[len(homomorphic_envelope) :]
 
@@ -79,8 +75,6 @@ def get_schmidt_heart_rate(
 
     max_sys_duration = round(index / 2)
     min_sys_duration = min(round(0.2 * fs), max_sys_duration)
-    systolic_time_interval = (
-        np.argmax(auto_corr[min_sys_duration : max_sys_duration + 1]) + min_sys_duration
-    ) / fs
+    systolic_time_interval = (np.argmax(auto_corr[min_sys_duration : max_sys_duration + 1]) + min_sys_duration) / fs
 
     return mean_hr, systolic_time_interval

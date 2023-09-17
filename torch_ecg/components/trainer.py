@@ -20,16 +20,10 @@ from tqdm.auto import tqdm
 
 from ..augmenters import AugmenterManager
 from ..cfg import CFG, DEFAULTS
-from ..models.loss import (
-    AsymmetricLoss,
-    BCEWithLogitsWithClassWeightLoss,
-    FocalLoss,
-    MaskedBCEWithLogitsLoss,
-)
+from ..models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
 from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
 from ..utils.utils_nn import default_collate_fn
 from .loggers import LoggerManager
-
 
 __all__ = [
     "BaseTrainer",
@@ -215,16 +209,9 @@ class BaseTrainer(ReprMixin, ABC):
                         self.best_epoch = self.epoch
                         self.pseudo_best_epoch = self.epoch
                     elif self.train_config.early_stopping:
-                        if (
-                            eval_res[self.train_config.monitor]
-                            >= self.best_metric
-                            - self.train_config.early_stopping.min_delta
-                        ):
+                        if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:
                             self.pseudo_best_epoch = self.epoch
-                        elif (
-                            self.epoch - self.pseudo_best_epoch
-                            >= self.train_config.early_stopping.patience
-                        ):
+                        elif self.epoch - self.pseudo_best_epoch >= self.train_config.early_stopping.patience:
                             msg = f"early stopping is triggered at epoch {self.epoch}"
                             self.log_manager.log_message(msg)
                             break
@@ -252,9 +239,7 @@ class BaseTrainer(ReprMixin, ABC):
                     try:
                         os.remove(model_to_remove)
                     except Exception:
-                        self.log_manager.log_message(
-                            f"failed to remove {str(model_to_remove)}"
-                        )
+                        self.log_manager.log_message(f"failed to remove {str(model_to_remove)}")
 
                 # update learning rate using lr_scheduler
                 if self.train_config.lr_scheduler.lower() == "plateau":
@@ -269,17 +254,13 @@ class BaseTrainer(ReprMixin, ABC):
             if self.train_config.final_model_name:
                 save_filename = self.train_config.final_model_name
             else:
-                save_suffix = (
-                    f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
-                )
+                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
                 save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = self.train_config.model_dir / save_filename
             self.save_checkpoint(path=str(save_path))
             self.log_manager.log_message(f"best model is saved at {save_path}")
         elif self.train_config.monitor is None:
-            self.log_manager.log_message(
-                "no monitor is set, no model is selected and saved as the best model"
-            )
+            self.log_manager.log_message("no monitor is set, no model is selected and saved as the best model")
             self.best_state_dict = self._model.state_dict()
         else:
             raise ValueError("No best model found!")
@@ -311,9 +292,7 @@ class BaseTrainer(ReprMixin, ABC):
 
             loss = self.criterion(*out_tensors).to(self.dtype)
             if self.train_config.flooding_level > 0:
-                flood = (
-                    loss - self.train_config.flooding_level
-                ).abs() + self.train_config.flooding_level
+                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
                 self.epoch_loss += loss.item()
                 self.optimizer.zero_grad()
                 flood.backward()
@@ -490,9 +469,7 @@ class BaseTrainer(ReprMixin, ABC):
 
         # setup log manager first
         self._setup_log_manager()
-        msg = (
-            f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
-        )
+        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
         self.log_manager.log_message(msg)
 
         # setup directories
@@ -533,9 +510,7 @@ class BaseTrainer(ReprMixin, ABC):
             assert (
                 self.train_config.lr_scheduler.lower() != "plateau"
             ), "monitor is not specified, lr_scheduler should not be ReduceLROnPlateau"
-        self._train_config.keep_checkpoint_max = self.train_config.get(
-            "keep_checkpoint_max", 1
-        )
+        self._train_config.keep_checkpoint_max = self.train_config.get("keep_checkpoint_max", 1)
         if self._train_config.keep_checkpoint_max < 0:
             self._train_config.keep_checkpoint_max = -1
             self.log_manager.log_message(
@@ -614,9 +589,7 @@ class BaseTrainer(ReprMixin, ABC):
         """Setup the optimizer."""
         if self.train_config.optimizer.lower() == "adam":
             optimizer_kwargs = get_kwargs(optim.Adam)
-            optimizer_kwargs.update(
-                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
-            )
+            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
             self.optimizer = optim.Adam(
                 params=self.model.parameters(),
@@ -624,9 +597,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
         elif self.train_config.optimizer.lower() in ["adamw", "adamw_amsgrad"]:
             optimizer_kwargs = get_kwargs(optim.AdamW)
-            optimizer_kwargs.update(
-                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
-            )
+            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(
                 dict(
                     lr=self.lr,
@@ -639,9 +610,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
         elif self.train_config.optimizer.lower() == "sgd":
             optimizer_kwargs = get_kwargs(optim.SGD)
-            optimizer_kwargs.update(
-                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
-            )
+            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
             self.optimizer = optim.SGD(
                 params=self.model.parameters(),
@@ -656,10 +625,7 @@ class BaseTrainer(ReprMixin, ABC):
 
     def _setup_scheduler(self) -> None:
         """Setup the learning rate scheduler."""
-        if (
-            self.train_config.lr_scheduler is None
-            or self.train_config.lr_scheduler.lower() == "none"
-        ):
+        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":
             self.train_config.lr_scheduler = "none"
             self.scheduler = None
         elif self.train_config.lr_scheduler.lower() == "plateau":
@@ -773,9 +739,7 @@ class BaseTrainer(ReprMixin, ABC):
             ]
         ).issubset(ckpt.keys()), insufficient_msg
         if not self._check_model_config_compatability(ckpt["model_config"]):
-            raise ValueError(
-                "model config of the checkpoint is not compatible with the config of the current model"
-            )
+            raise ValueError("model config of the checkpoint is not compatible with the config of the current model")
         self._model.load_state_dict(ckpt["model_state_dict"])
         self.epoch = ckpt["epoch"]
         self._setup_from_config(ckpt["train_config"])

@@ -32,7 +32,6 @@ from .normalize import MinMaxNormalize, NaiveNormalize, Normalize, ZScoreNormali
 from .preproc_manager import PreprocManager
 from .resample import Resample
 
-
 __all__ = [
     "PreprocManager",
     "BandPass",

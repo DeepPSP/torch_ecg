@@ -14,7 +14,6 @@ import pytest
 from torch_ecg.databases import CACHET_CADB, DataBaseInfo
 from torch_ecg.utils.download import http_get
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cache-cadb"
@@ -58,22 +57,16 @@ class TestCACHET_CADB:
         # reader.fs is 1024
         for rec in reader:
             data = reader.load_data(rec, sampfrom=0, sampto=6000)
-            data_1 = reader.load_data(
-                rec, data_format="flat", units="μV", sampfrom=0, sampto=6000
-            )
+            data_1 = reader.load_data(rec, data_format="flat", units="μV", sampfrom=0, sampto=6000)
             assert data.ndim == 2 and data.shape[0] == 1
             assert data_1.ndim == 1 and data_1.shape[0] == data.shape[1]
             assert np.allclose(data, data_1.reshape(1, -1) / 1000, atol=1e-2)
-            data_1 = reader.load_data(
-                rec, data_format="flat", sampfrom=1000, sampto=5000, fs=2 * reader.fs
-            )
+            data_1 = reader.load_data(rec, data_format="flat", sampfrom=1000, sampto=5000, fs=2 * reader.fs)
             assert data_1.shape[0] == 2 * 4000
             data_1 = reader.load_data(rec, sampfrom=1000, sampto=5000)
             assert data_1.shape[1] == 4000
             assert np.allclose(data_1, data[:, 1000:5000])
-            data_1, data_1_fs = reader.load_data(
-                rec, sampfrom=1000, sampto=5000, fs=reader.fs // 4, return_fs=True
-            )
+            data_1, data_1_fs = reader.load_data(rec, sampfrom=1000, sampto=5000, fs=reader.fs // 4, return_fs=True)
             assert data_1_fs == reader.fs // 4
 
         with pytest.raises(ValueError, match="Invalid `data_format`: xxx"):
@@ -99,21 +92,13 @@ class TestCACHET_CADB:
             reader.load_context_data(0, context_name="ecg")
         with pytest.raises(AssertionError, match="Invalid `context_name`: `xxx`"):
             reader.load_context_data(0, context_name="xxx")
-        with pytest.raises(
-            AssertionError, match="`units` should be `default` or `.+`, but got `xxx`"
-        ):
+        with pytest.raises(AssertionError, match="`units` should be `default` or `.+`, but got `xxx`"):
             reader.load_context_data(0, context_name="acc", units="xxx")
-        with pytest.raises(
-            AssertionError, match="`channels` should be a subset of `.+`, but got"
-        ):
+        with pytest.raises(AssertionError, match="`channels` should be a subset of `.+`, but got"):
             reader.load_context_data(0, context_name="acc", channels="xxx")
-        with pytest.raises(
-            AssertionError, match="`channels` should be a subset of `.+`, but got"
-        ):
+        with pytest.raises(AssertionError, match="`channels` should be a subset of `.+`, but got"):
             reader.load_context_data(0, context_name="acc", channels=["xxx"])
-        with pytest.raises(
-            AssertionError, match="`channels` should be less than `\\d+`, but got"
-        ):
+        with pytest.raises(AssertionError, match="`channels` should be less than `\\d+`, but got"):
             reader.load_context_data(0, context_name="acc", channels=10)
 
         with pytest.warns(RuntimeWarning, match="duplicate `channels` are removed"):
@@ -141,13 +126,9 @@ class TestCACHET_CADB:
     def test_load_context_ann(self):
         context_ann = reader.load_context_ann(0)
         assert isinstance(context_ann, dict)
-        context_ann = reader.load_context_ann(
-            0, sheet_name="movisens DataAnalyzer Parameter"
-        )
+        context_ann = reader.load_context_ann(0, sheet_name="movisens DataAnalyzer Parameter")
         assert isinstance(context_ann, pd.DataFrame)
-        context_ann = reader.load_context_ann(
-            0, sheet_name="movisens DataAnalyzer Results"
-        )
+        context_ann = reader.load_context_ann(0, sheet_name="movisens DataAnalyzer Results")
         assert isinstance(context_ann, pd.DataFrame)
 
     def test_get_subject_id(self):
@@ -194,11 +175,7 @@ class TestCACHET_CADB:
         pass  # `plot` not implemented yet
 
     def test_download(self):
-        with pytest.raises(
-            AssertionError, match="`files` should be a subset of `.+`"
-        ), pytest.warns(RuntimeWarning):
+        with pytest.raises(AssertionError, match="`files` should be a subset of `.+`"), pytest.warns(RuntimeWarning):
             reader.download(files="xxx")
-        with pytest.raises(
-            AssertionError, match="`files` should be a subset of `.+`"
-        ), pytest.warns(RuntimeWarning):
+        with pytest.raises(AssertionError, match="`files` should be a subset of `.+`"), pytest.warns(RuntimeWarning):
             reader.download(files=["xxx"])

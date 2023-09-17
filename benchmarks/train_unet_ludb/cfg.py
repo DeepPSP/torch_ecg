@@ -15,10 +15,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.model_configs import (  # noqa: F401
-    ECG_SUBTRACT_UNET_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
-)
+from torch_ecg.model_configs import ECG_SUBTRACT_UNET_CONFIG, ECG_UNET_VANILLA_CONFIG  # noqa: F401
 from torch_ecg.utils import EAK
 
 __all__ = [
@@ -75,12 +72,8 @@ TrainCfg.mask_class_map = deepcopy(BaseCfg.mask_class_map)
 
 TrainCfg.skip_dist = BaseCfg.skip_dist
 
-TrainCfg.leads = (
-    EAK.Standard12Leads
-)  # ["II",]  # the lead to tain model, None --> all leads
-TrainCfg.use_single_lead = (
-    False  # use single lead as input or use all leads in `TrainCfg.leads`
-)
+TrainCfg.leads = EAK.Standard12Leads  # ["II",]  # the lead to tain model, None --> all leads
+TrainCfg.use_single_lead = False  # use single lead as input or use all leads in `TrainCfg.leads`
 
 if TrainCfg.use_single_lead:
     TrainCfg.n_leads = 1

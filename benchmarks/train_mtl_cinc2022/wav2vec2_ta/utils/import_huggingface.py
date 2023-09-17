@@ -11,9 +11,7 @@ from ..model import Wav2Vec2Model, wav2vec2_model
 def _get_config(cfg):
     config = {
         "extractor_mode": f"{cfg.feat_extract_norm}_norm",
-        "extractor_conv_layer_config": list(
-            zip(cfg.conv_dim, cfg.conv_kernel, cfg.conv_stride)
-        ),
+        "extractor_conv_layer_config": list(zip(cfg.conv_dim, cfg.conv_kernel, cfg.conv_stride)),
         "extractor_conv_bias": cfg.conv_bias,
         "encoder_embed_dim": cfg.hidden_size,
         "encoder_projection_dropout": cfg.feat_proj_dropout,
@@ -37,17 +35,14 @@ def _build(config, original):
         wav2vec2 = original.wav2vec2
     else:
         warnings.warn(
-            "The model is not an instance of Wav2Vec2ForCTC. "
-            '"lm_head" module is not imported.',
+            "The model is not an instance of Wav2Vec2ForCTC. " '"lm_head" module is not imported.',
             RuntimeWarning,
         )
         aux_num_out = None
         wav2vec2 = original
     imported = wav2vec2_model(**config, aux_num_out=aux_num_out)
     imported.feature_extractor.load_state_dict(wav2vec2.feature_extractor.state_dict())
-    imported.encoder.feature_projection.load_state_dict(
-        wav2vec2.feature_projection.state_dict()
-    )
+    imported.encoder.feature_projection.load_state_dict(wav2vec2.feature_projection.state_dict())
     imported.encoder.transformer.load_state_dict(wav2vec2.encoder.state_dict())
     if original.__class__.__name__ == "Wav2Vec2ForCTC":
         imported.aux.load_state_dict(original.lm_head.state_dict())

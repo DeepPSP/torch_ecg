@@ -2,20 +2,19 @@
 """
 
 from copy import deepcopy
-from typing import Union, Optional, Any, Dict
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
-from torch import Tensor
-from torch_ecg.cfg import CFG
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.components.outputs import SequenceLabellingOutput
-from torch_ecg.utils import add_docstring
-
 from cfg import ModelCfg
 from outputs import CINC2022Outputs
+from torch import Tensor
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import SequenceLabellingOutput
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
+from torch_ecg.models.unets.ecg_unet import ECG_UNET
+from torch_ecg.utils import add_docstring
 
 __all__ = [
     "SEQ_LAB_NET_CINC2022",
@@ -139,9 +138,7 @@ class SEQ_LAB_NET_CINC2022(ECG_SEQ_LAB_NET):
             pred = torch.argmax(prob, dim=-1)
         else:
             prob = self.sigmoid(self.forward(_input)["segmentation"])
-            pred = (prob > bin_pred_threshold).int() * (
-                prob == prob.max(dim=-1, keepdim=True).values
-            ).int()
+            pred = (prob > bin_pred_threshold).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
         prob = prob.cpu().detach().numpy()
         pred = pred.cpu().detach().numpy()
 
@@ -267,9 +264,7 @@ class UNET_CINC2022(ECG_UNET):
             pred = torch.argmax(prob, dim=-1)
         else:
             prob = self.sigmoid(self.forward(_input)["segmentation"])
-            pred = (prob > bin_pred_threshold).int() * (
-                prob == prob.max(dim=-1, keepdim=True).values
-            ).int()
+            pred = (prob > bin_pred_threshold).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
         prob = prob.cpu().detach().numpy()
         pred = pred.cpu().detach().numpy()
 

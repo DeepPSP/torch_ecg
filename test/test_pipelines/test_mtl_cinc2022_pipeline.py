@@ -6,67 +6,44 @@ import os
 import re
 import textwrap
 import warnings
-from copy import deepcopy
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from random import shuffle, sample
-from typing import Union, Optional, Any, List, Dict, Tuple, Sequence
+from random import sample, shuffle
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
+import librosa
 import numpy as np
 import pandas as pd
-import wfdb
-import librosa
 import pytest
+import scipy.io.wavfile as sio_wav
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
-from einops import rearrange
-import scipy.io.wavfile as sio_wav
-import torchaudio
 import torch_audiomentations as TA
+import torchaudio
+import wfdb
+from einops import rearrange
+from pcg_springer_features.schmidt_spike_removal import schmidt_spike_removal
+from torch.utils.data import DataLoader, Dataset
 from torch_audiomentations.core.transforms_interface import BaseWaveformTransform
 from tqdm.auto import tqdm
-from pcg_springer_features.schmidt_spike_removal import schmidt_spike_removal
 
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.databases.base import PhysioNetDataBase, DataBaseInfo
 from torch_ecg._preprocessors import PreprocManager
-from torch_ecg.utils.utils_data import ensure_siglen, stratified_train_test_split
-from torch_ecg.utils.utils_nn import (
-    adjust_cnn_filter_lengths,
-    SizeMixin,
-    default_collate_fn,
-)
-from torch_ecg.utils.utils_signal import butter_bandpass_filter
-from torch_ecg.utils.misc import (
-    get_record_list_recursive3,
-    ReprMixin,
-    list_sum,
-    add_docstring,
-    get_kwargs,
-)
-from torch_ecg.utils.utils_metrics import _cls_to_bin
-from torch_ecg.model_configs import (
-    ECG_CRNN_CONFIG,
-    ECG_SEQ_LAB_NET_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
-)
-from torch_ecg.components.outputs import (
-    ClassificationOutput,
-    SequenceLabellingOutput,
-)
+from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
 from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.databases.base import DataBaseInfo, PhysioNetDataBase
+from torch_ecg.model_configs import ECG_CRNN_CONFIG, ECG_SEQ_LAB_NET_CONFIG, ECG_UNET_VANILLA_CONFIG
 from torch_ecg.models import ECG_CRNN
 from torch_ecg.models._nets import MLP
-from torch_ecg.models.loss import (
-    AsymmetricLoss,
-    BCEWithLogitsWithClassWeightLoss,
-    FocalLoss,
-    MaskedBCEWithLogitsLoss,
-)
-
+from torch_ecg.models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
+from torch_ecg.utils.misc import ReprMixin, add_docstring, get_kwargs, get_record_list_recursive3, list_sum
+from torch_ecg.utils.utils_data import ensure_siglen, stratified_train_test_split
+from torch_ecg.utils.utils_metrics import _cls_to_bin
+from torch_ecg.utils.utils_nn import SizeMixin, adjust_cnn_filter_lengths, default_collate_fn
+from torch_ecg.utils.utils_signal import butter_bandpass_filter
 
 ###############################################################################
 # set paths
@@ -257,23 +234,17 @@ TrainCfg.classification.input_config = InputConfig(
     fs=TrainCfg.classification.fs,
 )
 TrainCfg.classification.num_channels = TrainCfg.classification.input_config.n_channels
-TrainCfg.classification.input_len = int(
-    30 * TrainCfg.classification.fs
-)  # 30 seconds, to adjust
+TrainCfg.classification.input_len = int(30 * TrainCfg.classification.fs)  # 30 seconds, to adjust
 TrainCfg.classification.siglen = TrainCfg.classification.input_len  # alias
 TrainCfg.classification.sig_slice_tol = 0.2  # None, do no slicing
 TrainCfg.classification.classes = deepcopy(BaseCfg.classes)
 TrainCfg.classification.outcomes = deepcopy(BaseCfg.outcomes)
 # TrainCfg.classification.outcomes = None
 if TrainCfg.classification.outcomes is not None:
-    TrainCfg.classification.outcome_map = {
-        c: i for i, c in enumerate(TrainCfg.classification.outcomes)
-    }
+    TrainCfg.classification.outcome_map = {c: i for i, c in enumerate(TrainCfg.classification.outcomes)}
 else:
     TrainCfg.classification.outcome_map = None
-TrainCfg.classification.class_map = {
-    c: i for i, c in enumerate(TrainCfg.classification.classes)
-}
+TrainCfg.classification.class_map = {c: i for i, c in enumerate(TrainCfg.classification.classes)}
 
 # preprocess configurations
 TrainCfg.classification.resample = CFG(fs=TrainCfg.classification.fs)
@@ -333,18 +304,14 @@ TrainCfg.classification.loss = CFG(
 TrainCfg.classification.loss_kw = CFG(
     # murmur=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
     # outcome={},
-    murmur=CFG(
-        class_weight=torch.tensor([[5.0, 3.0, 1.0]])
-    ),  # "Present", "Unknown", "Absent"
+    murmur=CFG(class_weight=torch.tensor([[5.0, 3.0, 1.0]])),  # "Present", "Unknown", "Absent"
     outcome=CFG(class_weight=torch.tensor([[5.0, 1.0]])),  # "Abnormal", "Normal"
 )
 
 # monitor choices
 # challenge metric is the **cost** of misclassification
 # hence it is the lower the better
-TrainCfg.classification.monitor = (
-    "neg_weighted_cost"  # weighted_accuracy (not recommended)  # the higher the better
-)
+TrainCfg.classification.monitor = "neg_weighted_cost"  # weighted_accuracy (not recommended)  # the higher the better
 TrainCfg.classification.head_weights = CFG(
     # used to compute a numeric value to use the monitor
     murmur=0.5,
@@ -369,19 +336,13 @@ TrainCfg.segmentation.input_config = InputConfig(
     fs=TrainCfg.segmentation.fs,
 )
 TrainCfg.segmentation.num_channels = TrainCfg.segmentation.input_config.n_channels
-TrainCfg.segmentation.input_len = int(
-    30 * TrainCfg.segmentation.fs
-)  # 30seconds, to adjust
+TrainCfg.segmentation.input_len = int(30 * TrainCfg.segmentation.fs)  # 30seconds, to adjust
 TrainCfg.segmentation.siglen = TrainCfg.segmentation.input_len  # alias
 TrainCfg.segmentation.sig_slice_tol = 0.4  # None, do no slicing
 TrainCfg.segmentation.classes = deepcopy(BaseCfg.states)
 if TrainCfg.ignore_unannotated:
-    TrainCfg.segmentation.classes = [
-        s for s in TrainCfg.segmentation.classes if s != "unannotated"
-    ]
-TrainCfg.segmentation.class_map = {
-    c: i for i, c in enumerate(TrainCfg.segmentation.classes)
-}
+    TrainCfg.segmentation.classes = [s for s in TrainCfg.segmentation.classes if s != "unannotated"]
+TrainCfg.segmentation.class_map = {c: i for i, c in enumerate(TrainCfg.segmentation.classes)}
 
 # preprocess configurations
 TrainCfg.segmentation.resample = CFG(fs=TrainCfg.segmentation.fs)
@@ -465,18 +426,12 @@ TrainCfg.multi_task.input_len = int(30 * TrainCfg.multi_task.fs)  # 30seconds, t
 TrainCfg.multi_task.siglen = TrainCfg.multi_task.input_len  # alias
 TrainCfg.multi_task.sig_slice_tol = 0.4  # None, do no slicing
 TrainCfg.multi_task.classes = deepcopy(BaseCfg.classes)
-TrainCfg.multi_task.class_map = {
-    c: i for i, c in enumerate(TrainCfg.multi_task.classes)
-}
+TrainCfg.multi_task.class_map = {c: i for i, c in enumerate(TrainCfg.multi_task.classes)}
 TrainCfg.multi_task.outcomes = deepcopy(BaseCfg.outcomes)
-TrainCfg.multi_task.outcome_map = {
-    c: i for i, c in enumerate(TrainCfg.multi_task.outcomes)
-}
+TrainCfg.multi_task.outcome_map = {c: i for i, c in enumerate(TrainCfg.multi_task.outcomes)}
 TrainCfg.multi_task.states = deepcopy(BaseCfg.states)
 if TrainCfg.ignore_unannotated:
-    TrainCfg.multi_task.states = [
-        s for s in TrainCfg.multi_task.states if s != "unannotated"
-    ]
+    TrainCfg.multi_task.states = [s for s in TrainCfg.multi_task.states if s != "unannotated"]
 TrainCfg.multi_task.state_map = {s: i for i, s in enumerate(TrainCfg.multi_task.states)}
 
 # preprocess configurations
@@ -538,12 +493,8 @@ TrainCfg.multi_task.loss = CFG(
 TrainCfg.multi_task.loss_kw = CFG(
     # murmur=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
     # outcome={},
-    murmur=CFG(
-        class_weight=torch.tensor([[5.0 / 9.0, 3.0 / 9.0, 1.0 / 9.0]])
-    ),  # "Present", "Unknown", "Absent"
-    outcome=CFG(
-        class_weight=torch.tensor([[5.0 / 6.0, 1.0 / 6.0]])
-    ),  # "Abnormal", "Normal"
+    murmur=CFG(class_weight=torch.tensor([[5.0 / 9.0, 3.0 / 9.0, 1.0 / 9.0]])),  # "Present", "Unknown", "Absent"
+    outcome=CFG(class_weight=torch.tensor([[5.0 / 6.0, 1.0 / 6.0]])),  # "Abnormal", "Normal"
     segmentation=CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp"),
 )
 
@@ -647,9 +598,7 @@ if ModelCfg.classification.outcomes is None:
     ModelCfg.classification.outcome_head = None
 else:
     ModelCfg.classification.outcome_head.loss = TrainCfg.classification.loss.outcome
-    ModelCfg.classification.outcome_head.loss_kw = deepcopy(
-        TrainCfg.classification.loss_kw.outcome
-    )
+    ModelCfg.classification.outcome_head.loss_kw = deepcopy(TrainCfg.classification.loss_kw.outcome)
 ModelCfg.classification.states = None
 
 
@@ -659,9 +608,7 @@ ModelCfg.multi_task.outcome_head.loss = TrainCfg.multi_task.loss.outcome
 ModelCfg.multi_task.outcome_head.loss_kw = deepcopy(TrainCfg.multi_task.loss_kw.outcome)
 ModelCfg.multi_task.states = deepcopy(TrainCfg.multi_task.states)
 ModelCfg.multi_task.segmentation_head.loss = TrainCfg.multi_task.loss.segmentation
-ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(
-    TrainCfg.multi_task.loss_kw.segmentation
-)
+ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(TrainCfg.multi_task.loss_kw.segmentation)
 
 
 ###############################################################################
@@ -715,17 +662,14 @@ class PCGDataBase(PhysioNetDataBase):
 
         """
         super().__init__(db_name, db_dir, working_dir, verbose, **kwargs)
-        self.db_dir = (
-            Path(self.db_dir).resolve().absolute()
-        )  # will be fixed in `torch_ecg`
+        self.db_dir = Path(self.db_dir).resolve().absolute()  # will be fixed in `torch_ecg`
         self.fs = fs
         self.dtype = kwargs.get("dtype", BaseCfg.np_dtype)
         self.audio_backend = audio_backend.lower()
         if self.audio_backend not in self.available_backends():
             self.audio_backend = self.available_backends()[0]
             warnings.warn(
-                f"audio backend {audio_backend.lower()} is not available, "
-                f"using {self.audio_backend} instead",
+                f"audio backend {audio_backend.lower()} is not available, " f"using {self.audio_backend} instead",
                 RuntimeWarning,
             )
         if self.audio_backend == "torchaudio":
@@ -884,9 +828,7 @@ class CINC2022Reader(PCGDataBase):
         self.segmentation_states = deepcopy(BaseCfg.states)
         self.ignore_unannotated = kwargs.get("ignore_unannotated", True)
         if self.ignore_unannotated:
-            self.segmentation_states = [
-                s for s in self.segmentation_states if s != "unannotated"
-            ]
+            self.segmentation_states = [s for s in self.segmentation_states if s != "unannotated"]
         self.segmentation_map = {n: s for n, s in enumerate(self.segmentation_states)}
         if self.ignore_unannotated:
             self.segmentation_map[BaseCfg.ignore_index] = "unannotated"
@@ -966,12 +908,8 @@ class CINC2022Reader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.db_dir / x
-            )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records["path"] = self._df_records["record"].apply(lambda x: self.db_dir / x)
         else:
             write_file = True
 
@@ -987,9 +925,7 @@ class CINC2022Reader(PCGDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
-                )
+                self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
 
         data_dir = self._df_records["path"].apply(lambda x: x.parent).unique()
@@ -998,16 +934,10 @@ class CINC2022Reader(PCGDataBase):
             self.data_dir = data_dir[0]
 
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-        self._df_records = self._df_records[
-            ~self._df_records["record"].isin(self._exceptional_records)
-        ]
+        self._df_records = self._df_records[~self._df_records["record"].isin(self._exceptional_records)]
         self._df_records.set_index("record", inplace=True)
 
-        self._all_records = [
-            item
-            for item in self._df_records.index.tolist()
-            if item not in self._exceptional_records
-        ]
+        self._all_records = [item for item in self._df_records.index.tolist() if item not in self._exceptional_records]
         self._all_subjects = sorted(
             set([item.split("_")[0] for item in self._all_records]),
             key=lambda x: int(x),
@@ -1019,11 +949,7 @@ class CINC2022Reader(PCGDataBase):
 
         if write_file and self._subsample is None:
             records_file.write_text(
-                "\n".join(
-                    self._df_records["path"]
-                    .apply(lambda x: x.relative_to(self.db_dir).as_posix())
-                    .tolist()
-                )
+                "\n".join(self._df_records["path"].apply(lambda x: x.relative_to(self.db_dir).as_posix()).tolist())
             )
 
     def _load_stats(self) -> None:
@@ -1071,16 +997,10 @@ class CINC2022Reader(PCGDataBase):
         self._df_stats = self._df_stats.fillna(self.stats_fillna_val)
         try:
             # the column "Locations" is changed to "Recording locations:" in version 1.0.2
-            self._df_stats.Locations = self._df_stats.Locations.apply(
-                lambda s: s.split("+")
-            )
+            self._df_stats.Locations = self._df_stats.Locations.apply(lambda s: s.split("+"))
         except AttributeError:
-            self._df_stats["Locations"] = self._df_stats["Recording locations:"].apply(
-                lambda s: s.split("+")
-            )
-        self._df_stats["Murmur locations"] = self._df_stats["Murmur locations"].apply(
-            lambda s: s.split("+")
-        )
+            self._df_stats["Locations"] = self._df_stats["Recording locations:"].apply(lambda s: s.split("+"))
+        self._df_stats["Murmur locations"] = self._df_stats["Murmur locations"].apply(lambda s: s.split("+"))
         self._df_stats["Patient ID"] = self._df_stats["Patient ID"].astype(str)
         self._df_stats = self._df_stats[self._stats_cols]
         for idx, row in self._df_stats.iterrows():
@@ -1150,9 +1070,7 @@ class CINC2022Reader(PCGDataBase):
             rec = self[rec]
         return list(re.finditer(self._rec_pattern, rec))[0].groupdict()
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """
         get the absolute path of the record `rec`
 
@@ -1238,9 +1156,7 @@ class CINC2022Reader(PCGDataBase):
         """alias of `load_data`"""
         return self.load_data(rec, fs, data_format, data_type)
 
-    def load_ann(
-        self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None
-    ) -> Union[str, int]:
+    def load_ann(self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None) -> Union[str, int]:
         """
         load classification annotation of the record `rec` or the subject `sid`
 
@@ -1263,9 +1179,7 @@ class CINC2022Reader(PCGDataBase):
             rec_or_sid = self[rec_or_sid]
         _class_map = class_map or {}
         if rec_or_sid in self.all_subjects:
-            ann = self.df_stats[self.df_stats["Patient ID"] == rec_or_sid].iloc[0][
-                "Murmur"
-            ]
+            ann = self.df_stats[self.df_stats["Patient ID"] == rec_or_sid].iloc[0]["Murmur"]
         elif rec_or_sid in self.all_records:
             decom = self._decompose_rec(rec_or_sid)
             sid, loc = decom["sid"], decom["loc"]
@@ -1282,9 +1196,7 @@ class CINC2022Reader(PCGDataBase):
         return ann
 
     @add_docstring(load_ann.__doc__)
-    def load_murmur(
-        self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None
-    ) -> Union[str, int]:
+    def load_murmur(self, rec_or_sid: Union[str, int], class_map: Optional[Dict[str, int]] = None) -> Union[str, int]:
         """alias of `load_ann`"""
         return self.load_ann(rec_or_sid, class_map)
 
@@ -1333,9 +1245,7 @@ class CINC2022Reader(PCGDataBase):
         df_seg = pd.read_csv(segmentation_file, sep="\t", header=None)
         df_seg.columns = ["start_t", "end_t", "label"]
         if self.ignore_unannotated:
-            df_seg["label"] = df_seg["label"].apply(
-                lambda x: x - 1 if x > 0 else BaseCfg.ignore_index
-            )
+            df_seg["label"] = df_seg["label"].apply(lambda x: x - 1 if x > 0 else BaseCfg.ignore_index)
         df_seg["wave"] = df_seg["label"].apply(lambda s: self.segmentation_map[s])
         df_seg["start"] = (fs * df_seg["start_t"]).apply(round)
         df_seg["end"] = (fs * df_seg["end_t"]).apply(round)
@@ -1370,10 +1280,7 @@ class CINC2022Reader(PCGDataBase):
         ]:
             # dict of intervals
             return {
-                k: [
-                    [row["start"], row["end"]]
-                    for _, row in df_seg[df_seg["wave"] == k].iterrows()
-                ]
+                k: [[row["start"], row["end"]] for _, row in df_seg[df_seg["wave"] == k].iterrows()]
                 for _, k in self.segmentation_map.items()
             }
         elif seg_format.lower() in [
@@ -1387,9 +1294,7 @@ class CINC2022Reader(PCGDataBase):
         elif seg_format.lower() in [
             "binary",
         ]:
-            bin_mask = np.zeros(
-                (df_seg.end.values[-1], len(self.segmentation_states)), dtype=self.dtype
-            )
+            bin_mask = np.zeros((df_seg.end.values[-1], len(self.segmentation_states)), dtype=self.dtype)
             for _, row in df_seg.iterrows():
                 if row["wave"] in self.segmentation_states:
                     bin_mask[
@@ -1618,9 +1523,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
 
     __name__ = "CinC2022Dataset"
 
-    def __init__(
-        self, config: CFG, task: str, training: bool = True, lazy: bool = True
-    ) -> None:
+    def __init__(self, config: CFG, task: str, training: bool = True, lazy: bool = True) -> None:
         """ """
         super().__init__()
         self.config = CFG(deepcopy(config))
@@ -1634,12 +1537,8 @@ class CinC2022Dataset(Dataset, ReprMixin):
         )
 
         self.subjects = self._train_test_split()
-        df = self.reader.df_stats[
-            self.reader.df_stats["Patient ID"].isin(self.subjects)
-        ]
-        self.records = list_sum(
-            [self.reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()]
-        )
+        df = self.reader.df_stats[self.reader.df_stats["Patient ID"].isin(self.subjects)]
+        self.records = list_sum([self.reader.subject_records[row["Patient ID"]] for _, row in df.iterrows()])
         if self.config.get("test_flag", True):
             self.records = sample(self.records, int(len(self.records) * 0.2))
         if self.training:
@@ -1675,12 +1574,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
     def __set_task(self, task: str, lazy: bool) -> None:
         """ """
         assert task.lower() in TrainCfg.tasks, f"illegal task \042{task}\042"
-        if (
-            hasattr(self, "task")
-            and self.task == task.lower()
-            and self.cache is not None
-            and len(self.cache["waveforms"]) > 0
-        ):
+        if hasattr(self, "task") and self.task == task.lower() and self.cache is not None and len(self.cache["waveforms"]) > 0:
             return
         self.task = task.lower()
         self.siglen = int(self.config[self.task].fs * self.config[self.task].siglen)
@@ -1689,17 +1583,11 @@ class CinC2022Dataset(Dataset, ReprMixin):
         self.lazy = lazy
 
         if self.task in ["classification"]:
-            self.fdr = FastDataReader(
-                self.reader, self.records, self.config, self.task, self.ppm
-            )
+            self.fdr = FastDataReader(self.reader, self.records, self.config, self.task, self.ppm)
         elif self.task in ["segmentation"]:
-            self.fdr = FastDataReader(
-                self.reader, self.records, self.config, self.task, self.seg_ppm
-            )
+            self.fdr = FastDataReader(self.reader, self.records, self.config, self.task, self.seg_ppm)
         elif self.task in ["multi_task"]:
-            self.fdr = MutiTaskFastDataReader(
-                self.reader, self.records, self.config, self.task, self.ppm
-            )
+            self.fdr = MutiTaskFastDataReader(self.reader, self.records, self.config, self.task, self.ppm)
         else:
             raise ValueError("Illegal task")
 
@@ -1726,9 +1614,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
         """ """
         self.__set_task(self.task, lazy=False)
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """ """
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
@@ -1834,10 +1720,7 @@ class FastDataReader(ReprMixin, Dataset):
                 )
             else:
                 label = np.array(
-                    [
-                        self.config[self.task].class_map[label]
-                        for _ in range(n_segments)
-                    ],
+                    [self.config[self.task].class_map[label] for _ in range(n_segments)],
                     dtype=int,
                 )
             out = {"waveforms": waveforms, "murmur": label}
@@ -1851,10 +1734,7 @@ class FastDataReader(ReprMixin, Dataset):
                     )
                 else:
                     outcome = np.array(
-                        [
-                            self.config[self.task].outcome_map[outcome]
-                            for _ in range(n_segments)
-                        ],
+                        [self.config[self.task].outcome_map[outcome] for _ in range(n_segments)],
                         dtype=int,
                     )
                 out["outcome"] = outcome
@@ -1934,9 +1814,7 @@ class MutiTaskFastDataReader(ReprMixin, Dataset):
         label = self.reader.load_ann(rec)
         if self.config[self.task].loss["murmur"] != "CrossEntropyLoss":
             label = (
-                np.isin(self.config[self.task].classes, label)
-                .astype(self.dtype)[np.newaxis, ...]
-                .repeat(n_segments, axis=0)
+                np.isin(self.config[self.task].classes, label).astype(self.dtype)[np.newaxis, ...].repeat(n_segments, axis=0)
             )
         else:
             label = np.array(
@@ -1958,10 +1836,7 @@ class MutiTaskFastDataReader(ReprMixin, Dataset):
                 )
             else:
                 outcome = np.array(
-                    [
-                        self.config[self.task].outcome_map[outcome]
-                        for _ in range(n_segments)
-                    ],
+                    [self.config[self.task].outcome_map[outcome] for _ in range(n_segments)],
                     dtype=int,
                 )
             out_tensors["outcome"] = outcome
@@ -2115,19 +1990,13 @@ class MultiTaskHead(nn.Module, SizeMixin):
                     labels["segmentation"].reshape(-1, labels["segmentation"].shape[0]),
                 )
                 out["total_extra_loss"] = (
-                    out["total_extra_loss"].to(dtype=out["segmentation_loss"].dtype)
-                    + out["segmentation_loss"]
+                    out["total_extra_loss"].to(dtype=out["segmentation_loss"].dtype) + out["segmentation_loss"]
                 )
         if "outcome" in self.heads:
             out["outcome"] = self.heads["outcome"](pooled_features)
             if labels is not None and labels.get("outcome", None) is not None:
-                out["outcome_loss"] = self.criteria["outcome"](
-                    out["outcome"], labels["outcome"]
-                )
-                out["total_extra_loss"] = (
-                    out["total_extra_loss"].to(dtype=out["outcome_loss"].dtype)
-                    + out["outcome_loss"]
-                )
+                out["outcome_loss"] = self.criteria["outcome"](out["outcome"], labels["outcome"])
+                out["total_extra_loss"] = out["total_extra_loss"].to(dtype=out["outcome_loss"].dtype) + out["outcome_loss"]
         return out
 
     def _setup_criterion(self, loss: str, loss_kw: Optional[dict] = None) -> None:
@@ -2381,9 +2250,7 @@ class CRNN_CINC2022(ECG_CRNN):
                 pred = torch.argmax(prob, dim=-1)
             else:
                 prob = self.sigmoid(forward_output["segmentation"])
-                pred = (prob > seg_thr).int() * (
-                    prob == prob.max(dim=-1, keepdim=True).values
-                ).int()
+                pred = (prob > seg_thr).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
             prob = prob.cpu().detach().numpy()
             pred = pred.cpu().detach().numpy()
             segmentation_output = SequenceLabellingOutput(
@@ -2539,29 +2406,16 @@ def compute_challenge_metrics(
     metrics = {}
     if require_both:
         assert all([set(lb.keys()) >= set(["murmur", "outcome"]) for lb in labels])
-        assert all(
-            [
-                item.murmur_output is not None and item.outcome_output is not None
-                for item in outputs
-            ]
-        )
+        assert all([item.murmur_output is not None and item.outcome_output is not None for item in outputs])
     # metrics for murmurs
     # NOTE: labels all have a batch dimension, except for categorical labels
     if outputs[0].murmur_output is not None:
-        murmur_labels = np.concatenate(
-            [lb["murmur"] for lb in labels]  # categorical or binarized labels
-        )
-        murmur_scalar_outputs = np.concatenate(
-            [np.atleast_2d(item.murmur_output.prob) for item in outputs]
-        )
-        murmur_binary_outputs = np.concatenate(
-            [np.atleast_2d(item.murmur_output.bin_pred) for item in outputs]
-        )
+        murmur_labels = np.concatenate([lb["murmur"] for lb in labels])  # categorical or binarized labels
+        murmur_scalar_outputs = np.concatenate([np.atleast_2d(item.murmur_output.prob) for item in outputs])
+        murmur_binary_outputs = np.concatenate([np.atleast_2d(item.murmur_output.bin_pred) for item in outputs])
         murmur_classes = outputs[0].murmur_output.classes
         if murmur_labels.ndim == 1:
-            murmur_labels = _cls_to_bin(
-                murmur_labels, shape=(len(murmur_labels), len(murmur_classes))
-            )
+            murmur_labels = _cls_to_bin(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 murmur_labels,
@@ -2572,20 +2426,12 @@ def compute_challenge_metrics(
         )
     # metrics for outcomes
     if outputs[0].outcome_output is not None:
-        outcome_labels = np.concatenate(
-            [lb["outcome"] for lb in labels]  # categorical or binarized labels
-        )
-        outcome_scalar_outputs = np.concatenate(
-            [np.atleast_2d(item.outcome_output.prob) for item in outputs]
-        )
-        outcome_binary_outputs = np.concatenate(
-            [np.atleast_2d(item.outcome_output.bin_pred) for item in outputs]
-        )
+        outcome_labels = np.concatenate([lb["outcome"] for lb in labels])  # categorical or binarized labels
+        outcome_scalar_outputs = np.concatenate([np.atleast_2d(item.outcome_output.prob) for item in outputs])
+        outcome_binary_outputs = np.concatenate([np.atleast_2d(item.outcome_output.bin_pred) for item in outputs])
         outcome_classes = outputs[0].outcome_output.classes
         if outcome_labels.ndim == 1:
-            outcome_labels = _cls_to_bin(
-                outcome_labels, shape=(len(outcome_labels), len(outcome_classes))
-            )
+            outcome_labels = _cls_to_bin(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 outcome_labels,
@@ -2638,9 +2484,7 @@ def _compute_challenge_metrics(
             the challenge cost
 
     """
-    detailed_metrics = _compute_challenge_metrics_detailed(
-        labels, scalar_outputs, binary_outputs, classes
-    )
+    detailed_metrics = _compute_challenge_metrics_detailed(labels, scalar_outputs, binary_outputs, classes)
     metrics = {
         f"""{detailed_metrics["prefix"]}_{k}""": v
         for k, v in detailed_metrics.items()
@@ -2747,9 +2591,7 @@ def _compute_challenge_metrics_detailed(
 ###########################################
 
 
-def enforce_positives(
-    outputs: np.ndarray, classes: Sequence[str], positive_class: str
-) -> np.ndarray:
+def enforce_positives(outputs: np.ndarray, classes: Sequence[str], positive_class: str) -> np.ndarray:
     """
     For each patient, set a specific class to positive if no class is positive or multiple classes are positive.
 
@@ -2813,9 +2655,7 @@ def compute_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndar
     return A
 
 
-def compute_one_vs_rest_confusion_matrix(
-    labels: np.ndarray, outputs: np.ndarray
-) -> np.ndarray:
+def compute_one_vs_rest_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndarray:
     """
     Compute binary one-vs-rest confusion matrices, where the columns are expert labels and rows are classifier labels.
 
@@ -2857,9 +2697,7 @@ def compute_one_vs_rest_confusion_matrix(
 compute_ovr_confusion_matrix = compute_one_vs_rest_confusion_matrix
 
 
-def compute_auc(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
+def compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """
     Compute macro AUROC and macro AUPRC, and AUPRCs, AUPRCs for each class.
 
@@ -2965,9 +2803,7 @@ def compute_auc(
     return macro_auroc, macro_auprc, auroc, auprc
 
 
-def compute_accuracy(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """
     Compute accuracy.
 
@@ -3007,9 +2843,7 @@ def compute_accuracy(
     return accuracy, accuracy_classes
 
 
-def compute_f_measure(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """
     Compute macro F-measure, and F-measures for each class.
 
@@ -3049,9 +2883,7 @@ def compute_f_measure(
     return macro_f_measure, f_measure
 
 
-def compute_weighted_accuracy(
-    labels: np.ndarray, outputs: np.ndarray, classes: List[str]
-) -> float:
+def compute_weighted_accuracy(labels: np.ndarray, outputs: np.ndarray, classes: List[str]) -> float:
     """
     compute weighted accuracy
 
@@ -3080,9 +2912,7 @@ def compute_weighted_accuracy(
     elif classes == ["Abnormal", "Normal"]:
         weights = np.array([[5, 1], [5, 1]])
     else:
-        raise NotImplementedError(
-            "Weighted accuracy undefined for classes {}".format(", ".join(classes))
-        )
+        raise NotImplementedError("Weighted accuracy undefined for classes {}".format(", ".join(classes)))
 
     # Compute confusion matrix.
     assert np.shape(labels) == np.shape(outputs)
@@ -3159,18 +2989,10 @@ def compute_cost(
     A = compute_confusion_matrix(labels, outputs)
 
     # Identify positive and negative classes for referral.
-    idx_label_positive = [
-        i for i, x in enumerate(label_classes) if x in positive_classes
-    ]
-    idx_label_negative = [
-        i for i, x in enumerate(label_classes) if x in negative_classes
-    ]
-    idx_output_positive = [
-        i for i, x in enumerate(output_classes) if x in positive_classes
-    ]
-    idx_output_negative = [
-        i for i, x in enumerate(output_classes) if x in negative_classes
-    ]
+    idx_label_positive = [i for i, x in enumerate(label_classes) if x in positive_classes]
+    idx_label_negative = [i for i, x in enumerate(label_classes) if x in negative_classes]
+    idx_output_positive = [i for i, x in enumerate(output_classes) if x in positive_classes]
+    idx_output_negative = [i for i, x in enumerate(output_classes) if x in negative_classes]
 
     # Identify true positives, false positives, false negatives, and true negatives.
     tp = np.sum(A[np.ix_(idx_output_positive, idx_label_positive)])
@@ -3180,12 +3002,7 @@ def compute_cost(
     total_patients = tp + fp + fn + tn
 
     # Compute total cost for all patients.
-    total_cost = (
-        cost_algorithm(total_patients)
-        + cost_expert(tp + fp, total_patients)
-        + cost_treatment(tp)
-        + cost_error(fn)
-    )
+    total_cost = cost_algorithm(total_patients) + cost_expert(tp + fp, total_patients) + cost_treatment(tp) + cost_error(fn)
 
     # Compute mean cost per patient.
     if total_patients > 0:
@@ -3328,23 +3145,14 @@ class CINC2022Trainer(BaseTrainer):
 
     def _setup_augmenter_manager(self) -> None:
         """ """
-        self.augmenter_manager = AugmenterManager.from_config(
-            config=self.train_config[self.train_config.task]
-        )
+        self.augmenter_manager = AugmenterManager.from_config(config=self.train_config[self.train_config.task])
 
     def _setup_criterion(self) -> None:
         """ """
-        loss_kw = (
-            self.train_config[self.train_config.task]
-            .get("loss_kw", {})
-            .get(self._criterion_key, {})
-        )
+        loss_kw = self.train_config[self.train_config.task].get("loss_kw", {}).get(self._criterion_key, {})
         if self.train_config.loss[self._criterion_key] == "BCEWithLogitsLoss":
             self.criterion = nn.BCEWithLogitsLoss(**loss_kw)
-        elif (
-            self.train_config.loss[self._criterion_key]
-            == "BCEWithLogitsWithClassWeightLoss"
-        ):
+        elif self.train_config.loss[self._criterion_key] == "BCEWithLogitsWithClassWeightLoss":
             self.criterion = BCEWithLogitsWithClassWeightLoss(**loss_kw)
         elif self.train_config.loss[self._criterion_key] == "BCELoss":
             self.criterion = nn.BCELoss(**loss_kw)
@@ -3377,11 +3185,7 @@ class CINC2022Trainer(BaseTrainer):
             the progress bar for training
 
         """
-        if (
-            self.epoch
-            >= self.train_config[self.train_config.task].freeze_backbone_at
-            > 0
-        ):
+        if self.epoch >= self.train_config[self.train_config.task].freeze_backbone_at > 0:
             self._model.freeze_backbone(True)
         else:
             self._model.freeze_backbone(False)
@@ -3393,9 +3197,7 @@ class CINC2022Trainer(BaseTrainer):
             # "murmur" (optional): the murmur labels, for classification task and multi task
             # "outcome" (optional): the outcome labels, for classification task and multi task
             # "segmentation" (optional): the segmentation labels, for segmentation task and multi task
-            input_tensors["waveforms"] = self.augmenter_manager(
-                input_tensors["waveforms"]
-            )
+            input_tensors["waveforms"] = self.augmenter_manager(input_tensors["waveforms"])
 
             # out_tensors is a dict of tensors, with the following items (some are optional):
             # - "murmur": the murmur predictions, of shape (batch_size, n_classes)
@@ -3413,9 +3215,7 @@ class CINC2022Trainer(BaseTrainer):
             # ref. https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html
             loss = self.criterion(
                 out_tensors[self._criterion_key],
-                input_tensors[self._criterion_key].to(
-                    dtype=self.dtype, device=self.device
-                ),
+                input_tensors[self._criterion_key].to(dtype=self.dtype, device=self.device),
             ).to(dtype=self.dtype, device=self.device) + out_tensors.get(
                 "total_extra_loss",
                 torch.tensor(0.0, dtype=self.dtype, device=self.device),
@@ -3424,9 +3224,7 @@ class CINC2022Trainer(BaseTrainer):
             )
 
             if self.train_config.flooding_level > 0:
-                flood = (
-                    loss - self.train_config.flooding_level
-                ).abs() + self.train_config.flooding_level
+                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
                 self.epoch_loss += loss.item()
                 self.optimizer.zero_grad()
                 flood.backward()
@@ -3463,9 +3261,7 @@ class CINC2022Trainer(BaseTrainer):
                 )
             pbar.update(n_samples)
 
-    def run_one_step(
-        self, input_tensors: Dict[str, torch.Tensor]
-    ) -> Dict[str, torch.Tensor]:
+    def run_one_step(self, input_tensors: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
 
         Parameters
@@ -3518,16 +3314,11 @@ class CINC2022Trainer(BaseTrainer):
                 torch.cuda.synchronize()
             all_outputs.append(self._model.inference(waveforms))
 
-        if self.val_train_loader is not None and self.train_config.task not in [
-            "segmentation"
-        ]:
+        if self.val_train_loader is not None and self.train_config.task not in ["segmentation"]:
             log_head_num = 5
             head_scalar_preds = all_outputs[0].murmur_output.prob[:log_head_num]
             head_bin_preds = all_outputs[0].murmur_output.bin_pred[:log_head_num]
-            head_preds_classes = [
-                np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]]
-                for row in head_bin_preds
-            ]
+            head_preds_classes = [np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]] for row in head_bin_preds]
             head_labels = all_labels[0]["murmur"][:log_head_num]
             head_labels_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)]
@@ -3553,8 +3344,7 @@ class CINC2022Trainer(BaseTrainer):
                 head_scalar_preds = all_outputs[0].outcome_output.prob[:log_head_num]
                 head_bin_preds = all_outputs[0].outcome_output.bin_pred[:log_head_num]
                 head_preds_classes = [
-                    np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
-                    for row in head_bin_preds
+                    np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]] for row in head_bin_preds
                 ]
                 head_labels = all_labels[0]["outcome"][:log_head_num]
                 head_labels_classes = [
@@ -3611,15 +3401,9 @@ class CINC2022Trainer(BaseTrainer):
 
         weighted_cost = 0
         if eval_res.get("murmur_cost", None) is not None:
-            weighted_cost += (
-                eval_res["murmur_cost"]
-                * self.train_config[self.train_config.task].head_weights.murmur
-            )
+            weighted_cost += eval_res["murmur_cost"] * self.train_config[self.train_config.task].head_weights.murmur
         if eval_res.get("outcome_cost", None) is not None:
-            weighted_cost += (
-                eval_res["outcome_cost"]
-                * self.train_config[self.train_config.task].head_weights.outcome
-            )
+            weighted_cost += eval_res["outcome_cost"] * self.train_config[self.train_config.task].head_weights.outcome
         eval_res["neg_weighted_cost"] = -weighted_cost
 
         # in case possible memeory leakage?

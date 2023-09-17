@@ -17,9 +17,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.outputs import RPeaksDetectionOutput
 from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.databases.cpsc_databases.cpsc2019 import (
-    compute_metrics as compute_cpsc2019_metrics,
-)
+from torch_ecg.databases.cpsc_databases.cpsc2019 import compute_metrics as compute_cpsc2019_metrics
 from torch_ecg.databases.datasets.cpsc2019 import CPSC2019Dataset, CPSC2019TrainCfg
 from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
@@ -49,9 +47,7 @@ ModelCfg.classes = [
 # ModelCfg.class_map = {c:i for i,c in enumerate(ModelCfg.classes)}
 ModelCfg.n_leads = 1
 ModelCfg.db_dir = None
-ModelCfg.bias_thr = (
-    0.075 * ModelCfg.fs
-)  # keep the same with `THR` in `cpsc2019_score.py`
+ModelCfg.bias_thr = 0.075 * ModelCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 ModelCfg.skip_dist = 0.5 * ModelCfg.fs
@@ -82,9 +78,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
 
-    def __init__(
-        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -219,13 +213,7 @@ def _inference_post_process(
         b_prob = prob[b_idx, ...]
         b_mask = (b_prob > bin_pred_thr).astype(int)
         b_qrs_intervals = mask_to_intervals(b_mask, 1)
-        b_rpeaks = np.array(
-            [
-                (itv[0] + itv[1]) // 2
-                for itv in b_qrs_intervals
-                if itv[1] - itv[0] >= _duration_thr
-            ]
-        )
+        b_rpeaks = np.array([(itv[0] + itv[1]) // 2 for itv in b_qrs_intervals if itv[1] - itv[0] >= _duration_thr])
         # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
         # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
@@ -246,11 +234,7 @@ def _inference_post_process(
                     check = True
                     break
         if len(_dist_thr) == 1:
-            b_rpeaks = b_rpeaks[
-                np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[
-                    0
-                ]
-            ]
+            b_rpeaks = b_rpeaks[np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]]
             rpeaks.append(b_rpeaks)
             continue
         check = True
@@ -265,38 +249,24 @@ def _inference_post_process(
                 if b_rpeaks_diff[r] >= dist_thr_inds:  # 1200 ms
                     prev_r_ind = b_rpeaks[r]
                     next_r_ind = b_rpeaks[r + 1]
-                    prev_qrs = [
-                        itv for itv in b_qrs_intervals if itv[0] <= prev_r_ind <= itv[1]
-                    ][0]
-                    next_qrs = [
-                        itv for itv in b_qrs_intervals if itv[0] <= next_r_ind <= itv[1]
-                    ][0]
+                    prev_qrs = [itv for itv in b_qrs_intervals if itv[0] <= prev_r_ind <= itv[1]][0]
+                    next_qrs = [itv for itv in b_qrs_intervals if itv[0] <= next_r_ind <= itv[1]][0]
                     check_itv = [prev_qrs[1], next_qrs[0]]
-                    l_new_itv = mask_to_intervals(
-                        b_mask[check_itv[0] : check_itv[1]], 1
-                    )
+                    l_new_itv = mask_to_intervals(b_mask[check_itv[0] : check_itv[1]], 1)
                     if len(l_new_itv) == 0:
                         continue
-                    l_new_itv = [
-                        [itv[0] + check_itv[0], itv[1] + check_itv[0]]
-                        for itv in l_new_itv
-                    ]
+                    l_new_itv = [[itv[0] + check_itv[0], itv[1] + check_itv[0]] for itv in l_new_itv]
                     new_itv = max(l_new_itv, key=lambda itv: itv[1] - itv[0])
                     new_max_prob = (b_prob[new_itv[0] : new_itv[1]]).max()
                     for itv in l_new_itv:
                         itv_prob = (b_prob[itv[0] : itv[1]]).max()
-                        if (
-                            itv[1] - itv[0] == new_itv[1] - new_itv[0]
-                            and itv_prob > new_max_prob
-                        ):
+                        if itv[1] - itv[0] == new_itv[1] - new_itv[0] and itv_prob > new_max_prob:
                             new_itv = itv
                             new_max_prob = itv_prob
                     b_rpeaks = np.insert(b_rpeaks, r + 1, 4 * (new_itv[0] + new_itv[1]))
                     check = True
                     break
-        b_rpeaks = b_rpeaks[
-            np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]
-        ]
+        b_rpeaks = b_rpeaks[np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]]
         rpeaks.append(b_rpeaks)
     return rpeaks
 
@@ -373,18 +343,14 @@ class CPSC2019Trainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         if torch.cuda.is_available():
@@ -424,9 +390,7 @@ class CPSC2019Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -465,23 +429,15 @@ class CPSC2019Trainer(BaseTrainer):
         for signals, labels in data_loader:
             signals = signals.to(device=self.device, dtype=self.dtype)
             labels = labels.numpy()
-            labels = [
-                mask_to_intervals(item, 1) for item in labels
-            ]  # intervals of qrs complexes
+            labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
             labels = [  # to indices of rpeaks in the original signal sequence
-                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(
-                    int
-                )
-                for item in labels
+                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(int) for item in labels
             ]
             labels = [
                 item[
                     np.where(
                         (item >= self.train_config.skip_dist)
-                        & (
-                            item
-                            < self.train_config.input_len - self.train_config.skip_dist
-                        )
+                        & (item < self.train_config.input_len - self.train_config.skip_dist)
                     )[0]
                 ]
                 for item in labels

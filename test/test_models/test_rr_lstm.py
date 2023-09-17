@@ -4,16 +4,11 @@
 from copy import deepcopy
 from pathlib import Path
 
-import torch
 import pytest
+import torch
 
+from torch_ecg.model_configs.rr_lstm import RR_AF_CRF_CONFIG, RR_AF_VANILLA_CONFIG, RR_LSTM_CONFIG
 from torch_ecg.models.rr_lstm import RR_LSTM, RR_LSTM_v1
-from torch_ecg.model_configs.rr_lstm import (
-    RR_AF_VANILLA_CONFIG,
-    RR_AF_CRF_CONFIG,
-    RR_LSTM_CONFIG,
-)
-
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
@@ -34,9 +29,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[0], batch_size=inp.shape[1]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
@@ -53,9 +46,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "linear"
@@ -64,9 +55,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[0], batch_size=inp.shape[1]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
@@ -83,9 +72,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_AF_VANILLA_CONFIG)
     for attn_name in ["none", "gc", "nl", "se"]:
@@ -93,9 +80,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[0], batch_size=inp.shape[1]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
@@ -111,9 +96,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_AF_CRF_CONFIG)
     for attn_name in ["none"]:
@@ -121,9 +104,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[0], batch_size=inp.shape[1]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
@@ -139,9 +120,7 @@ def test_rr_lstm():
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.lstm.retseq = False
@@ -150,9 +129,7 @@ def test_rr_lstm():
     model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp.shape[0], batch_size=inp.shape[1]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
     model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
     model_v1 = model_v1.eval()
     out_v1 = model_v1(inp)
@@ -169,9 +146,7 @@ def test_rr_lstm():
     model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp_bf)
-    assert out.shape == model.compute_output_shape(
-        seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
-    )
+    assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     doi = model.doi
     assert isinstance(doi, list)
@@ -187,13 +162,9 @@ def test_warns_errors():
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
     inp = torch.randn(100, 2, in_channels).to(DEVICE)
 
-    with pytest.warns(
-        RuntimeWarning, match="No config is provided, using default config"
-    ):
+    with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model = RR_LSTM(classes=classes).to(DEVICE)
-    with pytest.warns(
-        RuntimeWarning, match="No config is provided, using default config"
-    ):
+    with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model_v1 = RR_LSTM_v1(classes=classes).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
@@ -239,37 +210,25 @@ def test_warns_errors():
     ):
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
-    with pytest.raises(
-        NotImplementedError, match="implement a task specific inference method"
-    ):
+    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model.inference(inp)
-    with pytest.raises(
-        NotImplementedError, match="implement a task specific inference method"
-    ):
+    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model_v1.inference(inp)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.attn.name = "not_implemented"
     config.attn.not_implemented = {}
-    with pytest.raises(
-        NotImplementedError, match="Attn module \042.+\042 not implemented yet"
-    ):
+    with pytest.raises(NotImplementedError, match="Attn module \042.+\042 not implemented yet"):
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
-    with pytest.raises(
-        NotImplementedError, match="Attn module \042.+\042 not implemented yet"
-    ):
+    with pytest.raises(NotImplementedError, match="Attn module \042.+\042 not implemented yet"):
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "linear"
     config.global_pool = "not_supported"
-    with pytest.raises(
-        NotImplementedError, match="Pooling type \042.+\042 not supported"
-    ):
+    with pytest.raises(NotImplementedError, match="Pooling type \042.+\042 not supported"):
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
-    with pytest.raises(
-        NotImplementedError, match="Pooling type \042.+\042 not supported"
-    ):
+    with pytest.raises(NotImplementedError, match="Pooling type \042.+\042 not supported"):
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
 

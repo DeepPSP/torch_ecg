@@ -12,20 +12,16 @@ References
 import textwrap
 import warnings
 from copy import deepcopy
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (
-    Conv_Bn_Activation,
-    DownSample,
-    MultiConv,
-)
 from ...model_configs import ECG_UNET_VANILLA_CONFIG
-from ...utils.misc import add_docstring, CitationMixin
+from ...models._nets import Conv_Bn_Activation, DownSample, MultiConv
+from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import (
     CkptMixin,
     SizeMixin,
@@ -33,7 +29,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
 
 __all__ = [
     "ECG_UNET",
@@ -282,9 +277,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
         super().__init__()
         self.__up_scale = up_scale
         self.__in_channels = in_channels
-        self.__mid_channels = (
-            mid_channels if mid_channels is not None else in_channels // 2
-        )
+        self.__mid_channels = mid_channels if mid_channels is not None else in_channels // 2
         self.__out_channels = out_channels
         self.__deconv_filter_length = deconv_filter_length
         self.__mode = mode.lower()
@@ -294,9 +287,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
         if self.__mode == "deconv":
-            self.__deconv_padding = max(
-                0, (self.__deconv_filter_length - self.__up_scale) // 2
-            )
+            self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale) // 2)
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
                 out_channels=self.__in_channels,
@@ -345,9 +336,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
         output = F.pad(output, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
 
         # TODO: consider the case `groups` > 1 when concatenating
-        output = torch.cat(
-            [down_output, output], dim=1
-        )  # concate along the channel axis
+        output = torch.cat([down_output, output], dim=1)  # concate along the channel axis
         output = self.conv(output)
 
         return output
@@ -431,9 +420,7 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.__in_channels = n_leads
         self.config = deepcopy(ECG_UNET_VANILLA_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
 
         self.init_conv = DoubleConv(

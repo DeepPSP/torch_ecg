@@ -10,28 +10,19 @@ References
 
 import warnings
 from copy import deepcopy
-from typing import Any, Optional, Sequence, Union, List
+from typing import Any, List, Optional, Sequence, Union
 
 import torch
-from torch import Tensor, nn
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from torch import Tensor, nn
 
 from ..cfg import CFG
 from ..components.outputs import BaseOutput
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
-from ..models._nets import (
-    ExtendedCRF,
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
-    SelfAttention,
-    MLP,
-    StackedLSTM,
-)
+from ..models._nets import MLP, ExtendedCRF, GlobalContextBlock, NonLocalBlock, SEBlock, SelfAttention, StackedLSTM
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
-
 
 __all__ = [
     "RR_LSTM",
@@ -61,24 +52,18 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     __name__ = "RR_LSTM"
 
-    def __init__(
-        self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any) -> None:
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
         self.config = deepcopy(RR_LSTM_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
         self.config.batch_first = self.config.get("batch_first", False)
 
         if self.config.batch_first:
-            self.in_rearrange = Rearrange(
-                "batch_size n_channels seq_len -> seq_len batch_size n_channels"
-            )
+            self.in_rearrange = Rearrange("batch_size n_channels seq_len -> seq_len batch_size n_channels")
         else:
             self.in_rearrange = nn.Identity()
 
@@ -105,16 +90,12 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = attn_input_size
         elif self.config.attn.name.lower() == "none":
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size n_channels -> batch_size n_channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size n_channels -> batch_size n_channels seq_len")
             self.attn = nn.Identity()
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = attn_input_size
         elif self.config.attn.name.lower() == "nl":  # non_local
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size n_channels -> batch_size n_channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size n_channels -> batch_size n_channels seq_len")
             self.attn = NonLocalBlock(
                 in_channels=attn_input_size,
                 filter_lengths=self.config.attn.nl.filter_lengths,
@@ -124,9 +105,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = self.attn.compute_output_shape(None, None)[1]
         elif self.config.attn.name.lower() == "se":  # squeeze_exitation
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size n_channels -> batch_size n_channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size n_channels -> batch_size n_channels seq_len")
             self.attn = SEBlock(
                 in_channels=attn_input_size,
                 reduction=self.config.attn.se.reduction,
@@ -137,9 +116,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = self.attn.compute_output_shape(None, None)[1]
         elif self.config.attn.name.lower() == "gc":  # global_context
-            self.attn_in_rearrange = Rearrange(
-                "seq_len batch_size n_channels -> batch_size n_channels seq_len"
-            )
+            self.attn_in_rearrange = Rearrange("seq_len batch_size n_channels -> batch_size n_channels seq_len")
             self.attn = GlobalContextBlock(
                 in_channels=attn_input_size,
                 ratio=self.config.attn.gc.ratio,
@@ -154,20 +131,14 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_in_rearrange = nn.Identity()
             self.attn = SelfAttention(
                 embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get(
-                    "num_heads", self.config.attn.sa.get("head_num")
-                ),
+                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
-            self.attn_out_rearrange = Rearrange(
-                "seq_len batch_size channels -> batch_size channels seq_len"
-            )
+            self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"Attn module \042{self.config.attn.name}\042 not implemented yet."
-            )
+            raise NotImplementedError(f"Attn module \042{self.config.attn.name}\042 not implemented yet.")
 
         if not self.config.lstm.retseq:
             if self.config.global_pool.lower() != "none":
@@ -184,9 +155,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     RuntimeWarning,
                 )
                 self.config.clf.name = "linear"
-                assert (
-                    "linear" in self.config.clf
-                ), "Linear layer not defined in `config`."
+                assert "linear" in self.config.clf, "Linear layer not defined in `config`."
             self.clf = MLP(
                 in_channels=clf_input_size,
                 out_channels=self.config.clf.linear.out_channels + [self.n_classes],
@@ -197,28 +166,18 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
         elif self.config.clf.name.lower() == "linear":
             if self.config.global_pool.lower() == "max":
-                self.pool = nn.AdaptiveMaxPool1d(
-                    (self.config.global_pool_size,), return_indices=False
-                )
-                self.pool_rearrange = Rearrange(
-                    "batch_size channels pool_size -> batch_size (channels pool_size)"
-                )
+                self.pool = nn.AdaptiveMaxPool1d((self.config.global_pool_size,), return_indices=False)
+                self.pool_rearrange = Rearrange("batch_size channels pool_size -> batch_size (channels pool_size)")
                 clf_input_size *= self.config.global_pool_size
             elif self.config.global_pool.lower() == "avg":
                 self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
-                self.pool_rearrange = Rearrange(
-                    "batch_size channels pool_size -> batch_size (channels pool_size)"
-                )
+                self.pool_rearrange = Rearrange("batch_size channels pool_size -> batch_size (channels pool_size)")
                 clf_input_size *= self.config.global_pool_size
             elif self.config.global_pool.lower() == "none":
                 self.pool = nn.Identity()
-                self.pool_rearrange = Rearrange(
-                    "batch_size n_channels seq_len -> batch_size seq_len n_channels"
-                )
+                self.pool_rearrange = Rearrange("batch_size n_channels seq_len -> batch_size seq_len n_channels")
             else:
-                raise NotImplementedError(
-                    f"Pooling type \042{self.config.global_pool}\042 not supported"
-                )
+                raise NotImplementedError(f"Pooling type \042{self.config.global_pool}\042 not supported")
             self.clf = MLP(
                 in_channels=clf_input_size,
                 out_channels=self.config.clf.linear.out_channels + [self.n_classes],
@@ -235,9 +194,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 )
                 self.config.global_pool = "none"
             self.pool = nn.Identity()
-            self.pool_rearrange = Rearrange(
-                "batch_size n_channels seq_len -> batch_size seq_len n_channels"
-            )
+            self.pool_rearrange = Rearrange("batch_size n_channels seq_len -> batch_size seq_len n_channels")
             self.clf = ExtendedCRF(
                 in_channels=clf_input_size,
                 num_tags=self.n_classes,
@@ -376,9 +333,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     __name__ = "RR_LSTM_v1"
 
-    def __init__(
-        self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -394,9 +349,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.n_classes = len(classes)
         self.config = deepcopy(RR_LSTM_CONFIG)
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         self.config.update(deepcopy(config) or {})
 
         self.lstm = StackedLSTM(
@@ -452,17 +405,13 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
                 embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get(
-                    "num_heads", self.config.attn.sa.get("head_num")
-                ),
+                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(
-                f"Attn module \042{self.config.attn.name}\042 not implemented yet."
-            )
+            raise NotImplementedError(f"Attn module \042{self.config.attn.name}\042 not implemented yet.")
 
         if not self.config.lstm.retseq:
             if self.config.global_pool.lower() != "none":
@@ -478,9 +427,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                     RuntimeWarning,
                 )
                 self.config.clf.name = "linear"
-                assert (
-                    "linear" in self.config.clf
-                ), "Linear layer not defined in `config`."
+                assert "linear" in self.config.clf, "Linear layer not defined in `config`."
             self.clf = MLP(
                 in_channels=clf_input_size,
                 out_channels=self.config.clf.linear.out_channels + [self.n_classes],
@@ -491,9 +438,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
         elif self.config.clf.name.lower() == "linear":
             if self.config.global_pool.lower() == "max":
-                self.pool = nn.AdaptiveMaxPool1d(
-                    (self.config.global_pool_size,), return_indices=False
-                )
+                self.pool = nn.AdaptiveMaxPool1d((self.config.global_pool_size,), return_indices=False)
                 clf_input_size *= self.config.global_pool_size
             elif self.config.global_pool.lower() == "avg":
                 self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
@@ -501,9 +446,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             elif self.config.global_pool.lower() == "none":
                 self.pool = None
             else:
-                raise NotImplementedError(
-                    f"Pooling type \042{self.config.global_pool}\042 not supported"
-                )
+                raise NotImplementedError(f"Pooling type \042{self.config.global_pool}\042 not supported")
             self.clf = MLP(
                 in_channels=clf_input_size,
                 out_channels=self.config.clf.linear.out_channels + [self.n_classes],
@@ -551,9 +494,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         """
         # (batch_size, n_channels, seq_len) --> (seq_len, batch_size, n_channels)
         # x = input.permute(1,2,0)
-        x = self.lstm(
-            input
-        )  # (seq_len, batch_size, n_channels) or (batch_size, n_channels)
+        x = self.lstm(input)  # (seq_len, batch_size, n_channels) or (batch_size, n_channels)
         if self.attn:
             # (seq_len, batch_size, n_channels) --> (batch_size, n_channels, seq_len)
             x = x.permute(1, 2, 0)
@@ -569,17 +510,13 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 "batch_size n_channels pool_size -> batch_size (n_channels pool_size)",
             )
         elif x.ndim == 3:
-            x = x.permute(
-                0, 2, 1
-            )  # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
+            x = x.permute(0, 2, 1)  # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
         else:
             # x of shape (batch_size, n_channels),
             # in the case where config.lstm.retseq = False
             pass
         if self.config.clf.name.lower() == "linear":
-            x = self.clf(
-                x
-            )  # (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+            x = self.clf(x)  # (batch_size, seq_len, n_classes) or (batch_size, n_classes)
         elif self.config.clf.name.lower() == "crf":
             x = self.clf(x)  # (batch_size, seq_len, n_classes)
         output = x

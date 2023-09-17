@@ -9,14 +9,7 @@ import wfdb
 from ...cfg import CFG
 from ...utils.misc import add_docstring
 from ...utils.utils_data import ECGWaveForm
-from ..base import (
-    PhysioNetDataBase,
-    DataBaseInfo,
-    BeatAnn,
-    WFDB_Beat_Annotations,
-    WFDB_Non_Beat_Annotations,
-)
-
+from ..base import BeatAnn, DataBaseInfo, PhysioNetDataBase, WFDB_Beat_Annotations, WFDB_Non_Beat_Annotations
 
 __all__ = [
     "QTDB",
@@ -153,18 +146,10 @@ class QTDB(PhysioNetDataBase):
         # fmt: on
 
         self.beat_types_extended = list("""~"+/AFJNQRSTVaefjs|""")
-        self.nonbeat_types = [
-            item
-            for item in self.beat_types_extended
-            if item in WFDB_Non_Beat_Annotations
-        ]
-        self.beat_types = [
-            item for item in self.beat_types_extended if item in WFDB_Beat_Annotations
-        ]
+        self.nonbeat_types = [item for item in self.beat_types_extended if item in WFDB_Non_Beat_Annotations]
+        self.beat_types = [item for item in self.beat_types_extended if item in WFDB_Beat_Annotations]
         self.beat_types_map = {item: i for i, item in enumerate(self.beat_types)}
-        self.beat_types_extended_map = {
-            item: i for i, item in enumerate(self.beat_types_extended)
-        }
+        self.beat_types_extended_map = {item: i for i, item in enumerate(self.beat_types_extended)}
 
         self.class_map = CFG(p=1, N=2, t=3, i=0)  # an extra isoelectric
 
@@ -272,9 +257,7 @@ class QTDB(PhysioNetDataBase):
                         offset=idx - subtraction,
                         name=current_wave_name,
                         peak=current_wave_peak,
-                        duration=(idx - current_onset) / header.fs
-                        if current_onset is not None
-                        else np.nan,
+                        duration=(idx - current_onset) / header.fs if current_onset is not None else np.nan,
                     )
                 )
                 current_onset = None
@@ -392,10 +375,7 @@ class QTDB(PhysioNetDataBase):
             the annotations in the format of intervals, or in the format of mask
 
         """
-        raise NotImplementedError(
-            "Only a small part of the recordings have rhythm annotations, "
-            "hence not implemented yet"
-        )
+        raise NotImplementedError("Only a small part of the recordings have rhythm annotations, " "hence not implemented yet")
 
     def load_beat_ann(
         self,
@@ -460,16 +440,11 @@ class QTDB(PhysioNetDataBase):
             beat_types = self.beat_types
 
         beat_ann = [
-            BeatAnn(i - subs, s)
-            for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices])
-            if s in beat_types
+            BeatAnn(i - subs, s) for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices]) if s in beat_types
         ]
 
         if beat_format.lower() == "dict":
-            beat_ann = {
-                s: np.array([b.index for b in beat_ann if b.symbol == s], dtype=int)
-                for s in self.beat_types_extended
-            }
+            beat_ann = {s: np.array([b.index for b in beat_ann if b.symbol == s], dtype=int) for s in self.beat_types_extended}
             beat_ann = {k: v for k, v in beat_ann.items() if len(v) > 0}
 
         return beat_ann
@@ -519,8 +494,7 @@ class QTDB(PhysioNetDataBase):
         if not rec_fp.with_suffix(f".{extension}").exists():
             another_extension = "man" if extension == "atr" else "atr"
             raise FileNotFoundError(
-                f"annotation file `{rec_fp.name}` does not exist, "
-                f"try setting `extension = \042{another_extension}\042`"
+                f"annotation file `{rec_fp.name}` does not exist, " f"try setting `extension = \042{another_extension}\042`"
             )
         wfdb_ann = wfdb.rdann(str(rec_fp), extension=extension)
         header = wfdb.rdheader(str(rec_fp))
@@ -530,11 +504,7 @@ class QTDB(PhysioNetDataBase):
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
         rpeak_inds = wfdb_ann.sample
-        indices = np.where(
-            (rpeak_inds >= sf)
-            & (rpeak_inds < st)
-            & (np.isin(wfdb_ann.symbol, self.beat_types))
-        )[0]
+        indices = np.where((rpeak_inds >= sf) & (rpeak_inds < st) & (np.isin(wfdb_ann.symbol, self.beat_types)))[0]
         rpeak_inds = rpeak_inds[indices]
         if not keep_original:
             rpeak_inds -= sf

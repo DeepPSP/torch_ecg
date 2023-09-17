@@ -30,11 +30,7 @@ This module contains a set of preprocessors for signals of numpy array format.
 """
 
 from .bandpass import BandPass
-from .base import (
-    PreProcessor,
-    preprocess_multi_lead_signal,
-    preprocess_single_lead_signal,
-)
+from .base import PreProcessor, preprocess_multi_lead_signal, preprocess_single_lead_signal
 from .baseline_remove import BaselineRemove
 from .normalize import MinMaxNormalize, NaiveNormalize, Normalize, ZScoreNormalize
 from .preproc_manager import PreprocManager

@@ -207,39 +207,27 @@ dx_mapping_all = pd.concat([dms, dmn], ignore_index=True).fillna("")
 df_weights_snomed = df_weights  # alias
 
 
-snomed_ct_code_to_abbr = CFG(
-    {row["SNOMED CT Code"]: row["Abbreviation"] for _, row in dx_mapping_all.iterrows()}
-)
+snomed_ct_code_to_abbr = CFG({row["SNOMED CT Code"]: row["Abbreviation"] for _, row in dx_mapping_all.iterrows()})
 abbr_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_abbr.items()})
 
 df_weights_abbr = df_weights.copy()
 
-df_weights_abbr.columns = df_weights_abbr.columns.map(
-    lambda i: snomed_ct_code_to_abbr[i]
-)
+df_weights_abbr.columns = df_weights_abbr.columns.map(lambda i: snomed_ct_code_to_abbr[i])
 
 df_weights_abbr.index = df_weights_abbr.index.map(lambda i: snomed_ct_code_to_abbr[i])
 
 
-snomed_ct_code_to_fullname = CFG(
-    {row["SNOMED CT Code"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
-)
+snomed_ct_code_to_fullname = CFG({row["SNOMED CT Code"]: row["Dx"] for _, row in dx_mapping_all.iterrows()})
 fullname_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_fullname.items()})
 
 df_weights_fullname = df_weights.copy()
 
-df_weights_fullname.columns = df_weights_fullname.columns.map(
-    lambda i: snomed_ct_code_to_fullname[i]
-)
+df_weights_fullname.columns = df_weights_fullname.columns.map(lambda i: snomed_ct_code_to_fullname[i])
 
-df_weights_fullname.index = df_weights_fullname.index.map(
-    lambda i: snomed_ct_code_to_fullname[i]
-)
+df_weights_fullname.index = df_weights_fullname.index.map(lambda i: snomed_ct_code_to_fullname[i])
 
 
-abbr_to_fullname = CFG(
-    {row["Abbreviation"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
-)
+abbr_to_fullname = CFG({row["Abbreviation"]: row["Dx"] for _, row in dx_mapping_all.iterrows()})
 fullname_to_abbr = CFG({v: k for k, v in abbr_to_fullname.items()})
 
 
@@ -258,9 +246,7 @@ equiv_class_dict = CFG(
 )
 
 
-def load_weights(
-    classes: Sequence[Union[int, str]] = None, return_fmt: str = "np"
-) -> Union[np.ndarray, pd.DataFrame]:
+def load_weights(classes: Sequence[Union[int, str]] = None, return_fmt: str = "np") -> Union[np.ndarray, pd.DataFrame]:
     """Load the weight matrix of the `classes`.
 
     Parameters
@@ -434,9 +420,7 @@ def get_class_count(
             tmp[abbr_to_fullname[key]] = val
         class_count = tmp.copy()
     else:
-        class_count = {
-            key: val for key, val in class_count.items() if val >= _threshold
-        }
+        class_count = {key: val for key, val in class_count.items() if val >= _threshold}
     del tmp
     return class_count
 
@@ -491,15 +475,8 @@ def get_class_weight(
         threshold=threshold,
         fmt=fmt,
     )
-    class_weight = CFG(
-        {key: sum(class_count.values()) / val for key, val in class_count.items()}
-    )
-    class_weight = CFG(
-        {
-            key: min_weight * val / min(class_weight.values())
-            for key, val in class_weight.items()
-        }
-    )
+    class_weight = CFG({key: sum(class_count.values()) / val for key, val in class_count.items()})
+    class_weight = CFG({key: min_weight * val / min(class_weight.values()) for key, val in class_weight.items()})
     return class_weight
 
 
@@ -621,14 +598,10 @@ WPW,0,2,0,1,0,3,0,41,0,0,0,0,1,0,0,0,0,3,0,3,3,66,0,6,4,0,0,0,41,0,0,0,0,0,0,0,0
     ),
     index_col=0,
 )
-dx_cooccurrence_scored = dx_cooccurrence_all.loc[
-    dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation
-]
+dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation]
 
 
-def get_cooccurrence(
-    c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
-) -> int:
+def get_cooccurrence(c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False) -> int:
     """Get the co-occurrence count between two diagnoses.
 
     Parameters

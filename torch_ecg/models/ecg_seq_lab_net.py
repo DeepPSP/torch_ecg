@@ -3,17 +3,16 @@
 
 import warnings
 from copy import deepcopy
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 import torch
 import torch.nn.functional as F
 from torch import Tensor
 
-from .ecg_crnn import ECG_CRNN, ECG_CRNN_v1
-from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ..cfg import CFG
+from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ..utils import add_docstring
-
+from .ecg_crnn import ECG_CRNN, ECG_CRNN_v1
 
 __all__ = [
     "ECG_SEQ_LAB_NET",
@@ -49,14 +48,10 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(
-        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None) -> None:
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         _config.update(deepcopy(config) or {})
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)
@@ -115,9 +110,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         return output_shape
 
     @classmethod
-    def from_v1(
-        cls, v1_ckpt: str, device: Optional[torch.device] = None
-    ) -> "ECG_SEQ_LAB_NET":
+    def from_v1(cls, v1_ckpt: str, device: Optional[torch.device] = None) -> "ECG_SEQ_LAB_NET":
         """Convert the v1 model to the current version.
 
         Parameters
@@ -132,9 +125,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
         """
         v1_model, _ = ECG_SEQ_LAB_NET_v1.from_checkpoint(v1_ckpt, device=device)
-        model = cls(
-            classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config
-        )
+        model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config)
         model = model.to(v1_model.device)
         model.cnn.load_state_dict(v1_model.cnn.state_dict())
         if model.rnn.__class__.__name__ != "Identity":
@@ -157,14 +148,10 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(
-        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> None:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None) -> None:
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         if not config:
-            warnings.warn(
-                "No config is provided, using default config.", RuntimeWarning
-            )
+            warnings.warn("No config is provided, using default config.", RuntimeWarning)
         _config.update(deepcopy(config) or {})
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)

@@ -11,20 +11,16 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 import wfdb
 from scipy.io import savemat
-import pytest
 
 from torch_ecg.databases import CPSC2021, DataBaseInfo
-from torch_ecg.databases.cpsc_databases.cpsc2021 import (
-    compute_metrics,
-    RefInfo,
-    load_ans,
-    score as score_func,
-)
+from torch_ecg.databases.cpsc_databases.cpsc2021 import RefInfo, compute_metrics, load_ans
+from torch_ecg.databases.cpsc_databases.cpsc2021 import score as score_func
 from torch_ecg.databases.datasets import CPSC2021Dataset, CPSC2021TrainCfg
-from torch_ecg.utils.utils_interval import generalized_interval_len
 from torch_ecg.utils.misc import list_sum
+from torch_ecg.utils.utils_interval import generalized_interval_len
 
 # from torch_ecg.utils.misc import dicts_equal
 
@@ -38,12 +34,8 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2021"
 reader = CPSC2021(_CWD)
 
 
-_ANS_JSON_FILE = (
-    Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.json"
-)
-_ANS_MAT_FILE = (
-    Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.mat"
-)
+_ANS_JSON_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.json"
+_ANS_MAT_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.mat"
 
 _ANS_JSON_FILE.parent.mkdir(parents=True, exist_ok=True)
 
@@ -78,30 +70,20 @@ class TestCPSC2021:
         reader_ss = CPSC2021(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2021(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2021(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2021(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         data = reader.load_data(0)
-        data_1 = reader.load_data(
-            0, leads=0, sampfrom=1000, sampto=5000, data_format="plain", units="μV"
-        )
+        data_1 = reader.load_data(0, leads=0, sampfrom=1000, sampto=5000, data_format="plain", units="μV")
         assert data.ndim == 2
         assert data_1.shape == (4000,)
         assert np.allclose(data[0, 1000:5000], data_1 / 1000, atol=1e-2)
-        data_1 = reader.load_data(
-            0, leads=0, data_format="channel_last", fs=2 * reader.fs
-        )
+        data_1 = reader.load_data(0, leads=0, data_format="channel_last", fs=2 * reader.fs)
         assert data_1.shape == (2 * data.shape[1], 1)
 
     def test_load_ann(self):
@@ -115,9 +97,7 @@ class TestCPSC2021:
 
         # field: "rpeaks", "af_episodes", "label", "raw", "wfdb"
         ann = reader.load_ann(rec, field="rpeaks", sampfrom=1000, sampto=5000)
-        ann_1 = reader.load_ann(
-            rec, field="rpeaks", sampfrom=1000, sampto=5000, keep_original=True
-        )
+        ann_1 = reader.load_ann(rec, field="rpeaks", sampfrom=1000, sampto=5000, keep_original=True)
         ann_2 = reader.load_ann(
             rec,
             field="rpeaks",
@@ -126,9 +106,7 @@ class TestCPSC2021:
             keep_original=True,
             fs=2 * reader.fs,
         )
-        ann_3 = reader.load_ann(
-            rec, field="rpeaks", sampfrom=1000, sampto=5000, valid_only=False
-        )
+        ann_3 = reader.load_ann(rec, field="rpeaks", sampfrom=1000, sampto=5000, valid_only=False)
         assert ann.ndim == 1
         assert ann.shape == ann_1.shape == ann_2.shape
         assert np.allclose(ann, ann_1 - 1000)
@@ -136,9 +114,7 @@ class TestCPSC2021:
         assert set(ann_3) >= set(ann)
 
         ann = reader.load_ann(rec, field="af_episodes", sampfrom=1000, sampto=5000)
-        ann_1 = reader.load_ann(
-            rec, field="af_episodes", sampfrom=1000, sampto=5000, keep_original=True
-        )
+        ann_1 = reader.load_ann(rec, field="af_episodes", sampfrom=1000, sampto=5000, keep_original=True)
         ann_2 = reader.load_ann(
             rec,
             field="af_episodes",
@@ -182,9 +158,7 @@ class TestCPSC2021:
             ValueError,
             match="when `fmt` is `c_intervals`, `sampfrom` and `sampto` should never be used",
         ):
-            reader.load_ann(
-                rec, field="af_episodes", sampfrom=1000, sampto=5000, fmt="c_intervals"
-            )
+            reader.load_ann(rec, field="af_episodes", sampfrom=1000, sampto=5000, fmt="c_intervals")
         with pytest.raises(ValueError, match="format `xxx` of labels is not supported"):
             reader.load_ann(rec, field="label", fmt="xxx")
 
@@ -206,9 +180,7 @@ class TestCPSC2021:
 
         # aliases
         assert (reader.load_rpeaks(rec) == reader.load_ann(rec, field="rpeaks")).all()
-        assert (
-            reader.load_rpeak_indices(rec) == reader.load_ann(rec, field="rpeaks")
-        ).all()
+        assert (reader.load_rpeak_indices(rec) == reader.load_ann(rec, field="rpeaks")).all()
         assert reader.load_af_episodes(rec) == reader.load_ann(rec, field="af_episodes")
         assert reader.load_label(rec) == reader.load_ann(rec, field="label")
 
@@ -217,14 +189,10 @@ class TestCPSC2021:
         data = reader.load_data(rec)
         onset_score_mask, offset_score_mask = reader.gen_endpoint_score_mask(rec)
         assert onset_score_mask.shape == offset_score_mask.shape == (data.shape[1],)
-        onset_score_mask_1, offset_score_mask_1 = reader.gen_endpoint_score_mask(
-            rec, bias={1: 0.5, 2: 0.5}
-        )
+        onset_score_mask_1, offset_score_mask_1 = reader.gen_endpoint_score_mask(rec, bias={1: 0.5, 2: 0.5})
         assert onset_score_mask.sum() > onset_score_mask_1.sum()
         assert offset_score_mask.sum() > offset_score_mask_1.sum()
-        onset_score_mask_1, offset_score_mask_1 = reader.gen_endpoint_score_mask(
-            rec, bias={1: 1, 2: 1}, verbose=2
-        )
+        onset_score_mask_1, offset_score_mask_1 = reader.gen_endpoint_score_mask(rec, bias={1: 1, 2: 1}, verbose=2)
         assert onset_score_mask.sum() < onset_score_mask_1.sum()
         assert offset_score_mask.sum() < offset_score_mask_1.sum()
 
@@ -257,10 +225,7 @@ class TestCPSC2021:
     def test_meta_data(self):
         assert isinstance(reader.diagnoses_records_list, dict)
         assert all(isinstance(v, list) for v in reader.diagnoses_records_list.values())
-        assert all(
-            set(v) <= set(reader.all_records)
-            for v in reader.diagnoses_records_list.values()
-        )
+        assert all(set(v) <= set(reader.all_records) for v in reader.diagnoses_records_list.values())
         assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_helper(self):
@@ -278,18 +243,14 @@ class TestCPSC2021:
             "t_onsets": [150, 1150],
             "t_offsets": [190, 1190],
         }
-        reader.plot(
-            0, leads=[1], sampfrom=1000, sampto=3000, ticks_granularity=2, waves=waves
-        )
+        reader.plot(0, leads=[1], sampfrom=1000, sampto=3000, ticks_granularity=2, waves=waves)
         waves = {
             "p_peaks": [105, 1105],
             "q_peaks": [120, 1120],
             "s_peaks": [125, 1125],
             "t_peaks": [170, 1170],
         }
-        reader.plot(
-            0, leads=0, sampfrom=1000, sampto=3000, ticks_granularity=1, waves=waves
-        )
+        reader.plot(0, leads=0, sampfrom=1000, sampto=3000, ticks_granularity=1, waves=waves)
         waves = {
             "p_peaks": [105, 1105],
             "r_peaks": [122, 1122],
@@ -337,13 +298,9 @@ class TestCPSC2021:
         assert ref_info.fs == reader.fs
         assert ref_info.len_sig == reader.load_data(rec).shape[1]
 
-        assert np.allclose(
-            ref_info.beat_loc, reader.load_ann(rec, field="rpeaks", valid_only=False)
-        )
+        assert np.allclose(ref_info.beat_loc, reader.load_ann(rec, field="rpeaks", valid_only=False))
 
-        af_episodes = np.array(
-            reader.load_ann(rec, field="af_episodes", fmt="c_intervals")
-        )
+        af_episodes = np.array(reader.load_ann(rec, field="af_episodes", fmt="c_intervals"))
         assert np.allclose(af_episodes[:, 0], ref_info.af_starts)
         assert np.allclose(af_episodes[:, 1], ref_info.af_ends)
 
@@ -390,9 +347,7 @@ config = deepcopy(CPSC2021TrainCfg)
 config.db_dir = _CWD
 config.stretch_compress = 5  # 5%
 
-with pytest.warns(
-    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
-):
+with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
     ds = CPSC2021Dataset(config, task="main", training=False, lazy=False, db_dir=_CWD)
 ds.persistence(verbose=2)
 
@@ -436,25 +391,14 @@ class TestCPSC2021Dataset:
         assert ds.task == "main"
         assert ds_1.task == "rr_lstm"
         assert ds_2.task == "qrs_detection"
-        assert (
-            isinstance(ds.all_segments, dict)
-            and isinstance(ds_1.all_segments, dict)
-            and isinstance(ds_2.all_segments, dict)
-        )
-        assert (
-            set(ds.all_segments)
-            == set(ds_2.all_segments)
-            == set(ds_1.all_rr_seq)
-            > set()
-        )
+        assert isinstance(ds.all_segments, dict) and isinstance(ds_1.all_segments, dict) and isinstance(ds_2.all_segments, dict)
+        assert set(ds.all_segments) == set(ds_2.all_segments) == set(ds_1.all_rr_seq) > set()
         assert set(ds.subjects) == set(ds_2.subjects) == set(ds_1.subjects) > set()
         assert set(ds.all_segments) > set(ds.subjects)
         assert len(ds.all_rr_seq) == len(ds_2.all_rr_seq) == len(ds_1.all_segments) == 0
         assert len(ds) == len(ds.segments) < len(list_sum(ds.all_segments.values()))
         assert len(ds_1) == len(ds_1.rr_seq) < len(list_sum(ds_1.all_rr_seq.values()))
-        assert (
-            len(ds_2) == len(ds_2.segments) < len(list_sum(ds_2.all_segments.values()))
-        )
+        assert len(ds_2) == len(ds_2.segments) < len(list_sum(ds_2.all_segments.values()))
         assert str(ds) == repr(ds)
 
     def test_load_seg_seq_lab(self):

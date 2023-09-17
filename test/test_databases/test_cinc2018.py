@@ -12,8 +12,7 @@ import numpy as np
 import pytest
 
 from torch_ecg.databases import CINC2018, DataBaseInfo
-from torch_ecg.utils.download import http_get, PHYSIONET_DB_VERSION_PATTERN
-
+from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN, http_get
 
 ###############################################################################
 # set paths
@@ -70,17 +69,11 @@ class TestCINC2018:
         reader_ss = CINC2018(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2018(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2018(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2018(_CWD, subsample=-0.1)
 
     def test_get_available_signals(self):
@@ -133,10 +126,7 @@ class TestCINC2018:
 
         with pytest.raises(
             AssertionError,
-            match=(
-                "`data_format` should be one of `.+` when the passed number "
-                "of `channel` is larger than 1, but got `.+`"
-            ),
+            match=("`data_format` should be one of `.+` when the passed number " "of `channel` is larger than 1, but got `.+`"),
         ):
             reader.load_psg_data(0, data_format="plain")
 
@@ -147,9 +137,7 @@ class TestCINC2018:
         data = reader.load_data(0, data_format="channel_last", units="uv")
         assert isinstance(data, np.ndarray)
         assert data.shape == (reader.get_siglen(0), 1)
-        data = reader.load_data(
-            0, data_format="flat", sampfrom=10000, sampto=50000, fs=2 * reader.get_fs(0)
-        )
+        data = reader.load_data(0, data_format="flat", sampfrom=10000, sampto=50000, fs=2 * reader.get_fs(0))
         assert isinstance(data, np.ndarray)
         assert data.shape == (80000,)
         data, data_fs = reader.load_data(0, fs=100, return_fs=True)
@@ -222,9 +210,7 @@ class TestCINC2018:
                 assert isinstance(itv[1], int)
 
     def test_meta_data(self):
-        assert isinstance(reader.version, str) and re.match(
-            PHYSIONET_DB_VERSION_PATTERN, reader.version
-        )
+        assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)

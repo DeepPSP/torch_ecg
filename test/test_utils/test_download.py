@@ -8,16 +8,13 @@ import pytest
 
 from torch_ecg.utils.download import http_get
 
-
 _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def test_http_get():
     url = "https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1"
-    http_get(
-        url, _TMP_DIR / "action-test-zip-extract", extract=True, filename="test.zip"
-    )
+    http_get(url, _TMP_DIR / "action-test-zip-extract", extract=True, filename="test.zip")
     shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
 
     url = (

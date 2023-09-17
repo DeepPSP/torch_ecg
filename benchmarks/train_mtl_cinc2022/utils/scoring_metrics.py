@@ -2,15 +2,14 @@
 metrics from the official scoring repository
 """
 
-from typing import Tuple, Sequence, Dict, List, Union
+from typing import Dict, List, Sequence, Tuple, Union
 
 import numpy as np
-from deprecated import deprecated
-from torch_ecg.utils.utils_metrics import _cls_to_bin
-
 from cfg import BaseCfg
+from deprecated import deprecated
 from outputs import CINC2022Outputs
 
+from torch_ecg.utils.utils_metrics import _cls_to_bin
 
 __all__ = [
     "compute_challenge_metrics",
@@ -108,29 +107,16 @@ def compute_challenge_metrics(
     metrics = {}
     if require_both:
         assert all([set(lb.keys()) >= set(["murmur", "outcome"]) for lb in labels])
-        assert all(
-            [
-                item.murmur_output is not None and item.outcome_output is not None
-                for item in outputs
-            ]
-        )
+        assert all([item.murmur_output is not None and item.outcome_output is not None for item in outputs])
     # metrics for murmurs
     # NOTE: labels all have a batch dimension, except for categorical labels
     if outputs[0].murmur_output is not None:
-        murmur_labels = np.concatenate(
-            [lb["murmur"] for lb in labels]  # categorical or binarized labels
-        )
-        murmur_scalar_outputs = np.concatenate(
-            [np.atleast_2d(item.murmur_output.prob) for item in outputs]
-        )
-        murmur_binary_outputs = np.concatenate(
-            [np.atleast_2d(item.murmur_output.bin_pred) for item in outputs]
-        )
+        murmur_labels = np.concatenate([lb["murmur"] for lb in labels])  # categorical or binarized labels
+        murmur_scalar_outputs = np.concatenate([np.atleast_2d(item.murmur_output.prob) for item in outputs])
+        murmur_binary_outputs = np.concatenate([np.atleast_2d(item.murmur_output.bin_pred) for item in outputs])
         murmur_classes = outputs[0].murmur_output.classes
         if murmur_labels.ndim == 1:
-            murmur_labels = _cls_to_bin(
-                murmur_labels, shape=(len(murmur_labels), len(murmur_classes))
-            )
+            murmur_labels = _cls_to_bin(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 murmur_labels,
@@ -141,20 +127,12 @@ def compute_challenge_metrics(
         )
     # metrics for outcomes
     if outputs[0].outcome_output is not None:
-        outcome_labels = np.concatenate(
-            [lb["outcome"] for lb in labels]  # categorical or binarized labels
-        )
-        outcome_scalar_outputs = np.concatenate(
-            [np.atleast_2d(item.outcome_output.prob) for item in outputs]
-        )
-        outcome_binary_outputs = np.concatenate(
-            [np.atleast_2d(item.outcome_output.bin_pred) for item in outputs]
-        )
+        outcome_labels = np.concatenate([lb["outcome"] for lb in labels])  # categorical or binarized labels
+        outcome_scalar_outputs = np.concatenate([np.atleast_2d(item.outcome_output.prob) for item in outputs])
+        outcome_binary_outputs = np.concatenate([np.atleast_2d(item.outcome_output.bin_pred) for item in outputs])
         outcome_classes = outputs[0].outcome_output.classes
         if outcome_labels.ndim == 1:
-            outcome_labels = _cls_to_bin(
-                outcome_labels, shape=(len(outcome_labels), len(outcome_classes))
-            )
+            outcome_labels = _cls_to_bin(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 outcome_labels,
@@ -207,9 +185,7 @@ def _compute_challenge_metrics(
             the challenge cost
 
     """
-    detailed_metrics = _compute_challenge_metrics_detailed(
-        labels, scalar_outputs, binary_outputs, classes
-    )
+    detailed_metrics = _compute_challenge_metrics_detailed(labels, scalar_outputs, binary_outputs, classes)
     metrics = {
         f"""{detailed_metrics["prefix"]}_{k}""": v
         for k, v in detailed_metrics.items()
@@ -321,9 +297,7 @@ def _compute_challenge_metrics_detailed(
 ###########################################
 
 
-def enforce_positives(
-    outputs: np.ndarray, classes: Sequence[str], positive_class: str
-) -> np.ndarray:
+def enforce_positives(outputs: np.ndarray, classes: Sequence[str], positive_class: str) -> np.ndarray:
     """
     For each patient, set a specific class to positive if no class is positive or multiple classes are positive.
 
@@ -387,9 +361,7 @@ def compute_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndar
     return A
 
 
-def compute_one_vs_rest_confusion_matrix(
-    labels: np.ndarray, outputs: np.ndarray
-) -> np.ndarray:
+def compute_one_vs_rest_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndarray:
     """
     Compute binary one-vs-rest confusion matrices, where the columns are expert labels and rows are classifier labels.
 
@@ -431,9 +403,7 @@ def compute_one_vs_rest_confusion_matrix(
 compute_ovr_confusion_matrix = compute_one_vs_rest_confusion_matrix
 
 
-def compute_auc(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
+def compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """
     Compute macro AUROC and macro AUPRC, and AUPRCs, AUPRCs for each class.
 
@@ -539,9 +509,7 @@ def compute_auc(
     return macro_auroc, macro_auprc, auroc, auprc
 
 
-def compute_accuracy(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """
     Compute accuracy.
 
@@ -581,9 +549,7 @@ def compute_accuracy(
     return accuracy, accuracy_classes
 
 
-def compute_f_measure(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """
     Compute macro F-measure, and F-measures for each class.
 
@@ -623,9 +589,7 @@ def compute_f_measure(
     return macro_f_measure, f_measure
 
 
-def compute_weighted_accuracy(
-    labels: np.ndarray, outputs: np.ndarray, classes: List[str]
-) -> float:
+def compute_weighted_accuracy(labels: np.ndarray, outputs: np.ndarray, classes: List[str]) -> float:
     """
     compute weighted accuracy
 
@@ -654,9 +618,7 @@ def compute_weighted_accuracy(
     elif classes == ["Abnormal", "Normal"]:
         weights = np.array([[5, 1], [5, 1]])
     else:
-        raise NotImplementedError(
-            "Weighted accuracy undefined for classes {}".format(", ".join(classes))
-        )
+        raise NotImplementedError("Weighted accuracy undefined for classes {}".format(", ".join(classes)))
 
     # Compute confusion matrix.
     assert np.shape(labels) == np.shape(outputs)
@@ -733,18 +695,10 @@ def compute_cost(
     A = compute_confusion_matrix(labels, outputs)
 
     # Identify positive and negative classes for referral.
-    idx_label_positive = [
-        i for i, x in enumerate(label_classes) if x in positive_classes
-    ]
-    idx_label_negative = [
-        i for i, x in enumerate(label_classes) if x in negative_classes
-    ]
-    idx_output_positive = [
-        i for i, x in enumerate(output_classes) if x in positive_classes
-    ]
-    idx_output_negative = [
-        i for i, x in enumerate(output_classes) if x in negative_classes
-    ]
+    idx_label_positive = [i for i, x in enumerate(label_classes) if x in positive_classes]
+    idx_label_negative = [i for i, x in enumerate(label_classes) if x in negative_classes]
+    idx_output_positive = [i for i, x in enumerate(output_classes) if x in positive_classes]
+    idx_output_negative = [i for i, x in enumerate(output_classes) if x in negative_classes]
 
     # Identify true positives, false positives, false negatives, and true negatives.
     tp = np.sum(A[np.ix_(idx_output_positive, idx_label_positive)])
@@ -754,12 +708,7 @@ def compute_cost(
     total_patients = tp + fp + fn + tn
 
     # Compute total cost for all patients.
-    total_cost = (
-        cost_algorithm(total_patients)
-        + cost_expert(tp + fp, total_patients)
-        + cost_treatment(tp)
-        + cost_error(fn)
-    )
+    total_cost = cost_algorithm(total_patients) + cost_expert(tp + fp, total_patients) + cost_treatment(tp) + cost_error(fn)
 
     # Compute mean cost per patient.
     if total_patients > 0:
@@ -771,9 +720,7 @@ def compute_cost(
 
 
 @deprecated(reason="only used in the unofficial phase of the Challenge")
-def compute_challenge_score(
-    labels: np.ndarray, outputs: np.ndarray, classes: Sequence[str]
-) -> float:
+def compute_challenge_score(labels: np.ndarray, outputs: np.ndarray, classes: Sequence[str]) -> float:
     """
     Compute Challenge score.
 

@@ -6,9 +6,8 @@ from copy import deepcopy
 import torch
 from tqdm.auto import tqdm
 
+from torch_ecg.model_configs.cnn.xception import xception_leadwise, xception_vanilla
 from torch_ecg.models.cnn.xception import Xception
-from torch_ecg.model_configs.cnn.xception import xception_vanilla, xception_leadwise
-
 
 IN_CHANNELS = 12
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,8 +32,6 @@ def test_xception():
         model = Xception(in_channels=IN_CHANNELS, **config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[-1], batch_size=inp.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
         assert model.in_channels == IN_CHANNELS
         assert isinstance(model.doi, list)

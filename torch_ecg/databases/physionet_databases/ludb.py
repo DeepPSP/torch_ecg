@@ -3,7 +3,7 @@
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -13,8 +13,7 @@ from ...cfg import CFG, DEFAULTS
 from ...utils import EAK
 from ...utils.misc import add_docstring
 from ...utils.utils_data import ECGWaveForm, masks_to_waveforms
-from ..base import PhysioNetDataBase, DataBaseInfo
-
+from ..base import DataBaseInfo, PhysioNetDataBase
 
 __all__ = [
     "LUDB",
@@ -294,9 +293,7 @@ class LUDB(PhysioNetDataBase):
             **kwargs,
         )
         if self.version == "1.0.0":
-            self.logger.info(
-                "Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used"
-            )
+            self.logger.info("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"
@@ -316,9 +313,7 @@ class LUDB(PhysioNetDataBase):
         ...         all_symbols.update(ann.symbol)
         """
         self._symbol_to_wavename = CFG(N="qrs", p="pwave", t="twave")
-        self._wavename_to_symbol = CFG(
-            {v: k for k, v in self._symbol_to_wavename.items()}
-        )
+        self._wavename_to_symbol = CFG({v: k for k, v in self._symbol_to_wavename.items()})
         self.class_map = CFG(p=1, N=2, t=3, i=0)  # an extra isoelectric
 
         self._df_subject_info = None
@@ -333,12 +328,8 @@ class LUDB(PhysioNetDataBase):
             # newly added in version 1.0.1
             self._df_subject_info = pd.read_csv(self.db_dir / "ludb.csv")
             self._df_subject_info.ID = self._df_subject_info.ID.apply(str)
-            self._df_subject_info.Sex = self._df_subject_info.Sex.apply(
-                lambda s: s.strip()
-            )
-            self._df_subject_info.Age = self._df_subject_info.Age.apply(
-                lambda s: s.strip()
-            )
+            self._df_subject_info.Sex = self._df_subject_info.Sex.apply(lambda s: s.strip())
+            self._df_subject_info.Age = self._df_subject_info.Age.apply(lambda s: s.strip())
         else:
             self._df_subject_info = pd.DataFrame(
                 columns=[
@@ -375,9 +366,7 @@ class LUDB(PhysioNetDataBase):
             rec = self[rec]
         return int(rec)
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """Get the absolute path of the record.
 
         Parameters
@@ -429,9 +418,7 @@ class LUDB(PhysioNetDataBase):
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads)
-        _ann_ext = [
-            f"{ld.lower()}" for ld in _leads
-        ]  # for Version 1.0.0, it is f"{l.lower()}"
+        _ann_ext = [f"{ld.lower()}" for ld in _leads]  # for Version 1.0.0, it is f"{l.lower()}"
         ann_dict["waves"] = CFG({ld: [] for ld in _leads})
         for ld, ext in zip(_leads, _ann_ext):
             ann = wfdb.rdann(rec_fp, extension=ext)
@@ -467,9 +454,7 @@ class LUDB(PhysioNetDataBase):
             # df_lead_ann["onset"] = ann.sample[np.where(symbols=="(")[0]]
             # df_lead_ann["offset"] = ann.sample[np.where(symbols==")")[0]]
 
-            df_lead_ann["duration"] = (
-                df_lead_ann["offset"] - df_lead_ann["onset"]
-            ) * self.spacing
+            df_lead_ann["duration"] = (df_lead_ann["offset"] - df_lead_ann["onset"]) * self.spacing
 
             df_lead_ann.index = symbols[peak_inds]
 
@@ -547,9 +532,7 @@ class LUDB(PhysioNetDataBase):
         waves = self.load_ann(rec, leads=leads, metadata=False)["waves"]
         for idx, (l, l_w) in enumerate(waves.items()):
             for w in l_w:
-                masks[idx, w.onset : w.offset] = _class_map[
-                    self._wavename_to_symbol[w.name]
-                ]
+                masks[idx, w.onset : w.offset] = _class_map[self._wavename_to_symbol[w.name]]
         if mask_format.lower() not in [
             "channel_first",
             "lead_first",
@@ -605,9 +588,7 @@ class LUDB(PhysioNetDataBase):
             else:
                 _masks = masks.copy()
         else:
-            raise ValueError(
-                f"masks should be of dim 1 or 2, but got a {masks.ndim}d array"
-            )
+            raise ValueError(f"masks should be of dim 1 or 2, but got a {masks.ndim}d array")
 
         if leads is not None:
             _leads = self._normalize_leads(leads)
@@ -673,30 +654,18 @@ class LUDB(PhysioNetDataBase):
         header_dict["adc_gain"] = header_reader.adc_gain
         header_dict["record_fmt"] = header_reader.fmt
         try:
-            header_dict["age"] = int(
-                [line for line in header_reader.comments if "<age>" in line][0].split(
-                    ": "
-                )[-1]
-            )
+            header_dict["age"] = int([line for line in header_reader.comments if "<age>" in line][0].split(": ")[-1])
         except Exception:
             header_dict["age"] = np.nan
         try:
-            header_dict["sex"] = [
-                line for line in header_reader.comments if "<sex>" in line
-            ][0].split(": ")[-1]
+            header_dict["sex"] = [line for line in header_reader.comments if "<sex>" in line][0].split(": ")[-1]
         except Exception:
             header_dict["sex"] = ""
-        d_start = [
-            idx
-            for idx, line in enumerate(header_reader.comments)
-            if "<diagnoses>" in line
-        ][0] + 1
+        d_start = [idx for idx, line in enumerate(header_reader.comments) if "<diagnoses>" in line][0] + 1
         header_dict["diagnoses"] = header_reader.comments[d_start:]
         return header_dict
 
-    def load_subject_info(
-        self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None
-    ) -> Union[dict, str]:
+    def load_subject_info(self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None) -> Union[dict, str]:
         """Load subject info of a record.
 
         Parameters
@@ -801,9 +770,7 @@ class LUDB(PhysioNetDataBase):
         else:
             _leads = self._normalize_leads(leads)
             _lead_indices = [self.all_leads.index(ld) for ld in _leads]
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[
-                _lead_indices
-            ]
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[_lead_indices]
 
         if same_range:
             y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100
@@ -845,9 +812,7 @@ class LUDB(PhysioNetDataBase):
         duration = len(t) / self.fs
         fig_sz_w = int(round(4.8 * duration))
         fig_sz_h = 6 * y_ranges / 1500
-        fig, axes = plt.subplots(
-            nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
-        )
+        fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         if nb_leads == 1:
             axes = [axes]
         for idx in range(nb_leads):
@@ -864,15 +829,11 @@ class LUDB(PhysioNetDataBase):
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(
-                    which="major", linestyle="-", linewidth="0.5", color="red"
-                )
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(
-                    which="minor", linestyle=":", linewidth="0.5", color="black"
-                )
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             for d in diagnoses:
@@ -952,22 +913,14 @@ def compute_metrics(
     truth_waveforms, pred_waveforms = [], []
     # compute for each element
     for tm, pm in zip(truth_masks, pred_masks):
-        n_masks = (
-            tm.shape[0]
-            if mask_format.lower() in ["channel_first", "lead_first"]
-            else tm.shape[1]
-        )
+        n_masks = tm.shape[0] if mask_format.lower() in ["channel_first", "lead_first"] else tm.shape[1]
 
         new_t = masks_to_waveforms(tm, class_map, fs, mask_format)
-        new_t = [
-            new_t[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_t = [new_t[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         truth_waveforms += new_t
 
         new_p = masks_to_waveforms(pm, class_map, fs, mask_format)
-        new_p = [
-            new_p[f"lead_{idx+1}"] for idx in range(n_masks)
-        ]  # list of list of `ECGWaveForm`s
+        new_p = [new_p[f"lead_{idx+1}"] for idx in range(n_masks)]  # list of list of `ECGWaveForm`s
         pred_waveforms += new_p
 
     scorings = compute_metrics_waveform(truth_waveforms, pred_waveforms, fs)
@@ -1061,15 +1014,9 @@ def compute_metrics_waveform(
             "twave",
         ]:
             for term in ["onset", "offset"]:
-                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "truth_positive"
-                ]
-                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_positive"
-                ]
-                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"][
-                    "false_negative"
-                ]
+                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["truth_positive"]
+                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_positive"]
+                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_negative"]
                 errors[f"{wave}_{term}"] += s[f"{wave}_{term}"]["errors"]
     scorings = CFG()
     for wave in [
@@ -1084,9 +1031,7 @@ def compute_metrics_waveform(
             err = errors[f"{wave}_{term}"]
             sensitivity = tp / (tp + fn + DEFAULTS.eps)
             precision = tp / (tp + fp + DEFAULTS.eps)
-            f1_score = (
-                2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
-            )
+            f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
             mean_error = np.mean(err) * 1000 / fs
             standard_deviation = np.std(err) * 1000 / fs
             scorings[f"{wave}_{term}"] = CFG(
@@ -1170,9 +1115,7 @@ def _compute_metrics_waveform(
                 f1_score,
                 mean_error,
                 standard_deviation,
-            ) = _compute_metrics_base(
-                eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs
-            )
+            ) = _compute_metrics_base(eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs)
             scorings[f"{wave}_{term}"] = CFG(
                 truth_positive=truth_positive,
                 false_negative=false_negative,

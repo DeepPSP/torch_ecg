@@ -8,7 +8,6 @@ import numpy as np
 
 from ...cfg import CFG
 
-
 __all__ = [
     # vanilla mobilenets
     "mobilenet_v1_vanilla",
@@ -22,12 +21,8 @@ mobilenet_v1_vanilla.fs = 500
 mobilenet_v1_vanilla.groups = 1
 mobilenet_v1_vanilla.batch_norm = True
 mobilenet_v1_vanilla.activation = "relu6"
-mobilenet_v1_vanilla.depth_multiplier = (
-    1  # multiplier of number of depthwise convolution output channels
-)
-mobilenet_v1_vanilla.width_multiplier = (
-    1.0  # controls the width (number of filters) of the network
-)
+mobilenet_v1_vanilla.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
+mobilenet_v1_vanilla.width_multiplier = 1.0  # controls the width (number of filters) of the network
 mobilenet_v1_vanilla.bias = True
 mobilenet_v1_vanilla.ordering = "cba"
 
@@ -84,12 +79,8 @@ mobilenet_v2_vanilla.fs = 500
 mobilenet_v2_vanilla.groups = 1
 mobilenet_v2_vanilla.batch_norm = True
 mobilenet_v2_vanilla.activation = "relu6"
-mobilenet_v2_vanilla.depth_multiplier = (
-    1  # multiplier of number of depthwise convolution output channels
-)
-mobilenet_v2_vanilla.width_multiplier = (
-    1.0  # controls the width (number of filters) of the network
-)
+mobilenet_v2_vanilla.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
+mobilenet_v2_vanilla.width_multiplier = 1.0  # controls the width (number of filters) of the network
 mobilenet_v2_vanilla.bias = True
 mobilenet_v2_vanilla.ordering = "cba"
 
@@ -122,9 +113,7 @@ mobilenet_v2_vanilla.inv_res.expansions = _inverted_residual_setting[..., 0].tol
 mobilenet_v2_vanilla.inv_res.out_channels = _inverted_residual_setting[..., 1].tolist()
 mobilenet_v2_vanilla.inv_res.n_blocks = _inverted_residual_setting[..., 2].tolist()
 mobilenet_v2_vanilla.inv_res.strides = _inverted_residual_setting[..., 3].tolist()
-mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[
-    ..., 4
-].tolist()
+mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[..., 4].tolist()
 
 mobilenet_v2_vanilla.exit_flow = CFG(
     num_filters=_base_num_filters * 128,
@@ -139,12 +128,8 @@ mobilenet_v3_small.fs = 500
 mobilenet_v3_small.groups = 1
 mobilenet_v3_small.batch_norm = True
 mobilenet_v3_small.activation = "relu"
-mobilenet_v3_small.depth_multiplier = (
-    1  # multiplier of number of depthwise convolution output channels
-)
-mobilenet_v3_small.width_multiplier = (
-    1.0  # controls the width (number of filters) of the network
-)
+mobilenet_v3_small.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
+mobilenet_v3_small.width_multiplier = 1.0  # controls the width (number of filters) of the network
 mobilenet_v3_small.bias = True
 mobilenet_v3_small.ordering = "cba"
 

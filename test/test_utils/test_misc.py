@@ -8,40 +8,39 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import torch
 import pytest
+import torch
 
+from torch_ecg.cfg import _DATA_CACHE, DEFAULTS
+from torch_ecg.utils.download import http_get
 from torch_ecg.utils.misc import (
+    CitationMixin,
+    MovingAverage,
+    ReprMixin,
+    Timer,
+    add_docstring,
+    add_kwargs,
+    dict_to_str,
+    dicts_equal,
+    diff_with_step,
+    get_date_str,
+    get_kwargs,
     get_record_list_recursive,
     get_record_list_recursive2,
     get_record_list_recursive3,
-    dict_to_str,
-    str2bool,
-    diff_with_step,
-    ms2samples,
-    samples2ms,
-    plot_single_lead,
-    get_date_str,
-    list_sum,
-    read_log_txt,
-    read_event_scalars,
-    dicts_equal,
-    ReprMixin,
-    CitationMixin,
-    MovingAverage,
-    nildent,
-    add_docstring,
-    remove_parameters_returns_from_docstring,
-    timeout,
-    Timer,
-    get_kwargs,
     get_required_args,
-    add_kwargs,
+    list_sum,
     make_serializable,
+    ms2samples,
+    nildent,
+    plot_single_lead,
+    read_event_scalars,
+    read_log_txt,
+    remove_parameters_returns_from_docstring,
+    samples2ms,
+    str2bool,
+    timeout,
 )
-from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
-from torch_ecg.utils.download import http_get
-
 
 _SAMPLE_DATA_DIR = Path(__file__).parents[2].resolve() / "sample-data"
 
@@ -111,9 +110,7 @@ def test_get_record_list_recursive3():
         "F": "E",
         "G": "JS",
     }
-    rec_patterns_with_ext = {
-        tranche: f"^{rec_prefix[tranche]}(?:\\d+)\\.mat$" for tranche in list("ABCDEFG")
-    }
+    rec_patterns_with_ext = {tranche: f"^{rec_prefix[tranche]}(?:\\d+)\\.mat$" for tranche in list("ABCDEFG")}
     record_list = get_record_list_recursive3(path, rec_patterns_with_ext)
     assert isinstance(record_list, dict)
     assert record_list.keys() == rec_patterns_with_ext.keys()
@@ -192,10 +189,7 @@ def test_plot_single_lead():
 
 
 def test_get_date_str():
-    assert (
-        datetime.datetime.strptime(get_date_str(), "%m-%d_%H-%M")
-        < datetime.datetime.now()
-    )
+    assert datetime.datetime.strptime(get_date_str(), "%m-%d_%H-%M") < datetime.datetime.now()
 
 
 def test_list_sum():
@@ -367,9 +361,7 @@ def test_MovingAverage():
     assert new_data.shape == data.shape
     new_data = ma(data, method="wma", window=7)
 
-    with pytest.raises(
-        NotImplementedError, match="method `xxx` is not implemented yet"
-    ):
+    with pytest.raises(NotImplementedError, match="method `xxx` is not implemented yet"):
         ma(data, method="xxx")
 
     with pytest.warns(

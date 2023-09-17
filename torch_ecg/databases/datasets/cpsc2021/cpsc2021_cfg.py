@@ -3,7 +3,6 @@
 
 from ....cfg import CFG, DEFAULTS
 
-
 __all__ = [
     "CPSC2021TrainCfg",
 ]
@@ -33,25 +32,16 @@ CPSC2021TrainCfg.class_fn2abbr = {  # fullname to abbreviation
     "paroxysmal atrial fibrillation": "AFp",
     "persistent atrial fibrillation": "AFf",
 }
-CPSC2021TrainCfg.class_abbr2fn = {
-    v: k for k, v in CPSC2021TrainCfg.class_fn2abbr.items()
-}
+CPSC2021TrainCfg.class_abbr2fn = {v: k for k, v in CPSC2021TrainCfg.class_fn2abbr.items()}
 CPSC2021TrainCfg.class_fn_map = {  # fullname to number
     "non atrial fibrillation": 0,
     "paroxysmal atrial fibrillation": 2,
     "persistent atrial fibrillation": 1,
 }
-CPSC2021TrainCfg.class_abbr_map = {
-    k: CPSC2021TrainCfg.class_fn_map[v]
-    for k, v in CPSC2021TrainCfg.class_abbr2fn.items()
-}
+CPSC2021TrainCfg.class_abbr_map = {k: CPSC2021TrainCfg.class_fn_map[v] for k, v in CPSC2021TrainCfg.class_abbr2fn.items()}
 
-CPSC2021TrainCfg.bias_thr = (
-    0.15 * CPSC2021TrainCfg.fs
-)  # rhythm change annotations onsets or offset of corresponding R peaks
-CPSC2021TrainCfg.beat_ann_bias_thr = (
-    0.1 * CPSC2021TrainCfg.fs
-)  # half width of broad qrs complex
+CPSC2021TrainCfg.bias_thr = 0.15 * CPSC2021TrainCfg.fs  # rhythm change annotations onsets or offset of corresponding R peaks
+CPSC2021TrainCfg.beat_ann_bias_thr = 0.1 * CPSC2021TrainCfg.fs  # half width of broad qrs complex
 CPSC2021TrainCfg.beat_winL = 250 * CPSC2021TrainCfg.fs // 1000  # corr. to 250 ms
 CPSC2021TrainCfg.beat_winR = 250 * CPSC2021TrainCfg.fs // 1000  # corr. to 250 ms
 
@@ -119,9 +109,7 @@ CPSC2021TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimi
 CPSC2021TrainCfg.learning_rate = 1e-4  # 1e-3
 CPSC2021TrainCfg.lr = CPSC2021TrainCfg.learning_rate
 
-CPSC2021TrainCfg.lr_scheduler = (
-    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
-)
+CPSC2021TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 CPSC2021TrainCfg.lr_step_size = 50
 CPSC2021TrainCfg.lr_gamma = 0.1
 CPSC2021TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
@@ -165,23 +153,15 @@ CPSC2021TrainCfg.qrs_detection.critical_overlap_len = int(25 * CPSC2021TrainCfg.
 CPSC2021TrainCfg.qrs_detection.classes = [
     "N",
 ]
-CPSC2021TrainCfg.qrs_detection.monitor = (
-    "qrs_score"  # monitor for determining the best model
-)
+CPSC2021TrainCfg.qrs_detection.monitor = "qrs_score"  # monitor for determining the best model
 CPSC2021TrainCfg.qrs_detection.loss = "BCEWithLogitsLoss"  # "AsymmetricLoss"
 CPSC2021TrainCfg.qrs_detection.loss_kw = CFG()
 
 CPSC2021TrainCfg.rr_lstm.final_model_name = None
 CPSC2021TrainCfg.rr_lstm.model_name = "lstm"  # "lstm", "lstm_crf"
-CPSC2021TrainCfg.rr_lstm.input_len = (
-    30  # number of rr intervals ( number of rpeaks - 1)
-)
-CPSC2021TrainCfg.rr_lstm.overlap_len = (
-    15  # number of rr intervals ( number of rpeaks - 1)
-)
-CPSC2021TrainCfg.rr_lstm.critical_overlap_len = (
-    25  # number of rr intervals ( number of rpeaks - 1)
-)
+CPSC2021TrainCfg.rr_lstm.input_len = 30  # number of rr intervals ( number of rpeaks - 1)
+CPSC2021TrainCfg.rr_lstm.overlap_len = 15  # number of rr intervals ( number of rpeaks - 1)
+CPSC2021TrainCfg.rr_lstm.critical_overlap_len = 25  # number of rr intervals ( number of rpeaks - 1)
 CPSC2021TrainCfg.rr_lstm.classes = [
     "af",
 ]

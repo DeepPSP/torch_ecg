@@ -6,7 +6,7 @@ import os
 import warnings
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
@@ -15,23 +15,12 @@ from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
 from ...._preprocessors import PreprocManager
-from ....databases import MITDB as DR
-from ....utils.misc import (
-    ReprMixin,
-    get_record_list_recursive3,
-    list_sum,
-    add_docstring,
-)
-from ....utils.utils_data import (
-    ensure_siglen,
-    cls_to_bin,
-    generate_weight_mask,
-    mask_to_intervals,
-)
-from ....utils.utils_signal import remove_spikes_naive
 from ....cfg import CFG, DEFAULTS
+from ....databases import MITDB as DR
+from ....utils.misc import ReprMixin, add_docstring, get_record_list_recursive3, list_sum
+from ....utils.utils_data import cls_to_bin, ensure_siglen, generate_weight_mask, mask_to_intervals
+from ....utils.utils_signal import remove_spikes_naive
 from .mitdb_cfg import MITDBTrainCfg
-
 
 __all__ = [
     "MITDBDataset",
@@ -78,9 +67,7 @@ class MITDBDataset(ReprMixin, Dataset):
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
-            warnings.warn(
-                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
-            )
+            warnings.warn("`db_dir` is specified in both config and reader_kwargs", RuntimeWarning)
         self.reader = DR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
@@ -147,12 +134,7 @@ class MITDBDataset(ReprMixin, Dataset):
 
         """
         assert task.lower() in MITDBTrainCfg.tasks, f"illegal task \042{task}\042"
-        if (
-            hasattr(self, "task")
-            and self.task == task.lower()
-            and self._all_data is not None
-            and len(self._all_data) > 0
-        ):
+        if hasattr(self, "task") and self.task == task.lower() and self._all_data is not None and len(self._all_data) > 0:
             return
         self.task = task.lower()
         self.all_classes = self.config[task].classes
@@ -194,15 +176,11 @@ class MITDBDataset(ReprMixin, Dataset):
                             self.config[self.task].input_len,
                         )
                         self._all_data.append(beat_data)
-                        self._all_labels.append(
-                            self.config[self.task].class_map[beat.symbol]
-                        )
+                        self._all_labels.append(self.config[self.task].class_map[beat.symbol])
                 self._all_data = np.array(self._all_data)
                 self._all_labels = np.array(self._all_labels)
                 if self.config[self.task].loss not in ["CrossEntropyLoss"]:
-                    self._all_labels = cls_to_bin(
-                        self._all_labels, len(self.config[self.task].classes)
-                    )
+                    self._all_labels = cls_to_bin(self._all_labels, len(self.config[self.task].classes))
         elif self.task in [
             "qrs_detection",
             "rhythm_segmentation",
@@ -299,9 +277,7 @@ class MITDBDataset(ReprMixin, Dataset):
             self._all_labels = np.array(self._all_labels).astype(self.dtype)
             self._all_masks = np.array(self._all_masks).astype(self.dtype)
         else:
-            raise NotImplementedError(
-                f"data generator for task \042{self.task}\042 not implemented"
-            )
+            raise NotImplementedError(f"data generator for task \042{self.task}\042 not implemented")
 
     def reset_task(self, task: str, lazy: bool = True) -> None:
         """Reset the task of the data generator.
@@ -332,23 +308,13 @@ class MITDBDataset(ReprMixin, Dataset):
         if self.segments_json.is_file():
             self.__all_segments = json.loads(self.segments_json.read_text())
             # return
-        print(
-            "please allow the reader a few minutes to collect "
-            f"the segments from {self.segments_base_dir}..."
-        )
+        print("please allow the reader a few minutes to collect " f"the segments from {self.segments_base_dir}...")
         seg_filename_pattern = f"{self.segment_name_pattern}\\.{self.segment_ext}"
         self.__all_segments = CFG(
-            {
-                rec: get_record_list_recursive3(
-                    str(self.segments_dirs.data[rec]), seg_filename_pattern
-                )
-                for rec in self.reader
-            }
+            {rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern) for rec in self.reader}
         )
         if all([len(self.__all_segments[rec]) > 0 for rec in self.reader]):
-            self.segments_json.write_text(
-                json.dumps(self.__all_segments, ensure_ascii=False)
-            )
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _ls_rr_seq(self) -> None:
         """Find all the rr sequences in the rr sequences base directory,
@@ -360,23 +326,13 @@ class MITDBDataset(ReprMixin, Dataset):
         if self.rr_seq_json.is_file():
             self.__all_rr_seq = json.loads(self.rr_seq_json.read_text())
             # return
-        print(
-            "please allow the reader a few minutes to collect "
-            f"the rr sequences from {self.rr_seq_base_dir}..."
-        )
+        print("please allow the reader a few minutes to collect " f"the rr sequences from {self.rr_seq_base_dir}...")
         rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}\\.{self.rr_seq_ext}"
         self.__all_rr_seq = CFG(
-            {
-                rec: get_record_list_recursive3(
-                    self.rr_seq_dirs[rec], rr_seq_filename_pattern
-                )
-                for rec in self.reader
-            }
+            {rec: get_record_list_recursive3(self.rr_seq_dirs[rec], rr_seq_filename_pattern) for rec in self.reader}
         )
         if all([len(self.__all_rr_seq[rec]) > 0 for rec in self.reader]):
-            self.rr_seq_json.write_text(
-                json.dumps(self.__all_rr_seq, ensure_ascii=False)
-            )
+            self.rr_seq_json.write_text(json.dumps(self.__all_rr_seq, ensure_ascii=False))
 
     @property
     def all_segments(self) -> CFG:
@@ -484,16 +440,10 @@ class MITDBDataset(ReprMixin, Dataset):
 
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_ann = {
-            k: v.flatten()
-            for k, v in loadmat(str(seg_ann_fp)).items()
-            if not k.startswith("__")
-        }
+        seg_ann = {k: v.flatten() for k, v in loadmat(str(seg_ann_fp)).items() if not k.startswith("__")}
         return seg_ann
 
-    def _load_seg_mask(
-        self, seg: str, task: Optional[str] = None
-    ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
+    def _load_seg_mask(self, seg: str, task: Optional[str] = None) -> Union[np.ndarray, Dict[str, np.ndarray]]:
         """Load mask(s) of the segment.
 
         Parameters
@@ -606,9 +556,7 @@ class MITDBDataset(ReprMixin, Dataset):
 
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
-        rr_seq = {
-            k: v for k, v in loadmat(str(rr_seq_path)).items() if not k.startswith("__")
-        }
+        rr_seq = {k: v for k, v in loadmat(str(rr_seq_path)).items() if not k.startswith("__")}
         rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
         rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
         rr_seq["interval"] = rr_seq["interval"].flatten()
@@ -702,9 +650,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 # if verbose >= 1:
                 #     print(f"{idx+1}/{len(self.reader)} records", end="\r")
         if force_recompute:
-            self.segments_json.write_text(
-                json.dump(self.__all_segments, ensure_ascii=False)
-            )
+            self.segments_json.write_text(json.dump(self.__all_segments, ensure_ascii=False))
 
     def _slice_one_record(
         self,
@@ -763,11 +709,7 @@ class MITDBDataset(ReprMixin, Dataset):
 
         # find critical points
         critical_points = np.where(np.diff(rhythm_mask) != 0)[0]
-        critical_points = [
-            p
-            for p in critical_points
-            if critical_forward_len[1] <= p < siglen - critical_forward_len[1]
-        ]
+        critical_points = [p for p in critical_points if critical_forward_len[1] <= p < siglen - critical_forward_len[1]]
 
         segments = []
 
@@ -802,10 +744,7 @@ class MITDBDataset(ReprMixin, Dataset):
             return
 
         # special segments around critical_points with random forward_len in critical_forward_len
-        print(
-            "Slicing special segments around `critical_points` "
-            "with random `forward_len` in `critical_forward_len`"
-        )
+        print("Slicing special segments around `critical_points` " "with random `forward_len` in `critical_forward_len`")
         with tqdm(
             critical_points,
             desc=f"Slicing segments for record {rec}",
@@ -816,24 +755,16 @@ class MITDBDataset(ReprMixin, Dataset):
             for cp in pbar:
                 start_idx = max(
                     0,
-                    cp
-                    - self.seglen
-                    + DEFAULTS.RNG_randint(
-                        critical_forward_len[0], critical_forward_len[1]
-                    ),
+                    cp - self.seglen + DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1]),
                 )
-                while start_idx <= min(
-                    cp - critical_forward_len[1], siglen - self.seglen
-                ):
+                while start_idx <= min(cp - critical_forward_len[1], siglen - self.seglen):
                     new_seg = self.__generate_segment(
                         rec=rec,
                         data=data,
                         start_idx=start_idx,
                     )
                     segments.append(new_seg)
-                    start_idx += DEFAULTS.RNG_randint(
-                        critical_forward_len[0], critical_forward_len[1]
-                    )
+                    start_idx += DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1])
 
         # save segments
         self.__save_segments(rec, segments, update_segments_json)
@@ -874,9 +805,7 @@ class MITDBDataset(ReprMixin, Dataset):
                   original ECG record of the segment
 
         """
-        assert not all(
-            [start_idx is None, end_idx is None]
-        ), "at least one of `start_idx` and `end_idx` should be set"
+        assert not all([start_idx is None, end_idx is None]), "at least one of `start_idx` and `end_idx` should be set"
         siglen = data.shape[1]
         # offline augmentations are done, including strech-or-compress, ...
         if self.config.stretch_compress != 0:
@@ -884,9 +813,7 @@ class MITDBDataset(ReprMixin, Dataset):
             sign = DEFAULTS.RNG_sample(stretch_compress_choices, 1)[0]
             if sign != 0:
                 sc_ratio = self.config.stretch_compress
-                sc_ratio = (
-                    1 + (DEFAULTS.RNG.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
-                )
+                sc_ratio = 1 + (DEFAULTS.RNG.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
                 sc_len = int(round(sc_ratio * self.seglen))
                 if start_idx is not None:
                     end_idx = start_idx + sc_len
@@ -935,16 +862,12 @@ class MITDBDataset(ReprMixin, Dataset):
         seg_rpeaks = [
             int(round(r / sc_ratio))
             for r in seg_rpeaks
-            if self.config.rpeaks_dist2border
-            <= r
-            < self.seglen - self.config.rpeaks_dist2border
+            if self.config.rpeaks_dist2border <= r < self.seglen - self.config.rpeaks_dist2border
         ]
         # generate qrs_mask from rpeaks
         seg_qrs_mask = np.zeros((self.seglen,), dtype=int)
         for r in seg_rpeaks:
-            seg_qrs_mask[
-                r - self.config.qrs_mask_bias : r + self.config.qrs_mask_bias
-            ] = 1
+            seg_qrs_mask[r - self.config.qrs_mask_bias : r + self.config.qrs_mask_bias] = 1
         # adjust rhythm_intervals
         seg_rhythm_intervals = self.reader.load_rhythm_ann(
             rec=rec,
@@ -955,19 +878,14 @@ class MITDBDataset(ReprMixin, Dataset):
             keep_original=False,
         )
         seg_rhythm_intervals = {
-            rt: [
-                [int(round(itv[0] / sc_ratio)), int(round(itv[1] / sc_ratio))]
-                for itv in l_itvs
-            ]
+            rt: [[int(round(itv[0] / sc_ratio)), int(round(itv[1] / sc_ratio))] for itv in l_itvs]
             for rt, l_itvs in seg_rhythm_intervals.items()
         }
         # generate rhythm_mask from rhythm_intervals
         seg_rhythm_mask = np.zeros((self.seglen,), dtype=int)
         for rt, l_itvs in seg_rhythm_intervals.items():
             for itv in l_itvs:
-                seg_rhythm_mask[
-                    itv[0] : itv[1]
-                ] = self.config.rhythm_segmentation.class_map[rt]
+                seg_rhythm_mask[itv[0] : itv[1]] = self.config.rhythm_segmentation.class_map[rt]
 
         new_seg = CFG(
             data=aug_seg,
@@ -978,9 +896,7 @@ class MITDBDataset(ReprMixin, Dataset):
         )
         return new_seg
 
-    def __save_segments(
-        self, rec: str, segments: List[CFG], update_segments_json: bool = False
-    ) -> None:
+    def __save_segments(self, rec: str, segments: List[CFG], update_segments_json: bool = False) -> None:
         """Save the segments to disk.
 
         Parameters
@@ -1014,9 +930,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 },
             )
         if update_segments_json:
-            self.segments_json.write_text(
-                json.dumps(self.__all_segments, ensure_ascii=False)
-            )
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> None:
         """Clear the cached segments of the records.
@@ -1089,9 +1003,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 # if verbose >= 1:
                 #     print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            self.rr_seq_json.write_text(
-                json.dumps(self.__all_rr_seq, ensure_ascii=False)
-            )
+            self.rr_seq_json.write_text(json.dumps(self.__all_rr_seq, ensure_ascii=False))
 
     def _slice_rr_seq_one_record(
         self,
@@ -1144,11 +1056,7 @@ class MITDBDataset(ReprMixin, Dataset):
 
         # find critical points
         critical_points = np.where(np.diff(label_seq) != 0)[0]
-        critical_points = [
-            p
-            for p in critical_points
-            if critical_forward_len[1] <= p < len(rr) - critical_forward_len[1]
-        ]
+        critical_points = [p for p in critical_points if critical_forward_len[1] <= p < len(rr) - critical_forward_len[1]]
 
         rr_seq = []
 
@@ -1187,10 +1095,7 @@ class MITDBDataset(ReprMixin, Dataset):
             return
 
         # special rr_seq around critical_points with random forward_len in critical_forward_len
-        print(
-            "Slicing special rr_seq around `critical_points` "
-            "with random `forward_len` in `critical_forward_len`"
-        )
+        print("Slicing special rr_seq around `critical_points` " "with random `forward_len` in `critical_forward_len`")
         with tqdm(
             critical_points,
             desc=f"Slicing rr_seq for record {rec}",
@@ -1201,15 +1106,9 @@ class MITDBDataset(ReprMixin, Dataset):
             for cp in pbar:
                 start_idx = max(
                     0,
-                    cp
-                    - self.seglen
-                    + DEFAULTS.RNG_randint(
-                        critical_forward_len[0], critical_forward_len[1]
-                    ),
+                    cp - self.seglen + DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1]),
                 )
-                while start_idx <= min(
-                    cp - critical_forward_len[1], len(rr) - self.seglen
-                ):
+                while start_idx <= min(cp - critical_forward_len[1], len(rr) - self.seglen):
                     end_idx = start_idx + self.seglen
                     new_rr_seq = CFG(
                         rr=rr[start_idx:end_idx],
@@ -1217,15 +1116,11 @@ class MITDBDataset(ReprMixin, Dataset):
                         interval=[start_idx, end_idx],
                     )
                     rr_seq.append(new_rr_seq)
-                    start_idx += DEFAULTS.RNG_randint(
-                        critical_forward_len[0], critical_forward_len[1]
-                    )
+                    start_idx += DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1])
         # save rr sequences
         self.__save_rr_seq(rec, rr_seq, update_rr_seq_json)
 
-    def __save_rr_seq(
-        self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
-    ) -> None:
+    def __save_rr_seq(self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False) -> None:
         """Save rr_seq to disk.
 
         Parameters
@@ -1251,9 +1146,7 @@ class MITDBDataset(ReprMixin, Dataset):
             savemat(str(data_path), item)
             self.__all_rr_seq[rec].append(Path(filename).with_suffix("").name)
         if update_rr_seq_json:
-            self.rr_seq_json.write_text(
-                json.dumps(self.__all_rr_seq, ensure_ascii=False)
-            )
+            self.rr_seq_json.write_text(json.dumps(self.__all_rr_seq, ensure_ascii=False))
 
     def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> None:
         """Clear the cached rr sequences.
@@ -1337,8 +1230,7 @@ class MITDBDataset(ReprMixin, Dataset):
     def __assert_task(self, tasks: List[str]) -> None:
         """Check if the current task is in the given list."""
         assert self.task in tasks, (
-            f"DO NOT call this method when the current task is {self.task}. "
-            "Switch task using `reset_task`"
+            f"DO NOT call this method when the current task is {self.task}. " "Switch task using `reset_task`"
         )
 
     def plot_seg(self, seg: str, ticks_granularity: int = 0) -> None:
@@ -1432,9 +1324,7 @@ class _FastDataReader(ReprMixin, Dataset):
             for idx in range(seg_data.shape[0]):
                 seg_data[idx] = remove_spikes_naive(seg_data[idx])
             seg_ann_fp = self.file_dirs.ann[rec] / f"{seg_name}.{self.file_ext}"
-            seg_label = loadmat(str(seg_ann_fp))[self._seg_keys[self.task]].reshape(
-                (self.seglen, -1)
-            )
+            seg_label = loadmat(str(seg_ann_fp))[self._seg_keys[self.task]].reshape((self.seglen, -1))
             if self.config[self.task].reduction > 1:
                 reduction = self.config[self.task].reduction
                 seg_len, n_classes = seg_label.shape
@@ -1474,12 +1364,8 @@ class _FastDataReader(ReprMixin, Dataset):
             rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
             rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
             # map values of `rr_seq["label"]` to 0, 1 according to `self.reader.rhythm_types_map`
-            rr_seq["label"][
-                np.where(rr_seq["label"] == self.rhythm_types_map["AFIB"])
-            ] = 1
-            rr_seq["label"][
-                np.where(rr_seq["label"] != self.rhythm_types_map["AFIB"])
-            ] = 0
+            rr_seq["label"][np.where(rr_seq["label"] == self.rhythm_types_map["AFIB"])] = 1
+            rr_seq["label"][np.where(rr_seq["label"] != self.rhythm_types_map["AFIB"])] = 0
             weight_mask = generate_weight_mask(
                 target_mask=rr_seq["label"].squeeze(-1),
                 fg_weight=2,
@@ -1490,9 +1376,7 @@ class _FastDataReader(ReprMixin, Dataset):
             )[..., np.newaxis]
             return rr_seq["rr"], rr_seq["label"], weight_mask
         else:
-            raise NotImplementedError(
-                f"data generator for task \042{self.task}\042 not implemented"
-            )
+            raise NotImplementedError(f"data generator for task \042{self.task}\042 not implemented")
 
     def __len__(self) -> int:
         return len(self.files)

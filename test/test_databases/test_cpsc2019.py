@@ -16,7 +16,6 @@ from torch_ecg.databases import CPSC2019, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2019 import compute_metrics
 from torch_ecg.databases.datasets import CPSC2019Dataset, CPSC2019TrainCfg
 
-
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cpsc2019"
@@ -44,17 +43,11 @@ class TestCPSC2019:
         reader_ss = CPSC2019(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1
 
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2019(_CWD, subsample=0.0)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2019(_CWD, subsample=1.01)
-        with pytest.raises(
-            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
-        ):
+        with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2019(_CWD, subsample=-0.1)
 
     def test_load_data(self):
@@ -122,9 +115,7 @@ config = deepcopy(CPSC2019TrainCfg)
 config.db_dir = _CWD
 config.recover_length = False
 
-with pytest.warns(
-    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
-):
+with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
     ds = CPSC2019Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 

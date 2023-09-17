@@ -3,19 +3,11 @@
 
 import itertools
 
-import torch
 import pytest
+import torch
 
-from torch_ecg.components.inputs import (
-    InputConfig,
-    BaseInput,
-    WaveformInput,
-    FFTInput,
-    _SpectralInput,
-    SpectrogramInput,
-)
 from torch_ecg.cfg import DEFAULTS
-
+from torch_ecg.components.inputs import BaseInput, FFTInput, InputConfig, SpectrogramInput, WaveformInput, _SpectralInput
 
 BATCH_SIZE = 32
 N_CHANNELS = 12
@@ -47,9 +39,7 @@ def test_input_config():
             n_channels=N_CHANNELS,
             n_samples=N_SAMPLES,
         )
-    with pytest.raises(
-        AssertionError, match="`n_bins` must be specified for spectrogram input"
-    ):
+    with pytest.raises(AssertionError, match="`n_bins` must be specified for spectrogram input"):
         input_config = InputConfig(
             input_type="spectrogram",
             n_channels=N_CHANNELS,
@@ -90,28 +80,18 @@ def test_waveform_input():
     )
     wi = WaveformInput(input_config)
 
-    assert (wi.input_channels, wi.input_samples) == wi.compute_input_shape(
-        (N_CHANNELS, N_SAMPLES)
-    )[-2:]
+    assert (wi.input_channels, wi.input_samples) == wi.compute_input_shape((N_CHANNELS, N_SAMPLES))[-2:]
 
     waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
     waveform_input = wi(waveform)
-    assert (
-        waveform_input.shape
-        == wi.compute_input_shape(waveform.shape)
-        == (BATCH_SIZE, N_CHANNELS, N_SAMPLES)
-    )
+    assert waveform_input.shape == wi.compute_input_shape(waveform.shape) == (BATCH_SIZE, N_CHANNELS, N_SAMPLES)
     assert isinstance(waveform_input, torch.Tensor)
     assert waveform_input.dtype == wi.dtype
     assert waveform_input.device.type == wi.device.type
 
     waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
     waveform_input = wi.from_waveform(waveform)
-    assert (
-        waveform_input.shape
-        == wi.compute_input_shape(waveform.shape)
-        == (1, N_CHANNELS, N_SAMPLES)
-    )
+    assert waveform_input.shape == wi.compute_input_shape(waveform.shape) == (1, N_CHANNELS, N_SAMPLES)
     assert isinstance(waveform_input, torch.Tensor)
     assert waveform_input.dtype == wi.dtype
     assert waveform_input.device.type == wi.device.type
@@ -126,19 +106,11 @@ def test_waveform_input():
 
     waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
     waveform_input = wi(waveform)
-    assert (
-        waveform_input.shape
-        == wi.compute_input_shape(waveform.shape)
-        == (BATCH_SIZE, N_CHANNELS, N_SAMPLES)
-    )
+    assert waveform_input.shape == wi.compute_input_shape(waveform.shape) == (BATCH_SIZE, N_CHANNELS, N_SAMPLES)
 
     waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
     waveform_input = wi.from_waveform(waveform)
-    assert (
-        waveform_input.shape
-        == wi.compute_input_shape(waveform.shape)
-        == (N_CHANNELS, N_SAMPLES)
-    )
+    assert waveform_input.shape == wi.compute_input_shape(waveform.shape) == (N_CHANNELS, N_SAMPLES)
 
     with pytest.raises(
         AssertionError,
@@ -184,9 +156,7 @@ def test_fft_input():
         )
         fi = FFTInput(input_config)
 
-        assert (fi.input_channels, fi.input_samples) == fi.compute_input_shape(
-            (N_CHANNELS, N_SAMPLES)
-        )[-2:]
+        assert (fi.input_channels, fi.input_samples) == fi.compute_input_shape((N_CHANNELS, N_SAMPLES))[-2:]
 
         waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
         fft_input = fi(waveform)
@@ -277,9 +247,7 @@ def test_spectrogram_input():
         si = SpectrogramInput(input_config)
 
         idx = -2 if to1d else -3
-        assert (si.input_channels, *si.input_samples) == si.compute_input_shape(
-            (N_CHANNELS, N_SAMPLES)
-        )[idx:]
+        assert (si.input_channels, *si.input_samples) == si.compute_input_shape((N_CHANNELS, N_SAMPLES))[idx:]
 
         waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
         spectrogram_input = si(waveform)
@@ -303,9 +271,7 @@ def test_spectrogram_input():
     with pytest.raises(AssertionError, match="`window_size` must be in \\(0, 0.2\\)"):
         input_config = InputConfig(**init_config, window_size=0.3)
         si = SpectrogramInput(input_config)
-    with pytest.raises(
-        AssertionError, match="`overlap_size` must be in `\\(0, window_size\\)`"
-    ):
+    with pytest.raises(AssertionError, match="`overlap_size` must be in `\\(0, window_size\\)`"):
         input_config = InputConfig(**init_config, window_size=0.1, overlap_size=0.3)
         si = SpectrogramInput(input_config)
 

@@ -3,7 +3,6 @@
 
 import numpy as np
 
-
 __all__ = [
     "schmidt_spike_removal",
 ]
@@ -43,9 +42,7 @@ def schmidt_spike_removal(
     frames = original_signal[: window_size * nframes].reshape((nframes, window_size))
     if res > 0:
         nframes += 1
-        frames = np.concatenate(
-            (frames, original_signal[-window_size:].reshape((1, window_size))), axis=0
-        )
+        frames = np.concatenate((frames, original_signal[-window_size:].reshape((1, window_size))), axis=0)
     MAAs = np.abs(frames).max(axis=1)  # of shape (nframes,)
 
     while len(np.where(MAAs > threshold * np.median(MAAs))[0]) > 0:
@@ -55,9 +52,7 @@ def schmidt_spike_removal(
         spike_start = np.where(zero_crossings <= spike_position)[0]
         spike_start = zero_crossings[spike_start[-1]] if len(spike_start) > 0 else 0
         spike_end = np.where(zero_crossings >= spike_position)[0]
-        spike_end = (
-            zero_crossings[spike_end[0]] + 1 if len(spike_end) > 0 else window_size
-        )
+        spike_end = zero_crossings[spike_end[0]] + 1 if len(spike_end) > 0 else window_size
         frames[frame_num, spike_start:spike_end] = eps
         MAAs = np.abs(frames).max(axis=1)
 

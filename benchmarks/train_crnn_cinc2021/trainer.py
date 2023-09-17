@@ -131,18 +131,14 @@ class CINC2021Trainer(BaseTrainer):
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(
-                config=self.train_config, training=True, lazy=False
-            )
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(
-                config=self.train_config, training=False, lazy=False
-            )
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
@@ -179,9 +175,7 @@ class CINC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(
-        self, *data: Tuple[torch.Tensor, torch.Tensor]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Parameters
         ----------
@@ -235,13 +229,9 @@ class CINC2021Trainer(BaseTrainer):
             head_num = 5
             head_scalar_preds = all_scalar_preds[:head_num, ...]
             head_bin_preds = all_bin_preds[:head_num, ...]
-            head_preds_classes = [
-                np.array(classes)[np.where(row)] for row in head_bin_preds
-            ]
+            head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
             head_labels = all_labels[:head_num, ...]
-            head_labels_classes = [
-                np.array(classes)[np.where(row)] for row in head_labels
-            ]
+            head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
             for n in range(head_num):
                 msg = textwrap.dedent(
                     f"""
@@ -256,15 +246,7 @@ class CINC2021Trainer(BaseTrainer):
                 )
                 self.log_manager.log_message(msg)
 
-        (
-            auroc,
-            auprc,
-            accuracy,
-            f_measure,
-            f_beta_measure,
-            g_beta_measure,
-            challenge_metric,
-        ) = evaluate_scores(
+        (auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric,) = evaluate_scores(
             classes=classes,
             truth=all_labels,
             scalar_pred=all_scalar_preds,
@@ -314,9 +296,7 @@ def get_args(**kwargs: Any):
         description="Train the Model on CINC2021",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument(
-        "-l", "--leads", type=int, default=12, help="number of leads", dest="n_leads"
-    )
+    parser.add_argument("-l", "--leads", type=int, default=12, help="number of leads", dest="n_leads")
     parser.add_argument(
         "-t",
         "--tranches",

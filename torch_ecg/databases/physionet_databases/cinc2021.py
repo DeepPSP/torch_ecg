@@ -22,22 +22,17 @@ from tqdm.auto import tqdm
 from ...cfg import CFG, DEFAULTS
 from ...utils import ecg_arrhythmia_knowledge as EAK
 from ...utils.download import http_get
-from ...utils.misc import (
-    add_docstring,
-    get_record_list_recursive3,
-    list_sum,
-    ms2samples,
-)
+from ...utils.misc import add_docstring, get_record_list_recursive3, list_sum, ms2samples
 from ...utils.utils_data import ensure_siglen
 from ..aux_data.cinc2021_aux_data import (
     df_weights_abbr,
+    dx_cooccurrence_all_fp,
     dx_mapping_all,
     dx_mapping_scored,
     equiv_class_dict,
     load_weights,
-    dx_cooccurrence_all_fp,
 )
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, DataBaseInfo, PhysioNetDataBase, _PlotCfg
 
 __all__ = [
     "CINC2021",
@@ -393,41 +388,28 @@ class CINC2021(PhysioNetDataBase):
             for tranche in self.db_tranches:
                 df_tmp = pd.DataFrame(self._all_records[tranche], columns=["path"])
                 df_tmp["tranche"] = tranche
-                self._df_records = pd.concat(
-                    [self._df_records, df_tmp], ignore_index=True
-                )
+                self._df_records = pd.concat([self._df_records, df_tmp], ignore_index=True)
             self._df_records["path"] = self._df_records.path.apply(lambda x: Path(x))
             self._df_records["record"] = self._df_records.path.apply(lambda x: x.stem)
 
             self._df_records = self._df_records[
-                self._df_records.path.apply(
-                    lambda x: x.with_suffix(f".{self.rec_ext}").is_file()
-                )
+                self._df_records.path.apply(lambda x: x.with_suffix(f".{self.rec_ext}").is_file())
             ]
 
-        if len(self._df_records) == 0 or any(
-            len(v) == 0 for v in self._all_records.values()
-        ):
+        if len(self._df_records) == 0 or any(len(v) == 0 for v in self._all_records.values()):
             original_len = len(self._df_records)
             self._df_records = pd.DataFrame()
-            self.logger.info(
-                "Please wait patiently to let the reader find all records of all the tranches..."
-            )
+            self.logger.info("Please wait patiently to let the reader find all records of all the tranches...")
             start = time.time()
             rec_patterns_with_ext = {
-                tranche: f"^{self.rec_prefix[tranche]}(?:\\d+)\\.{self.rec_ext}$"
-                for tranche in self.db_tranches
+                tranche: f"^{self.rec_prefix[tranche]}(?:\\d+)\\.{self.rec_ext}$" for tranche in self.db_tranches
             }
-            self._all_records = get_record_list_recursive3(
-                str(self.db_dir_base), rec_patterns_with_ext, relative=False
-            )
+            self._all_records = get_record_list_recursive3(str(self.db_dir_base), rec_patterns_with_ext, relative=False)
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
                 df_tmp = pd.DataFrame(self._all_records[tranche], columns=["path"])
                 df_tmp["tranche"] = tranche
-                self._df_records = pd.concat(
-                    [self._df_records, df_tmp], ignore_index=True
-                )
+                self._df_records = pd.concat([self._df_records, df_tmp], ignore_index=True)
             self._df_records["path"] = self._df_records.path.apply(lambda x: Path(x))
             self._df_records["record"] = self._df_records.path.apply(lambda x: x.stem)
 
@@ -447,9 +429,9 @@ class CINC2021(PhysioNetDataBase):
                     df_tmp = pd.concat(
                         [
                             df_tmp,
-                            self._df_records[
-                                self._df_records.tranche == tranche
-                            ].sample(size, random_state=DEFAULTS.SEED, replace=False),
+                            self._df_records[self._df_records.tranche == tranche].sample(
+                                size, random_state=DEFAULTS.SEED, replace=False
+                            ),
                         ],
                         ignore_index=True,
                     )
@@ -458,31 +440,21 @@ class CINC2021(PhysioNetDataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                df_tmp = self._df_records.sample(
-                    size, random_state=DEFAULTS.SEED, replace=False
-                )
+                df_tmp = self._df_records.sample(size, random_state=DEFAULTS.SEED, replace=False)
             del self._df_records
             self._df_records = df_tmp.copy()
             del df_tmp
             self._all_records = CFG(
                 {
                     tranche: sorted(
-                        [
-                            Path(x).stem
-                            for x in self._df_records[
-                                self._df_records.tranche == tranche
-                            ]["path"].values
-                        ]
+                        [Path(x).stem for x in self._df_records[self._df_records.tranche == tranche]["path"].values]
                     )
                     for tranche in self.db_tranches
                 }
             )
 
         self._all_records = CFG(
-            {
-                tranche: sorted([Path(x).stem for x in self._all_records[tranche]])
-                for tranche in self.db_tranches
-            }
+            {tranche: sorted([Path(x).stem for x in self._all_records[tranche]]) for tranche in self.db_tranches}
         )
         self.__all_records = list_sum(self._all_records.values())
 
@@ -513,28 +485,19 @@ class CINC2021(PhysioNetDataBase):
         stats_file_fp = self.db_dir_base / stats_file
         if stats_file_fp.is_file():
             self._stats = pd.read_csv(stats_file_fp, keep_default_na=False)
-        if force_reload or (
-            not fast
-            and (self._stats.empty or self._stats_columns != set(self._stats.columns))
-        ):
-            self.logger.info(
-                "Please wait patiently to let the reader collect statistics on the whole dataset..."
-            )
+        if force_reload or (not fast and (self._stats.empty or self._stats_columns != set(self._stats.columns))):
+            self.logger.info("Please wait patiently to let the reader collect statistics on the whole dataset...")
             start = time.time()
             self._stats = self._df_records.copy(deep=True)
             self._stats["record"] = self._stats.index
             self._stats = self._stats.reset_index(drop=True)
             self._stats.drop(columns="path", inplace=True)
-            self._stats["tranche_name"] = self._stats["tranche"].apply(
-                lambda t: self.tranche_names[t]
-            )
+            self._stats["tranche_name"] = self._stats["tranche"].apply(lambda t: self.tranche_names[t])
             for k in [
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                self._stats[
-                    k
-                ] = ""  # otherwise cells in the first row would be str instead of list
+                self._stats[k] = ""  # otherwise cells in the first row would be str instead of list
             with tqdm(
                 self._stats.iterrows(),
                 total=len(self._stats),
@@ -569,23 +532,17 @@ class CINC2021(PhysioNetDataBase):
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                _stats_to_save[k] = _stats_to_save[k].apply(
-                    lambda lst: list_sep.join(lst)
-                )
+                _stats_to_save[k] = _stats_to_save[k].apply(lambda lst: list_sep.join(lst))
             _stats_to_save.to_csv(stats_file_fp, index=False)
             self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
         else:
-            self.logger.info(
-                "converting dtypes of columns `diagnosis` and `diagnosis_scored`..."
-            )
+            self.logger.info("converting dtypes of columns `diagnosis` and `diagnosis_scored`...")
             for k in [
                 "diagnosis",
                 "diagnosis_scored",
             ]:
                 for idx, row in self._stats.iterrows():
-                    self._stats.at[idx, k] = list(
-                        filter(lambda v: len(v) > 0, row[k].split(list_sep))
-                    )
+                    self._stats.at[idx, k] = list(filter(lambda v: len(v) > 0, row[k].split(list_sep)))
 
     @property
     def all_records(self) -> Dict[str, List[str]]:
@@ -611,19 +568,13 @@ class CINC2021(PhysioNetDataBase):
         if dr_fp.is_file():
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
-            self.logger.info(
-                "Please wait several minutes patiently to let the reader list records for each diagnosis..."
-            )
-            self._diagnoses_records_list = {
-                d: [] for d in df_weights_abbr.columns.values.tolist()
-            }
+            self.logger.info("Please wait several minutes patiently to let the reader list records for each diagnosis...")
+            self._diagnoses_records_list = {d: [] for d in df_weights_abbr.columns.values.tolist()}
             if self._stats.empty:
                 self._aggregate_stats()
             for d in df_weights_abbr.columns.values.tolist():
                 self._diagnoses_records_list[d] = sorted(
-                    self._stats[
-                        self._stats["diagnosis_scored"].apply(lambda lst: d in lst)
-                    ]["record"].tolist()
+                    self._stats[self._stats["diagnosis_scored"].apply(lambda lst: d in lst)]["record"].tolist()
                 )
             dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
@@ -654,9 +605,7 @@ class CINC2021(PhysioNetDataBase):
         tranche = self._df_records.loc[rec, "tranche"]
         return tranche
 
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
+    def get_absolute_path(self, rec: Union[str, int], extension: Optional[str] = None) -> Path:
         """Get the absolute path of the record.
 
         Parameters
@@ -800,9 +749,7 @@ class CINC2021(PhysioNetDataBase):
             data = data[leads_ind, :]
             # lead_units = np.vectorize(lambda s: s.lower())(header_info["df_leads"]["adc_units"].values)
         else:
-            raise ValueError(
-                f"backend `{backend.lower()}` not supported for loading data"
-            )
+            raise ValueError(f"backend `{backend.lower()}` not supported for loading data")
 
         # ref. ISSUES 3, for multiplying `value_correction_factor`
         # data = data * self.value_correction_factor[tranche]
@@ -826,9 +773,7 @@ class CINC2021(PhysioNetDataBase):
             return data, data_fs
         return data
 
-    def load_ann(
-        self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb"
-    ) -> Union[dict, str]:
+    def load_ann(self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb") -> Union[dict, str]:
         """Load the annotations of the record.
 
         The annotations (header) are stored in the .hea files.
@@ -868,9 +813,7 @@ class CINC2021(PhysioNetDataBase):
         elif backend.lower() == "naive":
             ann_dict = self._load_ann_naive(header_data)
         else:
-            raise ValueError(
-                f"backend `{backend.lower()}` not supported for loading annotations"
-            )
+            raise ValueError(f"backend `{backend.lower()}` not supported for loading annotations")
         return ann_dict
 
     def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
@@ -909,65 +852,39 @@ class CINC2021(PhysioNetDataBase):
         ann_dict["fs"] = int(ann_dict["fs"])
         ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
         try:
-            ann_dict["datetime"] = datetime.strptime(
-                " ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S"
-            )
+            ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
         except Exception:
             pass
         try:  # see NOTE. 1.
-            ann_dict["age"] = int(
-                [line for line in header_reader.comments if "Age" in line][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["age"] = int([line for line in header_reader.comments if "Age" in line][0].split(":")[-1].strip())
         except Exception:
             ann_dict["age"] = np.nan
         try:  # only "10726" has "NaN" sex
             ann_dict["sex"] = (
-                [line for line in header_reader.comments if "Sex" in line][0]
-                .split(":")[-1]
-                .strip()
-                .replace("NaN", "Unknown")
+                [line for line in header_reader.comments if "Sex" in line][0].split(":")[-1].strip().replace("NaN", "Unknown")
             )
         except Exception:
             ann_dict["sex"] = "Unknown"
         try:
             ann_dict["medical_prescription"] = (
-                [line for line in header_reader.comments if "Rx" in line][0]
-                .split(":")[-1]
-                .strip()
+                [line for line in header_reader.comments if "Rx" in line][0].split(":")[-1].strip()
             )
         except Exception:
             ann_dict["medical_prescription"] = "Unknown"
         try:
-            ann_dict["history"] = (
-                [line for line in header_reader.comments if "Hx" in line][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["history"] = [line for line in header_reader.comments if "Hx" in line][0].split(":")[-1].strip()
         except Exception:
             ann_dict["history"] = "Unknown"
         try:
-            ann_dict["symptom_or_surgery"] = (
-                [line for line in header_reader.comments if "Sx" in line][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["symptom_or_surgery"] = [line for line in header_reader.comments if "Sx" in line][0].split(":")[-1].strip()
         except Exception:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
         # l_Dx = [line for line in header_reader.comments if "Dx" in line][0].split(": ")[-1].split(",")
         # ref. ISSUE 6
-        l_Dx = (
-            [line for line in header_reader.comments if "Dx" in line][0]
-            .split(":")[-1]
-            .strip()
-            .split(",")
-        )
+        l_Dx = [line for line in header_reader.comments if "Dx" in line][0].split(":")[-1].strip().split(",")
         l_Dx = [d for d in l_Dx if len(d) > 0]
-        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(
-            l_Dx
-        )
+        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(l_Dx)
 
         df_leads = pd.DataFrame()
         cols = [
@@ -1028,64 +945,37 @@ class CINC2021(PhysioNetDataBase):
         ann_dict["fs"] = int(ann_dict["fs"])
         ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
         try:
-            ann_dict["datetime"] = datetime.strptime(
-                " ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S"
-            )
+            ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
         except Exception:
             pass
         try:  # see NOTE. 1.
-            ann_dict["age"] = int(
-                [line for line in header_data if line.startswith("#Age")][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["age"] = int([line for line in header_data if line.startswith("#Age")][0].split(":")[-1].strip())
         except Exception:
             ann_dict["age"] = np.nan
         try:
-            ann_dict["sex"] = (
-                [line for line in header_data if line.startswith("#Sex")][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["sex"] = [line for line in header_data if line.startswith("#Sex")][0].split(":")[-1].strip()
         except Exception:
             ann_dict["sex"] = "Unknown"
         try:
             ann_dict["medical_prescription"] = (
-                [line for line in header_data if line.startswith("#Rx")][0]
-                .split(":")[-1]
-                .strip()
+                [line for line in header_data if line.startswith("#Rx")][0].split(":")[-1].strip()
             )
         except Exception:
             ann_dict["medical_prescription"] = "Unknown"
         try:
-            ann_dict["history"] = (
-                [line for line in header_data if line.startswith("#Hx")][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["history"] = [line for line in header_data if line.startswith("#Hx")][0].split(":")[-1].strip()
         except Exception:
             ann_dict["history"] = "Unknown"
         try:
-            ann_dict["symptom_or_surgery"] = (
-                [line for line in header_data if line.startswith("#Sx")][0]
-                .split(":")[-1]
-                .strip()
-            )
+            ann_dict["symptom_or_surgery"] = [line for line in header_data if line.startswith("#Sx")][0].split(":")[-1].strip()
         except Exception:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
         # l_Dx = [line for line in header_data if line.startswith("#Dx")][0].split(": ")[-1].split(",")
         # ref. ISSUE 6
-        l_Dx = (
-            [line for line in header_data if "Dx" in line][0]
-            .split(":")[-1]
-            .strip()
-            .split(",")
-        )
+        l_Dx = [line for line in header_data if "Dx" in line][0].split(":")[-1].strip().split(",")
         l_Dx = [d for d in l_Dx if len(d) > 0]
-        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(
-            l_Dx
-        )
+        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(l_Dx)
 
         ann_dict["df_leads"] = self._parse_leads(header_data[1:13])
 
@@ -1110,44 +1000,28 @@ class CINC2021(PhysioNetDataBase):
         """
         diag_dict, diag_scored_dict = {}, {}
         # try:
-        diag_dict["diagnosis_code"] = [
-            item for item in l_Dx if item in dx_mapping_all["SNOMEDCTCode"].tolist()
-        ]
+        diag_dict["diagnosis_code"] = [item for item in l_Dx if item in dx_mapping_all["SNOMEDCTCode"].tolist()]
         # in case not listed in dx_mapping_all
-        left = [
-            item for item in l_Dx if item not in dx_mapping_all["SNOMEDCTCode"].tolist()
-        ]
+        left = [item for item in l_Dx if item not in dx_mapping_all["SNOMEDCTCode"].tolist()]
         # selection = dx_mapping_all["SNOMEDCTCode"].isin(diag_dict["diagnosis_code"])
         # diag_dict["diagnosis_abbr"] = dx_mapping_all[selection]["Abbreviation"].tolist()
         # diag_dict["diagnosis_fullname"] = dx_mapping_all[selection]["Dx"].tolist()
         diag_dict["diagnosis_abbr"] = [
-            dx_mapping_all[dx_mapping_all["SNOMEDCTCode"] == dc]["Abbreviation"].values[
-                0
-            ]
-            for dc in diag_dict["diagnosis_code"]
+            dx_mapping_all[dx_mapping_all["SNOMEDCTCode"] == dc]["Abbreviation"].values[0] for dc in diag_dict["diagnosis_code"]
         ] + left
         diag_dict["diagnosis_fullname"] = [
-            dx_mapping_all[dx_mapping_all["SNOMEDCTCode"] == dc]["Dx"].values[0]
-            for dc in diag_dict["diagnosis_code"]
+            dx_mapping_all[dx_mapping_all["SNOMEDCTCode"] == dc]["Dx"].values[0] for dc in diag_dict["diagnosis_code"]
         ] + left
         diag_dict["diagnosis_code"] = diag_dict["diagnosis_code"] + left
-        scored_indices = np.isin(
-            diag_dict["diagnosis_code"], dx_mapping_scored["SNOMEDCTCode"].values
-        )
+        scored_indices = np.isin(diag_dict["diagnosis_code"], dx_mapping_scored["SNOMEDCTCode"].values)
         diag_scored_dict["diagnosis_code"] = [
-            item
-            for idx, item in enumerate(diag_dict["diagnosis_code"])
-            if scored_indices[idx]
+            item for idx, item in enumerate(diag_dict["diagnosis_code"]) if scored_indices[idx]
         ]
         diag_scored_dict["diagnosis_abbr"] = [
-            item
-            for idx, item in enumerate(diag_dict["diagnosis_abbr"])
-            if scored_indices[idx]
+            item for idx, item in enumerate(diag_dict["diagnosis_abbr"]) if scored_indices[idx]
         ]
         diag_scored_dict["diagnosis_fullname"] = [
-            item
-            for idx, item in enumerate(diag_dict["diagnosis_fullname"])
-            if scored_indices[idx]
+            item for idx, item in enumerate(diag_dict["diagnosis_fullname"]) if scored_indices[idx]
         ]
         # except Exception:  # the old version, the Dx's are abbreviations, deprecated
         # diag_dict["diagnosis_abbr"] = diag_dict["diagnosis_code"]
@@ -1174,9 +1048,7 @@ class CINC2021(PhysioNetDataBase):
             of a :class:`~pandas.DataFrame`.
 
         """
-        df_leads = pd.read_csv(
-            io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None
-        )
+        df_leads = pd.read_csv(io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None)
         df_leads.columns = [
             "filename",
             "fmt+byte_offset",
@@ -1189,15 +1061,9 @@ class CINC2021(PhysioNetDataBase):
             "lead_name",
         ]
         df_leads["fmt"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[0])
-        df_leads["byte_offset"] = df_leads["fmt+byte_offset"].apply(
-            lambda s: s.split("+")[1]
-        )
-        df_leads["adc_gain"] = df_leads["adc_gain+units"].apply(
-            lambda s: s.split("/")[0]
-        )
-        df_leads["adc_units"] = df_leads["adc_gain+units"].apply(
-            lambda s: s.split("/")[1]
-        )
+        df_leads["byte_offset"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[1])
+        df_leads["adc_gain"] = df_leads["adc_gain+units"].apply(lambda s: s.split("/")[0])
+        df_leads["adc_units"] = df_leads["adc_gain+units"].apply(lambda s: s.split("/")[1])
         for k in [
             "byte_offset",
             "adc_gain",
@@ -1320,9 +1186,7 @@ class CINC2021(PhysioNetDataBase):
             fs = self.fs[tranche]
         return fs
 
-    def get_subject_info(
-        self, rec: Union[str, int], items: Optional[List[str]] = None
-    ) -> dict:
+    def get_subject_info(self, rec: Union[str, int], items: Optional[List[str]] = None) -> dict:
         """Get auxiliary information of a subject
         (a record) stored in the header files.
 
@@ -1436,9 +1300,7 @@ class CINC2021(PhysioNetDataBase):
         lead_indices = [self.all_leads.index(ld) for ld in _leads]
 
         if data is None:
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[
-                lead_indices
-            ]
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[lead_indices]
         else:
             units = self._auto_infer_units(data)
             self.logger.info(f"input data is auto detected to have units in {units}")
@@ -1457,10 +1319,7 @@ class CINC2021(PhysioNetDataBase):
 
         if waves:
             if waves.get("p_onsets", None) and waves.get("p_offsets", None):
-                p_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])
-                ]
+                p_waves = [[onset, offset] for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])]
             elif waves.get("p_peaks", None):
                 p_waves = [
                     [
@@ -1475,10 +1334,7 @@ class CINC2021(PhysioNetDataBase):
             else:
                 p_waves = []
             if waves.get("q_onsets", None) and waves.get("s_offsets", None):
-                qrs = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])
-                ]
+                qrs = [[onset, offset] for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])]
             elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
                 qrs = [
                     [
@@ -1493,9 +1349,7 @@ class CINC2021(PhysioNetDataBase):
             elif waves.get("r_peaks", None):
                 qrs = [
                     [
-                        max(
-                            0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec))
-                        ),
+                        max(0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec))),
                         min(
                             _data.shape[1],
                             r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec)),
@@ -1506,10 +1360,7 @@ class CINC2021(PhysioNetDataBase):
             else:
                 qrs = []
             if waves.get("t_onsets", None) and waves.get("t_offsets", None):
-                t_waves = [
-                    [onset, offset]
-                    for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])
-                ]
+                t_waves = [[onset, offset] for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])]
             elif waves.get("t_peaks", None):
                 t_waves = [
                     [
@@ -1548,9 +1399,7 @@ class CINC2021(PhysioNetDataBase):
         duration = len(t) / self.fs[tranche]
         fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
         fig_sz_h = 6 * np.maximum(y_ranges, 750) / 1500
-        fig, axes = plt.subplots(
-            nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h))
-        )
+        fig, axes = plt.subplots(nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         if nb_leads == 1:
             axes = [axes]
         for idx in range(nb_leads):
@@ -1566,28 +1415,20 @@ class CINC2021(PhysioNetDataBase):
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(
-                    which="major", linestyle="-", linewidth="0.4", color="red"
-                )
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.4", color="red")
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(
-                    which="minor", linestyle=":", linewidth="0.2", color="gray"
-                )
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.2", color="gray")
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             axes[idx].plot([], [], " ", label=f"labels_s - {','.join(diag_scored)}")
             axes[idx].plot([], [], " ", label=f"labels_a - {','.join(diag_all)}")
-            axes[idx].plot(
-                [], [], " ", label=f"tranche - {self.tranche_names[tranche]}"
-            )
+            axes[idx].plot([], [], " ", label=f"tranche - {self.tranche_names[tranche]}")
             axes[idx].plot([], [], " ", label=f"fs - {self.fs[tranche]}")
             for w in ["p_waves", "qrs", "t_waves"]:
                 for itv in eval(w):
-                    axes[idx].axvspan(
-                        t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha
-                    )
+                    axes[idx].axvspan(t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha)
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])
             axes[idx].set_ylim(min(-600, -y_ranges[idx]), max(600, y_ranges[idx]))
@@ -1600,9 +1441,7 @@ class CINC2021(PhysioNetDataBase):
         else:
             plt.show()
 
-    def get_tranche_class_distribution(
-        self, tranches: Sequence[str], scored_only: bool = True
-    ) -> Dict[str, int]:
+    def get_tranche_class_distribution(self, tranches: Sequence[str], scored_only: bool = True) -> Dict[str, int]:
         """Compute class distribution in the tranches.
 
         Parameters
@@ -1670,41 +1509,27 @@ class CINC2021(PhysioNetDataBase):
 
         tranche = self._get_tranche(rec)
         if siglen is None:
-            rec_fp = (
-                self.db_dir
-                / f"{self.db_name}-rsmp-500Hz"
-                / self.tranche_names[tranche]
-                / f"{rec}_500Hz.npy"
-            )
+            rec_fp = self.db_dir / f"{self.db_name}-rsmp-500Hz" / self.tranche_names[tranche] / f"{rec}_500Hz.npy"
         else:
             rec_fp = (
-                self.db_dir
-                / f"{self.db_name}-rsmp-500Hz"
-                / self.tranche_names[tranche]
-                / f"{rec}_500Hz_siglen_{siglen}.npy"
+                self.db_dir / f"{self.db_name}-rsmp-500Hz" / self.tranche_names[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
             )
         rec_fp.parent.mkdir(parents=True, exist_ok=True)
         if not rec_fp.is_file():
             # self.logger.info(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,
             # so that the ordering of leads keeps in accordance with `EAK.Standard12Leads`
-            data = self.load_data(
-                rec, leads="all", data_format="channel_first", units="mV", fs=None
-            )
+            data = self.load_data(rec, leads="all", data_format="channel_first", units="mV", fs=None)
             rec_fs = self.get_fs(rec, from_hea=True)
             if rec_fs != 500:
-                data = SS.resample_poly(data, 500, rec_fs, axis=1).astype(
-                    DEFAULTS.DTYPE.NP
-                )
+                data = SS.resample_poly(data, 500, rec_fs, axis=1).astype(DEFAULTS.DTYPE.NP)
             # if self.fs[tranche] != 500:
             #     data = SS.resample_poly(data, 500, self.fs[tranche], axis=1)
             if siglen is not None and data.shape[1] >= siglen:
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
                 # data = data[..., slice_start:slice_end]
-                data = ensure_siglen(
-                    data, siglen=siglen, fmt="channel_first", tolerance=0.2
-                ).astype(DEFAULTS.DTYPE.NP)
+                data = ensure_siglen(data, siglen=siglen, fmt="channel_first", tolerance=0.2).astype(DEFAULTS.DTYPE.NP)
                 np.save(rec_fp, data)
             elif siglen is None:
                 np.save(rec_fp, data)
@@ -1799,11 +1624,7 @@ class CINC2021(PhysioNetDataBase):
                 elif np.std(data) == 0:
                     self.logger.info(f"record {rec} from tranche {t} is flat")
                 elif (np.std(data, axis=1) == 0).any():
-                    exceptional_leads = set(
-                        np.array(self.all_leads)[
-                            np.where(np.std(data, axis=1) == 0)[0]
-                        ].tolist()
-                    )
+                    exceptional_leads = set(np.array(self.all_leads)[np.where(np.std(data, axis=1) == 0)[0]].tolist())
                     cond = any(
                         [
                             _two_leads.issubset(exceptional_leads),
@@ -1813,9 +1634,7 @@ class CINC2021(PhysioNetDataBase):
                         ]
                     )
                     if cond or flat_granularity.lower() == "lead":
-                        self.logger.info(
-                            f"leads {exceptional_leads} of record {rec} from tranche {t} is flat"
-                        )
+                        self.logger.info(f"leads {exceptional_leads} of record {rec} from tranche {t} is flat")
                     else:
                         continue
                 else:
@@ -1876,18 +1695,14 @@ class CINC2021(PhysioNetDataBase):
                         dx_cooccurrence_all.loc[d[i], d[j]] += 1
                         dx_cooccurrence_all.loc[d[j], d[i]] += 1
                 print(f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r")
-        self.logger.info(
-            f"finish computing the cooccurrence matrix in {(time.time()-start)/60:.3f} minutes"
-        )
+        self.logger.info(f"finish computing the cooccurrence matrix in {(time.time()-start)/60:.3f} minutes")
         if tranches is None:
             dx_cooccurrence_all.to_csv(dx_cooccurrence_all_fp)
         return dx_cooccurrence_all
 
     @property
     def url(self) -> List[str]:
-        domain = (
-            "https://storage.cloud.google.com/physionetchallenge2021-public-datasets/"
-        )
+        domain = "https://storage.cloud.google.com/physionetchallenge2021-public-datasets/"
         return [posixpath.join(domain, f) for f in self.data_files]
 
     data_files = [
@@ -2014,14 +1829,10 @@ def compute_all_metrics_detailed(
 
     print("- F-beta and G-beta measures...")
     # NOTE that F-beta and G-beta are not among metrics of CinC2021, in contrast to CinC2020
-    f_beta_measure, g_beta_measure = _compute_beta_measures(
-        _truth, _binary_pred, beta=2
-    )
+    f_beta_measure, g_beta_measure = _compute_beta_measures(_truth, _binary_pred, beta=2)
 
     print("- Challenge metric...")
-    challenge_metric = compute_challenge_metric(
-        weights, _truth, _binary_pred, classes, sinus_rhythm
-    )
+    challenge_metric = compute_challenge_metric(weights, _truth, _binary_pred, classes, sinus_rhythm)
 
     print("Done.")
 
@@ -2131,9 +1942,7 @@ def _compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
     return float(num_correct_recordings) / float(num_recordings)
 
 
-def _compute_confusion_matrices(
-    labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
-) -> np.ndarray:
+def _compute_confusion_matrices(labels: np.ndarray, outputs: np.ndarray, normalize: bool = False) -> np.ndarray:
     """Compute confusion matrices.
 
     Compute a binary confusion matrix for each class k:
@@ -2197,9 +2006,7 @@ def _compute_confusion_matrices(
     return A
 
 
-def _compute_f_measure(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, np.ndarray]:
+def _compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, np.ndarray]:
     """Compute macro-averaged F1 score, and F1 score per class.
 
     Parameters
@@ -2239,9 +2046,7 @@ def _compute_f_measure(
     return macro_f_measure, f_measure
 
 
-def _compute_beta_measures(
-    labels: np.ndarray, outputs: np.ndarray, beta: Real
-) -> Tuple[float, float]:
+def _compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) -> Tuple[float, float]:
     """Compute F-beta and G-beta measures.
 
     Parameters
@@ -2272,9 +2077,7 @@ def _compute_beta_measures(
     for k in range(num_classes):
         tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
         if (1 + beta**2) * tp + fp + beta**2 * fn:
-            f_beta_measure[k] = float((1 + beta**2) * tp) / float(
-                (1 + beta**2) * tp + fp + beta**2 * fn
-            )
+            f_beta_measure[k] = float((1 + beta**2) * tp) / float((1 + beta**2) * tp + fp + beta**2 * fn)
         else:
             f_beta_measure[k] = float("nan")
         if tp + fp + beta * fn:
@@ -2288,9 +2091,7 @@ def _compute_beta_measures(
     return macro_f_beta_measure, macro_g_beta_measure
 
 
-def _compute_auc(
-    labels: np.ndarray, outputs: np.ndarray
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
+def _compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """Compute macro-averaged AUROC and macro-averaged AUPRC.
 
     Parameters
@@ -2397,9 +2198,7 @@ def _compute_auc(
 
 
 # Compute modified confusion matrix for multi-class, multi-label tasks.
-def _compute_modified_confusion_matrix(
-    labels: np.ndarray, outputs: np.ndarray
-) -> np.ndarray:
+def _compute_modified_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndarray:
     """
     Compute a binary multi-class, multi-label confusion matrix,
     where the rows are the labels and the columns are the outputs.
@@ -2425,9 +2224,7 @@ def _compute_modified_confusion_matrix(
     # Iterate over all of the recordings.
     for i in range(num_recordings):
         # Calculate the number of positive labels and/or outputs.
-        normalization = float(
-            max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1)
-        )
+        normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
         # Iterate over all of the classes.
         for j in range(num_classes):
             # Assign full and/or partial credit for each positive class.
@@ -2492,9 +2289,7 @@ def compute_challenge_metric(
     inactive_score = np.nansum(weights * A)
 
     if correct_score != inactive_score:
-        normalized_score = float(observed_score - inactive_score) / float(
-            correct_score - inactive_score
-        )
+        normalized_score = float(observed_score - inactive_score) / float(correct_score - inactive_score)
     else:
         normalized_score = 0.0
 

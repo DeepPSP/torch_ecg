@@ -1,21 +1,20 @@
 """
 """
 
-import torch
 import pytest
+import torch
 
 from torch_ecg.cfg import CFG
 from torch_ecg.preprocessors import (
-    PreprocManager,
     BandPass,
     BaselineRemove,
-    Normalize,
     MinMaxNormalize,
     NaiveNormalize,
-    ZScoreNormalize,
+    Normalize,
+    PreprocManager,
     Resample,
+    ZScoreNormalize,
 )
-
 
 test_sig = torch.randn(2, 12, 8000)
 
@@ -69,9 +68,7 @@ def test_preproc_manager() -> None:
     )
 
     ppm.random = True
-    with pytest.warns(
-        RuntimeWarning, match="The preprocessors are applied in random order"
-    ):
+    with pytest.warns(RuntimeWarning, match="The preprocessors are applied in random order"):
         ppm.rearrange(
             new_ordering=[
                 "bandpass",
@@ -135,9 +132,7 @@ def test_baseline_remove() -> None:
     sig = test_sig.clone()
     sig = br(sig)
 
-    with pytest.warns(
-        RuntimeWarning, match="values of `window1` and `window2` are switched"
-    ):
+    with pytest.warns(RuntimeWarning, match="values of `window1` and `window2` are switched"):
         br = BaselineRemove(fs=500, window1=0.7, window2=0.3)
 
     del br, sig

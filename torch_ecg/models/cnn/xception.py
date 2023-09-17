@@ -8,19 +8,14 @@ import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import Optional, Sequence, Union, List
+from typing import List, Optional, Sequence, Union
 
 from torch import Tensor, nn
 
 from ...cfg import CFG
 from ...models._nets import DownSample, MultiConv
-from ...utils.misc import add_docstring, CitationMixin
-from ...utils.utils_nn import (
-    SizeMixin,
-    compute_sequential_output_shape,
-    compute_sequential_output_shape_docstring,
-)
-
+from ...utils.misc import CitationMixin, add_docstring
+from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
 
 __all__ = [
     "Xception",
@@ -118,16 +113,14 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         else:
             self.__dilations = list(dilations)
         assert self.__num_convs == len(self.__dilations), (
-            f"the main stream has {self.__num_convs} convolutions, "
-            f"while `dilations` indicates {len(self.__dilations)}"
+            f"the main stream has {self.__num_convs} convolutions, " f"while `dilations` indicates {len(self.__dilations)}"
         )
         if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_convs == len(self.__dropouts), (
-            f"the main stream has {self.__num_convs} convolutions, "
-            f"while `dropouts` indicates {len(self.__dropouts)}"
+            f"the main stream has {self.__num_convs} convolutions, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -207,9 +200,7 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         """
         output_shape = self.main_stream_conv.compute_output_shape(seq_len, batch_size)
         if not isinstance(self.subsample, nn.Identity):
-            output_shape = self.subsample.compute_output_shape(
-                output_shape[-1], output_shape[0]
-            )
+            output_shape = self.subsample.compute_output_shape(output_shape[-1], output_shape[0])
         return output_shape
 
 
@@ -288,13 +279,10 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         else:
             self.__filter_lengths = list(filter_lengths)
         assert self.__num_blocks == len(self.__filter_lengths), (
-            f"the entry flow has {self.__num_blocks} blocks, "
-            f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
+            f"the entry flow has {self.__num_blocks} blocks, " f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
         )
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(subsample_lengths, self.__num_blocks)
-            )
+            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
         else:
             self.__subsample_lengths = list(subsample_lengths)
         assert self.__num_blocks == len(self.__subsample_lengths), (
@@ -304,9 +292,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
-            self.__subsample_kernels = list(
-                repeat(subsample_kernels, self.__num_blocks)
-            )
+            self.__subsample_kernels = list(repeat(subsample_kernels, self.__num_blocks))
         else:
             self.__subsample_kernels = list(subsample_kernels)
         assert self.__num_blocks == len(self.__subsample_kernels), (
@@ -318,16 +304,14 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         else:
             self.__dilations = list(dilations)
         assert self.__num_blocks == len(self.__dilations), (
-            f"the entry flow has {self.__num_blocks} blocks, "
-            f"while `dilations` indicates {len(self.__dilations)}"
+            f"the entry flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
         if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
-            f"the entry flow has {self.__num_blocks} blocks, "
-            f"while `dropouts` indicates {len(self.__dropouts)}"
+            f"the entry flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
         if isinstance(block_dropouts, (Real, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
@@ -383,26 +367,18 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             )
             block_in_channels = block_out_channels[-1]
             if isinstance(self.__block_dropouts[idx], dict):
-                if (
-                    self.__block_dropouts[idx]["type"] == "1d"
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                if self.__block_dropouts[idx]["type"] == "1d" and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"entry_flow_dropout_{idx}",
                         nn.Dropout1d(self.__block_dropouts[idx]["p"]),
                     )
-                elif (
-                    self.__block_dropouts[idx]["type"] is None
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                elif self.__block_dropouts[idx]["type"] is None and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"entry_flow_dropout_{idx}",
                         nn.Dropout(self.__block_dropouts[idx]["p"]),
                     )
             elif self.__block_dropouts[idx] > 0:
-                self.add_module(
-                    f"entry_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
-                )
+                self.add_module(f"entry_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx]))
 
     def forward(self, input: Tensor) -> Tensor:
         """Forward pass of the entry flow.
@@ -509,32 +485,28 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         else:
             self.__filter_lengths = list(filter_lengths)
         assert self.__num_blocks == len(self.__filter_lengths), (
-            f"the middle flow has {self.__num_blocks} blocks, "
-            f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
+            f"the middle flow has {self.__num_blocks} blocks, " f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
         )
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
         assert self.__num_blocks == len(self.__dilations), (
-            f"the middle flow has {self.__num_blocks} blocks, "
-            f"while `dilations` indicates {len(self.__dilations)}"
+            f"the middle flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
         if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
-            f"the middle flow has {self.__num_blocks} blocks, "
-            f"while `dropouts` indicates {len(self.__dropouts)}"
+            f"the middle flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
         if isinstance(block_dropouts, (Real, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
         assert self.__num_blocks == len(self.__block_dropouts), (
-            f"the middle flow has {self.__num_blocks} blocks, "
-            f"while `block_dropouts` indicates {len(self.__block_dropouts)}"
+            f"the middle flow has {self.__num_blocks} blocks, " f"while `block_dropouts` indicates {len(self.__block_dropouts)}"
         )
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
@@ -561,26 +533,18 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
             )
             block_in_channels = block_out_channels[-1]
             if isinstance(self.__block_dropouts[idx], dict):
-                if (
-                    self.__block_dropouts[idx]["type"] == "1d"
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                if self.__block_dropouts[idx]["type"] == "1d" and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"middle_flow_dropout_{idx}",
                         nn.Dropout1d(self.__block_dropouts[idx]["p"]),
                     )
-                elif (
-                    self.__block_dropouts[idx]["type"] is None
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                elif self.__block_dropouts[idx]["type"] is None and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"middle_flow_dropout_{idx}",
                         nn.Dropout(self.__block_dropouts[idx]["p"]),
                     )
             elif self.__block_dropouts[idx] > 0:
-                self.add_module(
-                    f"middle_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
-                )
+                self.add_module(f"middle_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx]))
 
     def forward(self, input: Tensor) -> Tensor:
         """Forward pass of the middle flow.
@@ -704,9 +668,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             self.__filter_lengths
         ), f"the exit flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(
-                repeat(subsample_lengths, self.__num_blocks)
-            )
+            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
         else:
             self.__subsample_lengths = list(subsample_lengths)
         assert self.__num_blocks == len(self.__subsample_lengths), (
@@ -716,9 +678,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
-            self.__subsample_kernels = list(
-                repeat(subsample_kernels, self.__num_blocks)
-            )
+            self.__subsample_kernels = list(repeat(subsample_kernels, self.__num_blocks))
         else:
             self.__subsample_kernels = list(subsample_kernels)
         assert self.__num_blocks == len(self.__subsample_kernels), (
@@ -730,26 +690,20 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         else:
             self.__dilations = list(dilations)
         assert self.__num_blocks == len(self.__dilations), (
-            f"the exit flow has {self.__num_blocks} blocks, "
-            f"while `dilations` indicates {len(self.__dilations)}"
+            f"the exit flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
         if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
-            f"the exit flow has {self.__num_blocks} blocks, "
-            f"while `dropouts` indicates {len(self.__dropouts)}"
+            f"the exit flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
         if isinstance(block_dropouts, (Real, dict)):
-            self.__block_dropouts = list(
-                repeat(block_dropouts, self.__num_blocks + len(final_num_filters))
-            )
+            self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks + len(final_num_filters)))
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks + len(final_num_filters) == len(
-            self.__block_dropouts
-        ), (
+        assert self.__num_blocks + len(final_num_filters) == len(self.__block_dropouts), (
             f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, "
             f"including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         )
@@ -780,26 +734,18 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             )
             block_in_channels = block_out_channels[-1]
             if isinstance(self.__block_dropouts[idx], dict):
-                if (
-                    self.__block_dropouts[idx]["type"] == "1d"
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                if self.__block_dropouts[idx]["type"] == "1d" and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"exit_flow_dropout_{idx}",
                         nn.Dropout1d(self.__block_dropouts[idx]["p"]),
                     )
-                elif (
-                    self.__block_dropouts[idx]["type"] is None
-                    and self.__block_dropouts[idx]["p"] > 0
-                ):
+                elif self.__block_dropouts[idx]["type"] is None and self.__block_dropouts[idx]["p"] > 0:
                     self.add_module(
                         f"exit_flow_dropout_{idx}",
                         nn.Dropout(self.__block_dropouts[idx]["p"]),
                     )
             elif self.__block_dropouts[idx] > 0:
-                self.add_module(
-                    f"exit_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
-                )
+                self.add_module(f"exit_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx]))
 
         self.add_module(
             "final_convs",
@@ -896,21 +842,15 @@ class Xception(nn.Sequential, SizeMixin, CitationMixin):
         self.config = CFG(deepcopy(config))
 
         entry_flow_in_channels = self.__in_channels
-        entry_flow = XceptionEntryFlow(
-            in_channels=entry_flow_in_channels, **(self.config.entry_flow)
-        )
+        entry_flow = XceptionEntryFlow(in_channels=entry_flow_in_channels, **(self.config.entry_flow))
         self.add_module("entry_flow", entry_flow)
 
         _, middle_flow_in_channels, _ = entry_flow.compute_output_shape()
-        middle_flow = XceptionMiddleFlow(
-            in_channels=middle_flow_in_channels, **(self.config.middle_flow)
-        )
+        middle_flow = XceptionMiddleFlow(in_channels=middle_flow_in_channels, **(self.config.middle_flow))
         self.add_module("middle_flow", middle_flow)
 
         _, exit_flow_in_channels, _ = middle_flow.compute_output_shape()
-        exit_flow = XceptionExitFlow(
-            in_channels=exit_flow_in_channels, **(self.config.exit_flow)
-        )
+        exit_flow = XceptionExitFlow(in_channels=exit_flow_in_channels, **(self.config.exit_flow))
         self.add_module(
             "exit_flow",
             exit_flow,

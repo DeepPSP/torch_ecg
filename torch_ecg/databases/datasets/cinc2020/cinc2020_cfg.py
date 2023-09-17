@@ -45,9 +45,7 @@ def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
             ]
         }
     )
-    cfg.tranche_classes = CFG(
-        {t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()}
-    )
+    cfg.tranche_classes = CFG({t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()})
 
     cfg.class_weights = get_class_weight(
         tranches="ABEF",
@@ -134,9 +132,7 @@ CINC2020TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimi
 CINC2020TrainCfg.learning_rate = 1e-4  # 1e-3
 CINC2020TrainCfg.lr = CINC2020TrainCfg.learning_rate
 
-CINC2020TrainCfg.lr_scheduler = (
-    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
-)
+CINC2020TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 CINC2020TrainCfg.lr_step_size = 50
 CINC2020TrainCfg.lr_gamma = 0.1
 CINC2020TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
@@ -153,9 +149,7 @@ CINC2020TrainCfg.early_stopping.patience = 10
 # CINC2020TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 CINC2020TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
 CINC2020TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
-CINC2020TrainCfg.flooding_level = (
-    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2020?
-)
+CINC2020TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2020?
 
 CINC2020TrainCfg.monitor = "challenge_metric"
 

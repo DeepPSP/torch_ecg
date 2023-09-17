@@ -3,7 +3,12 @@
 # Do *not* edit this script.
 # These are helper functions that you can use with your code.
 
-import os, numpy as np, scipy as sp, scipy.io, scipy.io.wavfile  # noqa: E401
+import os
+
+import numpy as np  # noqa: E401
+import scipy as sp
+import scipy.io
+import scipy.io.wavfile
 
 
 # Check if a variable is a number or represents a number.
@@ -52,9 +57,7 @@ def find_patient_files(data_folder):
     # To help with debugging, sort numerically if the filenames are integers.
     roots = [os.path.split(filename)[1][:-4] for filename in filenames]
     if all(is_integer(root) for root in roots):
-        filenames = sorted(
-            filenames, key=lambda filename: int(os.path.split(filename)[1][:-4])
-        )
+        filenames = sorted(filenames, key=lambda filename: int(os.path.split(filename)[1][:-4]))
 
     return filenames
 
@@ -220,9 +223,7 @@ def get_murmur(data):
             except Exception:
                 pass
     if murmur is None:
-        raise ValueError(
-            "No murmur available. Is your code trying to load labels from the hidden data?"
-        )
+        raise ValueError("No murmur available. Is your code trying to load labels from the hidden data?")
     return murmur
 
 
@@ -236,17 +237,13 @@ def get_outcome(data):
             except Exception:
                 pass
     if outcome is None:
-        raise ValueError(
-            "No outcome available. Is your code trying to load labels from the hidden data?"
-        )
+        raise ValueError("No outcome available. Is your code trying to load labels from the hidden data?")
     return outcome
 
 
 # Sanitize binary values from Challenge outputs.
 def sanitize_binary_value(x):
-    x = (
-        str(x).replace('"', "").replace("'", "").strip()
-    )  # Remove any quotes or invisible characters.
+    x = str(x).replace('"', "").replace("'", "").strip()  # Remove any quotes or invisible characters.
     if (is_finite_number(x) and float(x) == 1) or (x in ("True", "true", "T", "t")):
         return 1
     else:
@@ -255,9 +252,7 @@ def sanitize_binary_value(x):
 
 # Santize scalar values from Challenge outputs.
 def sanitize_scalar_value(x):
-    x = (
-        str(x).replace('"', "").replace("'", "").strip()
-    )  # Remove any quotes or invisible characters.
+    x = str(x).replace('"', "").replace("'", "").strip()  # Remove any quotes or invisible characters.
     if is_finite_number(x) or (is_number(x) and np.isinf(float(x))):
         return float(x)
     else:
@@ -271,16 +266,7 @@ def save_challenge_outputs(filename, patient_id, classes, labels, probabilities)
     class_string = ",".join(str(c) for c in classes)
     label_string = ",".join(str(lb) for lb in labels)
     probabilities_string = ",".join(str(p) for p in probabilities)
-    output_string = (
-        patient_string
-        + "\n"
-        + class_string
-        + "\n"
-        + label_string
-        + "\n"
-        + probabilities_string
-        + "\n"
-    )
+    output_string = patient_string + "\n" + class_string + "\n" + label_string + "\n" + probabilities_string + "\n"
 
     # Write the Challenge outputs.
     with open(filename, "w") as f:
@@ -298,9 +284,7 @@ def load_challenge_outputs(filename):
             elif i == 2:
                 labels = tuple(sanitize_binary_value(entry) for entry in l.split(","))
             elif i == 3:
-                probabilities = tuple(
-                    sanitize_scalar_value(entry) for entry in l.split(",")
-                )
+                probabilities = tuple(sanitize_scalar_value(entry) for entry in l.split(","))
             else:
                 break
     return patient_id, classes, labels, probabilities

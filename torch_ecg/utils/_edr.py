@@ -9,7 +9,6 @@ from typing import Sequence
 
 import numpy as np
 
-
 __all__ = [
     "phs_edr",
 ]
@@ -64,9 +63,7 @@ def phs_edr(
 
     if mode == "simple":
         if len(rpeaks) > 0:
-            ecg_der_rsp = np.vectorize(lambda idx: _getxy(sig, idx - winL, idx + winR))(
-                np.array(rpeaks)
-            )
+            ecg_der_rsp = np.vectorize(lambda idx: _getxy(sig, idx - winL, idx + winR))(np.array(rpeaks))
         else:
             ecg_der_rsp = np.array([])
     elif mode == "complex":

@@ -14,7 +14,6 @@ from ..cfg import DEFAULTS
 from ..utils.utils_signal import get_ampl
 from .base import Augmenter
 
-
 __all__ = [
     "BaselineWanderAugmenter",
 ]
@@ -151,22 +150,14 @@ class BaselineWanderAugmenter(Augmenter):
                     self.gaussian,
                 )
             )
-        assert (
-            self.bw_fs.ndim == 1
-            and self.ampl_ratio.ndim == 2
-            and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
-        )
+        assert self.bw_fs.ndim == 1 and self.ampl_ratio.ndim == 2 and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
         self.inplace = inplace
 
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
     def forward(
-        self,
-        sig: Tensor,
-        label: Optional[Tensor],
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        self, sig: Tensor, label: Optional[Tensor], *extra_tensors: Sequence[Tensor], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """Forward function of the :class:`BaselineWanderAugmenter`.
 
@@ -195,11 +186,7 @@ class BaselineWanderAugmenter(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob > 0:
-            sig.add_(
-                gen_baseline_wander(
-                    sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian
-                )
-            )
+            sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
@@ -232,9 +219,7 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
             get_ampl,
             iterable=[(sig[i].cpu().numpy(), fs) for i in range(sig.shape[0])],
         )
-    ampl = torch.as_tensor(
-        np.array(ampl), dtype=sig.dtype, device=sig.device
-    ).unsqueeze(-1)
+    ampl = torch.as_tensor(np.array(ampl), dtype=sig.dtype, device=sig.device).unsqueeze(-1)
     return ampl
 
 
@@ -403,7 +388,5 @@ def gen_baseline_wander(
                 for j in range(sig.shape[1])
             ],
         )
-    bw = torch.as_tensor(np.array(bw), dtype=sig.dtype, device=sig.device).reshape(
-        batch, lead, siglen
-    )
+    bw = torch.as_tensor(np.array(bw), dtype=sig.dtype, device=sig.device).reshape(batch, lead, siglen)
     return bw

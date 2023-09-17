@@ -2,11 +2,12 @@
 """
 
 import warnings
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import torch
 from torch import Tensor, nn
 from torch.nn import Module, Parameter
+
 from torch_ecg.utils.utils_nn import SizeMixin
 
 
@@ -15,9 +16,7 @@ class LayerNorm(nn.LayerNorm):
 
     def forward(self, input: Tensor) -> Tensor:
         x = input.transpose(-2, -1)
-        x = nn.functional.layer_norm(
-            x, self.normalized_shape, self.weight, self.bias, self.eps
-        )
+        x = nn.functional.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
         x = x.transpose(-2, -1)
         return x
 
@@ -65,10 +64,7 @@ class ConvLayerBlock(Module):
         x = nn.functional.gelu(x)
 
         if length is not None:
-            length = (
-                torch.div(length - self.kernel_size, self.stride, rounding_mode="floor")
-                + 1
-            )
+            length = torch.div(length - self.kernel_size, self.stride, rounding_mode="floor") + 1
             # When input length is 0, the resulting length can be negative. So fix it here.
             length = torch.max(torch.zeros_like(length), length)
         return x, length
@@ -109,10 +105,7 @@ class FeatureExtractor(SizeMixin, Module):
                 Valid length of each output sample. shape: ``[batch, ]``.
         """
         if x.ndim != 2:
-            raise ValueError(
-                "Expected the input Tensor to be 2D (batch, time), "
-                "but received {list(x.shape)}"
-            )
+            raise ValueError("Expected the input Tensor to be 2D (batch, time), " "but received {list(x.shape)}")
 
         x = x.unsqueeze(1)  # (batch, channel==1, frame)
         for layer in self.conv_layers:
@@ -193,10 +186,7 @@ class ConvolutionalPositionalEmbedding(Module):
             # normally we would do `if isinstance(...)` but this class is not accessible
             # because of shadowing, so we check the module name directly.
             # https://github.com/pytorch/pytorch/blob/be0ca00c5ce260eb5bcec3237357f7a30cc08983/torch/nn/utils/__init__.py#L3
-            if (
-                hook.__module__ == "torch.nn.utils.weight_norm"
-                and hook.__class__.__name__ == "WeightNorm"
-            ):
+            if hook.__module__ == "torch.nn.utils.weight_norm" and hook.__class__.__name__ == "WeightNorm":
                 warnings.warn(
                     f"Removing weight_norm from `{self.__class__.__name__}`",
                     RuntimeWarning,
@@ -240,9 +230,7 @@ class SelfAttention(Module):
         super().__init__()
         head_dim = embed_dim // num_heads
         if head_dim * num_heads != embed_dim:
-            raise ValueError(
-                f"`embed_dim ({embed_dim})` is not divisible by `num_heads ({num_heads})`"
-            )
+            raise ValueError(f"`embed_dim ({embed_dim})` is not divisible by `num_heads ({num_heads})`")
 
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -272,17 +260,13 @@ class SelfAttention(Module):
         """
         if x.ndim != 3 or x.shape[2] != self.embed_dim:
             raise ValueError(
-                f"The expected input shape is (batch, sequence, embed_dim=={self.embed_dim}). "
-                f"Found {x.shape}."
+                f"The expected input shape is (batch, sequence, embed_dim=={self.embed_dim}). " f"Found {x.shape}."
             )
         batch_size, length, embed_dim = x.size()
         if attention_mask is not None:
             shape_ = (batch_size, 1, length, length)
             if attention_mask.size() != shape_:
-                raise ValueError(
-                    f"The expected attention mask shape is {shape_}. "
-                    f"Found {attention_mask.size()}."
-                )
+                raise ValueError(f"The expected attention mask shape is {shape_}. " f"Found {attention_mask.size()}.")
 
         shape = (batch_size, length, self.num_heads, self.head_dim)
         q = self.q_proj(x).view(*shape).transpose(2, 1)  # B, nH, L, Hd
@@ -430,9 +414,7 @@ class Transformer(SizeMixin, Module):
     ) -> List[Tensor]:
         if num_layers is not None:
             if not 0 < num_layers <= len(self.layers):
-                raise ValueError(
-                    f"`num_layers` must be between [1, {len(self.layers)}]"
-                )
+                raise ValueError(f"`num_layers` must be between [1, {len(self.layers)}]")
 
         ret: List[Tensor] = []
         x = self._preprocess(x)
@@ -465,10 +447,7 @@ class Encoder(SizeMixin, Module):
         if lengths is not None:
             batch_size, max_len, _ = x.shape
             # create mask for padded elements and zero-out them
-            mask = (
-                torch.arange(max_len, device=lengths.device).expand(batch_size, max_len)
-                >= lengths[:, None]
-            )
+            mask = torch.arange(max_len, device=lengths.device).expand(batch_size, max_len) >= lengths[:, None]
             x[mask] = 0.0
             # extend the mask to attention shape and set weight
             mask = -10000.0 * mask[:, None, None, :].to(dtype=features.dtype)
@@ -491,9 +470,7 @@ class Encoder(SizeMixin, Module):
         num_layers: Optional[int] = None,
     ) -> List[Tensor]:
         x, masks = self._preprocess(features, lengths)
-        return self.transformer.get_intermediate_outputs(
-            x, attention_mask=masks, num_layers=num_layers
-        )
+        return self.transformer.get_intermediate_outputs(x, attention_mask=masks, num_layers=num_layers)
 
 
 ################################################################################
@@ -709,9 +686,7 @@ def _get_encoder(
             https://github.com/pytorch/fairseq/blob/425c36eafff535fe7337f8bdd5ace22ebacc78cb/examples/wav2vec/config/finetuning/vox_960h.yaml#L54
     """
     feature_projection = FeatureProjection(in_features, embed_dim, dropout_input)
-    pos_conv = ConvolutionalPositionalEmbedding(
-        embed_dim, pos_conv_kernel, pos_conv_groups
-    )
+    pos_conv = ConvolutionalPositionalEmbedding(embed_dim, pos_conv_kernel, pos_conv_groups)
 
     # Original impl
     # https://github.com/pytorch/fairseq/blob/425c36eafff535fe7337f8bdd5ace22ebacc78cb/fairseq/models/wav2vec/wav2vec2.py#L768-L782
@@ -847,17 +822,9 @@ def _compute_mask_indices(
             if sz - min_len <= num_mask:
                 min_len = sz - num_mask - 1
 
-            mask_idc = torch.multinomial(
-                torch.ones((sz - min_len,)), num_samples=num_mask, replacement=False
-            )
+            mask_idc = torch.multinomial(torch.ones((sz - min_len,)), num_samples=num_mask, replacement=False)
 
-            mask_idc = torch.tensor(
-                [
-                    mask_idc[j] + offset
-                    for j in range(len(mask_idc))
-                    for offset in range(lengths[j])
-                ]
-            )
+            mask_idc = torch.tensor([mask_idc[j] + offset for j in range(len(mask_idc)) for offset in range(lengths[j])])
 
         mask_idcs.append(torch.unique(mask_idc[mask_idc < sz]))
 
@@ -888,10 +855,7 @@ def _get_padding_mask(input: Tensor, lengths: Tensor) -> Tensor:
         (Tensor): The padding mask.
     """
     batch_size, max_len, _ = input.shape
-    mask = (
-        torch.arange(max_len, device=lengths.device).expand(batch_size, max_len)
-        >= lengths[:, None]
-    )
+    mask = torch.arange(max_len, device=lengths.device).expand(batch_size, max_len) >= lengths[:, None]
     return mask
 
 
@@ -990,9 +954,7 @@ class MaskGenerator(Module):
                 no_overlap=self.no_mask_channel_overlap,
                 min_space=self.mask_channel_min_space,
             )
-            mask_channel_indices = (
-                mask_channel_indices.to(x.device).unsqueeze(1).expand(-1, T, -1)
-            )
+            mask_channel_indices = mask_channel_indices.to(x.device).unsqueeze(1).expand(-1, T, -1)
             x[mask_channel_indices] = 0
 
         return x, mask_indices
@@ -1019,9 +981,7 @@ def _compute_logits(
     pos = pos.unsqueeze(0)
     targets = torch.cat([pos, negs], dim=0)
 
-    logits = torch.cosine_similarity(proj_x.float(), targets.float(), dim=-1).type_as(
-        proj_x
-    )
+    logits = torch.cosine_similarity(proj_x.float(), targets.float(), dim=-1).type_as(proj_x)
     logits /= logit_temp
     if neg_is_pos.any():
         logits[1:][neg_is_pos] = float("-inf")
@@ -1054,9 +1014,7 @@ class LogitGenerator(Module):
         self.skip_masked = skip_masked
         self.skip_nomask = skip_nomask
 
-    def forward(
-        self, x: Tensor, label: Tensor, mask_m: Tensor, mask_u: Tensor
-    ) -> Tuple[Tensor, Tensor]:
+    def forward(self, x: Tensor, label: Tensor, mask_m: Tensor, mask_u: Tensor) -> Tuple[Tensor, Tensor]:
         """
         Args:
             x (Tensor): The feature representation of the last transformer layer.

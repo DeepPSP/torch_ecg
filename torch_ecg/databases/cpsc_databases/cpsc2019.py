@@ -3,7 +3,7 @@
 import json
 from numbers import Real
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union, List, Tuple
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,6 @@ from scipy.io import loadmat
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
-
 
 __all__ = [
     "CPSC2019",
@@ -132,27 +131,15 @@ class CPSC2019(CPSCDataBase):
             "Please allow some time for the reader to confirm "
             "the existence of corresponding data files and annotation files..."
         )
-        self._df_records["record"] = [
-            f"data_{i:05d}" for i in range(1, 1 + self.n_records)
-        ]
-        self._df_records["path"] = self._df_records["record"].apply(
-            lambda x: self.data_dir / x
-        )
-        self._df_records["annotation"] = self._df_records["record"].apply(
-            lambda x: x.replace("data", "R")
-        )
+        self._df_records["record"] = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
+        self._df_records["path"] = self._df_records["record"].apply(lambda x: self.data_dir / x)
+        self._df_records["annotation"] = self._df_records["record"].apply(lambda x: x.replace("data", "R"))
         self._df_records.index = self._df_records["record"]
         self._df_records = self._df_records.drop(columns="record")
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
-        self._all_records = [
-            rec
-            for rec in self._all_records
-            if self.get_absolute_path(rec, self.rec_ext).is_file()
-        ]
+        self._all_records = [rec for rec in self._all_records if self.get_absolute_path(rec, self.rec_ext).is_file()]
         self._all_annotations = [
-            ann
-            for ann in self._all_annotations
-            if self.get_absolute_path(ann, self.ann_ext, ann=True).is_file()
+            ann for ann in self._all_annotations if self.get_absolute_path(ann, self.ann_ext, ann=True).is_file()
         ]
         common = set([rec.split("_")[1] for rec in self._all_records]) & set(
             [ann.split("_")[1] for ann in self._all_annotations]
@@ -439,8 +426,7 @@ def compute_metrics(
 
     """
     assert len(rpeaks_truths) == len(rpeaks_preds), (
-        f"number of records does not match, truth indicates {len(rpeaks_truths)}, "
-        f"while pred indicates {len(rpeaks_preds)}"
+        f"number of records does not match, truth indicates {len(rpeaks_truths)}, " f"while pred indicates {len(rpeaks_preds)}"
     )
     n_records = len(rpeaks_truths)
     record_flags = np.ones((len(rpeaks_truths),), dtype=float)
@@ -457,16 +443,12 @@ def compute_metrics(
             next_t_ind = extended_truth_arr[j + 1]
             loc = np.where(np.abs(pred_arr - t_ind) <= thr_)[0]
             if j == 0:
-                err = np.where(
-                    (pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_)
-                )[0]
+                err = np.where((pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_))[0]
             else:
                 err = np.array([], dtype=int)
             err = np.append(
                 err,
-                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[
-                    0
-                ],
+                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[0],
             )
 
             false_positive += len(err)

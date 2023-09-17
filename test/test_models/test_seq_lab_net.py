@@ -9,10 +9,9 @@ import pytest
 import torch
 from tqdm.auto import tqdm
 
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET, ECG_SEQ_LAB_NET_v1
 from torch_ecg.model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET, ECG_SEQ_LAB_NET_v1
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
-
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
@@ -43,15 +42,11 @@ def test_ecg_seq_lab_net():
         model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
-        assert out.shape == model.compute_output_shape(
-            seq_len=inp.shape[-1], batch_size=inp.shape[0]
-        )
+        assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
         if recover_length:
             assert out.shape[1] == inp.shape[-1]
 
-        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config).to(
-            DEVICE
-        )
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model.cnn.load_state_dict(model_v1.cnn.state_dict())
@@ -74,22 +69,14 @@ def test_warns_errors():
     fs = 400
     classes = ["N"]
 
-    with pytest.warns(
-        RuntimeWarning, match="No config is provided, using default config"
-    ):
+    with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12).to(DEVICE)
-    with pytest.warns(
-        RuntimeWarning, match="No config is provided, using default config"
-    ):
+    with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12).to(DEVICE)
 
-    with pytest.raises(
-        NotImplementedError, match="implement a task specific inference method"
-    ):
+    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model.inference(inp)
-    with pytest.raises(
-        NotImplementedError, match="implement a task specific inference method"
-    ):
+    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model_v1.inference(inp)
 
 
@@ -98,9 +85,7 @@ def test_from_v1():
     n_leads = 12
     classes = ["N"]
     model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=n_leads, config=config)
-    model_v1.save(
-        _TMP_DIR / "ecg_seq_lab_net_v1.pth", {"classes": classes, "n_leads": n_leads}
-    )
+    model_v1.save(_TMP_DIR / "ecg_seq_lab_net_v1.pth", {"classes": classes, "n_leads": n_leads})
     model = ECG_SEQ_LAB_NET.from_v1(_TMP_DIR / "ecg_seq_lab_net_v1.pth")
     (_TMP_DIR / "ecg_seq_lab_net_v1.pth").unlink()
     del model_v1, model

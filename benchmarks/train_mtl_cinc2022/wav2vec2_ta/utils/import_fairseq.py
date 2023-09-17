@@ -20,19 +20,14 @@ def _parse_config(w2v_model):
     else:
         extractor_mode = "layer_norm"
 
-    conv_layer_config = [
-        (cl[0].out_channels, cl[0].kernel_size[0], cl[0].stride[0])
-        for cl in conv_layers
-    ]
+    conv_layer_config = [(cl[0].out_channels, cl[0].kernel_size[0], cl[0].stride[0]) for cl in conv_layers]
 
     if all(cl[0].bias is None for cl in conv_layers):
         conv_bias = False
     elif all(cl[0].bias is not None for cl in conv_layers):
         conv_bias = True
     else:
-        raise ValueError(
-            "Either all the convolutions layers have bias term or none of them should."
-        )
+        raise ValueError("Either all the convolutions layers have bias term or none of them should.")
 
     config = {
         "extractor_mode": extractor_mode,
@@ -95,18 +90,12 @@ def _map_key(key):
     if match:
         return f"encoder.transformer.layer_norm.{match.group(1)}"
     # Encoder - Transformer - Self attention layers
-    match = re.match(
-        r"encoder\.layers\.(\d+)\.self_attn\.((k_|v_|q_|out_)proj\.(weight|bias))", key
-    )
+    match = re.match(r"encoder\.layers\.(\d+)\.self_attn\.((k_|v_|q_|out_)proj\.(weight|bias))", key)
     if match:
         return f"encoder.transformer.layers.{match.group(1)}.attention.{match.group(2)}"
-    match = re.match(
-        r"encoder\.layers\.(\d+)\.self_attn_layer_norm\.(weight|bias)", key
-    )
+    match = re.match(r"encoder\.layers\.(\d+)\.self_attn_layer_norm\.(weight|bias)", key)
     if match:
-        return (
-            f"encoder.transformer.layers.{match.group(1)}.layer_norm.{match.group(2)}"
-        )
+        return f"encoder.transformer.layers.{match.group(1)}.layer_norm.{match.group(2)}"
     match = re.match(r"encoder\.layers\.(\d+)\.fc1\.(weight|bias)", key)
     if match:
         return f"encoder.transformer.layers.{match.group(1)}.feed_forward.intermediate_dense.{match.group(2)}"
@@ -198,9 +187,7 @@ def import_fairseq_model(original: Module) -> Wav2Vec2Model:
         return _import_hubert_pretraining(original)
     if class_ == "HubertEncoder":
         return _import_hubert_finetuning(original)
-    raise ValueError(
-        f"Expected an instance of `Wav2Vec2Model` or `Wav2VecEncoder`. Found: {class_}"
-    )
+    raise ValueError(f"Expected an instance of `Wav2Vec2Model` or `Wav2VecEncoder`. Found: {class_}")
 
 
 def _import_wav2vec2_finetuning(original: Module) -> Wav2Vec2Model:

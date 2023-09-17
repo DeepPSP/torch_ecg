@@ -11,7 +11,6 @@ import numpy as np
 
 from .base import PreProcessor, preprocess_multi_lead_signal
 
-
 __all__ = [
     "BaselineRemove",
 ]
@@ -40,16 +39,12 @@ class BaselineRemove(PreProcessor):
 
     __name__ = "BaselineRemove"
 
-    def __init__(
-        self, window1: float = 0.2, window2: float = 0.6, **kwargs: Any
-    ) -> None:
+    def __init__(self, window1: float = 0.2, window2: float = 0.6, **kwargs: Any) -> None:
         self.window1 = window1
         self.window2 = window2
         if self.window2 < self.window1:
             self.window1, self.window2 = self.window2, self.window1
-            warnings.warn(
-                "values of `window1` and `window2` are switched", RuntimeWarning
-            )
+            warnings.warn("values of `window1` and `window2` are switched", RuntimeWarning)
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """Apply the preprocessor to `sig`.

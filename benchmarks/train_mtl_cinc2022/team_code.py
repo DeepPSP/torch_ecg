@@ -13,45 +13,37 @@ import time
 from copy import deepcopy
 from itertools import repeat
 from pathlib import Path
-from typing import List, Tuple, Dict, Union
+from typing import Dict, List, Tuple, Union
 
 import numpy as np
-from sklearn.base import BaseEstimator
 import torch
-from torch.nn.parallel import (  # noqa: F401
-    DistributedDataParallel as DDP,
-    DataParallel as DP,
-)  # noqa: F401
-from torch_ecg.cfg import CFG
-from torch_ecg._preprocessors import PreprocManager
-
-from cfg import TrainCfg, ModelCfg, OutcomeCfg, remove_extra_heads
+from cfg import ModelCfg, OutcomeCfg, TrainCfg, remove_extra_heads
 from dataset import CinC2022Dataset
+from helper_code import find_patient_files, get_locations
 from inputs import (  # noqa: F401
-    InputConfig,
     BaseInput,
-    WaveformInput,
-    SpectrogramInput,
+    InputConfig,
     MelSpectrogramInput,
     MFCCInput,
     SpectralInput,
-)  # noqa: F401
+    SpectrogramInput,
+    WaveformInput,
+)
 from models import (  # noqa: F401
     CRNN_CINC2022,
     SEQ_LAB_NET_CINC2022,
     UNET_CINC2022,
-    Wav2Vec2_CINC2022,
     HFWav2Vec2_CINC2022,
     OutComeClassifier_CINC2022,
-)  # noqa: F401
-from trainer import (  # noqa: F401
-    CINC2022Trainer,
-    _MODEL_MAP,
-    _set_task,
-)  # noqa: F401
+    Wav2Vec2_CINC2022,
+)
+from sklearn.base import BaseEstimator
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from trainer import _MODEL_MAP, CINC2022Trainer, _set_task  # noqa: F401
 
-from helper_code import find_patient_files, get_locations
-
+from torch_ecg._preprocessors import PreprocManager
+from torch_ecg.cfg import CFG
 
 ################################################################################
 # NOTE: configurable options
@@ -254,9 +246,7 @@ def train_challenge_model(data_folder: str, model_folder: str, verbose: int) -> 
 
 # Load your trained model. This function is *required*. You should edit this function to add your code, but do *not* change the
 # arguments and outputs of this function.
-def load_challenge_model(
-    model_folder: str, verbose: int
-) -> Dict[str, Union[CFG, torch.nn.Module, BaseEstimator]]:
+def load_challenge_model(model_folder: str, verbose: int) -> Dict[str, Union[CFG, torch.nn.Module, BaseEstimator]]:
     """
 
     Parameters
@@ -292,9 +282,7 @@ def load_challenge_model(
     main_model.eval()
     if USE_AUX_OUTCOME_MODEL:
         # outcome model
-        outcome_model = OutComeClassifier_CINC2022.from_file(
-            Path(model_folder) / _ModelFilename_outcome
-        )
+        outcome_model = OutComeClassifier_CINC2022.from_file(Path(model_folder) / _ModelFilename_outcome)
     else:
         outcome_model = None
     msg = "   CinC2022 challenge model loaded   ".center(100, "#")
@@ -419,13 +407,10 @@ def run_challenge_model(
         # features.append(main_model.extract_features(rec))  # shape (1, n_features, n_samples)
         if MURMUR_UNKNOWN_AS_POSITIVE:
             murmur_pred_dict[loc] = int(
-                model_output.murmur_output.pred.item()
-                in [murmur_positive_class_id, murmur_unknown_class_id]
+                model_output.murmur_output.pred.item() in [murmur_positive_class_id, murmur_unknown_class_id]
             )
         else:
-            murmur_pred_dict[loc] = int(
-                model_output.murmur_output.pred.item() == murmur_positive_class_id
-            )
+            murmur_pred_dict[loc] = int(model_output.murmur_output.pred.item() == murmur_positive_class_id)
 
         if not USE_AUX_OUTCOME_MODEL:
             outcome_probabilities.append(model_output.outcome_output.prob)
@@ -457,15 +442,11 @@ def run_challenge_model(
     if len(murmur_positive_indices) > 0:
         # if exists at least one positive recording,
         # then the subject is diagnosed with the positive class
-        murmur_probabilities = murmur_probabilities[murmur_positive_indices, ...].mean(
-            axis=0
-        )
+        murmur_probabilities = murmur_probabilities[murmur_positive_indices, ...].mean(axis=0)
         murmur_labels = murmur_labels[murmur_positive_indices[0]]
     elif len(murmur_unknown_indices) > 0:
         # no positive recording, but at least one unknown recording
-        murmur_probabilities = murmur_probabilities[murmur_unknown_indices, ...].mean(
-            axis=0
-        )
+        murmur_probabilities = murmur_probabilities[murmur_unknown_indices, ...].mean(axis=0)
         murmur_labels = murmur_labels[murmur_unknown_indices[0]]
     else:
         # no positive or unknown recording,
@@ -485,16 +466,12 @@ def run_challenge_model(
         outcome_labels = np.concatenate(outcome_labels, axis=0)
         outcome_cls_labels = np.concatenate(outcome_cls_labels, axis=0)
         outcome_forward_outputs = np.concatenate(outcome_forward_outputs, axis=0)
-        outcome_positive_indices = np.where(
-            outcome_cls_labels == outcome_positive_class_id
-        )[0]
+        outcome_positive_indices = np.where(outcome_cls_labels == outcome_positive_class_id)[0]
 
         if len(outcome_positive_indices) > 0:
             # if exists at least one positive recording,
             # then the subject is diagnosed with the positive class
-            outcome_probabilities = outcome_probabilities[
-                outcome_positive_indices, ...
-            ].mean(axis=0)
+            outcome_probabilities = outcome_probabilities[outcome_positive_indices, ...].mean(axis=0)
             outcome_labels = outcome_labels[outcome_positive_indices[0]]
         else:
             # no positive recording, only negative class recordings

@@ -11,8 +11,7 @@ import wfdb
 from ...cfg import CFG
 from ...utils.misc import add_docstring, get_record_list_recursive
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, DataBaseInfo, PhysioNetDataBase
 
 __all__ = [
     "AFDB",
@@ -127,12 +126,8 @@ class AFDB(PhysioNetDataBase):
 
         """
         super()._ls_rec(local=local)
-        self._all_records = [
-            rec for rec in self._all_records if rec not in self.special_records
-        ]
-        self.qrsc_records = get_record_list_recursive(
-            self.db_dir, self.manual_beat_ann_ext, relative=False
-        )
+        self._all_records = [rec for rec in self._all_records if rec not in self.special_records]
+        self.qrsc_records = get_record_list_recursive(self.db_dir, self.manual_beat_ann_ext, relative=False)
         self.qrsc_records = [Path(rec).stem for rec in self.qrsc_records]
 
     def load_ann(
@@ -186,15 +181,8 @@ class AFDB(PhysioNetDataBase):
             aux_note.insert(0, "(N")
 
         for idx, rhythm in enumerate(aux_note):
-            ann[rhythm.replace("(", "")].append(
-                [critical_points[idx], critical_points[idx + 1]]
-            )
-        ann = CFG(
-            {
-                k: generalized_intervals_intersection(l_itv, [[sf, st]])
-                for k, l_itv in ann.items()
-            }
-        )
+            ann[rhythm.replace("(", "")].append([critical_points[idx], critical_points[idx + 1]])
+        ann = CFG({k: generalized_intervals_intersection(l_itv, [[sf, st]]) for k, l_itv in ann.items()})
 
         if ann_format.lower() == "mask":
             tmp = deepcopy(ann)
@@ -369,10 +357,7 @@ class AFDB(PhysioNetDataBase):
         else:
             _ann = ann or CFG({k: [] for k in self.class_map.keys()})
         # indices to time
-        _ann = {
-            k: [[itv[0] / self.fs, itv[1] / self.fs] for itv in l_itv]
-            for k, l_itv in _ann.items()
-        }
+        _ann = {k: [[itv[0] / self.fs, itv[1] / self.fs] for itv in l_itv] for k, l_itv in _ann.items()}
         if rpeak_inds is None and data is None:
             _rpeak = self.load_rpeak_indices(
                 rec,
@@ -396,44 +381,29 @@ class AFDB(PhysioNetDataBase):
         for seg_idx in range(nb_lines):
             seg_data = _data[..., seg_idx * line_len : (seg_idx + 1) * line_len]
             secs = (np.arange(seg_data.shape[1]) + seg_idx * line_len) / self.fs
-            seg_ann = {
-                k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]])
-                for k, l_itv in _ann.items()
-            }
+            seg_ann = {k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]]) for k, l_itv in _ann.items()}
             seg_rpeaks = _rpeak[np.where((_rpeak >= secs[0]) & (_rpeak < secs[-1]))[0]]
-            fig_sz_w = int(
-                round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs)
-            )
+            fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs))
             if same_range:
-                y_ranges = (
-                    np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
-                )
+                y_ranges = np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
             else:
                 y_ranges = np.max(np.abs(seg_data), axis=1) + 100
             fig_sz_h = 6 * y_ranges / 1500
-            fig, axes = plt.subplots(
-                nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
-            )
+            fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
             if nb_leads == 1:
                 axes = [axes]
             for idx in range(nb_leads):
-                axes[idx].plot(
-                    secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}"
-                )
+                axes[idx].plot(secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}")
                 axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
                 # NOTE that `Locator` has default `MAXTICKS` equal to 1000
                 if ticks_granularity >= 1:
                     axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                     axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                    axes[idx].grid(
-                        which="major", linestyle="-", linewidth="0.5", color="red"
-                    )
+                    axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
                 if ticks_granularity >= 2:
                     axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                     axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                    axes[idx].grid(
-                        which="minor", linestyle=":", linewidth="0.5", color="black"
-                    )
+                    axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
                 for k, l_itv in seg_ann.items():
                     if k == "N":
                         continue

@@ -10,8 +10,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .base import Augmenter
 from ..cfg import DEFAULTS
+from .base import Augmenter
 
 __all__ = [
     "Mixup",
@@ -79,13 +79,7 @@ class Mixup(Augmenter):
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
-    def forward(
-        self,
-        sig: Tensor,
-        label: Tensor,
-        *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
-    ) -> Tuple[Tensor, ...]:
+    def forward(self, sig: Tensor, label: Tensor, *extra_tensors: Sequence[Tensor], **kwargs: Any) -> Tuple[Tensor, ...]:
         """Forward method of the Mixup augmenter.
 
         Parameters

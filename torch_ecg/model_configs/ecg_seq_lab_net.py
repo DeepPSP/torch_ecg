@@ -9,7 +9,6 @@ from ..utils.utils_nn import adjust_cnn_filter_lengths
 from .attn import global_context, non_local
 from .cnn import multi_scopic, multi_scopic_leadwise
 
-
 __all__ = [
     "ECG_SEQ_LAB_NET_CONFIG",
 ]

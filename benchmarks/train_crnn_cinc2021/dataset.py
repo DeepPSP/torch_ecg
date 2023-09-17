@@ -64,9 +64,7 @@ class CINC2021(ReprMixin, Dataset):
         self.config = deepcopy(config)
         assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = Path(self.config.db_dir)
-        self._TRANCHES = (
-            self.config.tranche_classes.keys()
-        )  # ["A", "B", "AB", "E", "F", "G",]
+        self._TRANCHES = self.config.tranche_classes.keys()  # ["A", "B", "AB", "E", "F", "G",]
         self.reader = CR(db_dir=self.config.db_dir)
         self.tranches = self.config.tranches_for_training
         self.training = training
@@ -88,24 +86,17 @@ class CINC2021(ReprMixin, Dataset):
         cw = np.zeros((len(self.class_weights),), dtype=self.dtype)
         for idx, c in enumerate(self.all_classes):
             cw[idx] = self.class_weights[c]
-        self.class_weights = torch.from_numpy(cw.astype(self.dtype)).view(
-            1, self.n_classes
-        )
+        self.class_weights = torch.from_numpy(cw.astype(self.dtype)).view(1, self.n_classes)
         # validation also goes in batches, hence length has to be fixed
         self.siglen = self.config.input_len
         self.lazy = lazy
 
         self._indices = [Standard12Leads.index(ld) for ld in self.config.leads]
 
-        self.records = self._train_test_split(
-            self.config.train_ratio, force_recompute=False
-        )
+        self.records = self._train_test_split(self.config.train_ratio, force_recompute=False)
         # TODO: consider using `remove_spikes_naive` to treat these exceptional records
         self.records = [
-            r
-            for r in self.records
-            if r not in self.reader.exceptional_records
-            and (self.reader.get_data_filepath(r)).is_file()
+            r for r in self.records if r not in self.reader.exceptional_records and (self.reader.get_data_filepath(r)).is_file()
         ]
         if self.__DEBUG__:
             self.records = sample(self.records, int(len(self.records) * 0.01))
@@ -115,9 +106,7 @@ class CINC2021(ReprMixin, Dataset):
         self.ppm = PreprocManager.from_config(ppm_config)
         # self.ppm.rearrange(["bandpass", "normalize"])
 
-        self._signals = np.array([], dtype=self.dtype).reshape(
-            0, len(self.config.leads), self.siglen
-        )
+        self._signals = np.array([], dtype=self.dtype).reshape(0, len(self.config.leads), self.siglen)
         self._labels = np.array([], dtype=self.dtype).reshape(0, self.n_classes)
         if not self.lazy:
             self._load_all_data()
@@ -197,11 +186,7 @@ class CINC2021(ReprMixin, Dataset):
             values = values[np.newaxis, ...]
 
         labels = self.reader.get_labels(rec, scored_only=True, fmt="a", normalize=True)
-        labels = (
-            np.isin(self.all_classes, labels)
-            .astype(self.dtype)[np.newaxis, ...]
-            .repeat(values.shape[0], axis=0)
-        )
+        labels = np.isin(self.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
 
         return values, labels
 
@@ -218,9 +203,7 @@ class CINC2021(ReprMixin, Dataset):
             leads = self.config.leads
         else:
             self.config.leads = leads
-        self._signals = np.array([], dtype=self.dtype).reshape(
-            0, len(leads), self.siglen
-        )
+        self._signals = np.array([], dtype=self.dtype).reshape(0, len(leads), self.siglen)
 
     @classmethod
     def from_extern(cls, ext_ds: "CINC2021", config: CFG) -> "CINC2021":
@@ -255,9 +238,7 @@ class CINC2021(ReprMixin, Dataset):
         """ """
         return len(self._signals)
 
-    def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
-    ) -> List[str]:
+    def _train_test_split(self, train_ratio: float = 0.8, force_recompute: bool = False) -> List[str]:
         """
         do train test split,
         it is ensured that both the train and the test set contain all classes
@@ -287,9 +268,7 @@ class CINC2021(ReprMixin, Dataset):
 
         ns = "_ns" if len(self.config.special_classes) == 0 else ""
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
-        train_file = (
-            self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
-        )
+        train_file = self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
         test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}{file_suffix}"
 
         # TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)
@@ -309,12 +288,8 @@ class CINC2021(ReprMixin, Dataset):
                         if rec in self.reader.exceptional_records:
                             # skip exceptional records
                             continue
-                        rec_labels = self.reader.get_labels(
-                            rec, scored_only=True, fmt="a", normalize=True
-                        )
-                        rec_labels = [
-                            c for c in rec_labels if c in self.config.tranche_classes[t]
-                        ]
+                        rec_labels = self.reader.get_labels(rec, scored_only=True, fmt="a", normalize=True)
+                        rec_labels = [c for c in rec_labels if c in self.config.tranche_classes[t]]
                         if len(rec_labels) == 0:
                             # skip records with no scored class
                             continue
@@ -326,9 +301,7 @@ class CINC2021(ReprMixin, Dataset):
                             continue
                         tranche_records[t].append(rec)
                 time.sleep(1)
-                print(
-                    f"tranche {t} has {len(tranche_records[t])} valid records for training"
-                )
+                print(f"tranche {t} has {len(tranche_records[t])} valid records for training")
             for t in _TRANCHES:
                 is_valid = False
                 while not is_valid:
@@ -357,18 +330,14 @@ class CINC2021(ReprMixin, Dataset):
 
         _tranches = list(self.tranches or "ABEFG")
         if self.training == "all":
-            records = list_sum([train_set[k] for k in _tranches]) + list_sum(
-                [test_set[k] for k in _tranches]
-            )
+            records = list_sum([train_set[k] for k in _tranches]) + list_sum([test_set[k] for k in _tranches])
         elif self.training is True:
             records = list_sum([train_set[k] for k in _tranches])
         else:
             records = list_sum([test_set[k] for k in _tranches])
         return records
 
-    def _check_train_test_split_validity(
-        self, train_set: List[str], test_set: List[str], all_classes: Set[str]
-    ) -> bool:
+    def _check_train_test_split_validity(self, train_set: List[str], test_set: List[str], all_classes: Set[str]) -> bool:
         """
         the train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
@@ -388,13 +357,9 @@ class CINC2021(ReprMixin, Dataset):
             the split is valid or not
 
         """
-        train_classes = set(
-            list_sum([self.reader.get_labels(rec, fmt="a") for rec in train_set])
-        )
+        train_classes = set(list_sum([self.reader.get_labels(rec, fmt="a") for rec in train_set]))
         train_classes.intersection_update(all_classes)
-        test_classes = set(
-            list_sum([self.reader.get_labels(rec, fmt="a") for rec in test_set])
-        )
+        test_classes = set(list_sum([self.reader.get_labels(rec, fmt="a") for rec in test_set]))
         test_classes.intersection_update(all_classes)
         is_valid = len(all_classes) == len(train_classes) == len(test_classes)
         print(
@@ -512,11 +477,7 @@ class FastDataReader(ReprMixin, Dataset):
             values = values[np.newaxis, ...]
 
         labels = self.reader.get_labels(rec, scored_only=True, fmt="a", normalize=True)
-        labels = (
-            np.isin(self.config.all_classes, labels)
-            .astype(self.dtype)[np.newaxis, ...]
-            .repeat(values.shape[0], axis=0)
-        )
+        labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
 
         return values, labels
 
@@ -548,9 +509,7 @@ def _load_record(reader: CR, rec: str, config: CFG) -> Tuple[np.ndarray, np.ndar
     labels: np.ndarray,
         the labels of the record
     """
-    values = reader.load_resampled_data(
-        rec, leads=config.leads, data_format="channel_first", siglen=None
-    )
+    values = reader.load_resampled_data(rec, leads=config.leads, data_format="channel_first", siglen=None)
     values = ensure_siglen(values, siglen=config.input_len, fmt="channel_first")
 
     labels = reader.get_labels(rec, scored_only=True, fmt="a", normalize=True)
