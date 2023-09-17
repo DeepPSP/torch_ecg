@@ -1,0 +1,23 @@
+# generate a pre-commit config file using flake8, black, and isort
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+        args: [--line-length=128, --extend-exclude=.ipynb, --verbose]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        args: [--max-line-length=128, '--exclude=./.*,build,dist', '--ignore=E501,W503,E203,F841,E231', --count, --statistics, --show-source]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.11.5
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=128]

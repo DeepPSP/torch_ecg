@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Formatting with black & flake8
+name: Formatting with pre-commit
 
 on:
   push:
@@ -31,14 +31,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        python -m pip install black==22.8.0 flake8 importlib-metadata==4.8.3 # Testing packages
+        python -m pip install importlib-metadata==4.8.3 # Testing packages
         python -m pip install -r requirements.txt
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
     - name: List installed Python packages
       run: |
         python -m pip list
-    - name: Check code format with black and flake8
-      run: |
-        black . --check --extend-exclude .ipynb -v
-        flake8 . --count --ignore="E501 W503 E203 F841" --show-source --statistics --exclude=./.*,build,dist
+    - name: Check code format with pre-commit
+      uses: pre-commit/action@v3.0.0
