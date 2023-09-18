@@ -1090,7 +1090,7 @@
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
-<span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">default_class_repr</span><span class="p">,</span> <span class="n">add_docstring</span>
+<span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">default_class_repr</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Augmenter</span><span class="p">,</span> <span class="n">_augmenter_forward_doc</span>
 <span class="kn">from</span> <span class="nn">.baseline_wander</span> <span class="kn">import</span> <span class="n">BaselineWanderAugmenter</span>
 <span class="kn">from</span> <span class="nn">.label_smooth</span> <span class="kn">import</span> <span class="n">LabelSmooth</span>
@@ -1099,7 +1099,6 @@
 <span class="kn">from</span> <span class="nn">.random_masking</span> <span class="kn">import</span> <span class="n">RandomMasking</span>
 <span class="kn">from</span> <span class="nn">.random_renormalize</span> <span class="kn">import</span> <span class="n">RandomRenormalize</span>
 <span class="kn">from</span> <span class="nn">.stretch_compress</span> <span class="kn">import</span> <span class="n">StretchCompress</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;AugmenterManager&quot;</span><span class="p">,</span>
@@ -1146,9 +1145,7 @@
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;AugmenterManager&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">augs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Augmenter</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span> <span class="n">random</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">augs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Augmenter</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span> <span class="n">random</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">augs</span><span class="p">)</span>
@@ -1250,9 +1247,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">ordering</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ordering</span><span class="p">:</span>
-            <span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmenters</span><span class="p">[</span><span class="n">idx</span><span class="p">](</span>
-                <span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span>
+            <span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmenters</span><span class="p">[</span><span class="n">idx</span><span class="p">](</span><span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
@@ -1265,9 +1260,7 @@
         <span class="n">indent</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;augmenters = [</span><span class="se">\n</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">indent</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">default_class_repr</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmenters</span>
-            <span class="p">)</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{</span><span class="mi">2</span><span class="o">*</span><span class="n">indent</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">default_class_repr</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">aug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmenters</span><span class="p">)</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="se">\n</span><span class="s2">]&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span></div>
@@ -1323,33 +1316,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The augmenters are applied in random order, &quot;</span>
-                <span class="s2">&quot;rearranging the augmenters will not take effect.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;The augmenters are applied in random order, &quot;</span> <span class="s2">&quot;rearranging the augmenters will not take effect.&quot;</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># built-in augmenters</span>
             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]):</span> <span class="n">k</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                <span class="s2">&quot;,&quot;</span>
-            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;BaselineWanderAugmenter&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline_wander&quot;</span><span class="p">})</span>
         <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">new_ordering</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_mapping</span><span class="p">:</span>
                 <span class="c1"># allow custom augmenters</span>
-                <span class="k">assert</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="n">am</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span>
-                <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Unknown augmenter name: `</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">`&quot;</span>
+                <span class="k">assert</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="n">am</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Unknown augmenter name: `</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">`&quot;</span>
                 <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="p">})</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)),</span> <span class="s2">&quot;Duplicate augmenter names.&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span>
-        <span class="p">),</span> <span class="s2">&quot;Number of augmenters mismatch.&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="p">),</span> <span class="s2">&quot;Number of augmenters mismatch.&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">aug</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">])</span>
-        <span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">aug</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span></div></div>
 </pre></div>
 
            </div>

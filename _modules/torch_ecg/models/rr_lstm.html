@@ -1093,28 +1093,19 @@
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 <span class="kn">from</span> <span class="nn">einops</span> <span class="kn">import</span> <span class="n">rearrange</span>
 <span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span>
 <span class="kn">from</span> <span class="nn">..components.outputs</span> <span class="kn">import</span> <span class="n">BaseOutput</span>
 <span class="kn">from</span> <span class="nn">..model_configs.rr_lstm</span> <span class="kn">import</span> <span class="n">RR_LSTM_CONFIG</span>
-<span class="kn">from</span> <span class="nn">..models._nets</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ExtendedCRF</span><span class="p">,</span>
-    <span class="n">GlobalContextBlock</span><span class="p">,</span>
-    <span class="n">NonLocalBlock</span><span class="p">,</span>
-    <span class="n">SEBlock</span><span class="p">,</span>
-    <span class="n">SelfAttention</span><span class="p">,</span>
-    <span class="n">MLP</span><span class="p">,</span>
-    <span class="n">StackedLSTM</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..models._nets</span> <span class="kn">import</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">ExtendedCRF</span><span class="p">,</span> <span class="n">GlobalContextBlock</span><span class="p">,</span> <span class="n">NonLocalBlock</span><span class="p">,</span> <span class="n">SEBlock</span><span class="p">,</span> <span class="n">SelfAttention</span><span class="p">,</span> <span class="n">StackedLSTM</span>
 <span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">CitationMixin</span>
 <span class="kn">from</span> <span class="nn">..utils.utils_nn</span> <span class="kn">import</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;RR_LSTM&quot;</span><span class="p">,</span>
@@ -1144,24 +1135,18 @@
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;RR_LSTM&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">RR_LSTM_CONFIG</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
-            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">batch_first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;batch_first&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">batch_first</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;batch_size n_channels seq_len -&gt; seq_len batch_size n_channels&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch_size n_channels seq_len -&gt; seq_len batch_size n_channels&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">in_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
@@ -1188,16 +1173,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="n">attn_input_size</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="n">attn_input_size</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nl&quot;</span><span class="p">:</span>  <span class="c1"># non_local</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">NonLocalBlock</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">attn_input_size</span><span class="p">,</span>
                 <span class="n">filter_lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">nl</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span>
@@ -1207,9 +1188,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;se&quot;</span><span class="p">:</span>  <span class="c1"># squeeze_exitation</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">SEBlock</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">attn_input_size</span><span class="p">,</span>
                 <span class="n">reduction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">se</span><span class="o">.</span><span class="n">reduction</span><span class="p">,</span>
@@ -1220,9 +1199,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gc&quot;</span><span class="p">:</span>  <span class="c1"># global_context</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;seq_len batch_size n_channels -&gt; batch_size n_channels seq_len&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">GlobalContextBlock</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">attn_input_size</span><span class="p">,</span>
                 <span class="n">ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">gc</span><span class="o">.</span><span class="n">ratio</span><span class="p">,</span>
@@ -1237,20 +1214,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">attn_in_rearrange</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">SelfAttention</span><span class="p">(</span>
                 <span class="n">embed_dim</span><span class="o">=</span><span class="n">attn_input_size</span><span class="p">,</span>
-                <span class="n">num_heads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;num_heads&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;head_num&quot;</span><span class="p">)</span>
-                <span class="p">),</span>
+                <span class="n">num_heads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_heads&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;head_num&quot;</span><span class="p">)),</span>
                 <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
                 <span class="n">bias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;seq_len batch_size channels -&gt; batch_size channels seq_len&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attn_out_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;seq_len batch_size channels -&gt; batch_size channels seq_len&quot;</span><span class="p">)</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Attn module </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented yet.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attn module </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented yet.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lstm</span><span class="o">.</span><span class="n">retseq</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
@@ -1267,9 +1238,7 @@
                     <span class="ne">RuntimeWarning</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-                <span class="k">assert</span> <span class="p">(</span>
-                    <span class="s2">&quot;linear&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span>
-                <span class="p">),</span> <span class="s2">&quot;Linear layer not defined in `config`.&quot;</span>
+                <span class="k">assert</span> <span class="s2">&quot;linear&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span> <span class="s2">&quot;Linear layer not defined in `config`.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">clf_input_size</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">],</span>
@@ -1280,28 +1249,18 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool1d</span><span class="p">(</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,),</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                    <span class="s2">&quot;batch_size channels pool_size -&gt; batch_size (channels pool_size)&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool1d</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,),</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch_size channels pool_size -&gt; batch_size (channels pool_size)&quot;</span><span class="p">)</span>
                 <span class="n">clf_input_size</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;avg&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveAvgPool1d</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                    <span class="s2">&quot;batch_size channels pool_size -&gt; batch_size (channels pool_size)&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch_size channels pool_size -&gt; batch_size (channels pool_size)&quot;</span><span class="p">)</span>
                 <span class="n">clf_input_size</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                    <span class="s2">&quot;batch_size n_channels seq_len -&gt; batch_size seq_len n_channels&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch_size n_channels seq_len -&gt; batch_size seq_len n_channels&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Pooling type </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not supported&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pooling type </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">clf_input_size</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">],</span>
@@ -1318,9 +1277,7 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;batch_size n_channels seq_len -&gt; batch_size seq_len n_channels&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;batch_size n_channels seq_len -&gt; batch_size seq_len n_channels&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">ExtendedCRF</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">clf_input_size</span><span class="p">,</span>
                 <span class="n">num_tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
@@ -1459,9 +1416,7 @@
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;RR_LSTM_v1&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1477,9 +1432,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">RR_LSTM_CONFIG</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
-            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">StackedLSTM</span><span class="p">(</span>
@@ -1535,17 +1488,13 @@
             <span class="c1"># NOTE: this branch NOT tested</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attn</span> <span class="o">=</span> <span class="n">SelfAttention</span><span class="p">(</span>
                 <span class="n">embed_dim</span><span class="o">=</span><span class="n">attn_input_size</span><span class="p">,</span>
-                <span class="n">num_heads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;num_heads&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;head_num&quot;</span><span class="p">)</span>
-                <span class="p">),</span>
+                <span class="n">num_heads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_heads&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;head_num&quot;</span><span class="p">)),</span>
                 <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
                 <span class="n">bias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">clf_input_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Attn module </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented yet.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attn module </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">attn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented yet.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lstm</span><span class="o">.</span><span class="n">retseq</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
@@ -1561,9 +1510,7 @@
                     <span class="ne">RuntimeWarning</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-                <span class="k">assert</span> <span class="p">(</span>
-                    <span class="s2">&quot;linear&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span>
-                <span class="p">),</span> <span class="s2">&quot;Linear layer not defined in `config`.&quot;</span>
+                <span class="k">assert</span> <span class="s2">&quot;linear&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="p">,</span> <span class="s2">&quot;Linear layer not defined in `config`.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">clf_input_size</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">],</span>
@@ -1574,9 +1521,7 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool1d</span><span class="p">(</span>
-                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,),</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool1d</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,),</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="n">clf_input_size</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;avg&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveAvgPool1d</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool_size</span><span class="p">,))</span>
@@ -1584,9 +1529,7 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Pooling type </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not supported&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pooling type </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">global_pool</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">clf_input_size</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">],</span>
@@ -1634,9 +1577,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># (batch_size, n_channels, seq_len) --&gt; (seq_len, batch_size, n_channels)</span>
         <span class="c1"># x = input.permute(1,2,0)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span>
-            <span class="nb">input</span>
-        <span class="p">)</span>  <span class="c1"># (seq_len, batch_size, n_channels) or (batch_size, n_channels)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>  <span class="c1"># (seq_len, batch_size, n_channels) or (batch_size, n_channels)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attn</span><span class="p">:</span>
             <span class="c1"># (seq_len, batch_size, n_channels) --&gt; (batch_size, n_channels, seq_len)</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -1652,17 +1593,13 @@
                 <span class="s2">&quot;batch_size n_channels pool_size -&gt; batch_size (n_channels pool_size)&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span>
-            <span class="p">)</span>  <span class="c1"># (batch_size, n_channels, seq_len) --&gt; (batch_size, seq_len, n_channels)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (batch_size, n_channels, seq_len) --&gt; (batch_size, seq_len, n_channels)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># x of shape (batch_size, n_channels),</span>
             <span class="c1"># in the case where config.lstm.retseq = False</span>
             <span class="k">pass</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span>
-                <span class="n">x</span>
-            <span class="p">)</span>  <span class="c1"># (batch_size, seq_len, n_classes) or (batch_size, n_classes)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># (batch_size, seq_len, n_classes) or (batch_size, n_classes)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clf</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;crf&quot;</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># (batch_size, seq_len, n_classes)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">x</span>

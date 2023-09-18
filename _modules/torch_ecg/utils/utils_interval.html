@@ -1104,7 +1104,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;overlaps&quot;</span><span class="p">,</span>
     <span class="s2">&quot;validate_interval&quot;</span><span class="p">,</span>
@@ -1220,9 +1219,7 @@
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="in_interval"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.in_interval.html#torch_ecg.utils.in_interval">[docs]</a><span class="k">def</span> <span class="nf">in_interval</span><span class="p">(</span>
-    <span class="n">val</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="n">Interval</span><span class="p">,</span> <span class="n">left_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">right_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="in_interval"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.in_interval.html#torch_ecg.utils.in_interval">[docs]</a><span class="k">def</span> <span class="nf">in_interval</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="n">Interval</span><span class="p">,</span> <span class="n">left_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">right_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether val is inside interval or not.</span>
 
 <span class="sd">    Parameters</span>
@@ -1320,9 +1317,7 @@
     <span class="k">return</span> <span class="n">is_in</span></div>
 
 
-<div class="viewcode-block" id="intervals_union"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.intervals_union.html#torch_ecg.utils.intervals_union">[docs]</a><span class="k">def</span> <span class="nf">intervals_union</span><span class="p">(</span>
-    <span class="n">interval_list</span><span class="p">:</span> <span class="n">GeneralizedInterval</span><span class="p">,</span> <span class="n">join_book_endeds</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneralizedInterval</span><span class="p">:</span>
+<div class="viewcode-block" id="intervals_union"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.intervals_union.html#torch_ecg.utils.intervals_union">[docs]</a><span class="k">def</span> <span class="nf">intervals_union</span><span class="p">(</span><span class="n">interval_list</span><span class="p">:</span> <span class="n">GeneralizedInterval</span><span class="p">,</span> <span class="n">join_book_endeds</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneralizedInterval</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the union of intervals.</span>
 
 <span class="sd">    This function is used to find the union (ordered and non-intersecting)</span>
@@ -1379,9 +1374,7 @@
                 <span class="c1"># the case where two consecutive intervals are book-ended</span>
                 <span class="c1"># concatenate if `join_book_endeds` is True,</span>
                 <span class="c1"># or one interval degenerates (to a single point)</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">this_start</span> <span class="o">==</span> <span class="n">this_end</span> <span class="ow">or</span> <span class="n">next_start</span> <span class="o">==</span> <span class="n">next_end</span>
-                <span class="p">)</span> <span class="ow">or</span> <span class="n">join_book_endeds</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">this_start</span> <span class="o">==</span> <span class="n">this_end</span> <span class="ow">or</span> <span class="n">next_start</span> <span class="o">==</span> <span class="n">next_end</span><span class="p">)</span> <span class="ow">or</span> <span class="n">join_book_endeds</span><span class="p">:</span>
                     <span class="n">new_intervals</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">this_start</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">this_end</span><span class="p">,</span> <span class="n">next_end</span><span class="p">)])</span>
                     <span class="n">new_intervals</span> <span class="o">+=</span> <span class="n">processed</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]</span>
                     <span class="n">merge_flag</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1435,9 +1428,7 @@
     <span class="k">return</span> <span class="n">iu</span></div>
 
 
-<div class="viewcode-block" id="intervals_intersection"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.intervals_intersection.html#torch_ecg.utils.intervals_intersection">[docs]</a><span class="k">def</span> <span class="nf">intervals_intersection</span><span class="p">(</span>
-    <span class="n">interval_list</span><span class="p">:</span> <span class="n">GeneralizedInterval</span><span class="p">,</span> <span class="n">drop_degenerate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Interval</span><span class="p">:</span>
+<div class="viewcode-block" id="intervals_intersection"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.intervals_intersection.html#torch_ecg.utils.intervals_intersection">[docs]</a><span class="k">def</span> <span class="nf">intervals_intersection</span><span class="p">(</span><span class="n">interval_list</span><span class="p">:</span> <span class="n">GeneralizedInterval</span><span class="p">,</span> <span class="n">drop_degenerate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Interval</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the intersection of all intervals in `interval_list`.</span>
 
 <span class="sd">    Parameters</span>
@@ -1473,9 +1464,7 @@
         <span class="n">item</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     <span class="n">potential_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">interval_list</span><span class="p">])</span>
     <span class="n">potential_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">interval_list</span><span class="p">])</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">potential_end</span> <span class="o">&gt;</span> <span class="n">potential_start</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-        <span class="n">potential_end</span> <span class="o">==</span> <span class="n">potential_start</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">drop_degenerate</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">potential_end</span> <span class="o">&gt;</span> <span class="n">potential_start</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">potential_end</span> <span class="o">==</span> <span class="n">potential_start</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">drop_degenerate</span><span class="p">):</span>
         <span class="n">its</span> <span class="o">=</span> <span class="p">[</span><span class="n">potential_start</span><span class="p">,</span> <span class="n">potential_end</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">its</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1523,9 +1512,7 @@
         <span class="n">another</span> <span class="o">=</span> <span class="n">another</span><span class="p">[</span><span class="n">cut_idx</span><span class="p">:]</span>
         <span class="n">intersected_indices</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item_prime</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">another</span><span class="p">):</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="n">intervals_intersection</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">item</span><span class="p">,</span> <span class="n">item_prime</span><span class="p">],</span> <span class="n">drop_degenerate</span><span class="o">=</span><span class="n">drop_degenerate</span>
-            <span class="p">)</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">intervals_intersection</span><span class="p">([</span><span class="n">item</span><span class="p">,</span> <span class="n">item_prime</span><span class="p">],</span> <span class="n">drop_degenerate</span><span class="o">=</span><span class="n">drop_degenerate</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">its</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
                 <span class="n">intersected_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
@@ -1534,9 +1521,7 @@
     <span class="k">return</span> <span class="n">its</span></div>
 
 
-<div class="viewcode-block" id="generalized_interval_complement"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.generalized_interval_complement.html#torch_ecg.utils.generalized_interval_complement">[docs]</a><span class="k">def</span> <span class="nf">generalized_interval_complement</span><span class="p">(</span>
-    <span class="n">total_interval</span><span class="p">:</span> <span class="n">Interval</span><span class="p">,</span> <span class="n">generalized_interval</span><span class="p">:</span> <span class="n">GeneralizedInterval</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneralizedInterval</span><span class="p">:</span>
+<div class="viewcode-block" id="generalized_interval_complement"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.generalized_interval_complement.html#torch_ecg.utils.generalized_interval_complement">[docs]</a><span class="k">def</span> <span class="nf">generalized_interval_complement</span><span class="p">(</span><span class="n">total_interval</span><span class="p">:</span> <span class="n">Interval</span><span class="p">,</span> <span class="n">generalized_interval</span><span class="p">:</span> <span class="n">GeneralizedInterval</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeneralizedInterval</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the complement of an interval in another interval.</span>
 
 <span class="sd">    Parameters</span>
@@ -1567,9 +1552,7 @@
     <span class="n">total_interval</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     <span class="n">tot_start</span><span class="p">,</span> <span class="n">tot_end</span> <span class="o">=</span> <span class="n">total_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">total_interval</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">rearranged_intervals</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">tot_start</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">tot_end</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rearranged_intervals</span>
-        <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">total_interval</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">tot_start</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">tot_end</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rearranged_intervals</span> <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">total_interval</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="p">]</span>
     <span class="n">slice_points</span> <span class="o">=</span> <span class="p">[</span><span class="n">tot_start</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rearranged_intervals</span><span class="p">:</span>
@@ -1668,14 +1651,10 @@
 <span class="sd">    ([[0, 100]], [[0, 1, 2]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">validate_interval</span><span class="p">(</span><span class="n">total_interval</span><span class="p">)[</span>
-        <span class="mi">0</span>
-    <span class="p">],</span> <span class="s2">&quot;`total_interval` must be a valid interval (a sequence of two real numbers)&quot;</span>
+    <span class="k">assert</span> <span class="n">validate_interval</span><span class="p">(</span><span class="n">total_interval</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;`total_interval` must be a valid interval (a sequence of two real numbers)&quot;</span>
     <span class="k">assert</span> <span class="n">min_len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;`min_len` must be positive&quot;</span>
     <span class="k">assert</span> <span class="n">split_threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;`split_threshold` must be positive&quot;</span>
-    <span class="k">assert</span> <span class="p">(</span>
-        <span class="n">isolated_point_dist_threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-    <span class="p">),</span> <span class="s2">&quot;`isolated_point_dist_threshold` must be non-negative&quot;</span>
+    <span class="k">assert</span> <span class="n">isolated_point_dist_threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;`isolated_point_dist_threshold` must be non-negative&quot;</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_cover</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">traceback</span> <span class="k">else</span> <span class="p">([],</span> <span class="p">[])</span>
@@ -1685,16 +1664,10 @@
     <span class="n">tmp</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">total_interval</span><span class="p">)</span>
     <span class="n">tot_start</span><span class="p">,</span> <span class="n">tot_end</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">tot_start</span>
-        <span class="o">&gt;</span> <span class="nb">min</span><span class="p">([</span><span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">to_cover</span><span class="p">])</span>
-    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-        <span class="n">tot_end</span>
-        <span class="o">&lt;</span> <span class="nb">max</span><span class="p">([</span><span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">to_cover</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">tot_start</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">([</span><span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">to_cover</span><span class="p">]))</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">tot_end</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">([</span><span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">to_cover</span><span class="p">])</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;some of the elements in `to_cover` exceeds the range of `total_interval`&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;some of the elements in `to_cover` exceeds the range of `total_interval`&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;total_interval = </span><span class="si">{</span><span class="n">total_interval</span><span class="si">}</span><span class="s2">, with_length = </span><span class="si">{</span><span class="n">tot_end</span><span class="o">-</span><span class="n">tot_start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1727,9 +1700,7 @@
         <span class="n">replica_for_traceback</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">to_cover_intervals</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;to_cover_intervals after all converted to intervals = </span><span class="si">{</span><span class="n">to_cover_intervals</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;to_cover_intervals after all converted to intervals = </span><span class="si">{</span><span class="n">to_cover_intervals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="n">to_cover_intervals</span><span class="p">:</span>
         <span class="n">interval</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
@@ -1770,10 +1741,7 @@
             <span class="n">this_start</span><span class="p">,</span> <span class="n">this_end</span> <span class="o">=</span> <span class="n">item</span>
             <span class="n">next_start</span><span class="p">,</span> <span class="n">next_end</span> <span class="o">=</span> <span class="n">to_cover_intervals</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">next_start</span> <span class="o">-</span> <span class="n">this_end</span> <span class="o">&gt;=</span> <span class="n">split_threshold</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">split_threshold</span> <span class="o">==</span> <span class="p">(</span><span class="n">next_start</span> <span class="o">-</span> <span class="n">next_end</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-                    <span class="ow">or</span> <span class="n">split_threshold</span> <span class="o">==</span> <span class="p">(</span><span class="n">this_start</span> <span class="o">-</span> <span class="n">this_end</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="n">split_threshold</span> <span class="o">==</span> <span class="p">(</span><span class="n">next_start</span> <span class="o">-</span> <span class="n">next_end</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">split_threshold</span> <span class="o">==</span> <span class="p">(</span><span class="n">this_start</span> <span class="o">-</span> <span class="n">this_end</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># the case where split_threshold ==0 and the degenerate case should be dealth with separately</span>
                     <span class="n">new_intervals</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">this_start</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">this_end</span><span class="p">,</span> <span class="n">next_end</span><span class="p">)])</span>
                     <span class="n">new_intervals</span> <span class="o">+=</span> <span class="n">to_cover_intervals</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]</span>
@@ -1791,9 +1759,7 @@
                 <span class="n">to_cover_intervals</span> <span class="o">=</span> <span class="n">new_intervals</span>
                 <span class="k">break</span>
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`to_cover_intervals` after merging intervals whose gaps &lt; split_threshold are </span><span class="si">{</span><span class="n">to_cover_intervals</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`to_cover_intervals` after merging intervals whose gaps &lt; split_threshold are </span><span class="si">{</span><span class="n">to_cover_intervals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># currently, distance between any two intervals in `to_cover_intervals` are larger than `split_threshold`</span>
     <span class="c1"># but any interval except the head and tail might has length less than `min_len`</span>
@@ -1809,9 +1775,7 @@
             <span class="n">covering</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ret_start</span><span class="p">,</span> <span class="n">ret_end</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ret_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tot_start</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">to_cover_intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">mid_pt</span> <span class="o">-</span> <span class="n">half_len</span><span class="p">))</span>
-            <span class="n">ret_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
-                <span class="n">tot_end</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">mid_pt</span> <span class="o">-</span> <span class="n">half_len</span> <span class="o">+</span> <span class="n">min_len</span><span class="p">,</span> <span class="n">to_cover_intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">)</span>
+            <span class="n">ret_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">tot_end</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">mid_pt</span> <span class="o">-</span> <span class="n">half_len</span> <span class="o">+</span> <span class="n">min_len</span><span class="p">,</span> <span class="n">to_cover_intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">covering</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ret_start</span><span class="p">,</span> <span class="n">ret_end</span><span class="p">]]</span>
 
     <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">to_cover_intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">to_cover_intervals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_len</span><span class="p">)</span>
@@ -1838,13 +1802,9 @@
                     <span class="p">]</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">covering</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">min</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">potential_end</span> <span class="o">-</span> <span class="n">min_len</span><span class="p">)),</span> <span class="n">potential_end</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">covering</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">min</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">potential_end</span> <span class="o">-</span> <span class="n">min_len</span><span class="p">)),</span> <span class="n">potential_end</span><span class="p">])</span>
             <span class="n">start</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">max</span><span class="p">(</span>
-                    <span class="n">potential_end</span> <span class="o">+</span> <span class="n">split_threshold</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">next_start</span><span class="p">,</span> <span class="n">next_end</span> <span class="o">-</span> <span class="n">min_len</span><span class="p">)</span>
-                <span class="p">),</span>
+                <span class="nb">max</span><span class="p">(</span><span class="n">potential_end</span> <span class="o">+</span> <span class="n">split_threshold</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">next_start</span><span class="p">,</span> <span class="n">next_end</span> <span class="o">-</span> <span class="n">min_len</span><span class="p">)),</span>
                 <span class="n">next_start</span><span class="p">,</span>
             <span class="p">]</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_cover_intervals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
@@ -1857,9 +1817,7 @@
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item_prime</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">replica_for_traceback</span><span class="p">):</span>
                 <span class="n">itc</span> <span class="o">=</span> <span class="n">intervals_intersection</span><span class="p">([</span><span class="n">item</span><span class="p">,</span> <span class="n">item_prime</span><span class="p">],</span> <span class="n">drop_degenerate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="n">len_itc</span> <span class="o">=</span> <span class="n">itc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">itc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">itc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="k">if</span> <span class="n">len_itc</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span>
-                    <span class="n">len_itc</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">item_prime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">item_prime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="n">len_itc</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">len_itc</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">item_prime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">item_prime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
                     <span class="n">record</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
             <span class="n">ret_traceback</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
 
@@ -1907,15 +1865,11 @@
 <span class="sd">    {&#39;max_cont_len&#39;: 3, &#39;max_cont_sublist_start&#39;: 1, &#39;max_cont_sublist&#39;: [2, 3, 4]}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">complementary_sublist</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tot_rng</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">tot_rng</span><span class="p">]</span>
-    <span class="p">)</span>
+    <span class="n">complementary_sublist</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tot_rng</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">tot_rng</span><span class="p">]</span>
     <span class="n">diff_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">complementary_sublist</span><span class="p">))</span>
     <span class="n">max_cont_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">diff_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">max_cont_sublist_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">diff_list</span><span class="p">)</span>
-    <span class="n">max_cont_sublist</span> <span class="o">=</span> <span class="n">sublist</span><span class="p">[</span>
-        <span class="n">max_cont_sublist_start</span> <span class="p">:</span> <span class="n">max_cont_sublist_start</span> <span class="o">+</span> <span class="n">max_cont_len</span>
-    <span class="p">]</span>
+    <span class="n">max_cont_sublist</span> <span class="o">=</span> <span class="n">sublist</span><span class="p">[</span><span class="n">max_cont_sublist_start</span> <span class="p">:</span> <span class="n">max_cont_sublist_start</span> <span class="o">+</span> <span class="n">max_cont_len</span><span class="p">]</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;max_cont_len&quot;</span><span class="p">:</span> <span class="n">max_cont_len</span><span class="p">,</span>
         <span class="s2">&quot;max_cont_sublist_start&quot;</span><span class="p">:</span> <span class="n">max_cont_sublist_start</span><span class="p">,</span>
@@ -2065,11 +2019,7 @@
 <span class="sd">    True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="ow">or</span> <span class="n">another_interval</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">another_interval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">another_interval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">another_interval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># the case of empty set</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -2145,19 +2095,12 @@
     <span class="n">l_itv</span> <span class="o">=</span> <span class="p">[</span><span class="n">l_itv</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">ordering</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the sorted intervals are </span><span class="si">{</span><span class="n">l_itv</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;whose indices in the original input `intervals` are </span><span class="si">{</span><span class="n">ordering</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the sorted intervals are </span><span class="si">{</span><span class="n">l_itv</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="sa">f</span><span class="s2">&quot;whose indices in the original input `intervals` are </span><span class="si">{</span><span class="n">ordering</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">allow_book_endeds</span><span class="p">:</span>
-        <span class="n">candidates_inds</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">itv</span><span class="p">,</span> <span class="n">l_itv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="p">]</span>
+        <span class="n">candidates_inds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">itv</span><span class="p">,</span> <span class="n">l_itv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">candidates_inds</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">itv</span><span class="p">,</span> <span class="n">l_itv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-        <span class="p">]</span>
+        <span class="n">candidates_inds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">overlaps</span><span class="p">(</span><span class="n">itv</span><span class="p">,</span> <span class="n">l_itv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
     <span class="n">candidates</span> <span class="o">=</span> <span class="p">[[</span><span class="n">l_itv</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span> <span class="k">for</span> <span class="n">inds</span> <span class="ow">in</span> <span class="n">candidates_inds</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
@@ -2170,17 +2113,9 @@
         <span class="k">if</span> <span class="n">interval_len</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">allow_book_endeds</span><span class="p">:</span>
-            <span class="n">tmp_inds</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">idx</span>
-                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">cl</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">interval_len</span><span class="p">(</span><span class="n">itv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="p">]</span>
+            <span class="n">tmp_inds</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">cl</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">interval_len</span><span class="p">(</span><span class="n">itv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tmp_inds</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">idx</span>
-                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">cl</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">interval_len</span><span class="p">(</span><span class="n">itv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="p">]</span>
+            <span class="n">tmp_inds</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="k">if</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">cl</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">interval_len</span><span class="p">(</span><span class="n">itv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;for the </span><span class="si">{</span><span class="n">c_idx</span><span class="si">}</span><span class="s2">-th candidate, tmp_inds = </span><span class="si">{</span><span class="n">tmp_inds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -2205,9 +2140,7 @@
     <span class="n">covering</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">max_idx</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">traceback</span><span class="p">:</span>
         <span class="n">covering_inds</span> <span class="o">=</span> <span class="n">candidates_inds</span><span class="p">[</span><span class="n">max_idx</span><span class="p">]</span>
-        <span class="n">covering_inds</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">ordering</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">covering_inds</span>
-        <span class="p">]</span>  <span class="c1"># map to the original indices</span>
+        <span class="n">covering_inds</span> <span class="o">=</span> <span class="p">[</span><span class="n">ordering</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">covering_inds</span><span class="p">]</span>  <span class="c1"># map to the original indices</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">covering_inds</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="n">covering</span><span class="p">,</span> <span class="n">covering_inds</span></div>

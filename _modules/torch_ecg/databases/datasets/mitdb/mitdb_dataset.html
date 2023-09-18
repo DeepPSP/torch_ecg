@@ -1089,7 +1089,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span> <span class="k">as</span> <span class="n">SS</span>
@@ -1098,23 +1098,12 @@
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">...._preprocessors</span> <span class="kn">import</span> <span class="n">PreprocManager</span>
-<span class="kn">from</span> <span class="nn">....databases</span> <span class="kn">import</span> <span class="n">MITDB</span> <span class="k">as</span> <span class="n">DR</span>
-<span class="kn">from</span> <span class="nn">....utils.misc</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ReprMixin</span><span class="p">,</span>
-    <span class="n">get_record_list_recursive3</span><span class="p">,</span>
-    <span class="n">list_sum</span><span class="p">,</span>
-    <span class="n">add_docstring</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">....utils.utils_data</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ensure_siglen</span><span class="p">,</span>
-    <span class="n">cls_to_bin</span><span class="p">,</span>
-    <span class="n">generate_weight_mask</span><span class="p">,</span>
-    <span class="n">mask_to_intervals</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">....utils.utils_signal</span> <span class="kn">import</span> <span class="n">remove_spikes_naive</span>
 <span class="kn">from</span> <span class="nn">....cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
+<span class="kn">from</span> <span class="nn">....databases</span> <span class="kn">import</span> <span class="n">MITDB</span> <span class="k">as</span> <span class="n">DR</span>
+<span class="kn">from</span> <span class="nn">....utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">get_record_list_recursive3</span><span class="p">,</span> <span class="n">list_sum</span>
+<span class="kn">from</span> <span class="nn">....utils.utils_data</span> <span class="kn">import</span> <span class="n">cls_to_bin</span><span class="p">,</span> <span class="n">ensure_siglen</span><span class="p">,</span> <span class="n">generate_weight_mask</span><span class="p">,</span> <span class="n">mask_to_intervals</span>
+<span class="kn">from</span> <span class="nn">....utils.utils_signal</span> <span class="kn">import</span> <span class="n">remove_spikes_naive</span>
 <span class="kn">from</span> <span class="nn">.mitdb_cfg</span> <span class="kn">import</span> <span class="n">MITDBTrainCfg</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;MITDBDataset&quot;</span><span class="p">,</span>
@@ -1161,9 +1150,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;db_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;`db_dir` is specified in both config and reader_kwargs&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
-            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`db_dir` is specified in both config and reader_kwargs&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">DR</span><span class="p">(</span><span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">)</span>
         <span class="c1"># assert self.config.db_dir is not None, &quot;db_dir must be specified&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span>
@@ -1230,12 +1217,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">MITDBTrainCfg</span><span class="o">.</span><span class="n">tasks</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;illegal task </span><span class="se">\042</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="se">\042</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">classes</span>
@@ -1277,15 +1259,11 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">input_len</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beat_data</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">class_map</span><span class="p">[</span><span class="n">beat</span><span class="o">.</span><span class="n">symbol</span><span class="p">]</span>
-                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">class_map</span><span class="p">[</span><span class="n">beat</span><span class="o">.</span><span class="n">symbol</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">loss</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CrossEntropyLoss&quot;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span> <span class="o">=</span> <span class="n">cls_to_bin</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">classes</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span> <span class="o">=</span> <span class="n">cls_to_bin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">classes</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="s2">&quot;qrs_detection&quot;</span><span class="p">,</span>
             <span class="s2">&quot;rhythm_segmentation&quot;</span><span class="p">,</span>
@@ -1382,9 +1360,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_all_masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_masks</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;data generator for task </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data generator for task </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MITDBDataset.reset_task"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.reset_task">[docs]</a>    <span class="k">def</span> <span class="nf">reset_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the task of the data generator.</span>
@@ -1415,23 +1391,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
             <span class="c1"># return</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;please allow the reader a few minutes to collect &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;the segments from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segments_base_dir</span><span class="si">}</span><span class="s2">...&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;please allow the reader a few minutes to collect &quot;</span> <span class="sa">f</span><span class="s2">&quot;the segments from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segments_base_dir</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
         <span class="n">seg_filename_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_name_pattern</span><span class="si">}</span><span class="se">\\</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_ext</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="n">rec</span><span class="p">:</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
-                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments_dirs</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">rec</span><span class="p">]),</span> <span class="n">seg_filename_pattern</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span>
-            <span class="p">}</span>
+            <span class="p">{</span><span class="n">rec</span><span class="p">:</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments_dirs</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">rec</span><span class="p">]),</span> <span class="n">seg_filename_pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">}</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">[</span><span class="n">rec</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_ls_rr_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all the rr sequences in the rr sequences base directory,</span>
@@ -1443,23 +1409,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
             <span class="c1"># return</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;please allow the reader a few minutes to collect &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;the rr sequences from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_base_dir</span><span class="si">}</span><span class="s2">...&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;please allow the reader a few minutes to collect &quot;</span> <span class="sa">f</span><span class="s2">&quot;the rr sequences from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_base_dir</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
         <span class="n">rr_seq_filename_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_name_pattern</span><span class="si">}</span><span class="se">\\</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_ext</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="n">rec</span><span class="p">:</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_dirs</span><span class="p">[</span><span class="n">rec</span><span class="p">],</span> <span class="n">rr_seq_filename_pattern</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span>
-            <span class="p">}</span>
+            <span class="p">{</span><span class="n">rec</span><span class="p">:</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_dirs</span><span class="p">[</span><span class="n">rec</span><span class="p">],</span> <span class="n">rr_seq_filename_pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">}</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">[</span><span class="n">rec</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFG</span><span class="p">:</span>
@@ -1567,16 +1523,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">seg_ann_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_seg_ann_path</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
-        <span class="n">seg_ann</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seg_ann_fp</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
-        <span class="p">}</span>
+        <span class="n">seg_ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seg_ann_fp</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)}</span>
         <span class="k">return</span> <span class="n">seg_ann</span>
 
-    <span class="k">def</span> <span class="nf">_load_seg_mask</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">_load_seg_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load mask(s) of the segment.</span>
 
 <span class="sd">        Parameters</span>
@@ -1689,9 +1639,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rr_seq_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rr_seq_path</span><span class="p">(</span><span class="n">seq_name</span><span class="p">)</span>
-        <span class="n">rr_seq</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rr_seq_path</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
-        <span class="p">}</span>
+        <span class="n">rr_seq</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rr_seq_path</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)}</span>
         <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;rr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;rr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">))</span>
         <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
@@ -1785,9 +1733,7 @@
                 <span class="c1"># if verbose &gt;= 1:</span>
                 <span class="c1">#     print(f&quot;{idx+1}/{len(self.reader)} records&quot;, end=&quot;\r&quot;)</span>
         <span class="k">if</span> <span class="n">force_recompute</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_slice_one_record</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1846,11 +1792,7 @@
 
         <span class="c1"># find critical points</span>
         <span class="n">critical_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">rhythm_mask</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">critical_points</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">p</span>
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">critical_points</span>
-            <span class="k">if</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">siglen</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">]</span>
+        <span class="n">critical_points</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">critical_points</span> <span class="k">if</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">siglen</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1885,10 +1827,7 @@
             <span class="k">return</span>
 
         <span class="c1"># special segments around critical_points with random forward_len in critical_forward_len</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Slicing special segments around `critical_points` &quot;</span>
-            <span class="s2">&quot;with random `forward_len` in `critical_forward_len`&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slicing special segments around `critical_points` &quot;</span> <span class="s2">&quot;with random `forward_len` in `critical_forward_len`&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="n">critical_points</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Slicing segments for record </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -1899,24 +1838,16 @@
             <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
                     <span class="mi">0</span><span class="p">,</span>
-                    <span class="n">cp</span>
-                    <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span>
-                    <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span>
-                        <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="p">),</span>
+                    <span class="n">cp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span> <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="p">)</span>
-                <span class="k">while</span> <span class="n">start_idx</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span>
-                    <span class="n">cp</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">siglen</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span>
-                <span class="p">):</span>
+                <span class="k">while</span> <span class="n">start_idx</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cp</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">siglen</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">):</span>
                     <span class="n">new_seg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_segment</span><span class="p">(</span>
                         <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
                         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                         <span class="n">start_idx</span><span class="o">=</span><span class="n">start_idx</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_seg</span><span class="p">)</span>
-                    <span class="n">start_idx</span> <span class="o">+=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span>
-                        <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="p">)</span>
+                    <span class="n">start_idx</span> <span class="o">+=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># save segments</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__save_segments</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">update_segments_json</span><span class="p">)</span>
@@ -1957,9 +1888,7 @@
 <span class="sd">                  original ECG record of the segment</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">start_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="p">),</span> <span class="s2">&quot;at least one of `start_idx` and `end_idx` should be set&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">start_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]),</span> <span class="s2">&quot;at least one of `start_idx` and `end_idx` should be set&quot;</span>
         <span class="n">siglen</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="c1"># offline augmentations are done, including strech-or-compress, ...</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stretch_compress</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -1967,9 +1896,7 @@
             <span class="n">sign</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_sample</span><span class="p">(</span><span class="n">stretch_compress_choices</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sign</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">sc_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stretch_compress</span>
-                <span class="n">sc_ratio</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">sc_ratio</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">sc_ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">sign</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
-                <span class="p">)</span>
+                <span class="n">sc_ratio</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">sc_ratio</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">sc_ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">sign</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
                 <span class="n">sc_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">sc_ratio</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">sc_len</span>
@@ -2018,16 +1945,12 @@
         <span class="n">seg_rpeaks</span> <span class="o">=</span> <span class="p">[</span>
             <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">sc_ratio</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">seg_rpeaks</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpeaks_dist2border</span>
-            <span class="o">&lt;=</span> <span class="n">r</span>
-            <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpeaks_dist2border</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpeaks_dist2border</span> <span class="o">&lt;=</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpeaks_dist2border</span>
         <span class="p">]</span>
         <span class="c1"># generate qrs_mask from rpeaks</span>
         <span class="n">seg_qrs_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">seg_rpeaks</span><span class="p">:</span>
-            <span class="n">seg_qrs_mask</span><span class="p">[</span>
-                <span class="n">r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qrs_mask_bias</span> <span class="p">:</span> <span class="n">r</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qrs_mask_bias</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">seg_qrs_mask</span><span class="p">[</span><span class="n">r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qrs_mask_bias</span> <span class="p">:</span> <span class="n">r</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qrs_mask_bias</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="c1"># adjust rhythm_intervals</span>
         <span class="n">seg_rhythm_intervals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_rhythm_ann</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
@@ -2038,19 +1961,14 @@
             <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">seg_rhythm_intervals</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">rt</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">sc_ratio</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sc_ratio</span><span class="p">))]</span>
-                <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">l_itvs</span>
-            <span class="p">]</span>
+            <span class="n">rt</span><span class="p">:</span> <span class="p">[[</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">sc_ratio</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sc_ratio</span><span class="p">))]</span> <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">l_itvs</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">rt</span><span class="p">,</span> <span class="n">l_itvs</span> <span class="ow">in</span> <span class="n">seg_rhythm_intervals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
         <span class="c1"># generate rhythm_mask from rhythm_intervals</span>
         <span class="n">seg_rhythm_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">rt</span><span class="p">,</span> <span class="n">l_itvs</span> <span class="ow">in</span> <span class="n">seg_rhythm_intervals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">l_itvs</span><span class="p">:</span>
-                <span class="n">seg_rhythm_mask</span><span class="p">[</span>
-                    <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rhythm_segmentation</span><span class="o">.</span><span class="n">class_map</span><span class="p">[</span><span class="n">rt</span><span class="p">]</span>
+                <span class="n">seg_rhythm_mask</span><span class="p">[</span><span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rhythm_segmentation</span><span class="o">.</span><span class="n">class_map</span><span class="p">[</span><span class="n">rt</span><span class="p">]</span>
 
         <span class="n">new_seg</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">aug_seg</span><span class="p">,</span>
@@ -2061,9 +1979,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_seg</span>
 
-    <span class="k">def</span> <span class="nf">__save_segments</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CFG</span><span class="p">],</span> <span class="n">update_segments_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__save_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CFG</span><span class="p">],</span> <span class="n">update_segments_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the segments to disk.</span>
 
 <span class="sd">        Parameters</span>
@@ -2097,9 +2013,7 @@
                 <span class="p">},</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">update_segments_json</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segments_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_segments</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_clear_cached_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cached segments of the records.</span>
@@ -2172,9 +2086,7 @@
                 <span class="c1"># if verbose &gt;= 1:</span>
                 <span class="c1">#     print(f&quot;{idx+1}/{len(self.reader.all_records)} records&quot;, end=&quot;\r&quot;)</span>
         <span class="k">if</span> <span class="n">force_recompute</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_slice_rr_seq_one_record</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2227,11 +2139,7 @@
 
         <span class="c1"># find critical points</span>
         <span class="n">critical_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">label_seq</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">critical_points</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">p</span>
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">critical_points</span>
-            <span class="k">if</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">]</span>
+        <span class="n">critical_points</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">critical_points</span> <span class="k">if</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="n">rr_seq</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2270,10 +2178,7 @@
             <span class="k">return</span>
 
         <span class="c1"># special rr_seq around critical_points with random forward_len in critical_forward_len</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Slicing special rr_seq around `critical_points` &quot;</span>
-            <span class="s2">&quot;with random `forward_len` in `critical_forward_len`&quot;</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slicing special rr_seq around `critical_points` &quot;</span> <span class="s2">&quot;with random `forward_len` in `critical_forward_len`&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="n">critical_points</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Slicing rr_seq for record </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -2284,15 +2189,9 @@
             <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
                     <span class="mi">0</span><span class="p">,</span>
-                    <span class="n">cp</span>
-                    <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span>
-                    <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span>
-                        <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="p">),</span>
+                    <span class="n">cp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span> <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="p">)</span>
-                <span class="k">while</span> <span class="n">start_idx</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span>
-                    <span class="n">cp</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span>
-                <span class="p">):</span>
+                <span class="k">while</span> <span class="n">start_idx</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cp</span> <span class="o">-</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">):</span>
                     <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span>
                     <span class="n">new_rr_seq</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
                         <span class="n">rr</span><span class="o">=</span><span class="n">rr</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">],</span>
@@ -2300,15 +2199,11 @@
                         <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">],</span>
                     <span class="p">)</span>
                     <span class="n">rr_seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_rr_seq</span><span class="p">)</span>
-                    <span class="n">start_idx</span> <span class="o">+=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span>
-                        <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="p">)</span>
+                    <span class="n">start_idx</span> <span class="o">+=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">critical_forward_len</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="c1"># save rr sequences</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__save_rr_seq</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">rr_seq</span><span class="p">,</span> <span class="n">update_rr_seq_json</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__save_rr_seq</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rr_seq</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CFG</span><span class="p">],</span> <span class="n">update_rr_seq_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__save_rr_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rr_seq</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CFG</span><span class="p">],</span> <span class="n">update_rr_seq_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save rr_seq to disk.</span>
 
 <span class="sd">        Parameters</span>
@@ -2334,9 +2229,7 @@
             <span class="n">savemat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data_path</span><span class="p">),</span> <span class="n">item</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">update_rr_seq_json</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__all_rr_seq</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_clear_cached_rr_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cached rr sequences.</span>
@@ -2420,8 +2313,7 @@
     <span class="k">def</span> <span class="nf">__assert_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the current task is in the given list.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">,</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;DO NOT call this method when the current task is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="s2">&quot;Switch task using `reset_task`&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;DO NOT call this method when the current task is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">. &quot;</span> <span class="s2">&quot;Switch task using `reset_task`&quot;</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="MITDBDataset.plot_seg"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.plot_seg">[docs]</a>    <span class="k">def</span> <span class="nf">plot_seg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2515,9 +2407,7 @@
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">seg_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="n">seg_data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_spikes_naive</span><span class="p">(</span><span class="n">seg_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
             <span class="n">seg_ann_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_dirs</span><span class="o">.</span><span class="n">ann</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">seg_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">file_ext</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">seg_label</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seg_ann_fp</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">seg_label</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seg_ann_fp</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">reduction</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">reduction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">reduction</span>
                 <span class="n">seg_len</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="n">seg_label</span><span class="o">.</span><span class="n">shape</span>
@@ -2557,12 +2447,8 @@
             <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;rr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;rr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">))</span>
             <span class="c1"># map values of `rr_seq[&quot;label&quot;]` to 0, 1 according to `self.reader.rhythm_types_map`</span>
-            <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">][</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="p">[</span><span class="s2">&quot;AFIB&quot;</span><span class="p">])</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">][</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="p">[</span><span class="s2">&quot;AFIB&quot;</span><span class="p">])</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="p">[</span><span class="s2">&quot;AFIB&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="p">[</span><span class="s2">&quot;AFIB&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">weight_mask</span> <span class="o">=</span> <span class="n">generate_weight_mask</span><span class="p">(</span>
                 <span class="n">target_mask</span><span class="o">=</span><span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                 <span class="n">fg_weight</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -2573,9 +2459,7 @@
             <span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;rr&quot;</span><span class="p">],</span> <span class="n">rr_seq</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">weight_mask</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;data generator for task </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data generator for task </span><span class="se">\042</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="se">\042</span><span class="s2"> not implemented&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>

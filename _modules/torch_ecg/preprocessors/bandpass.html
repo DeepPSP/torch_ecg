@@ -1091,7 +1091,6 @@
 
 <span class="kn">from</span> <span class="nn">.._preprocessors.base</span> <span class="kn">import</span> <span class="n">preprocess_multi_lead_signal</span>
 
-
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;BandPass&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -1118,20 +1117,13 @@
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BandPass&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-        <span class="n">lowcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">highcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mi">45</span><span class="p">,</span>
-        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">lowcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">highcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mi">45</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="o">=</span> <span class="n">lowcut</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">highcut</span> <span class="o">=</span> <span class="n">highcut</span>
-        <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">highcut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="p">),</span> <span class="s2">&quot;At least one of lowcut and highcut should be set&quot;</span>
+        <span class="k">assert</span> <span class="nb">any</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">highcut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]),</span> <span class="s2">&quot;At least one of lowcut and highcut should be set&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">highcut</span><span class="p">:</span>

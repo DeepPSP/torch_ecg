@@ -1099,20 +1099,15 @@
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">...cfg</span> <span class="kn">import</span> <span class="n">CFG</span>
 <span class="kn">from</span> <span class="nn">...models._nets</span> <span class="kn">import</span> <span class="n">Conv_Bn_Activation</span><span class="p">,</span> <span class="n">DownSample</span>
-<span class="kn">from</span> <span class="nn">...utils.misc</span> <span class="kn">import</span> <span class="n">list_sum</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">CitationMixin</span>
-<span class="kn">from</span> <span class="nn">...utils.utils_nn</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SizeMixin</span><span class="p">,</span>
-    <span class="n">compute_sequential_output_shape</span><span class="p">,</span>
-    <span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span>
-<span class="p">)</span>
-
+<span class="kn">from</span> <span class="nn">...utils.misc</span> <span class="kn">import</span> <span class="n">CitationMixin</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">list_sum</span>
+<span class="kn">from</span> <span class="nn">...utils.utils_nn</span> <span class="kn">import</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">compute_sequential_output_shape</span><span class="p">,</span> <span class="n">compute_sequential_output_shape_docstring</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DenseNet&quot;</span><span class="p">,</span>
@@ -1185,12 +1180,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">in_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`in_channels` (= `</span><span class="si">{</span><span class="n">in_channels</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">growth_rate</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`growth_rate` (= `</span><span class="si">{</span><span class="n">growth_rate</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
+        <span class="k">assert</span> <span class="n">in_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`in_channels` (= `</span><span class="si">{</span><span class="n">in_channels</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
+        <span class="k">assert</span> <span class="n">growth_rate</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`growth_rate` (= `</span><span class="si">{</span><span class="n">growth_rate</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bac</span> <span class="o">=</span> <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
             <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -1247,9 +1238,7 @@
                     <span class="p">[</span>
                         <span class="p">[</span>
                             <span class="nb">input</span><span class="p">[:,</span> <span class="n">iw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">iw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:],</span>
-                            <span class="n">new_features</span><span class="p">[</span>
-                                <span class="p">:,</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
-                            <span class="p">],</span>
+                            <span class="n">new_features</span><span class="p">[:,</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:],</span>
                         <span class="p">]</span>
                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__groups</span><span class="p">)</span>
                     <span class="p">]</span>
@@ -1436,9 +1425,7 @@
                     <span class="p">[</span>
                         <span class="p">[</span>
                             <span class="nb">input</span><span class="p">[:,</span> <span class="n">iw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">iw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:],</span>
-                            <span class="n">new_features</span><span class="p">[</span>
-                                <span class="p">:,</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
-                            <span class="p">],</span>
+                            <span class="n">new_features</span><span class="p">[:,</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:],</span>
                         <span class="p">]</span>
                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__groups</span><span class="p">)</span>
                     <span class="p">]</span>
@@ -1792,9 +1779,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">growth_rates</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">growth_rates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">growth_rates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">growth_rates</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
@@ -1802,9 +1787,7 @@
             <span class="sa">f</span><span class="s2">&quot;while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">)</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
@@ -1812,9 +1795,7 @@
                 <span class="sa">f</span><span class="s2">&quot;while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">)</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>

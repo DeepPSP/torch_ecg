@@ -1091,9 +1091,8 @@
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
-<span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span>
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">DEFAULTS</span>
-
+<span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Augmenter&quot;</span><span class="p">,</span>
@@ -1134,11 +1133,7 @@
 <div class="viewcode-block" id="Augmenter.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.forward">[docs]</a>    <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_augmenter_forward_doc</span><span class="p">)</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-        <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">extra_tensors</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -1148,9 +1143,7 @@
     <span class="c1">#     &quot;&quot;&quot;</span>
     <span class="c1">#     return self.generate(sig, label, *extra_tensors, **kwargs)</span>
 
-<div class="viewcode-block" id="Augmenter.get_indices"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.get_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_indices</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pop_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scale_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="Augmenter.get_indices"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.get_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pop_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scale_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of indices to be selected.</span>
 
 <span class="sd">        A random list of indices in the range ``[0, pop_size-1]``</span>

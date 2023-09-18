@@ -1089,11 +1089,11 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -1102,7 +1102,6 @@
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">make_serializable</span>
 <span class="kn">from</span> <span class="nn">.utils_data</span> <span class="kn">import</span> <span class="n">cls_to_bin</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;extend_predictions&quot;</span><span class="p">,</span>
@@ -1122,9 +1121,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="extend_predictions"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions">[docs]</a><span class="k">def</span> <span class="nf">extend_predictions</span><span class="p">(</span>
-    <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">extended_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="extend_predictions"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions">[docs]</a><span class="k">def</span> <span class="nf">extend_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">extended_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend the prediction arrays to prediction arrays in larger range of classes</span>
 
 <span class="sd">    Parameters</span>
@@ -1177,9 +1174,7 @@
         <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">extended_preds</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">extended_preds</span>
 
-    <span class="k">assert</span> <span class="n">_preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
-        <span class="n">classes</span>
-    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`pred` indicates </span><span class="si">{</span><span class="n">_preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> classes, while `classes` has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="n">_preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`pred` indicates </span><span class="si">{</span><span class="n">_preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> classes, while `classes` has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">_preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">extended_classes</span><span class="p">)))</span>
 
@@ -1267,9 +1262,7 @@
         <span class="s2">&quot;averagepooling&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">lt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">layer_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="p">(</span>
-        <span class="n">lt</span> <span class="ow">in</span> <span class="n">__TYPES__</span>
-    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unknown layer type `</span><span class="si">{</span><span class="n">layer_type</span><span class="si">}</span><span class="s2">`, should be one of: </span><span class="si">{</span><span class="n">__TYPES__</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="n">lt</span> <span class="ow">in</span> <span class="n">__TYPES__</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unknown layer type `</span><span class="si">{</span><span class="n">layer_type</span><span class="si">}</span><span class="s2">`, should be one of: </span><span class="si">{</span><span class="n">__TYPES__</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">assert_positive_integer</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -1287,23 +1280,18 @@
     <span class="p">),</span> <span class="s2">&quot;`input_shape` should be a sequence containing only `None` and positive integers&quot;</span>
 
     <span class="k">if</span> <span class="n">num_filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">assert_positive_integer</span><span class="p">(</span>
-            <span class="n">num_filters</span>
-        <span class="p">),</span> <span class="s2">&quot;`num_filters` should be `None` or positive integer&quot;</span>
+        <span class="k">assert</span> <span class="n">assert_positive_integer</span><span class="p">(</span><span class="n">num_filters</span><span class="p">),</span> <span class="s2">&quot;`num_filters` should be `None` or positive integer&quot;</span>
     <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">assert_positive_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">assert_positive_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">),</span> <span class="s2">&quot;`kernel_size` should contain only positive integers&quot;</span>
     <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
         <span class="n">assert_positive_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">),</span> <span class="s2">&quot;`stride` should contain only positive integers&quot;</span>
     <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">assert_non_negative_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">assert_non_negative_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">),</span> <span class="s2">&quot;`padding` should contain only non-negative integers&quot;</span>
     <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">assert_non_negative_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">output_padding</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">assert_non_negative_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">output_padding</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">),</span> <span class="s2">&quot;`output_padding` should contain only non-negative integers&quot;</span>
     <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
         <span class="n">assert_positive_integer</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dilation</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -1347,9 +1335,7 @@
         <span class="n">out_channels</span> <span class="o">=</span> <span class="n">num_filters</span>
 
     <span class="k">def</span> <span class="nf">check_output_validity</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-            <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">shape</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;output shape `</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">` is illegal, please check input arguments&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;output shape `</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">` is illegal, please check input arguments&quot;</span>
         <span class="k">return</span> <span class="n">shape</span>
 
     <span class="c1"># none_dim_msg = &quot;only batch and channel dimension can be `None`&quot;</span>
@@ -1361,9 +1347,7 @@
     <span class="k">if</span> <span class="n">channel_last</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>
             <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span><span class="p">)</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">check_output_validity</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>
@@ -1371,9 +1355,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]]):</span>
             <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span><span class="p">)</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>
             <span class="k">return</span> <span class="n">check_output_validity</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]]):</span>
@@ -1422,14 +1404,11 @@
     <span class="k">if</span> <span class="n">asymmetric_padding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">),</span> <span class="s2">&quot;Invalid `asymmetric_padding`&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">asymmetric_padding</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span>
-            <span class="p">),</span> <span class="s2">&quot;Invalid `asymmetric_padding`&quot;</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Invalid `asymmetric_padding`&quot;</span>
             <span class="n">_asymmetric_padding</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ap</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">asymmetric_padding</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ap</span><span class="p">)</span> <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">asymmetric_padding</span>
             <span class="p">),</span> <span class="s2">&quot;Invalid `asymmetric_padding`&quot;</span>
             <span class="n">_asymmetric_padding</span> <span class="o">=</span> <span class="n">asymmetric_padding</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
@@ -1481,9 +1460,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">floor</span><span class="p">(((</span><span class="n">i</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">minus_term</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span> <span class="o">/</span> <span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="n">_input_shape</span><span class="p">,</span> <span class="n">_padding</span><span class="p">,</span> <span class="n">_dilation</span><span class="p">,</span> <span class="n">_kernel_size</span><span class="p">,</span> <span class="n">_stride</span>
-            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_input_shape</span><span class="p">,</span> <span class="n">_padding</span><span class="p">,</span> <span class="n">_dilation</span><span class="p">,</span> <span class="n">_kernel_size</span><span class="p">,</span> <span class="n">_stride</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="k">if</span> <span class="n">channel_last</span><span class="p">:</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">output_shape</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>
@@ -1737,9 +1714,7 @@
     <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a sequential model.&quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span>
-        <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span>
-    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;model should be nn.Sequential, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;model should be nn.Sequential, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">_seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
@@ -1821,12 +1796,7 @@
             <span class="s2">&quot;torch.int64&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
             <span class="s2">&quot;torch.uint8&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">*</span> <span class="n">size_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">*</span> <span class="n">size_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span><span class="p">])</span>
         <span class="n">div_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">n_params</span> <span class="o">&gt;=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">:</span>
             <span class="n">n_params</span> <span class="o">/=</span> <span class="mi">1024</span>
@@ -1923,18 +1893,10 @@
 <span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_kernel_sizes</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">[</span><span class="n">kernel_sizes</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kernel_sizes</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">kernel_sizes</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">_kernel_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">kernel_sizes</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kernel_sizes</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">kernel_sizes</span><span class="p">)</span>
     <span class="n">num_layers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_kernel_sizes</span><span class="p">)</span>
-    <span class="n">_strides</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">strides</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">_dilations</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">_strides</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">strides</span><span class="p">)</span>
+    <span class="n">_dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">num_layers</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_strides</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_dilations</span><span class="p">)</span>
     <span class="n">receptive_field</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">_kernel_sizes</span><span class="p">,</span> <span class="n">_dilations</span><span class="p">)):</span>
@@ -2054,9 +2016,7 @@
         <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>  <span class="c1"># DO NOT use `Iterable`</span>
                 <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">_adjust_cnn_filter_lengths</span><span class="p">(</span>
-                        <span class="p">{</span><span class="s2">&quot;filter_length&quot;</span><span class="p">:</span> <span class="n">fl</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]},</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ensure_odd</span>
-                    <span class="p">)[</span><span class="s2">&quot;filter_length&quot;</span><span class="p">]</span>
+                    <span class="n">_adjust_cnn_filter_lengths</span><span class="p">({</span><span class="s2">&quot;filter_length&quot;</span><span class="p">:</span> <span class="n">fl</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]},</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ensure_odd</span><span class="p">)[</span><span class="s2">&quot;filter_length&quot;</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">fl</span> <span class="ow">in</span> <span class="n">v</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
@@ -2066,12 +2026,7 @@
                     <span class="k">if</span> <span class="n">ensure_odd</span><span class="p">:</span>
                         <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
-            <span class="n">tmp_configs</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">_adjust_cnn_filter_lengths</span><span class="p">(</span>
-                    <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]},</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ensure_odd</span><span class="p">,</span> <span class="n">pattern</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">v</span>
-            <span class="p">]</span>
+            <span class="n">tmp_configs</span> <span class="o">=</span> <span class="p">[</span><span class="n">_adjust_cnn_filter_lengths</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]},</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ensure_odd</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
             <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tmp_configs</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">config</span>
 
@@ -2121,15 +2076,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sizeof_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
@@ -2162,9 +2113,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin class for loading from checkpoint class methods&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CkptMixin.from_checkpoint"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.from_checkpoint">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_checkpoint</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">from_checkpoint</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a model from a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
@@ -2186,9 +2135,7 @@
         <span class="n">_device</span> <span class="o">=</span> <span class="n">device</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span>
         <span class="n">ckpt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">_device</span><span class="p">)</span>
         <span class="n">aux_config</span> <span class="o">=</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train_config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">aux_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;input checkpoint has no sufficient data to recover a model&quot;</span>
+        <span class="k">assert</span> <span class="n">aux_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;input checkpoint has no sufficient data to recover a model&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_config&quot;</span><span class="p">],</span>
         <span class="p">)</span>

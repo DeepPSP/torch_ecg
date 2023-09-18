@@ -1095,20 +1095,16 @@
 <span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">...cfg</span> <span class="kn">import</span> <span class="n">CFG</span>
-<span class="kn">from</span> <span class="nn">...models._nets</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Conv_Bn_Activation</span><span class="p">,</span>
-    <span class="n">DownSample</span><span class="p">,</span>
-    <span class="n">MultiConv</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">...model_configs</span> <span class="kn">import</span> <span class="n">ECG_UNET_VANILLA_CONFIG</span>
-<span class="kn">from</span> <span class="nn">...utils.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">CitationMixin</span>
+<span class="kn">from</span> <span class="nn">...models._nets</span> <span class="kn">import</span> <span class="n">Conv_Bn_Activation</span><span class="p">,</span> <span class="n">DownSample</span><span class="p">,</span> <span class="n">MultiConv</span>
+<span class="kn">from</span> <span class="nn">...utils.misc</span> <span class="kn">import</span> <span class="n">CitationMixin</span><span class="p">,</span> <span class="n">add_docstring</span>
 <span class="kn">from</span> <span class="nn">...utils.utils_nn</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CkptMixin</span><span class="p">,</span>
     <span class="n">SizeMixin</span><span class="p">,</span>
@@ -1116,7 +1112,6 @@
     <span class="n">compute_sequential_output_shape</span><span class="p">,</span>
     <span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span>
 <span class="p">)</span>
-
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;ECG_UNET&quot;</span><span class="p">,</span>
@@ -1365,9 +1360,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__up_scale</span> <span class="o">=</span> <span class="n">up_scale</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__mid_channels</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">mid_channels</span> <span class="k">if</span> <span class="n">mid_channels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="mi">2</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__mid_channels</span> <span class="o">=</span> <span class="n">mid_channels</span> <span class="k">if</span> <span class="n">mid_channels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__deconv_filter_length</span> <span class="o">=</span> <span class="n">deconv_filter_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -1377,9 +1370,7 @@
         <span class="c1"># the following has to be checked</span>
         <span class="c1"># if bilinear, use the normal convolutions to reduce the number of channels</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">==</span> <span class="s2">&quot;deconv&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__deconv_padding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__deconv_filter_length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__up_scale</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__deconv_padding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__deconv_filter_length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__up_scale</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose1d</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -1428,9 +1419,7 @@
         <span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="p">[</span><span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">diff_sig_len</span> <span class="o">-</span> <span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">])</span>
 
         <span class="c1"># TODO: consider the case `groups` &gt; 1 when concatenating</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">down_output</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
-        <span class="p">)</span>  <span class="c1"># concate along the channel axis</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">down_output</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># concate along the channel axis</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">output</span>
@@ -1514,9 +1503,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">n_leads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ECG_UNET_VANILLA_CONFIG</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
-            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_conv</span> <span class="o">=</span> <span class="n">DoubleConv</span><span class="p">(</span>
