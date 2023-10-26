@@ -9,6 +9,7 @@ import numpy as np
 from biosppy.signals.tools import filter_signal
 from scipy.ndimage import median_filter
 
+from ..cfg import DEFAULTS
 from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_signal import butter_bandpass_filter
 
@@ -129,9 +130,9 @@ def preprocess_multi_lead_signal(
     ], f"multi-lead signal format `{sig_fmt}` not supported"
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         # might have a batch dimension at the first axis
-        filtered_ecg = np.moveaxis(raw_sig, -2, -1)
+        filtered_ecg = np.moveaxis(raw_sig, -2, -1).astype(DEFAULTS.np_dtype)
     else:
-        filtered_ecg = raw_sig
+        filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)
 
     # remove baseline
     if bl_win:
@@ -229,7 +230,7 @@ def preprocess_single_lead_signal(
     e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.
 
     """
-    filtered_ecg = np.asarray(raw_sig)
+    filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)
     assert filtered_ecg.ndim == 1, "single-lead signal should be 1d array"
 
     # remove baseline

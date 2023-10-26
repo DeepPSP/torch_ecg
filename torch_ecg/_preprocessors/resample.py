@@ -6,6 +6,7 @@ from typing import Any, List, Optional, Tuple
 import numpy as np
 import scipy.signal as SS
 
+from ..cfg import DEFAULTS
 from .base import PreProcessor
 
 __all__ = [
@@ -68,10 +69,10 @@ class Resample(PreProcessor):
         """
         self._check_sig(sig)
         if self.fs is not None:
-            rsmp_sig = SS.resample_poly(sig, up=self.fs, down=fs, axis=-1)
+            rsmp_sig = SS.resample_poly(sig.astype(DEFAULTS.np_dtype), up=self.fs, down=fs, axis=-1)
             new_fs = self.fs
         else:  # self.siglen is not None
-            rsmp_sig = SS.resample(sig, num=self.siglen, axis=-1)
+            rsmp_sig = SS.resample(sig.astype(DEFAULTS.np_dtype), num=self.siglen, axis=-1)
             new_fs = int(round(self.siglen / sig.shape[-1] * fs))
         return rsmp_sig, new_fs
 
