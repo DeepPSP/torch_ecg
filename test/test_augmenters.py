@@ -280,12 +280,18 @@ def test_stretch_compress():
     assert sig.shape == (BATCH_SIZE, N_LEADS, SIG_LEN)
     assert label.shape == (BATCH_SIZE, 26)
     assert mask.shape == (BATCH_SIZE, SIG_LEN, 3)
+    label = torch.randint(0, 2, (BATCH_SIZE, SIG_LEN // 2, 26), dtype=torch.float32)
+    assert label.shape == (BATCH_SIZE, SIG_LEN // 2, 26)
 
     sig = torch.randn((BATCH_SIZE, N_LEADS, SIG_LEN))
     # labels = torch.randint(0, 2, (BATCH_SIZE, SIG_LEN, 26))
     label = torch.randint(0, 2, (BATCH_SIZE, 26), dtype=torch.float32)
     mask = torch.randint(0, 2, (BATCH_SIZE, SIG_LEN // 8, 3), dtype=torch.float32)
-    sig, label, mask = sc._generate(sig, label, mask)
+    for _ in range(5):
+        # generate 5 times
+        sig, label, mask = sc._generate(sig, label, mask)
+    # generate with only sig
+    sig = sc._generate(sig)
 
     sc = StretchCompress(prob=0.0)
     sig = torch.randn((BATCH_SIZE, N_LEADS, SIG_LEN))
@@ -301,7 +307,11 @@ def test_stretch_compress():
     # labels = torch.randint(0, 2, (BATCH_SIZE, SIG_LEN, 26))
     label = torch.randint(0, 2, (BATCH_SIZE, 26), dtype=torch.float32)
     mask = torch.randint(0, 2, (BATCH_SIZE, SIG_LEN // 8, 3), dtype=torch.float32)
-    sig, label, mask = sc._generate(sig, label, mask)
+    for _ in range(5):
+        # generate 5 times
+        sig, label, mask = sc._generate(sig, label, mask)
+    # generate with only sig
+    sig = sc._generate(sig)
 
     assert str(sc) == repr(sc)
 
