@@ -5,6 +5,7 @@ from typing import Any, List, Tuple, Union
 
 import numpy as np
 
+from ..cfg import DEFAULTS
 from ..utils.utils_signal import normalize
 from .base import PreProcessor
 
@@ -113,7 +114,7 @@ class Normalize(PreProcessor):
         """
         self._check_sig(sig)
         normalized_sig = normalize(
-            sig=sig,
+            sig=sig.astype(DEFAULTS.np_dtype),
             method=self.method,
             mean=self.mean,
             std=self.std,

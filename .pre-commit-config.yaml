@@ -1,5 +1,5 @@
-# ignore svg, txt, json files
-exclude: '^.*\.(svg|txt|json)$'
+# ignore svg, txt, json, html files
+exclude: '^.*\.(svg|txt|json|html)$'
 fail_fast: false
 
 repos:
