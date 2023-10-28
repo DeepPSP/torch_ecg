@@ -1092,6 +1092,7 @@
 <span class="kn">from</span> <span class="nn">biosppy.signals.tools</span> <span class="kn">import</span> <span class="n">filter_signal</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">median_filter</span>
 
+<span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span>
 <span class="kn">from</span> <span class="nn">..utils.utils_signal</span> <span class="kn">import</span> <span class="n">butter_bandpass_filter</span>
 
@@ -1212,9 +1213,9 @@
     <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;multi-lead signal format `</span><span class="si">{</span><span class="n">sig_fmt</span><span class="si">}</span><span class="s2">` not supported&quot;</span>
     <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
         <span class="c1"># might have a batch dimension at the first axis</span>
-        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">raw_sig</span>
+        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
 
     <span class="c1"># remove baseline</span>
     <span class="k">if</span> <span class="n">bl_win</span><span class="p">:</span>
@@ -1312,7 +1313,7 @@
 <span class="sd">    e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">)</span>
+    <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;single-lead signal should be 1d array&quot;</span>
 
     <span class="c1"># remove baseline</span>

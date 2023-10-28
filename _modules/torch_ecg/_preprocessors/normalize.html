@@ -1088,6 +1088,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span> <span class="nn">..utils.utils_signal</span> <span class="kn">import</span> <span class="n">normalize</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PreProcessor</span>
 
@@ -1196,7 +1197,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">normalized_sig</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span>
-            <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="p">,</span>
+            <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">),</span>
             <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
             <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
             <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">,</span>
