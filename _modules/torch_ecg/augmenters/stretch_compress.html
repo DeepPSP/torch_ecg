@@ -1283,31 +1283,18 @@
                 <span class="k">return</span> <span class="n">sig</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">)</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_indices</span><span class="p">(</span><span class="n">prob</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="n">batch</span><span class="p">)</span>
-        <span class="c1"># with tmp.Pool(processes=4) as pool:</span>
-        <span class="c1">#     data = pool.starmap(</span>
-        <span class="c1">#         func=_stretch_compress_one_batch_element,</span>
-        <span class="c1">#         iterable=[</span>
-        <span class="c1">#             (</span>
-        <span class="c1">#                 self.ratio,</span>
-        <span class="c1">#                 sig[batch_idx, ...].unsqueeze(0),</span>
-        <span class="c1">#                 *(label[batch_idx, ...].unsqueeze(0) for label in labels)</span>
-        <span class="c1">#             )</span>
-        <span class="c1">#             for batch_idx in indices</span>
-        <span class="c1">#         ],</span>
-        <span class="c1">#     )</span>
-        <span class="c1"># for batch_idx, (sig_, *labels_) in zip(indices, data):</span>
-        <span class="c1">#     sig[batch_idx, ...] = sig_</span>
-        <span class="c1">#     for idx, label in enumerate(labels_):</span>
-        <span class="c1">#         labels[idx][batch_idx, ...] = label</span>
         <span class="k">for</span> <span class="n">batch_idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">_stretch_compress_one_batch_element</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">,</span>
                 <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                 <span class="o">*</span><span class="p">(</span><span class="n">label</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">),</span>
             <span class="p">)</span>
-            <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
-                <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                    <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sig</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">)</span>
@@ -1320,7 +1307,9 @@
         <span class="p">]</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">_stretch_compress_one_batch_element</span><span class="p">(</span><span class="n">ratio</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_stretch_compress_one_batch_element</span><span class="p">(</span>
+    <span class="n">ratio</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stretch or compress one batch element of the ECGs.</span>
 
 <span class="sd">    Parameters</span>
@@ -1598,9 +1587,11 @@
             <span class="n">sign</span> <span class="o">=</span> <span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
             <span class="n">new_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">seglen</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">))</span>
                 <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">new_len</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">new_len</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># end_idx is not None</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">new_len</span><span class="p">)</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">new_len</span>
             <span class="k">if</span> <span class="n">end_idx</span> <span class="o">&gt;</span> <span class="n">siglen</span><span class="p">:</span>
                 <span class="n">end_idx</span> <span class="o">=</span> <span class="n">siglen</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">new_len</span><span class="p">)</span>
@@ -1621,11 +1612,13 @@
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">))</span>
                 <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">seglen</span>
                 <span class="k">if</span> <span class="n">end_idx</span> <span class="o">&gt;</span> <span class="n">siglen</span><span class="p">:</span>
                     <span class="n">end_idx</span> <span class="o">=</span> <span class="n">siglen</span>
                     <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">seglen</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># end_idx is not None</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">-</span> <span class="n">seglen</span>
                 <span class="k">if</span> <span class="n">start_idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
