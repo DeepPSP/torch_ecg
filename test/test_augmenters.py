@@ -335,3 +335,14 @@ def test_stretch_compress_offline():
     segments = sco(seglen, sig, labels, masks)
 
     assert str(sco) == repr(sco)
+
+    for _ in range(5):
+        # generate 5 times
+        aug_seg, aug_labels, aug_masks, start_idx, end_idx = sco._StretchCompressOffline__generate_segment(
+            seglen, sig, labels, masks, end_idx=sig.shape[-1] + 200
+        )
+        assert end_idx == sig.shape[-1]
+        aug_seg, aug_labels, aug_masks, start_idx, end_idx = sco._StretchCompressOffline__generate_segment(
+            seglen, sig, labels, masks, end_idx=seglen - 200
+        )
+        assert start_idx == 0

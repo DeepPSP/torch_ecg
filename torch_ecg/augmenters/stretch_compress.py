@@ -200,31 +200,18 @@ class StretchCompress(Augmenter):
                 return sig
             return (sig, *labels)
         indices = self.get_indices(prob=self.prob, pop_size=batch)
-        # with tmp.Pool(processes=4) as pool:
-        #     data = pool.starmap(
-        #         func=_stretch_compress_one_batch_element,
-        #         iterable=[
-        #             (
-        #                 self.ratio,
-        #                 sig[batch_idx, ...].unsqueeze(0),
-        #                 *(label[batch_idx, ...].unsqueeze(0) for label in labels)
-        #             )
-        #             for batch_idx in indices
-        #         ],
-        #     )
-        # for batch_idx, (sig_, *labels_) in zip(indices, data):
-        #     sig[batch_idx, ...] = sig_
-        #     for idx, label in enumerate(labels_):
-        #         labels[idx][batch_idx, ...] = label
         for batch_idx in indices:
             data = _stretch_compress_one_batch_element(
                 self.ratio,
                 sig[batch_idx, ...].unsqueeze(0),
                 *(label[batch_idx, ...].unsqueeze(0) for label in labels),
             )
-            sig[batch_idx, ...] = data[0]
-            for idx, label in enumerate(data[1:]):
-                labels[idx][batch_idx, ...] = label
+            if len(labels) == 0:
+                sig[batch_idx, ...] = data
+            else:
+                sig[batch_idx, ...] = data[0]
+                for idx, label in enumerate(data[1:]):
+                    labels[idx][batch_idx, ...] = label
         if len(labels) == 0:
             return sig
         return (sig, *labels)
@@ -237,7 +224,9 @@ class StretchCompress(Augmenter):
         ] + super().extra_repr_keys()
 
 
-def _stretch_compress_one_batch_element(ratio: Real, sig: Tensor, *labels: Sequence[Tensor]) -> Tensor:
+def _stretch_compress_one_batch_element(
+    ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
+) -> Union[Tensor, Tuple[Tensor, ...]]:
     """Stretch or compress one batch element of the ECGs.
 
     Parameters
@@ -515,9 +504,11 @@ class StretchCompressOffline(ReprMixin):
             sign = choice([-1, 1])
             new_len = int(round((1 + sign * ratio) * seglen))
             if start_idx is not None:
+                start_idx = min(siglen, max(0, start_idx))
                 end_idx = start_idx + new_len
-            else:
-                start_idx = end_idx - new_len
+            else:  # end_idx is not None
+                start_idx = max(0, end_idx - new_len)
+                end_idx = start_idx + new_len
             if end_idx > siglen:
                 end_idx = siglen
                 start_idx = max(0, end_idx - new_len)
@@ -538,11 +529,13 @@ class StretchCompressOffline(ReprMixin):
                 )
         else:
             if start_idx is not None:
+                start_idx = min(siglen, max(0, start_idx))
                 end_idx = start_idx + seglen
                 if end_idx > siglen:
                     end_idx = siglen
                     start_idx = end_idx - seglen
-            else:
+            else:  # end_idx is not None
+                end_idx = min(siglen, max(0, end_idx))
                 start_idx = end_idx - seglen
                 if start_idx < 0:
                     start_idx = 0
