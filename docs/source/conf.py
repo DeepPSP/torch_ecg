@@ -58,6 +58,7 @@ extensions = [
     # "recommonmark",
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
+    "sphinx_emoji_favicon",
     # "sphinx_toolbox.collapse",  # replaced by dropdown of sphinx_design
     # "numpydoc",
     "sphinxcontrib.tikz",
@@ -170,6 +171,8 @@ html_css_files = [
 ]
 
 master_doc = "index"
+
+emoji_favicon = ":cœur_battant:"
 
 
 def setup(app):

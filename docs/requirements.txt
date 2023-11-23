@@ -10,6 +10,7 @@ sphinx-copybutton
 sphinx-multiversion
 # sphinx-toolbox  # replaced by dropdown of sphinx_design
 sphinx-design
+sphinx-emoji-favicon
 sphinxcontrib-napoleon
 sphinxcontrib-tikz
 sphinxcontrib-bibtex
