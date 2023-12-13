@@ -76,6 +76,11 @@ jobs:
       # This is used to render the tikz plots in the docs.
       uses: teatimeguest/setup-texlive-action@v2
       with:
+        # List of TeXLive-packages contained in the scheme-basic
+        # https://trac.macports.org/wiki/TeXLivePackages
+        # tlmgr info --list scheme-basic
+        # tlmgr info --list collection-latex
+        # tlmgr info --list collection-basic
         packages: >-
           scheme-basic
           algorithm2e
