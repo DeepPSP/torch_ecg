@@ -1,0 +1,9 @@
+defaults:
+  - training: crnn
+
+experiment: my-experiment
+
+# Hydra configuration
+hydra:
+  job:
+    chdir: false

@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+    command: ["python", "-m", "torch_ecg_volta.api.server"]
+    ports:
+      - "8000:8000"
+
+#  mlflow:
+#    image: ghcr.io/mlflow/mlflow:v2.9.2
+

@@ -497,3 +497,104 @@ See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 Much is learned, especially the modular design, from the adversarial NLP library [`TextAttack`](https://github.com/QData/TextAttack) and from Hugging Face [`transformers`](https://github.com/huggingface/transformers).
 
 :point_right: [Back to TOC](#torch_ecg)
+
+## Updates to code base
+
+### Poetry package manager
+Instead of solely relying on `requirements.txt` files, I introduced `poetry` as a package manager. This has multiple benefits:
+- Robust package management: the `poetry.lock` file ensures we reuse the exact same dependencies every time
+- `pyproject.toml` is the source of truth for this package and contains additional configuration for usual tools
+- Easier packaging: just run `poetry build` to create wheel files
+
+#### Getting started
+##### 1. Install poetry
+I suggest using pipx to install poetry:
+```bash
+pip install pipx
+pipx install poetry
+```
+
+##### 2. Install the project
+```bash
+poetry install
+```
+
+By default, poetry will create a virtual environment for your project. You can configure this behaviour and more using `poetry config`. See the docs at https://python-poetry.org/.
+
+To access this virtual environment after installation, simply enter it with poetry:
+```bash
+poetry shell
+```
+
+### REST API
+A REST API server for inference can be run using the following command:
+```bash
+torch-ecg-server
+# Or
+ENABLE_AUTHENTICATION=0 torch-ecg-server  # To disable authentication and allow any connection
+```
+
+See the [config file](./torch_ecg_volta/api/config.py) to see which environment variables can affect the application.
+
+The API docs can be found then at http://localhost:8000/docs if you have disabled the authentication on the app (`ENABLE_AUTHENTICATION=0`).
+
+#### Authentication
+A simple basic authentication scheme has been put in place, governed by the following environment variables:
+```bash
+ENABLE_AUTHENTICATION  # Whether to enable (1) or disable (0) the authentication service
+BASIC_USERNAME  # Accepted username
+BASIC_PASSWORD  # Accepted password
+```
+
+To authenticate client requests, your requests should contain the `Authorization` header with a `Basic <base64-encoded credentials>`.
+
+Using `requests`, you can for example do this:
+```python
+import numpy as np
+import requests
+from requests.auth import HTTPBasicAuth
+
+r = requests.post(
+    "http://localhost:8000/v1/models/ECG_CRNN/1/infer",
+    json={"data": [np.random.rand(12, 4000).tolist()]},
+    auth=HTTPBasicAuth("username", "password"),
+)
+```
+
+or this:
+```python
+import base64
+
+import numpy as np
+import requests
+
+r = requests.post(
+    "http://localhost:8000/v1/models/ECG_CRNN/1/infer",
+    json={"data": [np.random.rand(12, 4000).tolist()]},
+    headers={"authorization": "basic " + base64.b64encode(b"username:password").decode()},
+)
+```
+
+
+### Docker packaging
+You may build a simple Docker image containing dependencies for the project using the provided `Dockerfile` and `compose.yaml` files.
+
+To run the API server with Docker Compose, simply run:
+```bash
+docker compose up
+```
+
+The service should then show up at http://localhost:8000.
+
+## Stuff I did not have time to finish
+### Hydra
+
+A very basic `hydra` CLI command is available after installing the project. This CLI points to [this file](torch_ecg_volta/experiments/cli.py) and makes
+use of the `hydra-core` package. [Hydra](https://hydra.cc) is an experiment managing CLI toolkit. It can be very powerful and has various
+utilities to structure and document experiment configuration and outputs. Let me tell you about that in person on Thursday :)
+
+### MLflow
+
+As a base, I integrated MLflow into the `hydra` CLI, though it only persists results locally by default. I would have liked to customize the
+experience for local and in-docker execution of code, as well as fetch models from the MLflow registry in the API. I did not take the time 
+to set this up, but the MLflow server shows up in the `compose.yaml` file, unconfigured.
