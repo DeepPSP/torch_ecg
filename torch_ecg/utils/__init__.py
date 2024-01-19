@@ -134,6 +134,14 @@ String operations
     nildent
     get_date_str
 
+Visualization functions
+------------------------
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    ecg_plot
+
 Miscellaneous
 -------------
 .. autosummary::
@@ -149,6 +157,7 @@ Miscellaneous
 
 """
 from . import ecg_arrhythmia_knowledge as EAK
+from ._ecg_plot import ecg_plot
 from .download import http_get
 from .misc import (
     CitationMixin,
@@ -316,4 +325,5 @@ __all__ = [
     "normalize",
     "normalize_t",
     "resample_t",
+    "ecg_plot",
 ]
