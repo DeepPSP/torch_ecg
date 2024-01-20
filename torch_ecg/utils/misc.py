@@ -57,7 +57,7 @@ __all__ = [
 ]
 
 
-def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str, relative: bool = True) -> List[str]:
+def get_record_list_recursive(db_dir: os.PathLike, rec_ext: str, relative: bool = True) -> List[str]:
     """Get the list of records in a recursive manner.
 
     For example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -68,7 +68,7 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str, relative: 
 
     Parameters
     ----------
-    db_dir : str or pathlib.Path
+    db_dir : os.PathLike
         The parent (root) path of to search for records.
     rec_ext : str
         Extension of the record files.
@@ -92,7 +92,7 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str, relative: 
 
 
 @deprecated(reason="use `get_record_list_recursive3` instead")
-def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
+def get_record_list_recursive2(db_dir: os.PathLike, rec_pattern: str) -> List[str]:
     """Get the list of records in a recursive manner.
 
     For example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -103,7 +103,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
 
     Parameters
     ----------
-    db_dir : str or pathlib.Path
+    db_dir : os.PathLike
         The parent (root) path of to search for records.
     rec_pattern : str
         Pattern of the record filenames, e.g. ``"A*.mat"``.
@@ -131,7 +131,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
 
 
 def get_record_list_recursive3(
-    db_dir: Union[str, Path],
+    db_dir: os.PathLike,
     rec_patterns: Union[str, Dict[str, str]],
     relative: bool = True,
 ) -> Union[List[str], Dict[str, List[str]]]:
@@ -145,7 +145,7 @@ def get_record_list_recursive3(
 
     Parameters
     ----------
-    db_dir : str or pathlib.Path
+    db_dir : os.PathLike
         The parent (root) path of to search for records.
     rec_patterns : str or dict
         Pattern of the record filenames, e.g. ``"A(?:\\d+).mat"``,
@@ -442,7 +442,7 @@ def init_logger(
 
     Parameters
     ----------
-    log_dir : str or pathlib.Path or bool, optional
+    log_dir : os.PathLike or bool, optional
         Directory of the log file,
         default to `DEFAULTS.log_dir`.
         If is `False`, then no log file will be created.
@@ -560,7 +560,7 @@ def list_sum(lst: Sequence[list]) -> list:
 
 
 def read_log_txt(
-    fp: Union[str, Path],
+    fp: os.PathLike,
     epoch_startswith: str = "Train epoch_",
     scalar_startswith: Union[str, Iterable[str]] = "train/|test/",
 ) -> pd.DataFrame:
@@ -568,7 +568,7 @@ def read_log_txt(
 
     Parameters
     ----------
-    fp : str or pathlib.Path
+    fp : os.PathLike
         Path to the log txt file.
     epoch_startswith : str, default "Train epoch_"
         Indicator of the start of the start of an epoch
@@ -606,13 +606,13 @@ def read_log_txt(
 
 
 def read_event_scalars(
-    fp: Union[str, Path], keys: Optional[Union[str, Iterable[str]]] = None
+    fp: os.PathLike, keys: Optional[Union[str, Iterable[str]]] = None
 ) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
     """Read scalars from event file, in case tensorboard not working.
 
     Parameters
     ----------
-    fp : str or pathlib.Path
+    fp : os.PathLike
         Path to the event file.
     keys : str or Iterable[str], optional
         Field names of the scalars to read.

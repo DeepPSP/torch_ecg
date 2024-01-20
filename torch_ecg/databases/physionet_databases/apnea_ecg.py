@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import os
 from datetime import datetime
 from numbers import Real
-from pathlib import Path
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -59,10 +59,10 @@ class ApneaECG(PhysioNetDataBase):
     """
     Parameters
     ----------
-    db_dir : str or pathlib.Path, optional
+    db_dir : os.PathLike, optional
         Storage path of the database.
         If not specified, data will be fetched from Physionet.
-    working_dir : str, optional
+    working_dir : os.PathLike, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Level of logging verbosity.
@@ -75,8 +75,8 @@ class ApneaECG(PhysioNetDataBase):
 
     def __init__(
         self,
-        db_dir: Optional[Union[str, Path]] = None,
-        working_dir: Optional[Union[str, Path]] = None,
+        db_dir: Optional[os.PathLike] = None,
+        working_dir: Optional[os.PathLike] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
@@ -260,7 +260,7 @@ class ApneaECG(PhysioNetDataBase):
     def load_ann(
         self,
         rec: Union[str, int],
-        ann_path: Optional[Union[str, Path]] = None,
+        ann_path: Optional[os.PathLike] = None,
         **kwargs,
     ) -> list:
         """Load annotations of the record.
@@ -269,7 +269,7 @@ class ApneaECG(PhysioNetDataBase):
         ----------
         rec : str or int
             Record name or index of the record in :attr:`all_records`.
-        ann_path : str or pathlib.Path, optional
+        ann_path : os.PathLike, optional
             Path of the file which contains the annotations.
             If is None, default path will be used.
 

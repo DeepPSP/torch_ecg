@@ -58,7 +58,7 @@ def _fetch_final_results() -> Dict[str, pd.DataFrame]:
     return df
 
 
-def _http_get(url: str, fname: Union[str, Path]) -> None:
+def _http_get(url: str, fname: os.PathLike) -> None:
     """ """
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))

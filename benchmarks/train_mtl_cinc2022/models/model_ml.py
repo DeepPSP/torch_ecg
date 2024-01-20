@@ -4,11 +4,12 @@ Currently NOT used, NOT tested.
 
 import json
 import multiprocessing as mp
+import os
 import pickle
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -81,14 +82,13 @@ class OutComeClassifier_CINC2022(object):
     def feature_list(self) -> List[str]:
         return deepcopy(self.config.feature_list)
 
-    def _prepare_training_data(self, db_dir: Optional[Union[str, Path]] = None) -> None:
-        """
-        Prepares training data.
+    def _prepare_training_data(self, db_dir: Optional[os.PathLike] = None) -> None:
+        """Prepares training data.
 
         Parameters
         ----------
-        db_dir: str, optional,
-            database directory,
+        db_dir : os.PathLike, optional,
+            Database directory.
             if None, do nothing
 
         """
@@ -180,23 +180,22 @@ class OutComeClassifier_CINC2022(object):
         imputer: SimpleImputer,
         scaler: BaseEstimator,
         config: CFG,
-        model_path: Union[str, Path],
+        model_path: os.PathLike,
     ) -> None:
-        """
-        Saves a model to a file.
+        """Saves a model to a file.
 
         Parameters
         ----------
-        model: BaseEstimator,
-            model instance to save
-        imputer: SimpleImputer,
-            imputer instance to save
-        scaler: BaseEstimator,
-            scaler instance to save
-        config: CFG,
-            configurations of the model
-        model_path: str or Path,
-            path to save the model
+        model : BaseEstimator
+            model instance to save.
+        imputer : SimpleImputer
+            imputer instance to save.
+        scaler : BaseEstimator
+            scaler instance to save.
+        config : CFG
+            configurations of the model.
+        model_path : os.PathLike
+            path to save the model.
 
         """
         _config = deepcopy(config)
@@ -234,18 +233,18 @@ class OutComeClassifier_CINC2022(object):
         )
 
     @classmethod
-    def from_file(cls, path: Union[str, Path]) -> "OutComeClassifier_CINC2022":
+    def from_file(cls, path: os.PathLike) -> "OutComeClassifier_CINC2022":
         """
         Loads a OutComeClassifier_CINC2022 instance from a file.
 
         Parameters
         ----------
-        path: str or Path,
-            path to the model file
+        path : os.PathLike
+            path to the model file.
 
         Returns
         -------
-        OutComeClassifier_CINC2022,
+        OutComeClassifier_CINC2022
             OutComeClassifier_CINC2022 instance
 
         """

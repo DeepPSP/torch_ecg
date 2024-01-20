@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import itertools
+import os
 import re
 import warnings
 from datetime import datetime
@@ -314,10 +315,10 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     """
     Parameters
     ----------
-    db_dir : str or pathlib.Path, optional
+    db_dir : os.PathLike, optional
         Storage path of the database.
         If not specified, data will be fetched from Physionet.
-    working_dir : str, optional
+    working_dir : os.PathLike, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Level of logging verbosity.
@@ -330,8 +331,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
     def __init__(
         self,
-        db_dir: Optional[Union[str, Path]] = None,
-        working_dir: Optional[Union[str, Path]] = None,
+        db_dir: Optional[os.PathLike] = None,
+        working_dir: Optional[os.PathLike] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
@@ -679,7 +680,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         sig: str = "ECG",
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
     ) -> Real:
         """Get the sampling frequency of a signal of a record.
 
@@ -692,7 +693,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Signal name or annotation name (e.g. "rpeak").
             Some annotation files (\\*-rpeak.csv) have
             a sampling frequency column.
-        rec_path : str or path.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
 
@@ -735,7 +736,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         sig: str = "ECG",
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
     ) -> int:
         """Get the index of the channel of the signal in the record.
 
@@ -746,7 +747,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             or index of the record in :attr:`all_records`.
         sig : str, default "ECG"
             Signal name.
-        rec_path : str or pathlib.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
 
@@ -800,7 +801,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def get_absolute_path(
         self,
         rec: Union[str, int],
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
         rec_type: str = "psg",
     ) -> Path:
         """Get the absolute path of specific type of the record.
@@ -810,7 +811,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rec_path : str or pathlib.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the desired data.
             If is None, default path will be used.
         rec_type : str, default "psg"
@@ -841,7 +842,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def database_stats(self) -> None:
         raise NotImplementedError
 
-    def show_rec_stats(self, rec: Union[str, int], rec_path: Optional[Union[str, Path]] = None) -> None:
+    def show_rec_stats(self, rec: Union[str, int], rec_path: Optional[os.PathLike] = None) -> None:
         """Print the statistics of the record.
 
         Parameters
@@ -849,7 +850,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rec_path : str or pathlib.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
 
@@ -869,7 +870,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         channel: str = "all",
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
         sampfrom: Optional[Real] = None,
         sampto: Optional[Real] = None,
         fs: Optional[int] = None,
@@ -885,7 +886,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         channel : str, default "all"
             Name of the channel of PSG.
             If is "all", then all channels will be returned.
-        rec_path : str or pathlib.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
         sampfrom : numbers.Real, optional
@@ -958,7 +959,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_ecg_data(
         self,
         rec: Union[str, int],
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
@@ -973,7 +974,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rec_path : str or pathlib.Path, optional
+        rec_path : os.PathLike, optional
             Path of the file which contains the ECG data.
             If is None, default path will be used.
         sampfrom : int, optional
@@ -1050,7 +1051,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_data(
         self,
         rec: Union[str, int],
-        rec_path: Optional[Union[str, Path]] = None,
+        rec_path: Optional[os.PathLike] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
@@ -1074,7 +1075,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         ann_type: str,
-        ann_path: Optional[Union[str, Path]] = None,
+        ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> Union[np.ndarray, pd.DataFrame, dict]:
         """Load annotations of specific type of the record.
@@ -1089,7 +1090,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             "event", "event_profusion", "hrv_summary", "hrv_detailed",
             "sleep", "sleep_stage", "sleep_event", "apnea" (alias "sleep_apnea"),
             "wave_delineation", "rpeak", "rr", "nn".
-        ann_path : str or pathlib.Path, optional
+        ann_path : os.PathLike, optional
             Path of the file which contains the annotations.
             If is None, default path will be used.
         kwargs : dict, optional
@@ -1129,7 +1130,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_event_ann(
         self,
         rec: Union[str, int],
-        event_ann_path: Optional[Union[str, Path]] = None,
+        event_ann_path: Optional[os.PathLike] = None,
         simplify: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
@@ -1140,7 +1141,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        event_ann_path : str or pathlib.Path, optional
+        event_ann_path : os.PathLike, optional
             Path of the file which contains the events-nsrr annotations.
             If is None, default path will be used.
 
@@ -1167,7 +1168,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_event_profusion_ann(
         self,
         rec: Union[str, int],
-        event_profusion_ann_path: Optional[Union[str, Path]] = None,
+        event_profusion_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> dict:
         """Load events-profusion annotations of the record.
@@ -1177,7 +1178,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        event_profusion_ann_path : str or pathlib.Path, optional
+        event_profusion_ann_path : os.PathLike, optional
             Path of the file which contains the events-profusion annotations.
             If is None, default path will be used.
 
@@ -1208,7 +1209,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_hrv_summary_ann(
         self,
         rec: Optional[Union[str, int]] = None,
-        hrv_ann_path: Optional[Union[str, Path]] = None,
+        hrv_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load summary HRV annotations of the record.
@@ -1218,7 +1219,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        hrv_ann_path : str or pathlib.Path, optional
+        hrv_ann_path : os.PathLike, optional
             Path of the summary HRV annotation file.
             If is None, default path will be used.
 
@@ -1255,7 +1256,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_hrv_detailed_ann(
         self,
         rec: Union[str, int],
-        hrv_ann_path: Optional[Union[str, Path]] = None,
+        hrv_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load detailed HRV annotations of the record.
@@ -1265,7 +1266,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        hrv_ann_path : str or pathlib.Path, optional
+        hrv_ann_path : os.PathLike, optional
             Path of the detailed HRV annotation file.
             If is None, default path will be used.
 
@@ -1290,7 +1291,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         source: str = "event",
-        sleep_ann_path: Optional[Union[str, Path]] = None,
+        sleep_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> Union[pd.DataFrame, dict]:
         """Load sleep annotations of the record.
@@ -1303,7 +1304,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         source : {"hrv", "event", "event_profusion"}, optional
             Source of the annotations, case insensitive,
             by default "event"
-        sleep_ann_path : str or pathlib.Path, optional
+        sleep_ann_path : os.PathLike, optional
             Path of the file which contains the sleep annotations.
             If is None, default path will be used.
 
@@ -1354,7 +1355,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         source: str = "event",
-        sleep_stage_ann_path: Optional[Union[str, Path]] = None,
+        sleep_stage_ann_path: Optional[os.PathLike] = None,
         sleep_stage_protocol: str = "aasm",
         with_stage_names: bool = True,
         **kwargs: Any,
@@ -1369,7 +1370,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         source : {"hrv", "event", "event_profusion"}, optional
             Source of the annotations, case insensitive,
             by default "event".
-        sleep_stage_ann_path : str or pathlib.Path, optional
+        sleep_stage_ann_path : os.PathLike, optional
             Path of the file which contains the sleep stage annotations.
             If is None, default path will be used.
         sleep_stage_protocol : str, default "aasm"
@@ -1467,7 +1468,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         source: str = "event",
         event_types: Optional[List[str]] = None,
-        sleep_event_ann_path: Optional[Union[str, Path]] = None,
+        sleep_event_ann_path: Optional[os.PathLike] = None,
     ) -> pd.DataFrame:
         """Load sleep event annotations of a record.
 
@@ -1486,7 +1487,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             "Apnea" (including "CSA", "OSA", "MSA", "Hypopnea"), "SpO2",
             "CSA", "OSA", "MSA", "Hypopnea".
             Used only when `source` is "event" or "event_profusion".
-        sleep_event_ann_path : str or pathlib.Path, optional
+        sleep_event_ann_path : os.PathLike, optional
             Path of the file which contains the sleep event annotations.
             If is None, default path will be used.
 
@@ -1659,7 +1660,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         source: str = "event",
         apnea_types: Optional[List[str]] = None,
-        apnea_ann_path: Optional[Union[str, Path]] = None,
+        apnea_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load annotations on apnea events of the record.
@@ -1676,7 +1677,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Types of apnea events to load, should be a subset of
             "CSA", "OSA", "MSA", "Hypopnea".
             If is None, then all types of apnea will be loaded.
-        apnea_ann_path : str or pathlib.Path, optional
+        apnea_ann_path : os.PathLike, optional
             Path of the file which contains the apnea event annotations.
             If is None, default path will be used.
 
@@ -1700,7 +1701,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_wave_delineation_ann(
         self,
         rec: Union[str, int],
-        wave_deli_path: Optional[Union[str, Path]] = None,
+        wave_deli_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load annotations on wave delineations of the record.
@@ -1710,7 +1711,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        wave_deli_path : str or pathlib.Path, optional
+        wave_deli_path : os.PathLike, optional
             Path of the file which contains wave delineation annotations.
             If is None, default path will be used.
 
@@ -1745,7 +1746,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_rpeak_ann(
         self,
         rec: Union[str, int],
-        rpeak_ann_path: Optional[Union[str, Path]] = None,
+        rpeak_ann_path: Optional[os.PathLike] = None,
         exclude_artifacts: bool = True,
         exclude_abnormal_beats: bool = True,
         units: Optional[str] = None,
@@ -1758,7 +1759,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rpeak_ann_path : str or pathlib.Path, optional
+        rpeak_ann_path : os.PathLike, optional
             Path of the file which contains R peak annotations.
             If is None, default path will be used.
         exclude_artifacts : bool, default True
@@ -1812,7 +1813,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_rr_ann(
         self,
         rec: Union[str, int],
-        rpeak_ann_path: Optional[Union[str, Path]] = None,
+        rpeak_ann_path: Optional[os.PathLike] = None,
         units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
@@ -1823,7 +1824,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rpeak_ann_path : str or pathlib.Path, optional
+        rpeak_ann_path : os.PathLike, optional
             Path of the file which contains R peak annotations.
             If is None, default path will be used.
         units : {None, "s", "ms"}, optional
@@ -1853,7 +1854,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_nn_ann(
         self,
         rec: Union[str, int],
-        rpeak_ann_path: Optional[Union[str, Path]] = None,
+        rpeak_ann_path: Optional[os.PathLike] = None,
         units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
@@ -1864,7 +1865,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        rpeak_ann_path: str or pathlib.Path, optional
+        rpeak_ann_path: os.PathLike, optional
             Path of the file which contains R peak annotations.
             If is None, default path will be used.
         units: {None, "s", "ms"}, optional
@@ -1914,7 +1915,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def locate_artifacts(
         self,
         rec: Union[str, int],
-        wave_deli_path: Optional[Union[str, Path]] = None,
+        wave_deli_path: Optional[os.PathLike] = None,
         units: Optional[str] = None,
     ) -> np.ndarray:
         """Locate "artifacts" in the record.
@@ -1924,7 +1925,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        wave_deli_path : str or pathlib.Path, optional
+        wave_deli_path : os.PathLike, optional
             Path of the file which contains wave delineation annotations.
             If is None, default path will be used.
         units : {None, "s", "ms"}, optional
@@ -1966,7 +1967,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def locate_abnormal_beats(
         self,
         rec: Union[str, int],
-        wave_deli_path: Optional[Union[str, Path]] = None,
+        wave_deli_path: Optional[os.PathLike] = None,
         abnormal_type: Optional[str] = None,
         units: Optional[str] = None,
     ) -> Union[Dict[str, np.ndarray], np.ndarray]:
@@ -1977,7 +1978,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        wave_deli_path : str or pathlib.Path, optional
+        wave_deli_path : os.PathLike, optional
             Path of the file which contains wave delineation annotations.
             If is None, default path will be used.
         abnormal_type : {"VE", "SVE"}, optional
@@ -2045,7 +2046,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_eeg_band_ann(
         self,
         rec: Union[str, int],
-        eeg_band_ann_path: Optional[Union[str, Path]] = None,
+        eeg_band_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load annotations on EEG bands of the record.
@@ -2055,7 +2056,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        eeg_band_ann_path : str or pathlib.Path, optional
+        eeg_band_ann_path : os.PathLike, optional
             Path of the file which contains EEG band annotations.
             if is None, default path will be used.
 
@@ -2073,7 +2074,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_eeg_spectral_ann(
         self,
         rec: Union[str, int],
-        eeg_spectral_ann_path: Optional[Union[str, Path]] = None,
+        eeg_spectral_ann_path: Optional[os.PathLike] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """Load annotations on EEG spectral summary of the record.
@@ -2083,7 +2084,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        eeg_spectral_ann_path : str or pathlib.Path, optional
+        eeg_spectral_ann_path : os.PathLike, optional
             Path of the file which contains EEG spectral summary annotations.
             If is None, default path will be used.
 

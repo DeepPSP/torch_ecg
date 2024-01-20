@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
@@ -264,10 +265,10 @@ class LUDB(PhysioNetDataBase):
     """
     Parameters
     ----------
-    db_dir : str or pathlib.Path, optional
+    db_dir : os.PathLike, optional
         Storage path of the database.
         If not specified, data will be fetched from Physionet.
-    working_dir : str, optional
+    working_dir : os.PathLike, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Level of logging verbosity.
@@ -280,8 +281,8 @@ class LUDB(PhysioNetDataBase):
 
     def __init__(
         self,
-        db_dir: Optional[Union[str, Path]] = None,
-        working_dir: Optional[Union[str, Path]] = None,
+        db_dir: Optional[os.PathLike] = None,
+        working_dir: Optional[os.PathLike] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:

@@ -15,7 +15,7 @@ import urllib
 import warnings
 import zipfile
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional
 
 import requests
 from tqdm.auto import tqdm
@@ -30,7 +30,7 @@ PHYSIONET_DB_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+"
 
 def http_get(
     url: str,
-    dst_dir: Union[str, Path],
+    dst_dir: os.PathLike,
     proxies: Optional[dict] = None,
     extract: bool = True,
     filename: Optional[str] = None,
@@ -44,7 +44,7 @@ def http_get(
     ----------
     url : str
         URL to download file from.
-    dst_dir : str or pathlib.Path
+    dst_dir : os.PathLike
         Directory to save the file.
     proxies : dict, optional
         Dictionary of proxy settings.
@@ -135,13 +135,13 @@ def http_get(
     os.remove(downloaded_file.name)
 
 
-def _stem(path: Union[str, Path]) -> str:
+def _stem(path: os.PathLike) -> str:
     """Get filename without extension,
     especially for .tar.xx files.
 
     Parameters
     ----------
-    path : str or pathlib.Path
+    path : os.PathLike
         Path to the file
 
     Returns
@@ -156,12 +156,12 @@ def _stem(path: Union[str, Path]) -> str:
     return ret
 
 
-def _suffix(path: Union[str, Path], ignore_pattern: str = PHYSIONET_DB_VERSION_PATTERN) -> str:
+def _suffix(path: os.PathLike, ignore_pattern: str = PHYSIONET_DB_VERSION_PATTERN) -> str:
     """Get file extension, including all suffixes.
 
     Parameters
     ----------
-    path : str or pathlib.Path
+    path : os.PathLike
         Path to the file.
     ignore_pattern : str, optional
         Pattern to ignore in the filename,
@@ -176,12 +176,12 @@ def _suffix(path: Union[str, Path], ignore_pattern: str = PHYSIONET_DB_VERSION_P
     return "".join(Path(re.sub(ignore_pattern, "", str(path))).suffixes)
 
 
-def is_compressed_file(path: Union[str, Path]) -> bool:
+def is_compressed_file(path: os.PathLike) -> bool:
     """Check if the path points to a valid compressed file.
 
     Parameters
     ----------
-    path : str or pathlib.Path
+    path : os.PathLike
         Path to the file
 
     Returns
@@ -195,14 +195,14 @@ def is_compressed_file(path: Union[str, Path]) -> bool:
     return re.search(compressed_file_pattern, _suffix(path)) is not None
 
 
-def _unzip_file(path_to_zip_file: Union[str, Path], dst_dir: Union[str, Path]) -> None:
+def _unzip_file(path_to_zip_file: os.PathLike, dst_dir: os.PathLike) -> None:
     """Unzips a .zip file to folder path.
 
     Parameters
     ----------
-    path_to_zip_file : str or pathlib.Path
+    path_to_zip_file : os.PathLike
         Path to the .zip file.
-    dst_dir : str or pathlib.Path
+    dst_dir : os.PathLike
         Path to the destination folder.
 
     Returns
@@ -215,14 +215,14 @@ def _unzip_file(path_to_zip_file: Union[str, Path], dst_dir: Union[str, Path]) -
         zip_ref.extractall(str(dst_dir))
 
 
-def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -> None:
+def _untar_file(path_to_tar_file: os.PathLike, dst_dir: os.PathLike) -> None:
     """Decompress a .tar.xx file to folder path.
 
     Parameters
     ----------
-    path_to_tar_file : str or pathlib.Path
+    path_to_tar_file : os.PathLike
         Path to the .tar.xx file.
-    dst_dir : str or pathlib.Path
+    dst_dir : os.PathLike
         Path to the destination folder.
 
     Returns
@@ -239,14 +239,14 @@ def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -
         _safe_tar_extract(tar_ref, str(dst_dir))
 
 
-def _is_within_directory(directory: Union[str, Path], target: Union[str, Path]) -> bool:
+def _is_within_directory(directory: os.PathLike, target: os.PathLike) -> bool:
     """Check if the target is within the directory.
 
     Parameters
     ----------
-    directory : str or pathlib.Path
+    directory : os.PathLike
         Directory to check.
-    target : str or pathlib.Path
+    target : os.PathLike
         Path to the target.
 
     Returns
@@ -266,7 +266,7 @@ def _is_within_directory(directory: Union[str, Path], target: Union[str, Path]) 
 
 def _safe_tar_extract(
     tar: tarfile.TarFile,
-    dst_dir: Union[str, Path],
+    dst_dir: os.PathLike,
     members: Optional[Iterable[tarfile.TarInfo]] = None,
     *,
     numeric_owner: bool = False,
@@ -281,7 +281,7 @@ def _safe_tar_extract(
     ----------
     tar : tarfile.TarFile
         The tarfile to extract from.
-    dst_dir : str or pathlib.Path
+    dst_dir : os.PathLike
         The destination directory
     members : Iterable[tarfile.TarInfo], optional
         The members to extract

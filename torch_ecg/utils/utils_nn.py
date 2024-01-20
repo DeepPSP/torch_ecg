@@ -3,6 +3,7 @@ utilities for nn models
 
 """
 
+import os
 import re
 import warnings
 from copy import deepcopy
@@ -1030,12 +1031,12 @@ class CkptMixin(object):
     """Mixin class for loading from checkpoint class methods"""
 
     @classmethod
-    def from_checkpoint(cls, path: Union[str, Path], device: Optional[torch.device] = None) -> Tuple[nn.Module, dict]:
+    def from_checkpoint(cls, path: os.PathLike, device: Optional[torch.device] = None) -> Tuple[nn.Module, dict]:
         """Load a model from a checkpoint.
 
         Parameters
         ----------
-        path : str or pathlib.Path
+        path : os.PathLike
             Path of the checkpoint.
         device : torch.device, optional
             Map location of the model parameters,
@@ -1064,12 +1065,12 @@ class CkptMixin(object):
         model.load_state_dict(ckpt["model_state_dict"])
         return model, aux_config
 
-    def save(self, path: Union[str, Path], train_config: CFG) -> None:
+    def save(self, path: os.PathLike, train_config: CFG) -> None:
         """Save the model to disk.
 
         Parameters
         ----------
-        path : str or pathlib.Path
+        path : os.PathLike
             Path to save the model.
         train_config : CFG
             Config for training the model,
