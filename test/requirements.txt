@@ -10,3 +10,4 @@ torch_audiomentations
 tensorboard
 openpyxl
 pre-commit
+packaging

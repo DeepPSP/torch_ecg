@@ -2,9 +2,12 @@
 """
 
 import itertools
+import platform
 import shutil
 import warnings
 from pathlib import Path
+
+import packaging.version
 
 from torch_ecg.databases import CINC2021
 from torch_ecg.utils._ecg_plot import create_signal_dictionary, ecg_plot, inches_to_dots, leadNames_12
@@ -53,6 +56,18 @@ def test_ecg_plot():
         [True, False],  # standard_colours
     )
 
+    # skip if Python version < 3.8
+    # matplotlib (version 3.5.3) in Python 3.7.10 has a bug that will raise an error
+    # RuntimeError: Cannot get window extent w/o renderer
+    # when calling `ax.get_window_extent()` in `ecg_plot()`
+    if packaging.version.parse(platform.python_version()) < packaging.version.parse("3.8"):
+        return
+
+    x_grid_dots, y_grid_dots = ecg_plot(
+        ecg={}, sample_rate=100, columns=4, rec_file_name=reader.get_absolute_path(rec), output_dir=_TMP_DIR
+    )
+    assert (x_grid_dots, y_grid_dots) == (0, 0)
+
     for columns, lead_index, full_mode, style, standard_colours in grid:
         x_grid_dots, y_grid_dots = ecg_plot(
             ecg=signal_dict,
@@ -82,7 +97,7 @@ def test_ecg_plot():
         x_grid_dots, y_grid_dots = ecg_plot(
             ecg=signal_dict,
             sample_rate=reader.get_fs(rec),
-            columns=4,
+            columns=1,
             rec_file_name=reader.get_absolute_path(rec),
             output_dir=_TMP_DIR,
             resolution=100,
@@ -90,11 +105,12 @@ def test_ecg_plot():
             lead_index=leadNames_12,
             full_mode="II",
             store_text_bbox=True,
+            papersize="A3",
             title="Test ECG Plot",
             style="bw",
             show_lead_name=True,
             show_grid=True,
-            show_dc_pulse=True,
+            show_dc_pulse=False,
             standard_colours=True,
             bbox=True,
             save_format=fmt,
