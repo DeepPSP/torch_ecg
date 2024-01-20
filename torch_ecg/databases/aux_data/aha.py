@@ -148,7 +148,8 @@ N,Pacemaker,180,Atrial-paced complex(es) or rhythm
     dtype=str,
 )
 
-df_primary_statements = df_primary_statements.fillna(method="ffill")
+# df_primary_statements = df_primary_statements.fillna(method="ffill")
+df_primary_statements = df_primary_statements.ffill(axis=0)
 
 
 df_secondary_statements = pd.read_csv(
@@ -188,7 +189,8 @@ Consider,220,Acute ischemia
     dtype=str,
 )
 
-df_secondary_statements = df_secondary_statements.fillna(method="ffill")
+# df_secondary_statements = df_secondary_statements.fillna(method="ffill")
+df_secondary_statements = df_secondary_statements.ffill(axis=0)
 
 
 df_modifiers = pd.read_csv(
@@ -247,7 +249,8 @@ Repolarization abnormalities,360,≥0.1 mV,
     dtype=str,
 )
 
-df_modifiers = df_modifiers.fillna(method="ffill")
+# df_modifiers = df_modifiers.fillna(method="ffill")
+df_modifiers = df_modifiers.ffill(axis=0)
 
 
 df_comparison_statements = pd.read_csv(
@@ -272,7 +275,8 @@ Code,Statement,Criteria
     dtype=str,
 )
 
-df_comparison_statements = df_comparison_statements.fillna(method="ffill")
+# df_comparison_statements = df_comparison_statements.fillna(method="ffill")
+df_comparison_statements = df_comparison_statements.ffill(axis=0)
 
 
 df_convenience_statements = pd.read_csv(
