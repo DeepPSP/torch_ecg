@@ -42,7 +42,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
-from PIL import Image
 
 __all__ = ["ecg_plot"]
 
@@ -133,7 +132,6 @@ def create_signal_dictionary(signal: np.ndarray, full_leads: List[str]) -> Dict[
     return record_dict
 
 
-# Function to plot raw ecg signal
 def ecg_plot(
     ecg: Dict[str, np.ndarray],
     sample_rate: int,
@@ -163,7 +161,7 @@ def ecg_plot(
     bbox: bool = False,
     save_format: Optional[str] = None,
 ) -> Tuple[float, float]:
-    """Function to plot ECG signal.
+    """Function to plot raw ECG signal.
 
     Parameters
     ----------
@@ -181,7 +179,7 @@ def ecg_plot(
     resolution : int, default ``200``
         Resolution of the output image.
     pad_inches : int, default ``0``
-        Padding of white border along the image in inches.
+        Padding of white margin along the image in inches.
     lead_index : List[str], optional
         Order of lead indices to be plotted.
         By default, the order is the same as the order in ``ecg``.
@@ -193,6 +191,7 @@ def ecg_plot(
         If ``True``, stores the bounding box of the text in a text file.
     units : str, default ``"mV"``
         Units of the ECG signal.
+        NOT used currently.
     papersize : {``"A0"``, ``"A1"``, ``"A2"``, ``"A3"``, ``"A4"``, ``"letter"``}, default ``None``
         Size of the paper to plot the ECG on.
     x_gap : float, default ``1.0``
@@ -370,7 +369,8 @@ def ecg_plot(
             leadName = leadNames_12[i]
         else:
             leadName = lead_index[i]
-        # y_offset is computed by shifting by a certain offset based on i, and also by row_height/2 to account for half the waveform below the axis
+        # y_offset is computed by shifting by a certain offset based on i,
+        # and also by row_height/2 to account for half the waveform below the axis
         if i % columns == 0:
 
             y_offset += row_height
@@ -518,31 +518,16 @@ def ecg_plot(
     else:
         return x_grid_dots, y_grid_dots
 
-    plt.savefig(os.path.join(output_dir, tail + ".png"), dpi=resolution)
+    plt.savefig(os.path.join(output_dir, tail + save_format), dpi=resolution, bbox_inches="tight", pad_inches=pad_inches)
     plt.close(fig)
     plt.clf()
     plt.cla()
 
-    if pad_inches != 0:
-
-        ecg_image = Image.open(os.path.join(output_dir, tail + ".png"))
-
-        right = pad_inches * resolution
-        left = pad_inches * resolution
-        top = pad_inches * resolution
-        bottom = pad_inches * resolution
-        width, height = ecg_image.size
-        new_width = width + right + left
-        new_height = height + top + bottom
-        result_image = Image.new(ecg_image.mode, (new_width, new_height), (255, 255, 255))
-        result_image.paste(ecg_image, (left, top))
-
-        result_image.save(os.path.join(output_dir, tail + ".png"))
-
-        plt.close("all")
-        plt.close(fig)
-        plt.clf()
-        plt.cla()
+    # margins
+    right = pad_inches * resolution
+    left = pad_inches * resolution
+    top = pad_inches * resolution
+    bottom = pad_inches * resolution
 
     if store_text_bbox:
         if os.path.exists(os.path.join(output_dir, "text_bounding_box")) is False:
