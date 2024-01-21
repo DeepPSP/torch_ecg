@@ -147,7 +147,7 @@ def class_weight_to_sample_weight(
 
     if isinstance(class_weight, str) and class_weight.lower() == "balanced":
         classes = np.unique(y).tolist()
-        cw = compute_class_weight("balanced", classes=classes, y=y)
+        cw = compute_class_weight("balanced", classes=np.array(classes), y=y)
         sample_weight = np.vectorize(lambda s: cw[classes.index(s)])(sample_weight)
     else:
         sample_weight = np.vectorize(lambda s: class_weight[s])(sample_weight)
