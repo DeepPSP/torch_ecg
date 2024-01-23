@@ -980,6 +980,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#visualization-functions">Visualization functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot"><code class="docutils literal notranslate"><span class="pre">ecg_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../utils.html#miscellaneous">Miscellaneous</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
@@ -1140,7 +1147,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">get_record_list_recursive</span><span class="p">(</span><span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">rec_ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">get_record_list_recursive</span><span class="p">(</span><span class="n">db_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">rec_ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of records in a recursive manner.</span>
 
 <span class="sd">    For example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
@@ -1151,7 +1158,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">    db_dir : os.PathLike</span>
 <span class="sd">        The parent (root) path of to search for records.</span>
 <span class="sd">    rec_ext : str</span>
 <span class="sd">        Extension of the record files.</span>
@@ -1175,7 +1182,7 @@
 
 
 <span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;use `get_record_list_recursive3` instead&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_record_list_recursive2</span><span class="p">(</span><span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">rec_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">get_record_list_recursive2</span><span class="p">(</span><span class="n">db_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">rec_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of records in a recursive manner.</span>
 
 <span class="sd">    For example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
@@ -1186,7 +1193,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">    db_dir : os.PathLike</span>
 <span class="sd">        The parent (root) path of to search for records.</span>
 <span class="sd">    rec_pattern : str</span>
 <span class="sd">        Pattern of the record filenames, e.g. ``&quot;A*.mat&quot;``.</span>
@@ -1214,7 +1221,7 @@
 
 
 <div class="viewcode-block" id="get_record_list_recursive3"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_record_list_recursive3.html#torch_ecg.utils.get_record_list_recursive3">[docs]</a><span class="k">def</span> <span class="nf">get_record_list_recursive3</span><span class="p">(</span>
-    <span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">db_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
     <span class="n">rec_patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
     <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
@@ -1228,7 +1235,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">    db_dir : os.PathLike</span>
 <span class="sd">        The parent (root) path of to search for records.</span>
 <span class="sd">    rec_patterns : str or dict</span>
 <span class="sd">        Pattern of the record filenames, e.g. ``&quot;A(?:\\d+).mat&quot;``,</span>
@@ -1525,7 +1532,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir : str or pathlib.Path or bool, optional</span>
+<span class="sd">    log_dir : os.PathLike or bool, optional</span>
 <span class="sd">        Directory of the log file,</span>
 <span class="sd">        default to `DEFAULTS.log_dir`.</span>
 <span class="sd">        If is `False`, then no log file will be created.</span>
@@ -1643,7 +1650,7 @@
 
 
 <span class="k">def</span> <span class="nf">read_log_txt</span><span class="p">(</span>
-    <span class="n">fp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
     <span class="n">epoch_startswith</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Train epoch_&quot;</span><span class="p">,</span>
     <span class="n">scalar_startswith</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;train/|test/&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -1651,7 +1658,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fp : str or pathlib.Path</span>
+<span class="sd">    fp : os.PathLike</span>
 <span class="sd">        Path to the log txt file.</span>
 <span class="sd">    epoch_startswith : str, default &quot;Train epoch_&quot;</span>
 <span class="sd">        Indicator of the start of the start of an epoch</span>
@@ -1689,13 +1696,13 @@
 
 
 <span class="k">def</span> <span class="nf">read_event_scalars</span><span class="p">(</span>
-    <span class="n">fp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read scalars from event file, in case tensorboard not working.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fp : str or pathlib.Path</span>
+<span class="sd">    fp : os.PathLike</span>
 <span class="sd">        Path to the event file.</span>
 <span class="sd">    keys : str or Iterable[str], optional</span>
 <span class="sd">        Field names of the scalars to read.</span>

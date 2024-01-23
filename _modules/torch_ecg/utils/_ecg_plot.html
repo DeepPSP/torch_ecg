@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.augmenters.baseline_wander &mdash; torch-ecg 0.0.27 documentation</title>
+  <title>torch_ecg.utils._ecg_plot &mdash; torch-ecg 0.0.27 documentation</title>
   
 
   
@@ -1066,14 +1066,14 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>torch_ecg.augmenters.baseline_wander</li>
+      <li>torch_ecg.utils._ecg_plot</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/DeepPSP/torch_ecg/blob/master/docs/source/_modules/torch_ecg/augmenters/baseline_wander" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/DeepPSP/torch_ecg/blob/master/docs/source/_modules/torch_ecg/utils/_ecg_plot" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -1087,399 +1087,574 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for torch_ecg.augmenters.baseline_wander</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Add baseline wander composed of sinusoidal and Gaussian noise to the ECGs.&quot;&quot;&quot;</span>
+  <h1>Source code for torch_ecg.utils._ecg_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">BSD 3-Clause License</span>
 
-<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
+<span class="sd">Copyright (c) 2024, The Alphanumerics Lab</span>
+
+<span class="sd">Redistribution and use in source and binary forms, with or without</span>
+<span class="sd">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="sd">1. Redistributions of source code must retain the above copyright notice, this</span>
+<span class="sd">   list of conditions and the following disclaimer.</span>
+
+<span class="sd">2. Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="sd">   this list of conditions and the following disclaimer in the documentation</span>
+<span class="sd">   and/or other materials provided with the distribution.</span>
+
+<span class="sd">3. Neither the name of the copyright holder nor the names of its</span>
+<span class="sd">   contributors may be used to endorse or promote products derived from</span>
+<span class="sd">   this software without specific prior written permission.</span>
+
+<span class="sd">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="sd">AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="sd">IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="sd">DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE</span>
+<span class="sd">FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+<span class="sd">DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
+<span class="sd">SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER</span>
+<span class="sd">CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,</span>
+<span class="sd">OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class="sd">OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+
+
+<span class="sd">Modified from https://github.com/alphanumericslab/ecg-image-kit/blob/main/codes/ecg-image-generator/ecg_plot.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">AutoMinorLocator</span>
 
-<span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">DEFAULTS</span>
-<span class="kn">from</span> <span class="nn">..utils.utils_signal</span> <span class="kn">import</span> <span class="n">get_ampl</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Augmenter</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;BaselineWanderAugmenter&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ecg_plot&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="BaselineWanderAugmenter"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter">[docs]</a><span class="k">class</span> <span class="nc">BaselineWanderAugmenter</span><span class="p">(</span><span class="n">Augmenter</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate baseline wander composed of</span>
-<span class="sd">    sinusoidal and Gaussian noise.</span>
+<span class="n">standard_values</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;y_grid_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;x_grid_size&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="s2">&quot;y_grid_inch&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">/</span> <span class="mf">25.4</span><span class="p">,</span>
+    <span class="s2">&quot;x_grid_inch&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">/</span> <span class="mf">25.4</span><span class="p">,</span>
+    <span class="s2">&quot;grid_line_width&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;lead_name_offset&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;lead_fontsize&quot;</span><span class="p">:</span> <span class="mf">11.0</span><span class="p">,</span>
+    <span class="s2">&quot;x_gap&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;y_gap&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;display_factor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;line_width&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
+    <span class="s2">&quot;row_height&quot;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span>
+    <span class="s2">&quot;dc_offset_length&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="s2">&quot;lead_length&quot;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+    <span class="s2">&quot;V1_length&quot;</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span>
+    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">11.0</span><span class="p">,</span>
+    <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mf">8.5</span><span class="p">,</span>
+<span class="p">}</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    fs : int</span>
-<span class="sd">        Sampling frequency of the ECGs to be augmented</span>
-<span class="sd">    bw_fs : numpy.ndarray, optional</span>
-<span class="sd">        Frequencies of the sinusoidal noises,</span>
-<span class="sd">        of shape ``(n,)``,</span>
-<span class="sd">        defaults to ``[0.33, 0.1, 0.05, 0.01]``.</span>
-<span class="sd">    ampl_ratio : numpy.ndarray, optional</span>
-<span class="sd">        Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,</span>
-<span class="sd">        of shape ``(m, n)``,</span>
-<span class="sd">        defaults to</span>
+<span class="c1"># standard_major_colors = {</span>
+<span class="c1">#     &quot;colour1&quot;: (1, 0.6823, 0.776),</span>
+<span class="c1">#     &quot;colour2&quot;: (1, 0.796, 0.866),</span>
+<span class="c1">#     &quot;colour3&quot;: (0.933, 0.8235, 0.8),</span>
+<span class="c1">#     &quot;colour4&quot;: (0.996, 0.807, 0.8039),</span>
+<span class="c1">#     &quot;colour5&quot;: (0.611, 0.627, 0.647),</span>
+<span class="c1">#     &quot;colour6&quot;: (0.4901, 0.498, 0.513),</span>
+<span class="c1">#     &quot;colour7&quot;: (0.4274, 0.196, 0.1843),</span>
+<span class="c1">#     &quot;colour8&quot;: (0.992, 0.7529, 0.7254),</span>
+<span class="c1">#     &quot;colour9&quot;: (0.9215, 0.9372, 0.9725),</span>
+<span class="c1"># }</span>
 
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            np.array(</span>
-<span class="sd">                [</span>
-<span class="sd">                    [0.01, 0.01, 0.02, 0.03],  # low</span>
-<span class="sd">                    [0.01, 0.02, 0.04, 0.05],  # low</span>
-<span class="sd">                    [0.1, 0.06, 0.04, 0.02],  # low</span>
-<span class="sd">                    [0.02, 0.04, 0.07, 0.1],  # low</span>
-<span class="sd">                    [0.05, 0.1, 0.16, 0.25],  # medium</span>
-<span class="sd">                    [0.1, 0.15, 0.25, 0.3],  # high</span>
-<span class="sd">                    [0.25, 0.25, 0.3, 0.35],  # extremely high</span>
-<span class="sd">                ]</span>
-<span class="sd">            )</span>
-
-<span class="sd">    gaussian : numpy.ndarray, optional</span>
-<span class="sd">        Candidate mean and std of the Gaussian noises,</span>
-<span class="sd">        of shape ``(k, 2)``,</span>
-<span class="sd">        defaults to</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            np.array(</span>
-<span class="sd">                [  # mean and std, in terms of ratio</span>
-<span class="sd">                    [0.0, 0.001],</span>
-<span class="sd">                    [0.0, 0.003],</span>
-<span class="sd">                    [0.0, 0.01],</span>
-<span class="sd">                ]</span>
-<span class="sd">            )</span>
-
-<span class="sd">    prob : float, default 0.5</span>
-<span class="sd">        Probability of performing the augmentation.</span>
-<span class="sd">    inplace : bool, default True</span>
-<span class="sd">        If True, ECG signal tensors will be modified inplace.</span>
-<span class="sd">    kwargs : dict, optional</span>
-<span class="sd">        Additional keyword arguments.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        blw = BaselineWanderAugmenter(300, prob=0.7)</span>
-<span class="sd">        sig = torch.randn(32, 12, 5000)</span>
-<span class="sd">        label = torch.ones((32, 20))</span>
-<span class="sd">        sig, _ = blw(sig, label)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BaselineWanderAugmenter&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">gaussian</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span> <span class="o">=</span> <span class="n">bw_fs</span> <span class="k">if</span> <span class="n">bw_fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Probability must be between 0 and 1&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">ampl_ratio</span>
-            <span class="k">if</span> <span class="n">ampl_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="p">[</span>  <span class="c1"># default ampl_ratio</span>
-                    <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>  <span class="c1"># low</span>
-                    <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>  <span class="c1"># low</span>
-                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>  <span class="c1"># low</span>
-                    <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>  <span class="c1"># low</span>
-                    <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>  <span class="c1"># medium</span>
-                    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>  <span class="c1"># high</span>
-                    <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">],</span>  <span class="c1"># extremely high</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                        <span class="p">(</span>
-                            <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">),</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="p">)</span>
-                    <span class="p">),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">gaussian</span>
-            <span class="k">if</span> <span class="n">gaussian</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                <span class="p">[</span>  <span class="c1"># default gaussian, mean and std, in terms of ratio</span>
-                    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.003</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                        <span class="p">(</span>
-                            <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">),</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="p">)</span>
-                    <span class="p">),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span> <span class="o">=</span> <span class="n">inplace</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_bw_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_gn_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="p">)</span>
-
-<div class="viewcode-block" id="BaselineWanderAugmenter.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward function of the :class:`BaselineWanderAugmenter`.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        sig : torch.Tensor</span>
-<span class="sd">            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.</span>
-<span class="sd">        label : torch.Tensor, optional</span>
-<span class="sd">            Batched label tensor of the ECGs.</span>
-<span class="sd">            Not used, but kept for consistency with other augmenters.</span>
-<span class="sd">        extra_tensors : Sequence[torch.Tensor], optional,</span>
-<span class="sd">            Not used, but kept for consistency with other augmenters.</span>
-<span class="sd">        **kwargs : dict, optional</span>
-<span class="sd">            Not used, but kept for consistency with other augmenters.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        sig : torch.Tensor</span>
-<span class="sd">            The augmented ECGs.</span>
-<span class="sd">        label : torch.Tensor</span>
-<span class="sd">            Label tensor of the augmented ECGs, unchanged.</span>
-<span class="sd">        extra_tensors : Sequence[torch.Tensor], optional</span>
-<span class="sd">            Unchanged extra tensors.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
-            <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sig</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">gen_baseline_wander</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaselineWanderAugmenter.extra_repr_keys"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.extra_repr_keys">[docs]</a>    <span class="k">def</span> <span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;fs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bw_fs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;prob&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;inplace&quot;</span><span class="p">,</span>
-        <span class="p">]</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span></div></div>
+<span class="n">standard_major_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.6823</span><span class="p">,</span> <span class="mf">0.776</span><span class="p">),</span>
+    <span class="s2">&quot;colour2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.796</span><span class="p">,</span> <span class="mf">0.866</span><span class="p">),</span>
+    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.933</span><span class="p">,</span> <span class="mf">0.8235</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
+    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.807</span><span class="p">,</span> <span class="mf">0.8039</span><span class="p">),</span>
+    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.4274</span><span class="p">,</span> <span class="mf">0.196</span><span class="p">,</span> <span class="mf">0.1843</span><span class="p">),</span>
+    <span class="s2">&quot;colour6&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.992</span><span class="p">,</span> <span class="mf">0.7529</span><span class="p">,</span> <span class="mf">0.7254</span><span class="p">),</span>
+<span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_ampl</span><span class="p">(</span><span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the amplitude of each lead.</span>
+<span class="n">standard_minor_colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9843</span><span class="p">,</span> <span class="mf">0.9019</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">),</span>
+    <span class="s2">&quot;colour2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.9294</span><span class="p">,</span> <span class="mf">0.9725</span><span class="p">),</span>
+    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9529</span><span class="p">,</span> <span class="mf">0.8745</span><span class="p">,</span> <span class="mf">0.8549</span><span class="p">),</span>
+    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">),</span>
+    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5882</span><span class="p">,</span> <span class="mf">0.4196</span><span class="p">,</span> <span class="mf">0.3960</span><span class="p">),</span>
+    <span class="s2">&quot;colour6&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.8745</span><span class="p">,</span> <span class="mf">0.8588</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="c1"># standard_minor_colors = {</span>
+<span class="c1">#     &quot;colour1&quot;: (0.9843, 0.9019, 0.9529),</span>
+<span class="c1">#     &quot;colour2&quot;: (0.996, 0.9294, 0.9725),</span>
+<span class="c1">#     &quot;colour3&quot;: (0.9529, 0.8745, 0.8549),</span>
+<span class="c1">#     &quot;colour4&quot;: (0.996, 0.9529, 0.9529),</span>
+<span class="c1">#     &quot;colour5&quot;: (0.7607, 0.7725, 0.7843),</span>
+<span class="c1">#     &quot;colour6&quot;: (0.6039, 0.6235, 0.6274),</span>
+<span class="c1">#     &quot;colour7&quot;: (0.5882, 0.4196, 0.3960),</span>
+<span class="c1">#     &quot;colour8&quot;: (0.996, 0.8745, 0.8588),</span>
+<span class="c1">#     &quot;colour9&quot;: (0.9568, 0.9686, 0.9843),</span>
+<span class="c1"># }</span>
+
+<span class="n">papersize_values</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;A0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">33.1</span><span class="p">,</span> <span class="mf">46.8</span><span class="p">),</span>
+    <span class="s2">&quot;A1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">33.1</span><span class="p">,</span> <span class="mf">23.39</span><span class="p">),</span>
+    <span class="s2">&quot;A2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">16.54</span><span class="p">,</span> <span class="mf">23.39</span><span class="p">),</span>
+    <span class="s2">&quot;A3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">11.69</span><span class="p">,</span> <span class="mf">16.54</span><span class="p">),</span>
+    <span class="s2">&quot;A4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">8.27</span><span class="p">,</span> <span class="mf">11.69</span><span class="p">),</span>
+    <span class="s2">&quot;letter&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">leadNames_12</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;III&quot;</span><span class="p">,</span> <span class="s2">&quot;aVF&quot;</span><span class="p">,</span> <span class="s2">&quot;V3&quot;</span><span class="p">,</span> <span class="s2">&quot;V6&quot;</span><span class="p">,</span> <span class="s2">&quot;II&quot;</span><span class="p">,</span> <span class="s2">&quot;aVL&quot;</span><span class="p">,</span> <span class="s2">&quot;V2&quot;</span><span class="p">,</span> <span class="s2">&quot;V5&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;aVR&quot;</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;V4&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">inches_to_dots</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="n">resolution</span>
+
+
+<span class="k">def</span> <span class="nf">create_signal_dictionary</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">full_leads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="n">record_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">full_leads</span><span class="p">)):</span>
+        <span class="n">record_dict</span><span class="p">[</span><span class="n">full_leads</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">record_dict</span>
+
+
+<div class="viewcode-block" id="ecg_plot"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot">[docs]</a><span class="k">def</span> <span class="nf">ecg_plot</span><span class="p">(</span>
+    <span class="n">ecg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">rec_file_name</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
+    <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">pad_inches</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">lead_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+    <span class="n">store_text_bbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+    <span class="n">papersize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">x_gap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;x_gap&quot;</span><span class="p">],</span>
+    <span class="n">y_gap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;y_gap&quot;</span><span class="p">],</span>
+    <span class="n">display_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;display_factor&quot;</span><span class="p">],</span>
+    <span class="n">line_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;line_width&quot;</span><span class="p">],</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">row_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;row_height&quot;</span><span class="p">],</span>
+    <span class="n">show_lead_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_grid</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_dc_pulse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">y_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">x_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">standard_colours</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">bbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">save_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to plot raw ECG signal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sig : torch.Tensor</span>
-<span class="sd">        Batched ECG signal tensor, of shape ``(batch, lead, siglen)``.</span>
-<span class="sd">    fs : int</span>
-<span class="sd">        Sampling frequency of the ECGs.</span>
+<span class="sd">    ecg : Dict[str, np.ndarray]</span>
+<span class="sd">        Dictionary of ECG signals with lead names as keys,</span>
+<span class="sd">        values as 1D numpy arrays.</span>
+<span class="sd">    sample_rate : int</span>
+<span class="sd">        Sampling rate of the ECG signal.</span>
+<span class="sd">    columns : int</span>
+<span class="sd">        Number of columns to be plotted in each row.</span>
+<span class="sd">    rec_file_name : os.PathLike</span>
+<span class="sd">        Name of the record file.</span>
+<span class="sd">    output_dir : os.PathLike</span>
+<span class="sd">        Output directory.</span>
+<span class="sd">    resolution : int, default ``200``</span>
+<span class="sd">        Resolution of the output image.</span>
+<span class="sd">    pad_inches : int, default ``0``</span>
+<span class="sd">        Padding of white margin along the image in inches.</span>
+<span class="sd">    lead_index : List[str], optional</span>
+<span class="sd">        Order of lead indices to be plotted.</span>
+<span class="sd">        By default, the order is the same as the order in ``ecg``.</span>
+<span class="sd">    full_mode : str, default ``&quot;None&quot;``</span>
+<span class="sd">        Sets the lead to add at the bottom of the paper ECG as a long strip.</span>
+<span class="sd">        If ``&quot;None&quot;``, no lead is added at the bottom.</span>
+<span class="sd">        If not ``&quot;None&quot;``, the lead ``&quot;full&quot; + full_mode`` must be present in ``ecg``.</span>
+<span class="sd">    store_text_bbox : bool, default ``False``</span>
+<span class="sd">        If ``True``, stores the bounding box of the text in a text file.</span>
+<span class="sd">    units : str, default ``&quot;mV&quot;``</span>
+<span class="sd">        Units of the ECG signal.</span>
+<span class="sd">        NOT used currently.</span>
+<span class="sd">    papersize : {``&quot;A0&quot;``, ``&quot;A1&quot;``, ``&quot;A2&quot;``, ``&quot;A3&quot;``, ``&quot;A4&quot;``, ``&quot;letter&quot;``}, default ``None``</span>
+<span class="sd">        Size of the paper to plot the ECG on.</span>
+<span class="sd">    x_gap : float, default ``1.0``</span>
+<span class="sd">        Gap between paper x axis border and signal plot.</span>
+<span class="sd">    y_gap : float, default ``0.5``</span>
+<span class="sd">        Gap between paper y axis border and signal plot.</span>
+<span class="sd">    display_factor : float, default ``1.0``</span>
+<span class="sd">        Factor to scale the ECG signal by.</span>
+<span class="sd">    line_width : float, default ``0.75``</span>
+<span class="sd">        Width of line tracing the ECG.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Title of the figure.</span>
+<span class="sd">    style : {``&quot;bw&quot;``, ``&quot;color&quot;``}, optional</span>
+<span class="sd">        Sets the style of the plot.</span>
+<span class="sd">    row_height : float, default ``8.0``</span>
+<span class="sd">        Gap between corresponding ECG rows.</span>
+<span class="sd">    show_lead_name : bool, default ``True``</span>
+<span class="sd">        Option to show lead names or skip.</span>
+<span class="sd">    show_grid : bool, default ``False``</span>
+<span class="sd">        Turn grid on or off.</span>
+<span class="sd">    show_dc_pulse : bool, default ``False``</span>
+<span class="sd">        Option to show DC pulse.</span>
+<span class="sd">    y_grid : float, optional</span>
+<span class="sd">        Sets the y grid size in inches.</span>
+<span class="sd">    x_grid : float, optional</span>
+<span class="sd">        Sets the x grid size in inches.</span>
+<span class="sd">    standard_colours : bool, default ``False``</span>
+<span class="sd">        If ``True``, uses standard colours for the plot.</span>
+<span class="sd">    bbox : bool, default ``False``</span>
+<span class="sd">        If ``True``, stores the bounding box of the lead in a text file.</span>
+<span class="sd">    save_format : {``&quot;png&quot;``, ``&quot;pdf&quot;``, ``&quot;svg&quot;``, ``&quot;jpg&quot;``}, optional</span>
+<span class="sd">        Format to save the plot in.</span>
+<span class="sd">        If ``None``, the plot is not saved.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ampl : torch.Tensor</span>
-<span class="sd">        Amplitude of each lead, of shape ``(batch, lead, 1)``.</span>
+<span class="sd">    x_grid_dots : float</span>
+<span class="sd">        X grid size in dots.</span>
+<span class="sd">    y_grid_dots : float</span>
+<span class="sd">        Y grid size in dots.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-        <span class="n">ampl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span>
-            <span class="n">get_ampl</span><span class="p">,</span>
-            <span class="n">iterable</span><span class="o">=</span><span class="p">[(</span><span class="n">sig</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">fs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-        <span class="p">)</span>
-    <span class="n">ampl</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ampl</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ampl</span>
 
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+    <span class="n">randindex</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+    <span class="n">random_sampler</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.004</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d Gaussian noise of given</span>
-<span class="sd">    length, mean, and standard deviation.</span>
+    <span class="c1"># check if the ecg dict is empty</span>
+    <span class="k">if</span> <span class="n">ecg</span> <span class="o">==</span> <span class="p">{}:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    siglen : int</span>
-<span class="sd">        Length of the noise signal.</span>
-<span class="sd">    mean : numbers.Real, default 0</span>
-<span class="sd">        Mean value of the noise.</span>
-<span class="sd">    std : numbers.Real, default 0</span>
-<span class="sd">        Standard deviation of the noise.</span>
+    <span class="n">secs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ecg</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sample_rate</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    gn : numpy.ndarray</span>
-<span class="sd">        Gaussian noise of given length, mean, and standard deviation.</span>
+    <span class="k">if</span> <span class="n">lead_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lead_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ecg</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">leads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lead_index</span><span class="p">)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">gn</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">gn</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">leads</span> <span class="o">/</span> <span class="n">columns</span><span class="p">))</span>
 
+    <span class="k">if</span> <span class="n">full_mode</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+        <span class="n">rows</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">leads</span> <span class="o">+=</span> <span class="mi">1</span>
 
-<span class="k">def</span> <span class="nf">_gen_sinusoidal_noise</span><span class="p">(</span>
-    <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">start_phase</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">end_phase</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">amplitude_mean</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">amplitude_std</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d sinusoidal noise of given</span>
-<span class="sd">    length, amplitude, start phase, and end phase.</span>
+    <span class="c1"># Grid calibration</span>
+    <span class="c1"># Each big grid corresponds to 0.2 seconds and 0.5 mV</span>
+    <span class="c1"># To do: Select grid size in a better way</span>
+    <span class="n">y_grid_size</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;y_grid_size&quot;</span><span class="p">]</span>
+    <span class="n">x_grid_size</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;x_grid_size&quot;</span><span class="p">]</span>
+    <span class="n">grid_line_width</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;grid_line_width&quot;</span><span class="p">]</span>
+    <span class="n">lead_name_offset</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;lead_name_offset&quot;</span><span class="p">]</span>
+    <span class="n">lead_fontsize</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;lead_fontsize&quot;</span><span class="p">]</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    siglen : int</span>
-<span class="sd">        Length of the (noise) signal.</span>
-<span class="sd">    start_phase : numbers.Real</span>
-<span class="sd">        Start phase, with units in degrees.</span>
-<span class="sd">    end_phase : numbers.Real</span>
-<span class="sd">        End phase, with units in degrees.</span>
-<span class="sd">    amplitude : numbers.Real</span>
-<span class="sd">        Amplitude of the sinusoidal curve.</span>
-<span class="sd">    amplitude_mean : numbers.Real</span>
-<span class="sd">        Mean amplitude of an extra Gaussian noise.</span>
-<span class="sd">    amplitude_std : numbers.Real, default 0</span>
-<span class="sd">        Standard deviation of an extra Gaussian noise</span>
+    <span class="c1"># Set max and min coordinates to mark grid. Offset x_max slightly (i.e by 1 column width)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    sn : numpy.ndarray,</span>
-<span class="sd">        Sinusoidal noise of given length, amplitude, start phase, and end phase.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start_phase</span><span class="p">,</span> <span class="n">end_phase</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
-    <span class="n">sn</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sn</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
-    <span class="n">sn</span> <span class="o">+=</span> <span class="n">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="n">amplitude_mean</span><span class="p">,</span> <span class="n">amplitude_std</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">sn</span>
-
-
-<span class="k">def</span> <span class="nf">_gen_baseline_wander</span><span class="p">(</span>
-    <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">amplitude_gaussian</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d baseline wander of given</span>
-<span class="sd">    length, amplitude, and frequency.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    siglen : int</span>
-<span class="sd">        Length of the (noise) signal.</span>
-<span class="sd">    fs : numbers.Real</span>
-<span class="sd">        Sampling frequency of the original signal.</span>
-<span class="sd">    bw_fs : numbers.Real, or list of numbers.Real</span>
-<span class="sd">        Frequency (Frequencies) of the baseline wander.</span>
-<span class="sd">    amplitude : numbers.Real, or list of numbers.Real</span>
-<span class="sd">        Amplitude of the baseline wander (corr. to each frequency band).</span>
-<span class="sd">    amplitude_gaussian : Tuple[numbers.Real], default [0,0]</span>
-<span class="sd">        2-tuple of :class:`~numbers.Real`.</span>
-<span class="sd">        Mean and std of amplitude of an extra Gaussian noise.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bw : numpy.ndarray</span>
-<span class="sd">        Baseline wander of given length, amplitude, frequency.</span>
-
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
-<span class="sd">    &gt;&gt;&gt; _gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bw</span> <span class="o">=</span> <span class="n">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="n">amplitude_gaussian</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">amplitude_gaussian</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bw_fs</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
-        <span class="n">_bw_fs</span> <span class="o">=</span> <span class="p">[</span><span class="n">bw_fs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">papersize</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_bw_fs</span> <span class="o">=</span> <span class="n">bw_fs</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
-        <span class="n">_amplitude</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_bw_fs</span><span class="p">)))</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">papersize_values</span><span class="p">[</span><span class="n">papersize</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">papersize_values</span><span class="p">[</span><span class="n">papersize</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">y_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_grid</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;y_grid_inch&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">x_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x_grid</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;x_grid_inch&quot;</span><span class="p">]</span>
+    <span class="n">y_grid_dots</span> <span class="o">=</span> <span class="n">y_grid</span> <span class="o">*</span> <span class="n">resolution</span>
+    <span class="n">x_grid_dots</span> <span class="o">=</span> <span class="n">x_grid</span> <span class="o">*</span> <span class="n">resolution</span>
+
+    <span class="c1"># row_height = height * y_grid_size/(y_grid*(rows+2))</span>
+    <span class="n">row_height</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">y_grid_size</span> <span class="o">/</span> <span class="n">y_grid</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">x_max</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">x_grid_size</span> <span class="o">/</span> <span class="n">x_grid</span>
+    <span class="n">x_min</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">x_gap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(((</span><span class="n">x_max</span> <span class="o">-</span> <span class="p">(</span><span class="n">columns</span> <span class="o">*</span> <span class="n">secs</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.2</span>
+    <span class="n">y_min</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">y_grid_size</span> <span class="o">/</span> <span class="n">y_grid</span>
+
+    <span class="c1"># Set figure and subplot sizes</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="c1"># Mark grid based on whether we want black and white or colour</span>
+
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s2">&quot;bw&quot;</span><span class="p">:</span>
+        <span class="n">color_major</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
+        <span class="n">color_minor</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
+        <span class="n">color_line</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standard_colours</span><span class="p">:</span>
+        <span class="n">random_colour_index</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">color_major</span> <span class="o">=</span> <span class="n">standard_major_colors</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_colour_index</span><span class="p">)]</span>
+        <span class="n">color_minor</span> <span class="o">=</span> <span class="n">standard_minor_colors</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_colour_index</span><span class="p">)]</span>
+        <span class="n">randcolorindex_grey</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">grey_random_color</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">color_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">grey_random_color</span><span class="p">,</span> <span class="n">grey_random_color</span><span class="p">,</span> <span class="n">grey_random_color</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_amplitude</span> <span class="o">=</span> <span class="n">amplitude</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_bw_fs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_amplitude</span><span class="p">)</span>
-    <span class="n">duration</span> <span class="o">=</span> <span class="n">siglen</span> <span class="o">/</span> <span class="n">fs</span>
-    <span class="k">for</span> <span class="n">bf</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_bw_fs</span><span class="p">,</span> <span class="n">_amplitude</span><span class="p">):</span>
-        <span class="n">start_phase</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
-        <span class="n">end_phase</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">bf</span> <span class="o">*</span> <span class="mi">360</span> <span class="o">+</span> <span class="n">start_phase</span>
-        <span class="n">bw</span> <span class="o">+=</span> <span class="n">_gen_sinusoidal_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="n">start_phase</span><span class="p">,</span> <span class="n">end_phase</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">bw</span>
+        <span class="n">randcolorindex_red</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">major_random_color_sampler_red</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">randcolorindex_green</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">major_random_color_sampler_green</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">randcolorindex_blue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">major_random_color_sampler_blue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 
+        <span class="n">randcolorindex_minor</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">minor_offset</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">minor_random_color_sampler_red</span> <span class="o">=</span> <span class="n">major_random_color_sampler_red</span> <span class="o">+</span> <span class="n">minor_offset</span>
+        <span class="n">minor_random_color_sampler_green</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="n">minor_offset</span>
+        <span class="n">minor_random_color_sampler_blue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="n">minor_offset</span>
 
-<span class="k">def</span> <span class="nf">gen_baseline_wander</span><span class="p">(</span>
-    <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">gaussian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d baseline wander of given</span>
-<span class="sd">    length, amplitude, and frequency.</span>
+        <span class="n">randcolorindex_grey</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">grey_random_color</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">color_major</span> <span class="o">=</span> <span class="p">(</span><span class="n">major_random_color_sampler_red</span><span class="p">,</span> <span class="n">major_random_color_sampler_green</span><span class="p">,</span> <span class="n">major_random_color_sampler_blue</span><span class="p">)</span>
+        <span class="n">color_minor</span> <span class="o">=</span> <span class="p">(</span><span class="n">minor_random_color_sampler_red</span><span class="p">,</span> <span class="n">minor_random_color_sampler_green</span><span class="p">,</span> <span class="n">minor_random_color_sampler_blue</span><span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    sig : torch.Tensor</span>
-<span class="sd">        Batched ECGs to be augmented, of shape (batch, lead, siglen).</span>
-<span class="sd">    fs : numbers.Real</span>
-<span class="sd">        Sampling frequency of the original signal.</span>
-<span class="sd">    bw_fs : numbers.Real, or list of numbers.Real,</span>
-<span class="sd">        Frequency (Frequencies) of the baseline wander.</span>
-<span class="sd">    ampl_ratio : numpy.ndarray, optional</span>
-<span class="sd">        Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,</span>
-<span class="sd">        of shape ``(m, n)``.</span>
-<span class="sd">    gaussian : numpy.ndarray, optional</span>
-<span class="sd">        Candidate mean and std of the Gaussian noises,</span>
-<span class="sd">        of shape ``(k, 2)``.</span>
+        <span class="n">color_line</span> <span class="o">=</span> <span class="p">(</span><span class="n">grey_random_color</span><span class="p">,</span> <span class="n">grey_random_color</span><span class="p">,</span> <span class="n">grey_random_color</span><span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bw : numpy.ndarray</span>
-<span class="sd">        Baseline wander of given length, amplitude, frequency,</span>
-<span class="sd">        of shape ``(batch, lead, siglen)``.</span>
+    <span class="c1"># Set grid</span>
+    <span class="c1"># Standard ecg has grid size of 0.5 mV and 0.2 seconds. Set ticks accordingly</span>
+    <span class="k">if</span> <span class="n">show_grid</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_grid_size</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">y_grid_size</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">sig_ampl</span> <span class="o">=</span> <span class="n">_get_ampl</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
-    <span class="n">_n_bw_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ampl_ratio</span><span class="p">)</span>
-    <span class="n">_n_gn_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaussian</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-        <span class="n">bw</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span>
-            <span class="n">_gen_baseline_wander</span><span class="p">,</span>
-            <span class="n">iterable</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">(</span>
-                    <span class="n">siglen</span><span class="p">,</span>
-                    <span class="n">fs</span><span class="p">,</span>
-                    <span class="n">bw_fs</span><span class="p">,</span>
-                    <span class="n">ampl_ratio</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_bw_choices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span>
-                    <span class="n">gaussian</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_gn_choices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span>
+        <span class="c1"># set grid line style</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">grid_line_width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_major</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">grid_line_width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_minor</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+    <span class="n">lead_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Step size will be number of seconds per sample i.e 1/sampling_rate</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sample_rate</span>
+
+    <span class="n">dc_offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">show_dc_pulse</span><span class="p">:</span>
+        <span class="n">dc_offset</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">*</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;dc_offset_length&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step</span>
+    <span class="c1"># Iterate through each lead in lead_index array.</span>
+    <span class="n">y_offset</span> <span class="o">=</span> <span class="n">row_height</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">x_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">text_bbox</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lead_bbox</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lead_index</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lead_index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">leadName</span> <span class="o">=</span> <span class="n">leadNames_12</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">leadName</span> <span class="o">=</span> <span class="n">lead_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c1"># y_offset is computed by shifting by a certain offset based on i,</span>
+        <span class="c1"># and also by row_height/2 to account for half the waveform below the axis</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">columns</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">row_height</span>
+
+        <span class="c1"># x_offset will be distance by which we shift the plot in each iteration</span>
+        <span class="k">if</span> <span class="n">columns</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="n">columns</span><span class="p">)</span> <span class="o">*</span> <span class="n">secs</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Create dc pulse wave to plot at the beginning of plot. Dc pulse will be 0.2 seconds</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">*</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;dc_offset_length&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="n">dc_pulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_range</span><span class="p">))</span>
+        <span class="n">dc_pulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dc_pulse</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+        <span class="c1"># Print lead name at .5 ( or 5 mm distance) from plot</span>
+        <span class="k">if</span> <span class="n">show_lead_name</span><span class="p">:</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">,</span> <span class="n">y_offset</span> <span class="o">-</span> <span class="n">lead_name_offset</span> <span class="o">-</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">leadName</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lead_fontsize</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">store_text_bbox</span><span class="p">:</span>
+                <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+                <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+                <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">text_bbox</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">leadName</span><span class="p">])</span>
+
+        <span class="c1"># If we are plotting the first row-1 plots, we plot the dc pulse prior to adding the waveform</span>
+        <span class="k">if</span> <span class="n">columns</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">show_dc_pulse</span><span class="p">:</span>
+                <span class="c1"># Plot dc pulse for 0.2 seconds with 2 trailing and leading zeros to get the pulse</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_range</span> <span class="o">+</span> <span class="n">x_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">,</span> <span class="n">dc_pulse</span> <span class="o">+</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                    <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+                    <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+                    <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                    <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+        <span class="k">elif</span> <span class="n">columns</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show_dc_pulse</span><span class="p">:</span>
+                <span class="c1"># Plot dc pulse for 0.2 seconds with 2 trailing and leading zeros to get the pulse</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">*</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;dc_offset_length&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="n">x_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">,</span>
+                    <span class="n">dc_pulse</span> <span class="o">+</span> <span class="n">y_offset</span><span class="p">,</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">color_line</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">],</span>
+                <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                    <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+                    <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+                    <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                    <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ecg</span><span class="p">[</span><span class="n">leadName</span><span class="p">])</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="n">x_offset</span> <span class="o">+</span> <span class="n">dc_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">,</span>
+            <span class="n">ecg</span><span class="p">[</span><span class="n">leadName</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_offset</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color_line</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="n">bw</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bw</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">bw</span>
+        <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+            <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+            <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">show_dc_pulse</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="p">(</span><span class="n">columns</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">)):</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span>
+                <span class="n">y2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y2</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+            <span class="n">lead_bbox</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">start_ind</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">x_offset</span> <span class="o">+</span> <span class="n">dc_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_grid_dots</span> <span class="o">/</span> <span class="n">x_grid_size</span><span class="p">)</span>
+        <span class="n">end_ind</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">x_offset</span> <span class="o">+</span> <span class="n">dc_offset</span> <span class="o">+</span> <span class="n">x_gap</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ecg</span><span class="p">[</span><span class="n">leadName</span><span class="p">])</span> <span class="o">*</span> <span class="n">step</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_grid_dots</span> <span class="o">/</span> <span class="n">x_grid_size</span><span class="p">)</span>
+
+    <span class="c1"># Plotting longest lead for 12 seconds</span>
+    <span class="k">if</span> <span class="n">full_mode</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show_lead_name</span><span class="p">:</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_gap</span><span class="p">,</span> <span class="n">row_height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lead_name_offset</span><span class="p">,</span> <span class="n">full_mode</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lead_fontsize</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">store_text_bbox</span><span class="p">:</span>
+                <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+                <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+                <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">(</span><span class="n">renderer</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">text_bbox</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">full_mode</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">show_dc_pulse</span><span class="p">:</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x_range</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">,</span>
+                <span class="n">dc_pulse</span> <span class="o">+</span> <span class="n">row_height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lead_name_offset</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color_line</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+                <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+                <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+        <span class="n">dc_full_lead_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">show_dc_pulse</span><span class="p">:</span>
+            <span class="n">dc_full_lead_offset</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">*</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;dc_offset_length&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step</span>
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ecg</span><span class="p">[</span><span class="s2">&quot;full&quot;</span> <span class="o">+</span> <span class="n">full_mode</span><span class="p">])</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="n">x_gap</span> <span class="o">+</span> <span class="n">dc_full_lead_offset</span><span class="p">,</span>
+            <span class="n">ecg</span><span class="p">[</span><span class="s2">&quot;full&quot;</span> <span class="o">+</span> <span class="n">full_mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">row_height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lead_name_offset</span> <span class="o">+</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color_line</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+            <span class="n">renderer1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+            <span class="n">transf</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">show_dc_pulse</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y0</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span>
+                <span class="n">y2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y2</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">y1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="n">x1</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+            <span class="n">lead_bbox</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">start_ind</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">dc_full_lead_offset</span> <span class="o">+</span> <span class="n">x_gap</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_grid_dots</span> <span class="o">/</span> <span class="n">x_grid_size</span><span class="p">)</span>
+        <span class="n">end_ind</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">dc_full_lead_offset</span> <span class="o">+</span> <span class="n">x_gap</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ecg</span><span class="p">[</span><span class="s2">&quot;full&quot;</span> <span class="o">+</span> <span class="n">full_mode</span><span class="p">])</span> <span class="o">*</span> <span class="n">step</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_grid_dots</span> <span class="o">/</span> <span class="n">x_grid_size</span><span class="p">)</span>
+
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">rec_file_name</span><span class="p">)</span>
+    <span class="n">rec_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">save_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;.</span><span class="si">{</span><span class="n">save_format</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x_grid_dots</span><span class="p">,</span> <span class="n">y_grid_dots</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="n">save_format</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">pad_inches</span><span class="o">=</span><span class="n">pad_inches</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+
+    <span class="c1"># margins</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">pad_inches</span> <span class="o">*</span> <span class="n">resolution</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">pad_inches</span> <span class="o">*</span> <span class="n">resolution</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">pad_inches</span> <span class="o">*</span> <span class="n">resolution</span>
+    <span class="n">bottom</span> <span class="o">=</span> <span class="n">pad_inches</span> <span class="o">*</span> <span class="n">resolution</span>
+
+    <span class="k">if</span> <span class="n">store_text_bbox</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;text_bounding_box&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;text_bounding_box&quot;</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;text_bounding_box&quot;</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">text_bbox</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">pad_inches</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">left</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">left</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">top</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">top</span>
+
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[:</span><span class="mi">4</span><span class="p">]:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;lead_bounding_box&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;lead_bounding_box&quot;</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;lead_bounding_box&quot;</span><span class="p">,</span> <span class="n">tail</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lead_bbox</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">pad_inches</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">left</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">left</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">top</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">top</span>
+
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[:</span><span class="mi">4</span><span class="p">]:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x_grid_dots</span><span class="p">,</span> <span class="n">y_grid_dots</span></div>
 </pre></div>
 
            </div>

@@ -980,6 +980,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#visualization-functions">Visualization functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot"><code class="docutils literal notranslate"><span class="pre">ecg_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../utils.html#miscellaneous">Miscellaneous</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
@@ -1086,6 +1093,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -2113,12 +2121,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin class for loading from checkpoint class methods&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CkptMixin.from_checkpoint"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.from_checkpoint">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_checkpoint</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">from_checkpoint</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a model from a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        path : str or pathlib.Path</span>
+<span class="sd">        path : os.PathLike</span>
 <span class="sd">            Path of the checkpoint.</span>
 <span class="sd">        device : torch.device, optional</span>
 <span class="sd">            Map location of the model parameters,</span>
@@ -2147,12 +2155,12 @@
         <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span></div>
 
-<div class="viewcode-block" id="CkptMixin.save"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="CkptMixin.save"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        path : str or pathlib.Path</span>
+<span class="sd">        path : os.PathLike</span>
 <span class="sd">            Path to save the model.</span>
 <span class="sd">        train_config : CFG</span>
 <span class="sd">            Config for training the model,</span>

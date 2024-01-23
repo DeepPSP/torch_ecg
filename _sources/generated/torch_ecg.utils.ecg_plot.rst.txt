@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.ecg\_plot
+==========================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: ecg_plot

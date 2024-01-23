@@ -980,6 +980,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#visualization-functions">Visualization functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot"><code class="docutils literal notranslate"><span class="pre">ecg_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../utils.html#miscellaneous">Miscellaneous</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
@@ -1090,6 +1097,7 @@
 
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
@@ -1226,7 +1234,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir : str or path.Path, optional</span>
+<span class="sd">    log_dir : os.PathLike, optional</span>
 <span class="sd">        The directory to save the log file.</span>
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
@@ -1237,7 +1245,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)</span>
@@ -1335,7 +1343,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir : str or path.Path, optional</span>
+<span class="sd">    log_dir : os.PathLike, optional</span>
 <span class="sd">        The directory to save the log file.</span>
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
@@ -1346,7 +1354,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)</span>
@@ -1426,7 +1434,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir : str or path.Path, optional</span>
+<span class="sd">    log_dir : os.PathLike, optional</span>
 <span class="sd">        The directory to save the log file.</span>
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
@@ -1437,7 +1445,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)</span>
@@ -1504,7 +1512,7 @@
 
 <span class="c1">#     def __init__(</span>
 <span class="c1">#         self,</span>
-<span class="c1">#         log_dir: Optional[Union[str, Path]] = None,</span>
+<span class="c1">#         log_dir: Optional[os.PathLike] = None,</span>
 <span class="c1">#         log_suffix: Optional[str] = None,</span>
 <span class="c1">#         project: Optional[str] = None,</span>
 <span class="c1">#         entity: Optional[str] = None,</span>
@@ -1570,7 +1578,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir : str or path.Path, optional</span>
+<span class="sd">    log_dir : os.PathLike, optional</span>
 <span class="sd">        The directory to save the log file.</span>
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
@@ -1581,7 +1589,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)</span>

@@ -980,6 +980,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#visualization-functions">Visualization functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot"><code class="docutils literal notranslate"><span class="pre">ecg_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#miscellaneous">Miscellaneous</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
@@ -1084,6 +1091,7 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -1397,10 +1405,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir : str or pathlib.Path, optional</span>
+<span class="sd">    db_dir : os.PathLike, optional</span>
 <span class="sd">        Storage path of the database.</span>
 <span class="sd">        If not specified, data will be fetched from Physionet.</span>
-<span class="sd">    working_dir : str, optional</span>
+<span class="sd">    working_dir : os.PathLike, optional</span>
 <span class="sd">        Working directory, to store intermediate files and log files.</span>
 <span class="sd">    verbose : int, default 1</span>
 <span class="sd">        Level of logging verbosity.</span>
@@ -1413,8 +1421,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1762,7 +1770,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sig</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ECG&quot;</span><span class="p">,</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the sampling frequency of a signal of a record.</span>
 
@@ -1775,7 +1783,7 @@
 <span class="sd">            Signal name or annotation name (e.g. &quot;rpeak&quot;).</span>
 <span class="sd">            Some annotation files (\\*-rpeak.csv) have</span>
 <span class="sd">            a sampling frequency column.</span>
-<span class="sd">        rec_path : str or path.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the PSG data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -1818,7 +1826,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sig</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ECG&quot;</span><span class="p">,</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the index of the channel of the signal in the record.</span>
 
@@ -1829,7 +1837,7 @@
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
 <span class="sd">        sig : str, default &quot;ECG&quot;</span>
 <span class="sd">            Signal name.</span>
-<span class="sd">        rec_path : str or pathlib.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the PSG data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -1883,7 +1891,7 @@
 <div class="viewcode-block" id="SHHS.get_absolute_path"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.get_absolute_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_absolute_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">rec_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;psg&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the absolute path of specific type of the record.</span>
@@ -1893,7 +1901,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rec_path : str or pathlib.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the desired data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        rec_type : str, default &quot;psg&quot;</span>
@@ -1924,7 +1932,7 @@
     <span class="k">def</span> <span class="nf">database_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="SHHS.show_rec_stats"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.show_rec_stats">[docs]</a>    <span class="k">def</span> <span class="nf">show_rec_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SHHS.show_rec_stats"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.show_rec_stats">[docs]</a>    <span class="k">def</span> <span class="nf">show_rec_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the statistics of the record.</span>
 
 <span class="sd">        Parameters</span>
@@ -1932,7 +1940,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rec_path : str or pathlib.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the PSG data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -1952,7 +1960,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1968,7 +1976,7 @@
 <span class="sd">        channel : str, default &quot;all&quot;</span>
 <span class="sd">            Name of the channel of PSG.</span>
 <span class="sd">            If is &quot;all&quot;, then all channels will be returned.</span>
-<span class="sd">        rec_path : str or pathlib.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the PSG data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        sampfrom : numbers.Real, optional</span>
@@ -2041,7 +2049,7 @@
 <div class="viewcode-block" id="SHHS.load_ecg_data"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_ecg_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_ecg_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
@@ -2056,7 +2064,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rec_path : str or pathlib.Path, optional</span>
+<span class="sd">        rec_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the ECG data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        sampfrom : int, optional</span>
@@ -2133,7 +2141,7 @@
     <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rec_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
@@ -2157,7 +2165,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">ann_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations of specific type of the record.</span>
@@ -2172,7 +2180,7 @@
 <span class="sd">            &quot;event&quot;, &quot;event_profusion&quot;, &quot;hrv_summary&quot;, &quot;hrv_detailed&quot;,</span>
 <span class="sd">            &quot;sleep&quot;, &quot;sleep_stage&quot;, &quot;sleep_event&quot;, &quot;apnea&quot; (alias &quot;sleep_apnea&quot;),</span>
 <span class="sd">            &quot;wave_delineation&quot;, &quot;rpeak&quot;, &quot;rr&quot;, &quot;nn&quot;.</span>
-<span class="sd">        ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        kwargs : dict, optional</span>
@@ -2212,7 +2220,7 @@
 <div class="viewcode-block" id="SHHS.load_event_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_event_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_event_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">event_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">simplify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -2223,7 +2231,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        event_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        event_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the events-nsrr annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2250,7 +2258,7 @@
 <div class="viewcode-block" id="SHHS.load_event_profusion_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_event_profusion_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_event_profusion_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">event_profusion_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_profusion_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load events-profusion annotations of the record.</span>
@@ -2260,7 +2268,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        event_profusion_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        event_profusion_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the events-profusion annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2291,7 +2299,7 @@
 <div class="viewcode-block" id="SHHS.load_hrv_summary_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_hrv_summary_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_hrv_summary_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">hrv_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hrv_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load summary HRV annotations of the record.</span>
@@ -2301,7 +2309,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        hrv_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        hrv_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the summary HRV annotation file.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2338,7 +2346,7 @@
 <div class="viewcode-block" id="SHHS.load_hrv_detailed_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_hrv_detailed_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_hrv_detailed_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">hrv_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hrv_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load detailed HRV annotations of the record.</span>
@@ -2348,7 +2356,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        hrv_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        hrv_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the detailed HRV annotation file.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2373,7 +2381,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
-        <span class="n">sleep_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sleep_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load sleep annotations of the record.</span>
@@ -2386,7 +2394,7 @@
 <span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
 <span class="sd">            Source of the annotations, case insensitive,</span>
 <span class="sd">            by default &quot;event&quot;</span>
-<span class="sd">        sleep_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        sleep_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the sleep annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2437,7 +2445,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
-        <span class="n">sleep_stage_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sleep_stage_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sleep_stage_protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;aasm&quot;</span><span class="p">,</span>
         <span class="n">with_stage_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -2452,7 +2460,7 @@
 <span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
 <span class="sd">            Source of the annotations, case insensitive,</span>
 <span class="sd">            by default &quot;event&quot;.</span>
-<span class="sd">        sleep_stage_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        sleep_stage_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the sleep stage annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        sleep_stage_protocol : str, default &quot;aasm&quot;</span>
@@ -2550,7 +2558,7 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">event_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sleep_event_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sleep_event_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load sleep event annotations of a record.</span>
 
@@ -2569,7 +2577,7 @@
 <span class="sd">            &quot;Apnea&quot; (including &quot;CSA&quot;, &quot;OSA&quot;, &quot;MSA&quot;, &quot;Hypopnea&quot;), &quot;SpO2&quot;,</span>
 <span class="sd">            &quot;CSA&quot;, &quot;OSA&quot;, &quot;MSA&quot;, &quot;Hypopnea&quot;.</span>
 <span class="sd">            Used only when `source` is &quot;event&quot; or &quot;event_profusion&quot;.</span>
-<span class="sd">        sleep_event_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        sleep_event_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the sleep event annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2742,7 +2750,7 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">apnea_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">apnea_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">apnea_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on apnea events of the record.</span>
@@ -2759,7 +2767,7 @@
 <span class="sd">            Types of apnea events to load, should be a subset of</span>
 <span class="sd">            &quot;CSA&quot;, &quot;OSA&quot;, &quot;MSA&quot;, &quot;Hypopnea&quot;.</span>
 <span class="sd">            If is None, then all types of apnea will be loaded.</span>
-<span class="sd">        apnea_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        apnea_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains the apnea event annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2783,7 +2791,7 @@
 <div class="viewcode-block" id="SHHS.load_wave_delineation_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_wave_delineation_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_wave_delineation_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on wave delineations of the record.</span>
@@ -2793,7 +2801,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        wave_deli_path : str or pathlib.Path, optional</span>
+<span class="sd">        wave_deli_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains wave delineation annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2828,7 +2836,7 @@
 <div class="viewcode-block" id="SHHS.load_rpeak_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_rpeak_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_rpeak_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exclude_artifacts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">exclude_abnormal_beats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2841,7 +2849,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rpeak_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        rpeak_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains R peak annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        exclude_artifacts : bool, default True</span>
@@ -2895,7 +2903,7 @@
 <div class="viewcode-block" id="SHHS.load_rr_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_rr_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_rr_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -2906,7 +2914,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rpeak_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        rpeak_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains R peak annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        units : {None, &quot;s&quot;, &quot;ms&quot;}, optional</span>
@@ -2936,7 +2944,7 @@
 <div class="viewcode-block" id="SHHS.load_nn_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_nn_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_nn_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -2947,7 +2955,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        rpeak_ann_path: str or pathlib.Path, optional</span>
+<span class="sd">        rpeak_ann_path: os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains R peak annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        units: {None, &quot;s&quot;, &quot;ms&quot;}, optional</span>
@@ -2997,7 +3005,7 @@
 <div class="viewcode-block" id="SHHS.locate_artifacts"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.locate_artifacts">[docs]</a>    <span class="k">def</span> <span class="nf">locate_artifacts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Locate &quot;artifacts&quot; in the record.</span>
@@ -3007,7 +3015,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        wave_deli_path : str or pathlib.Path, optional</span>
+<span class="sd">        wave_deli_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains wave delineation annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        units : {None, &quot;s&quot;, &quot;ms&quot;}, optional</span>
@@ -3049,7 +3057,7 @@
 <div class="viewcode-block" id="SHHS.locate_abnormal_beats"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.locate_abnormal_beats">[docs]</a>    <span class="k">def</span> <span class="nf">locate_abnormal_beats</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">abnormal_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -3060,7 +3068,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        wave_deli_path : str or pathlib.Path, optional</span>
+<span class="sd">        wave_deli_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains wave delineation annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 <span class="sd">        abnormal_type : {&quot;VE&quot;, &quot;SVE&quot;}, optional</span>
@@ -3128,7 +3136,7 @@
 <div class="viewcode-block" id="SHHS.load_eeg_band_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_eeg_band_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_eeg_band_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">eeg_band_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">eeg_band_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on EEG bands of the record.</span>
@@ -3138,7 +3146,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        eeg_band_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        eeg_band_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains EEG band annotations.</span>
 <span class="sd">            if is None, default path will be used.</span>
 
@@ -3156,7 +3164,7 @@
 <div class="viewcode-block" id="SHHS.load_eeg_spectral_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_eeg_spectral_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_eeg_spectral_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">eeg_spectral_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">eeg_spectral_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on EEG spectral summary of the record.</span>
@@ -3166,7 +3174,7 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        eeg_spectral_ann_path : str or pathlib.Path, optional</span>
+<span class="sd">        eeg_spectral_ann_path : os.PathLike, optional</span>
 <span class="sd">            Path of the file which contains EEG spectral summary annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
