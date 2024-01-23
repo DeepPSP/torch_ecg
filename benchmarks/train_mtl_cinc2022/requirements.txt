@@ -1,5 +1,5 @@
 numpy>=1.21.0
-scipy==1.6.1
+scipy==1.11.1
 joblib==1.2.0
 # Cython==0.29.10
 pandas==1.2.2
