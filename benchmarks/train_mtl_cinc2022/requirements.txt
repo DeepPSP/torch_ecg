@@ -29,7 +29,7 @@ requests
 kaldi_io
 xgboost
 huggingface_hub
-transformers==4.18.0
+transformers==4.36.0
 datasets
 accelerate
 # requirements from torch-audiomentations,
