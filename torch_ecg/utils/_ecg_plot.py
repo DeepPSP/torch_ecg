@@ -520,7 +520,13 @@ def ecg_plot(
     ax.text(4, 0.5, "10mm/mV", fontsize=lead_fontsize)
 
     if save_format is not None:
-        save_format = f""".{save_format.strip(".")}"""
+        save_format = f""".{save_format.strip(".")}""".lower()
+        assert save_format in [
+            ".png",
+            ".pdf",
+            ".svg",
+            ".jpg",
+        ], f"save_format must be one of '.png', '.pdf', '.svg', '.jpg', but got {save_format}"
     else:
         return x_grid_dots, y_grid_dots
 

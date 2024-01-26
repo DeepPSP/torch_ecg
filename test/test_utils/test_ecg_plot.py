@@ -8,6 +8,7 @@ import warnings
 from pathlib import Path
 
 import packaging.version
+import pytest
 
 from torch_ecg.databases import CINC2021
 from torch_ecg.utils._ecg_plot import create_signal_dictionary, ecg_plot, inches_to_dots, leadNames_12
@@ -37,11 +38,12 @@ def test_ecg_plot():
     # test inches_to_dots
     assert inches_to_dots(1.2, 200) == 240
 
-    rec = 0
+    rec = "HR06000"
     signal = reader.load_data(rec)
     leads = reader.all_leads
+    sample_rate = reader.get_fs(rec)
 
-    signal_dict = create_signal_dictionary(signal, leads)
+    signal_dict = create_signal_dictionary(signal[:, : int(2.5 * sample_rate)], leads)
     assert isinstance(signal_dict, dict)
     assert len(signal_dict) == len(leads)
     assert set(signal_dict.keys()) == set(leads)
@@ -53,7 +55,7 @@ def test_ecg_plot():
         [None, leadNames_12],  # lead_index
         ["None", "II"],  # full_mode
         ["bw", "color"],  # style
-        [True, False],  # standard_colours
+        [0, 2],  # standard_colours
     )
 
     # skip if Python version < 3.8
@@ -71,7 +73,7 @@ def test_ecg_plot():
     for columns, lead_index, full_mode, style, standard_colours in grid:
         x_grid_dots, y_grid_dots = ecg_plot(
             ecg=signal_dict,
-            sample_rate=reader.get_fs(rec),
+            sample_rate=sample_rate,
             columns=columns,
             rec_file_name=reader.get_absolute_path(rec),
             output_dir=_TMP_DIR,
@@ -93,10 +95,13 @@ def test_ecg_plot():
         # assert no image file is saved in the output_dir
         assert len([f for f in _TMP_DIR.iterdir() if f.is_file()]) == 0
 
+    signal_dict = create_signal_dictionary(signal[:, : int(10 * sample_rate)], leads)
+    signal_dict["fullII"] = signal_dict["II"].copy()
+
     for fmt in ["png", "pdf", "svg", "jpg"]:
         x_grid_dots, y_grid_dots = ecg_plot(
             ecg=signal_dict,
-            sample_rate=reader.get_fs(rec),
+            sample_rate=sample_rate,
             columns=1,
             rec_file_name=reader.get_absolute_path(rec),
             output_dir=_TMP_DIR,
@@ -118,3 +123,22 @@ def test_ecg_plot():
         # assert file is saved in the output_dir
         output_image_file = _TMP_DIR / reader.get_absolute_path(rec).with_suffix(f".{fmt}").name
         assert output_image_file.exists()
+
+    with pytest.raises(AssertionError, match="Total time of ECG signal of one row cannot exceed 10 seconds"):
+        ecg_plot(
+            ecg=signal_dict,
+            sample_rate=sample_rate,
+            columns=4,
+            rec_file_name=reader.get_absolute_path(rec),
+            output_dir=_TMP_DIR,
+        )
+
+    with pytest.raises(AssertionError, match="save_format must be one of"):
+        ecg_plot(
+            ecg=signal_dict,
+            sample_rate=sample_rate,
+            columns=1,
+            rec_file_name=reader.get_absolute_path(rec),
+            output_dir=_TMP_DIR,
+            save_format="abc",
+        )
