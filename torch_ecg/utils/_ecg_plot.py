@@ -66,48 +66,22 @@ standard_values = {
     "height": 8.5,
 }
 
-# standard_major_colors = {
-#     "colour1": (1, 0.6823, 0.776),
-#     "colour2": (1, 0.796, 0.866),
-#     "colour3": (0.933, 0.8235, 0.8),
-#     "colour4": (0.996, 0.807, 0.8039),
-#     "colour5": (0.611, 0.627, 0.647),
-#     "colour6": (0.4901, 0.498, 0.513),
-#     "colour7": (0.4274, 0.196, 0.1843),
-#     "colour8": (0.992, 0.7529, 0.7254),
-#     "colour9": (0.9215, 0.9372, 0.9725),
-# }
-
 standard_major_colors = {
-    "colour1": (1, 0.6823, 0.776),
-    "colour2": (1, 0.796, 0.866),
-    "colour3": (0.933, 0.8235, 0.8),
-    "colour4": (0.996, 0.807, 0.8039),
-    "colour5": (0.4274, 0.196, 0.1843),
-    "colour6": (0.992, 0.7529, 0.7254),
+    "colour1": (0.4274, 0.196, 0.1843),  # brown
+    "colour2": (1, 0.796, 0.866),  # pink
+    "colour3": (0.0, 0.0, 0.4),  # blue
+    "colour4": (0, 0.3, 0.0),  # green
+    "colour5": (1, 0, 0),  # red
 }
 
 
 standard_minor_colors = {
-    "colour1": (0.9843, 0.9019, 0.9529),
+    "colour1": (0.5882, 0.4196, 0.3960),
     "colour2": (0.996, 0.9294, 0.9725),
-    "colour3": (0.9529, 0.8745, 0.8549),
-    "colour4": (0.996, 0.9529, 0.9529),
-    "colour5": (0.5882, 0.4196, 0.3960),
-    "colour6": (0.996, 0.8745, 0.8588),
+    "colour3": (0.0, 0, 0.7),
+    "colour4": (0, 0.8, 0.3),
+    "colour5": (0.996, 0.8745, 0.8588),
 }
-
-# standard_minor_colors = {
-#     "colour1": (0.9843, 0.9019, 0.9529),
-#     "colour2": (0.996, 0.9294, 0.9725),
-#     "colour3": (0.9529, 0.8745, 0.8549),
-#     "colour4": (0.996, 0.9529, 0.9529),
-#     "colour5": (0.7607, 0.7725, 0.7843),
-#     "colour6": (0.6039, 0.6235, 0.6274),
-#     "colour7": (0.5882, 0.4196, 0.3960),
-#     "colour8": (0.996, 0.8745, 0.8588),
-#     "colour9": (0.9568, 0.9686, 0.9843),
-# }
 
 papersize_values = {
     "A0": (33.1, 46.8),
@@ -157,8 +131,9 @@ def ecg_plot(
     show_dc_pulse: bool = False,
     y_grid: Optional[float] = None,
     x_grid: Optional[float] = None,
-    standard_colours: bool = False,
+    standard_colours: int = 0,
     bbox: bool = False,
+    print_txt: bool = False,
     save_format: Optional[str] = None,
 ) -> Tuple[float, float]:
     """Function to plot raw ECG signal.
@@ -218,10 +193,12 @@ def ecg_plot(
         Sets the y grid size in inches.
     x_grid : float, optional
         Sets the x grid size in inches.
-    standard_colours : bool, default ``False``
-        If ``True``, uses standard colours for the plot.
+    standard_colours : {``0``, ``1``, ``2``, ``3``, ``4``, ``5``}, default ``0``
+        Sets the colour of the plot grid.
     bbox : bool, default ``False``
         If ``True``, stores the bounding box of the lead in a text file.
+    print_txt : bool, default ``False``
+        If ``True``, prints the metadata of the plot.
     save_format : {``"png"``, ``"pdf"``, ``"svg"``, ``"jpg"``}, optional
         Format to save the plot in.
         If ``None``, the plot is not saved.
@@ -244,6 +221,8 @@ def ecg_plot(
         return 0, 0
 
     secs = len(list(ecg.items())[0][1]) / sample_rate
+
+    assert secs * columns <= 10, "Total time of ECG signal of one row cannot exceed 10 seconds"
 
     if lead_index is None:
         lead_index = list(ecg.keys())
@@ -301,8 +280,8 @@ def ecg_plot(
         color_major = (0.4, 0.4, 0.4)
         color_minor = (0.75, 0.75, 0.75)
         color_line = (0, 0, 0)
-    elif standard_colours:
-        random_colour_index = randint(1, 6)
+    elif standard_colours > 0:
+        random_colour_index = standard_colours
         color_major = standard_major_colors["colour" + str(random_colour_index)]
         color_minor = standard_minor_colors["colour" + str(random_colour_index)]
         randcolorindex_grey = randint(0, 24)
@@ -512,6 +491,33 @@ def ecg_plot(
 
     head, tail = os.path.split(rec_file_name)
     rec_file_name = os.path.join(output_dir, tail)
+
+    if print_txt:
+        pass
+        # x_offset = 0.05
+        # y_offset = int(y_max)
+        # printed_text, attributes, flag = generate_template(full_header_file)
+
+        # if flag:
+        #     for l in range(0, len(printed_text), 1):
+
+        #         for j in printed_text[l]:
+        #             curr_l = ''
+        #             if j in attributes.keys():
+        #                 curr_l += str(attributes[j])
+        #             ax.text(x_offset, y_offset, curr_l, fontsize=lead_fontsize)
+        #             x_offset += 3
+
+        #         y_offset -= 0.5
+        #         x_offset = 0.05
+        # else:
+        #     for line in printed_text:
+        #         ax.text(x_offset, y_offset, line, fontsize=lead_fontsize)
+        #         y_offset -= 0.5
+
+    # change x and y res
+    ax.text(2, 0.5, "25mm/s", fontsize=lead_fontsize)
+    ax.text(4, 0.5, "10mm/mV", fontsize=lead_fontsize)
 
     if save_format is not None:
         save_format = f""".{save_format.strip(".")}"""

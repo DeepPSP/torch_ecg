@@ -1,5 +1,5 @@
 # ignore svg, txt, json, html files
-exclude: '^.*\.(svg|txt|json|html)$'
+exclude: '^.*\.(svg|txt|json|html)$|build|dist'
 fail_fast: false
 
 repos:
