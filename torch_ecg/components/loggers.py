@@ -144,7 +144,7 @@ class TxtLogger(BaseLogger):
 
     Parameters
     ----------
-    log_dir : os.PathLike, optional
+    log_dir : `path-like`, optional
         The directory to save the log file.
     log_suffix : str, optional
         The suffix of the log file.
@@ -155,7 +155,7 @@ class TxtLogger(BaseLogger):
 
     def __init__(
         self,
-        log_dir: Optional[os.PathLike] = None,
+        log_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
@@ -253,7 +253,7 @@ class CSVLogger(BaseLogger):
 
     Parameters
     ----------
-    log_dir : os.PathLike, optional
+    log_dir : `path-like`, optional
         The directory to save the log file.
     log_suffix : str, optional
         The suffix of the log file.
@@ -264,7 +264,7 @@ class CSVLogger(BaseLogger):
 
     def __init__(
         self,
-        log_dir: Optional[os.PathLike] = None,
+        log_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
@@ -344,7 +344,7 @@ class TensorBoardXLogger(BaseLogger):
 
     Parameters
     ----------
-    log_dir : os.PathLike, optional
+    log_dir : `path-like`, optional
         The directory to save the log file.
     log_suffix : str, optional
         The suffix of the log file.
@@ -355,7 +355,7 @@ class TensorBoardXLogger(BaseLogger):
 
     def __init__(
         self,
-        log_dir: Optional[os.PathLike] = None,
+        log_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
@@ -422,7 +422,7 @@ class TensorBoardXLogger(BaseLogger):
 
 #     def __init__(
 #         self,
-#         log_dir: Optional[os.PathLike] = None,
+#         log_dir: Optional[Union[str, bytes, os.PathLike]] = None,
 #         log_suffix: Optional[str] = None,
 #         project: Optional[str] = None,
 #         entity: Optional[str] = None,
@@ -488,7 +488,7 @@ class LoggerManager(ReprMixin):
 
     Parameters
     ----------
-    log_dir : os.PathLike, optional
+    log_dir : `path-like`, optional
         The directory to save the log file.
     log_suffix : str, optional
         The suffix of the log file.
@@ -499,7 +499,7 @@ class LoggerManager(ReprMixin):
 
     def __init__(
         self,
-        log_dir: Optional[os.PathLike] = None,
+        log_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)

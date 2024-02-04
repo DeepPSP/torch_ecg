@@ -36,7 +36,7 @@ import os
 import random
 from math import ceil
 from random import randint
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -110,8 +110,8 @@ def ecg_plot(
     ecg: Dict[str, np.ndarray],
     sample_rate: int,
     columns: int,
-    rec_file_name: os.PathLike,
-    output_dir: os.PathLike,
+    rec_file_name: Union[str, bytes, os.PathLike],
+    output_dir: Union[str, bytes, os.PathLike],
     resolution: int = 200,
     pad_inches: int = 0,
     lead_index: Optional[List[str]] = None,
@@ -147,9 +147,9 @@ def ecg_plot(
         Sampling rate of the ECG signal.
     columns : int
         Number of columns to be plotted in each row.
-    rec_file_name : os.PathLike
+    rec_file_name : `path-like`
         Name of the record file.
-    output_dir : os.PathLike
+    output_dir : `path-like`
         Output directory.
     resolution : int, default ``200``
         Resolution of the output image.
@@ -351,7 +351,6 @@ def ecg_plot(
         # y_offset is computed by shifting by a certain offset based on i,
         # and also by row_height/2 to account for half the waveform below the axis
         if i % columns == 0:
-
             y_offset += row_height
 
         # x_offset will be distance by which we shift the plot in each iteration

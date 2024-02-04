@@ -9,7 +9,7 @@ import pickle
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -82,12 +82,12 @@ class OutComeClassifier_CINC2022(object):
     def feature_list(self) -> List[str]:
         return deepcopy(self.config.feature_list)
 
-    def _prepare_training_data(self, db_dir: Optional[os.PathLike] = None) -> None:
+    def _prepare_training_data(self, db_dir: Optional[Union[str, bytes, os.PathLike]] = None) -> None:
         """Prepares training data.
 
         Parameters
         ----------
-        db_dir : os.PathLike, optional,
+        db_dir : `path-like`, optional,
             Database directory.
             if None, do nothing
 
@@ -180,7 +180,7 @@ class OutComeClassifier_CINC2022(object):
         imputer: SimpleImputer,
         scaler: BaseEstimator,
         config: CFG,
-        model_path: os.PathLike,
+        model_path: Union[str, bytes, os.PathLike],
     ) -> None:
         """Saves a model to a file.
 
@@ -194,7 +194,7 @@ class OutComeClassifier_CINC2022(object):
             scaler instance to save.
         config : CFG
             configurations of the model.
-        model_path : os.PathLike
+        model_path : `path-like`
             path to save the model.
 
         """
@@ -233,13 +233,13 @@ class OutComeClassifier_CINC2022(object):
         )
 
     @classmethod
-    def from_file(cls, path: os.PathLike) -> "OutComeClassifier_CINC2022":
+    def from_file(cls, path: Union[str, bytes, os.PathLike]) -> "OutComeClassifier_CINC2022":
         """
         Loads a OutComeClassifier_CINC2022 instance from a file.
 
         Parameters
         ----------
-        path : os.PathLike
+        path : `path-like`
             path to the model file.
 
         Returns
@@ -355,7 +355,11 @@ class OutComeClassifier_CINC2022(object):
         if cv is None:
             msg = "Performing grid search with no cross validation."
             self.logger_manager.log_message(msg)
-            (self.best_clf, self.best_params, self.best_score,) = self._perform_grid_search_no_cv(
+            (
+                self.best_clf,
+                self.best_params,
+                self.best_score,
+            ) = self._perform_grid_search_no_cv(
                 model_name,
                 self.config.grids[model_name],
                 self.X_train,
@@ -377,7 +381,11 @@ class OutComeClassifier_CINC2022(object):
         else:
             msg = f"Performing grid search with {cv}-fold cross validation."
             self.logger_manager.log_message(msg)
-            (self.best_clf, self.best_params, self.best_score,) = self._perform_grid_search_cv(
+            (
+                self.best_clf,
+                self.best_params,
+                self.best_score,
+            ) = self._perform_grid_search_cv(
                 model_name,
                 self.config.grids[model_name],
                 self.X_train,

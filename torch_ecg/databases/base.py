@@ -128,10 +128,10 @@ class _DataBase(ReprMixin, ABC):
 
     Parameters
     ----------
-    db_dir : str or pathlib.Path, optional
+    db_dir : `path-like`, optional
         Storage path of the database.
         If not specified, data will be fetched from Physionet.
-    working_dir : str, optional
+    working_dir : `path-like`, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Level of logging verbosity.
@@ -143,8 +143,8 @@ class _DataBase(ReprMixin, ABC):
     def __init__(
         self,
         db_name: str,
-        db_dir: Optional[os.PathLike] = None,
-        working_dir: Optional[os.PathLike] = None,
+        db_dir: Optional[Union[str, bytes, os.PathLike]] = None,
+        working_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
@@ -403,10 +403,10 @@ class PhysioNetDataBase(_DataBase):
     ----------
     db_name : str
         Name of the database.
-    db_dir : os.PathLike, optional
+    db_dir : `path-like`, optional
         Storage path of the database.
         If is None, `wfdb` will fetch data from PhysioNet.
-    working_dir : os.PathLike, optional
+    working_dir : `path-like`, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Verbosity level for logging.
@@ -422,8 +422,8 @@ class PhysioNetDataBase(_DataBase):
     def __init__(
         self,
         db_name: str,
-        db_dir: Optional[os.PathLike] = None,
-        working_dir: Optional[os.PathLike] = None,
+        db_dir: Optional[Union[str, bytes, os.PathLike]] = None,
+        working_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
@@ -639,7 +639,12 @@ class PhysioNetDataBase(_DataBase):
             data_format.lower() in allowed_data_format
         ), f"`data_format` should be one of `{allowed_data_format}`, but got `{data_format}`"
         if len(_leads) > 1:
-            assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], (
+            assert data_format.lower() in [
+                "channel_first",
+                "lead_first",
+                "channel_last",
+                "lead_last",
+            ], (
                 "`data_format` should be one of `['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
                 f"when the passed number of `leads` is larger than 1, but got `{data_format}`"
             )
@@ -771,12 +776,12 @@ class PhysioNetDataBase(_DataBase):
                         except KeyError:
                             print(f"`{k}` stands for `{a['('+k]}`")
 
-    def get_file_download_url(self, file_name: os.PathLike) -> str:
+    def get_file_download_url(self, file_name: Union[str, bytes, os.PathLike]) -> str:
         """Get the download url of the file.
 
         Parameters
         ----------
-        file_name : os.PathLike
+        file_name : `path-like`
             Name of the file,
             e.g. "data/001a.dat", "training/tr03-0005/tr03-0005.mat", etc.
 
@@ -869,9 +874,9 @@ class NSRRDataBase(_DataBase):
     ----------
     db_name : str
         Name of the database.
-    db_dir : str or pathlib.Path, optional
+    db_dir : `path-like`, optional
         Local storage path of the database.
-    working_dir : str, optional
+    working_dir : `path-like`, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Verbosity level for logging.
@@ -887,8 +892,8 @@ class NSRRDataBase(_DataBase):
     def __init__(
         self,
         db_name: str,
-        db_dir: Optional[os.PathLike] = None,
-        working_dir: Optional[str] = None,
+        db_dir: Optional[Union[str, bytes, os.PathLike]] = None,
+        working_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
@@ -932,7 +937,7 @@ class NSRRDataBase(_DataBase):
     def safe_edf_file_operation(
         self,
         operation: str = "close",
-        full_file_path: Optional[os.PathLike] = None,
+        full_file_path: Optional[Union[str, bytes, os.PathLike]] = None,
     ) -> None:
         """Safe IO operation for edf file.
 
@@ -940,7 +945,7 @@ class NSRRDataBase(_DataBase):
         ----------
         operation : {"open", "close"}, optional
             Operation name, by default "close".
-        full_file_path : os.PathLike, optional
+        full_file_path : `path-like`, optional
             Path of the file which contains the data.
             If is None, default path will be used.
 
@@ -1045,9 +1050,9 @@ class CPSCDataBase(_DataBase):
     ----------
     db_name : str
         Name of the database.
-    db_dir : os.PathLike, optional
+    db_dir : `path-like`, optional
         Local storage path of the database.
-    working_dir : os.PathLike, optional
+    working_dir : `path-like`, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1
         Verbosity level for logging.
@@ -1059,8 +1064,8 @@ class CPSCDataBase(_DataBase):
     def __init__(
         self,
         db_name: str,
-        db_dir: Optional[os.PathLike] = None,
-        working_dir: Optional[os.PathLike] = None,
+        db_dir: Optional[Union[str, bytes, os.PathLike]] = None,
+        working_dir: Optional[Union[str, bytes, os.PathLike]] = None,
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
