@@ -94,7 +94,6 @@ class PanTompkins(object):
         # Start from 200ms after the first qrs detected in the
         # learning phase
         for i in range(self.qrs_inds[0] + 41, self.siglen):
-
             # Number of indices from the previous r peak to this index
             last_r_distance = i - self.qrs_inds[-1]
 
@@ -102,7 +101,6 @@ class PanTompkins(object):
             # was found. Search back for common 2 signal
             # peaks and test using lower threshold
             if last_r_distance > self.rr_missed_limit:
-
                 self.backsearch()
                 # Continue with this index whether or not
                 # a previous common peak was marked as qrs
@@ -354,7 +352,6 @@ class PanTompkins(object):
 
     # Update parameters when a peak is found
     def update_peak_params(self, peaktype, i):
-
         # Noise peak for filtered signal
         if peaktype == "nF":
             self.noisepeak_F = 0.875 * self.noisepeak_I + 0.125 * self.sig_I[i]
@@ -496,7 +493,6 @@ def pantompkins(sig, fs):
 # all not bigger than it.
 # Faster than calling ispeak_radius for every index.
 def findpeaks_radius(sig, radius):
-
     siglen = len(sig)
     peaklocs = []
 

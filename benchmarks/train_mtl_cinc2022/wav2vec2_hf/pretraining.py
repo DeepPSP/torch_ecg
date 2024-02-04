@@ -238,7 +238,6 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
             if (epoch_step + 1) % self.train_config.gradient_accumulation_steps == 0 or epoch_step == len(
                 self.train_loader
             ) - 1:
-
                 # compute grad norm for monitoring
                 scale = 1
                 grad_norm = get_grad_norm(self.model.parameters(), scale)

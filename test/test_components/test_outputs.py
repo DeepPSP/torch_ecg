@@ -18,7 +18,6 @@ from torch_ecg.components.outputs import (
 
 
 class TestClassificationOutput:
-
     classes = ["AF", "NSR", "SPB"]
     batch_size = 32
     num_classes = len(classes)
@@ -91,7 +90,6 @@ class TestClassificationOutput:
 
 
 class TestMultiLabelClassificationOutput:
-
     classes = ["AF", "NSR", "SPB"]
     batch_size = 32
     num_classes = len(classes)
@@ -113,7 +111,6 @@ class TestMultiLabelClassificationOutput:
 
 
 class TestSequenceTaggingOutput:
-
     classes = ["AF", "NSR", "SPB"]
     batch_size = 32
     signal_length = 5000
@@ -136,7 +133,6 @@ class TestSequenceTaggingOutput:
 
 
 class TestSequenceLabellingOutput:
-
     classes = ["AF", "NSR", "SPB"]
     batch_size = 32
     signal_length = 5000
@@ -159,7 +155,6 @@ class TestSequenceLabellingOutput:
 
 
 class TestWaveDelineationOutput:
-
     classes = ["N", "P", "Q"]
     batch_size = 32
     signal_length = 500
@@ -193,7 +188,6 @@ class TestWaveDelineationOutput:
 
 
 class TestRPeaksDetectionOutput:
-
     batch_size = 2
     signal_length = 1000
 

@@ -272,7 +272,6 @@ class _SpectralInput(BaseInput):
 
 
 class SpectrogramInput(_SpectralInput):
-
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "SpectrogramInput"
 
@@ -312,7 +311,6 @@ class SpectrogramInput(_SpectralInput):
 
 
 class MelSpectrogramInput(_SpectralInput):
-
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "MelSpectrogramInput"
 
@@ -358,7 +356,6 @@ class MelSpectrogramInput(_SpectralInput):
 
 
 class MFCCInput(_SpectralInput):
-
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "MFCCInput"
 

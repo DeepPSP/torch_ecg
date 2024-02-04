@@ -143,7 +143,10 @@ class BaseInput(ReprMixin, ABC):
             The transformed waveform.
 
         """
-        assert waveform.shape[-2:] == (self.n_channels, self.n_samples,), (
+        assert waveform.shape[-2:] == (
+            self.n_channels,
+            self.n_samples,
+        ), (
             f"`waveform` shape must be `(batch_size, {self.n_channels}, {self.n_samples})` "
             f"or `({self.n_channels}, {self.n_samples})`, got `{waveform.shape}`"
         )
@@ -535,7 +538,6 @@ class _SpectralInput(BaseInput):
 
 
 class SpectrogramInput(_SpectralInput):
-
     __doc__ = (
         _SpectralInput.__doc__
         + """

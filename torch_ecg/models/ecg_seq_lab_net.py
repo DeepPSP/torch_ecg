@@ -143,7 +143,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
 @add_docstring(ECG_SEQ_LAB_NET.__doc__)
 class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
-
     __name__ = "ECG_SEQ_LAB_NET_v1"
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))

@@ -263,7 +263,6 @@ def _get_sinc_resample_kernel(
     device: torch.device = torch.device("cpu"),
     dtype: Optional[torch.dtype] = None,
 ):
-
     if not (int(orig_freq) == orig_freq and int(new_freq) == new_freq):
         raise Exception(
             "Frequencies must be of integer type to ensure quality resampling computation. "

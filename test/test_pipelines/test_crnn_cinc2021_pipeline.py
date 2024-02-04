@@ -635,7 +635,15 @@ class CINC2021Trainer(BaseTrainer):
                 )
                 self.log_manager.log_message(msg)
 
-        (auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric,) = compute_cinc2021_metrics(
+        (
+            auroc,
+            auprc,
+            accuracy,
+            f_measure,
+            f_beta_measure,
+            g_beta_measure,
+            challenge_metric,
+        ) = compute_cinc2021_metrics(
             classes=classes,
             truth=all_labels,
             scalar_pred=all_scalar_preds,

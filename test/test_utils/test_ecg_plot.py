@@ -34,7 +34,6 @@ reader = CINC2021(_CWD)
 
 
 def test_ecg_plot():
-
     # test inches_to_dots
     assert inches_to_dots(1.2, 200) == 240
 

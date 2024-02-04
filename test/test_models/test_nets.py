@@ -60,7 +60,6 @@ SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN).to(DEVICE)
 
 @torch.no_grad()
 def test_activations():
-
     for name in Activations:
         act = get_activation(name)
         assert act == Activations[name]

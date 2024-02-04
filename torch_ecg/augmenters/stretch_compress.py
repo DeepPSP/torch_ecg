@@ -272,7 +272,12 @@ def _stretch_compress_one_batch_element(
     diff_len = abs(new_len - siglen)
     half_diff_len = diff_len // 2
     if sign > 0:  # stretch and cut
-        sig = F.interpolate(sig, size=new_len, mode="linear", align_corners=True,)[
+        sig = F.interpolate(
+            sig,
+            size=new_len,
+            mode="linear",
+            align_corners=True,
+        )[
             ..., half_diff_len : siglen + half_diff_len
         ].squeeze(0)
         for idx in range(n_labels):
