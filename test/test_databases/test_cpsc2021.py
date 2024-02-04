@@ -224,8 +224,10 @@ class TestCPSC2021:
 
     def test_meta_data(self):
         assert isinstance(reader.diagnoses_records_list, dict)
-        assert all(isinstance(v, list) for v in reader.diagnoses_records_list.values())
-        assert all(set(v) <= set(reader.all_records) for v in reader.diagnoses_records_list.values())
+        assert all([isinstance(v, list) for v in reader.diagnoses_records_list.values()]), reader.diagnoses_records_list
+        assert all(
+            [set(v) <= set(reader.all_records) for v in reader.diagnoses_records_list.values()]
+        ), reader.diagnoses_records_list
         assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_helper(self):

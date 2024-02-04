@@ -97,10 +97,12 @@ class TestQTDB:
         assert len(beat_ann) >= len(beat_ann_1)
         beat_ann = reader.load_beat_ann(0, sampfrom=1000, sampto=2000, beat_format="dict")
         assert isinstance(beat_ann, dict)
-        assert all([isinstance(beat_ann[k], np.ndarray) for k in beat_ann])
+        assert all([isinstance(beat_ann[k], np.ndarray) for k in beat_ann]), [type(beat_ann[k]) for k in beat_ann]
         beat_ann_1 = reader.load_beat_ann(0, sampfrom=1000, sampto=2000, beat_format="dict", keep_original=True)
         assert beat_ann.keys() == beat_ann_1.keys()
-        assert all([np.allclose(beat_ann[k], beat_ann_1[k] - 1000) for k in beat_ann])
+        assert all([np.allclose(beat_ann[k], beat_ann_1[k] - 1000) for k in beat_ann]), [
+            beat_ann[k] - beat_ann_1[k] for k in beat_ann
+        ]
 
         with pytest.raises(
             AssertionError,

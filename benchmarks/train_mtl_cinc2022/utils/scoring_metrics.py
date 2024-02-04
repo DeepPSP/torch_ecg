@@ -344,8 +344,8 @@ def compute_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndar
 
     """
     assert np.shape(labels)[0] == np.shape(outputs)[0]
-    assert all(value in (0, 1, True, False) for value in np.unique(labels))
-    assert all(value in (0, 1, True, False) for value in np.unique(outputs))
+    assert all([value in (0, 1, True, False) for value in np.unique(labels)])
+    assert all([value in (0, 1, True, False) for value in np.unique(outputs)])
 
     num_patients = np.shape(labels)[0]
     num_label_classes = np.shape(labels)[1]
@@ -379,8 +379,8 @@ def compute_one_vs_rest_confusion_matrix(labels: np.ndarray, outputs: np.ndarray
 
     """
     assert np.shape(labels) == np.shape(outputs)
-    assert all(value in (0, 1, True, False) for value in np.unique(labels))
-    assert all(value in (0, 1, True, False) for value in np.unique(outputs))
+    assert all([value in (0, 1, True, False) for value in np.unique(labels)])
+    assert all([value in (0, 1, True, False) for value in np.unique(outputs)])
 
     num_patients, num_classes = np.shape(labels)
 

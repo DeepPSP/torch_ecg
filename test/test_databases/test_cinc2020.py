@@ -224,7 +224,7 @@ class TestCINC2020:
             scalar_pred=probs,
         )
         assert isinstance(metrics, tuple)
-        assert all(isinstance(m, float) for m in metrics)
+        assert all([isinstance(m, float) for m in metrics]), [(m, type(m)) for m in metrics]
 
     def test_aux_data(self):
         mat = load_weights(return_fmt="np")

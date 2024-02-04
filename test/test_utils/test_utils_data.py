@@ -205,7 +205,7 @@ def test_masks_to_waveforms():
 def test_uniform():
     arr = uniform(-10, 100, 999)
     assert len(arr) == 999
-    assert all([-10 <= x <= 100 for x in arr])
+    assert all([-10 <= x <= 100 for x in arr]), arr
 
 
 def test_stratified_train_test_split():

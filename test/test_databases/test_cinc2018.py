@@ -80,7 +80,7 @@ class TestCINC2018:
         available_signals = reader.get_available_signals(0)
         assert isinstance(available_signals, list)
         assert len(available_signals) > 0
-        assert all([isinstance(s, str) for s in available_signals])
+        assert all([isinstance(s, str) for s in available_signals]), available_signals
 
     def test_get_fs(self):
         fs = reader.get_fs(0)

@@ -72,7 +72,7 @@ class TestLUDB:
 
     def test_load_diagnoses(self):
         diagnoses = reader.load_diagnoses(0)
-        assert all(isinstance(item, str) for item in diagnoses)
+        assert all([isinstance(item, str) for item in diagnoses]), [(item, type(item)) for item in diagnoses]
 
     def test_load_masks(self):
         data = reader.load_data(0)

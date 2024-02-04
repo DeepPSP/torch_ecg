@@ -114,8 +114,8 @@ def confusion_matrix(
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
     assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
-    assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
-    assert all(value in (0, 1) for value in np.unique(outputs)), "outputs must be binary"
+    assert all([value in (0, 1) for value in np.unique(labels)]), "labels must be binary"
+    assert all([value in (0, 1) for value in np.unique(outputs)]), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 
@@ -158,8 +158,8 @@ def one_vs_rest_confusion_matrix(
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
     assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
-    assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
-    assert all(value in (0, 1) for value in np.unique(outputs)), "outputs must be binary"
+    assert all([value in (0, 1) for value in np.unique(labels)]), "labels must be binary"
+    assert all([value in (0, 1) for value in np.unique(outputs)]), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 

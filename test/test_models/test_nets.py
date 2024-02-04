@@ -458,7 +458,7 @@ def test_branched_conv():
     bc.eval()
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
-    assert all(isinstance(t, torch.Tensor) for t in out_tensors)
+    assert all([isinstance(t, torch.Tensor) for t in out_tensors]), [type(t) for t in out_tensors]
     assert [t.shape for t in out_tensors] == bc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert bc.in_channels == IN_CHANNELS
     bc_config["dropouts"] = {"p": 0.2, "type": "1d"}
@@ -466,12 +466,12 @@ def test_branched_conv():
     bc.eval()
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
-    assert all(isinstance(t, torch.Tensor) for t in out_tensors)
+    assert all([isinstance(t, torch.Tensor) for t in out_tensors]), [type(t) for t in out_tensors]
     assert [t.shape for t in out_tensors] == bc.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert bc.in_channels == IN_CHANNELS
     receptive_fields = bc.compute_receptive_field()
     assert isinstance(receptive_fields, tuple) and len(receptive_fields) == 2
-    assert all(isinstance(t, int) for t in receptive_fields)
+    assert all([isinstance(t, int) for t in receptive_fields]), [type(t) for t in receptive_fields]
     assert receptive_fields[0] == compute_receptive_field(
         kernel_sizes=[5, 5, 5, 5],
         strides=[2, 2, 2, 2],

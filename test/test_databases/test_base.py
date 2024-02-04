@@ -105,4 +105,4 @@ def test_list_databases():
 def test_list_datasets():
     assert isinstance(list_datasets(), list)
     assert len(list_datasets()) > 0
-    assert all(item.endswith("Dataset") for item in list_datasets())
+    assert all([item.endswith("Dataset") for item in list_datasets()]), list_datasets()

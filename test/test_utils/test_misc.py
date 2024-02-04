@@ -87,8 +87,8 @@ def test_get_record_list_recursive():
     record_list_1 = get_record_list_recursive(path, rec_ext=".hea")
     assert set(record_list_1) == set(record_list)
     record_list_1 = get_record_list_recursive(path, rec_ext="mat", relative=False)
-    assert all([Path(p).is_absolute() for p in record_list_1])
-    assert all([p.startswith(str(path)) for p in record_list_1])
+    assert all([Path(p).is_absolute() for p in record_list_1]), record_list_1
+    assert all([p.startswith(str(path)) for p in record_list_1]), record_list_1
 
 
 def test_get_record_list_recursive2():
@@ -114,9 +114,9 @@ def test_get_record_list_recursive3():
     record_list = get_record_list_recursive3(path, rec_patterns_with_ext)
     assert isinstance(record_list, dict)
     assert record_list.keys() == rec_patterns_with_ext.keys()
-    assert all([isinstance(v, list) for v in record_list.values()])
+    assert all([isinstance(v, list) for v in record_list.values()]), record_list
     for tranche in list("ABCD"):
-        assert len(record_list[tranche]) == 0
+        assert len(record_list[tranche]) == 0, len(record_list[tranche])
     assert len(record_list["E"]) == 10
     assert len(record_list["F"]) == 20
     assert len(record_list["G"]) == 20

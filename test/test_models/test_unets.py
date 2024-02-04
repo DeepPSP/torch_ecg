@@ -31,7 +31,7 @@ def test_ecg_unet():
 
     doi = model.doi
     assert isinstance(doi, list)
-    assert all([isinstance(d, str) for d in doi])
+    assert all([isinstance(d, str) for d in doi]), doi
 
     with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model.inference(inp)
@@ -56,7 +56,7 @@ def test_ecg_subtract_unet():
 
     doi = model.doi
     assert isinstance(doi, list)
-    assert all([isinstance(d, str) for d in doi])
+    assert all([isinstance(d, str) for d in doi]), doi
 
     with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
         model.inference(inp)

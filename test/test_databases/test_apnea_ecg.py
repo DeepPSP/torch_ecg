@@ -82,9 +82,9 @@ class TestApneaECG:
 
     def test_load_ann(self):
         ann = reader.load_ann(0)
-        assert all(len(item) == 2 for item in ann)
-        assert all(isinstance(item[0], int) for item in ann)
-        assert all(isinstance(item[1], str) for item in ann)
+        assert all([len(item) == 2 for item in ann]), [len(item) for item in ann]
+        assert all([isinstance(item[0], int) for item in ann]), [type(item[0]) for item in ann]
+        assert all([isinstance(item[1], str) for item in ann]), [type(item[1]) for item in ann]
 
     def test_load_apnea_event(self):
         df_apnea_event = reader.load_apnea_event(0)

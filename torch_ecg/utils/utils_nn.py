@@ -194,25 +194,25 @@ def compute_output_shape(
         "to be a valid (with batch and channel) shape of a non-degenerate Tensor"
     )
     assert all(
-        s is None or assert_positive_integer(s) for s in input_shape
+        [s is None or assert_positive_integer(s) for s in input_shape]
     ), "`input_shape` should be a sequence containing only `None` and positive integers"
 
     if num_filters is not None:
         assert assert_positive_integer(num_filters), "`num_filters` should be `None` or positive integer"
     assert all(
-        assert_positive_integer(num) for num in np.asarray(kernel_size).flatten().tolist()
+        [assert_positive_integer(num) for num in np.asarray(kernel_size).flatten().tolist()]
     ), "`kernel_size` should contain only positive integers"
     assert all(
-        assert_positive_integer(num) for num in np.asarray(stride).flatten().tolist()
+        [assert_positive_integer(num) for num in np.asarray(stride).flatten().tolist()]
     ), "`stride` should contain only positive integers"
     assert all(
-        assert_non_negative_integer(num) for num in np.asarray(padding).flatten().tolist()
+        [assert_non_negative_integer(num) for num in np.asarray(padding).flatten().tolist()]
     ), "`padding` should contain only non-negative integers"
     assert all(
-        assert_non_negative_integer(num) for num in np.asarray(output_padding).flatten().tolist()
+        [assert_non_negative_integer(num) for num in np.asarray(output_padding).flatten().tolist()]
     ), "`output_padding` should contain only non-negative integers"
     assert all(
-        assert_positive_integer(num) for num in np.asarray(dilation).flatten().tolist()
+        [assert_positive_integer(num) for num in np.asarray(dilation).flatten().tolist()]
     ), "`dilation` should contain only positive integers"
 
     if lt in [

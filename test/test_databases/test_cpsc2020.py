@@ -71,7 +71,7 @@ class TestCPSC2020:
     def test_load_ann(self):
         ann = reader.load_ann(0, sampfrom=1000, sampto=9000)
         assert ann.keys() == {"SPB_indices", "PVC_indices"}
-        assert all(isinstance(v, np.ndarray) for v in ann.values())
+        assert all([isinstance(v, np.ndarray) for v in ann.values()]), [type(v) for v in ann.values()]
 
     def test_locate_premature_beats(self):
         premature_beat_intervals = reader.locate_premature_beats(0)

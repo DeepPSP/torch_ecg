@@ -96,7 +96,9 @@ class TestMITDB:
     def test_get_lead_names(self):
         lead_names = reader._get_lead_names(0)
         assert isinstance(lead_names, list)
-        assert all(isinstance(lead_name, str) for lead_name in lead_names)
+        assert all([isinstance(lead_name, str) for lead_name in lead_names]), [
+            (lead_name, type(lead_name)) for lead_name in lead_names
+        ]
 
     def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)

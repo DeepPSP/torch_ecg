@@ -117,12 +117,12 @@ class BaseOutput(CFG, ABC):
         pop_fields = [k for k in self if k in ["required_fields", "append", "compute_metrics"] or k.startswith("_abc")]
         for f in pop_fields:
             self.pop(f, None)
-        assert all(field in self.keys() for field in self.required_fields()), (
+        assert all([field in self.keys() for field in self.required_fields()]), (
             f"{self.__name__} requires {self.required_fields()}, "
             f"but `{', '.join(self.required_fields() - set(self.keys()))}` are missing"
         )
         assert all(
-            self[field] is not None for field in self.required_fields()
+            [self[field] is not None for field in self.required_fields()]
         ), f"Fields `{', '.join([field for field in self.required_fields() if self[field] is None])}` are not set"
 
     @abstractmethod
