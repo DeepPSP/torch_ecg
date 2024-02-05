@@ -413,13 +413,18 @@ def metrics_from_confusion_matrix(
         "auprc",  # area under the precision-recall curve
     ]:
         metrics[m.strip("_")] = eval(m)
-        metrics[f"macro_{m}".strip("_")] = np.nanmean(eval(m) * _weights) if np.any(np.isfinite(eval(m))) else float("nan")
+        # convert to Python float from numpy float if possible
+        metrics[f"macro_{m}".strip("_")] = (
+            np.nanmean(eval(m) * _weights).item() if np.any(np.isfinite(eval(m))) else float("nan")
+        )
     if fillna is not False:
         if isinstance(fillna, bool):
             fillna = 0.0
         assert 0 <= fillna <= 1, "fillna must be in [0, 1]"
         for m in metrics:
-            if np.isnan(metrics[m]):
+            if isinstance(metrics[m], np.ndarray):
+                metrics[m][np.isnan(metrics[m])] = fillna
+            elif np.isnan(metrics[m]):
                 metrics[m] = fillna
     return metrics
 
