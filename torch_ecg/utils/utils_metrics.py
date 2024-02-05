@@ -204,6 +204,10 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
     thr : float, default: 0.5
         Threshold for binary classification,
         valid only if `outputs` is of shape ``(n_samples, n_classes)``.
+    fillna : bool or float, default: 0.0
+        If is False, then NaN will be left in the result.
+        If is True, then NaN will be filled with 0.0.
+        If is a float, then NaN will be filled with the specified value.
 """
 
 
@@ -217,6 +221,7 @@ def metrics_from_confusion_matrix(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Dict[str, Union[float, np.ndarray]]:
     """
     Returns
@@ -409,6 +414,13 @@ def metrics_from_confusion_matrix(
     ]:
         metrics[m.strip("_")] = eval(m)
         metrics[f"macro_{m}".strip("_")] = np.nanmean(eval(m) * _weights) if np.any(np.isfinite(eval(m))) else float("nan")
+    if fillna is not False:
+        if isinstance(fillna, bool):
+            fillna = 0.0
+        assert 0 <= fillna <= 1, "fillna must be in [0, 1]"
+        for m in metrics:
+            if np.isnan(metrics[m]):
+                metrics[m] = fillna
     return metrics
 
 
@@ -422,6 +434,7 @@ def f_measure(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -432,7 +445,7 @@ def f_measure(
         F1-measures for each class, of shape: ``(n_classes,)``.
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_f1"], m["f1"]
 
@@ -447,6 +460,7 @@ def sensitivity(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -457,7 +471,7 @@ def sensitivity(
         Sensitivities for each class, of shape ``(n_classes,)``.
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_sens"], m["sens"]
 
@@ -478,6 +492,7 @@ def precision(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -488,7 +503,7 @@ def precision(
         Precisions for each class, of shape ``(n_classes,)``.
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_prec"], m["prec"]
 
@@ -507,6 +522,7 @@ def specificity(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -517,7 +533,7 @@ def specificity(
         Specificities for each class, of shape ``(n_classes,)``.
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_spec"], m["spec"]
 
@@ -537,6 +553,7 @@ def auc(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """
     Returns
@@ -553,7 +570,7 @@ def auc(
     """
     if outputs.ndim == 1:
         raise ValueError("outputs must be of shape (n_samples, n_classes) to compute AUC")
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
 
@@ -568,6 +585,7 @@ def accuracy(
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
     thr: float = 0.5,
+    fillna: Union[bool, float] = 0.0,
 ) -> float:
     """
     Returns
@@ -578,7 +596,7 @@ def accuracy(
         Accuracies for each class, of shape ``(n_classes,)``.
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr, fillna)
 
     return m["macro_acc"], m["acc"]
 

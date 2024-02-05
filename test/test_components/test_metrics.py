@@ -158,6 +158,10 @@ def test_metric_functions():
     # 100 samples, 10 classes
     labels = DEFAULTS.RNG_randint(0, 9, (100))
     outputs = DEFAULTS.RNG.uniform(0, 1, (100, 10))
+    # NOTE: for random outputs, some metrics may encounter 0 / 0 division
+    # e.g. sensitivity = TP / (TP + FN), if TP = 0, FN = 0, then sensitivity = 0 / 0
+    # this case is handled by the fillna parameter in the metrics functions,
+    # whose default value is 0.0
     acc = top_n_accuracy(labels, outputs, 3)
     assert isinstance(acc, float)
     assert 0 <= acc <= 1
@@ -166,7 +170,7 @@ def test_metric_functions():
     assert acc.keys() == {"top_1_acc", "top_3_acc", "top_5_acc"}
     assert all([0 <= v <= 1 for v in acc.values()]), acc.values()
 
-    macro_score, scores = f_measure(labels, outputs)
+    macro_score, scores = f_measure(labels, outputs, fillna=True)
     assert isinstance(macro_score, float)
     assert isinstance(scores, np.ndarray)
     assert scores.shape == (10,)
