@@ -668,7 +668,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     References
     ----------
     .. [1] https://github.com/awni/ecg
-    .. [2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
+    .. [2] https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py
 
     TODO
     ----

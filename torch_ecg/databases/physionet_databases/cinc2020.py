@@ -143,7 +143,7 @@ _CINC2020_INFO = DataBaseInfo(
 
     """,
     references=[
-        "https://physionetchallenges.github.io/2020/",
+        "https://moody-challenge.physionet.org/2020/",
         "https://physionet.org/content/challenge-2020/",
         "http://2018.icbeb.org/",
         "https://physionet.org/content/incartdb/",

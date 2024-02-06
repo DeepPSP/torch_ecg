@@ -56,7 +56,7 @@ class Mixup(Augmenter):
     .. [1] Zhang, Hongyi, et al. "mixup: Beyond Empirical Risk Minimization."
            International Conference on Learning Representations. 2018.
     .. [2] https://arxiv.org/abs/1710.09412
-    .. [3] https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
+    .. [3] https://github.com/facebookresearch/mixup-cifar10/blob/main/train.py
 
     """
 

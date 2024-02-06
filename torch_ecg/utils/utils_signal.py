@@ -305,7 +305,7 @@ def detect_peaks(
 
     References
     ----------
-    .. [#peak] http://nbviewer.ipython.org/github/demotu/BMC/blob/master/notebooks/DetectPeaks.ipynb
+    .. [#peak] https://nbviewer.org/github/demotu/BMC/blob/master/notebooks/DetectPeaks.ipynb
 
     Examples
     --------

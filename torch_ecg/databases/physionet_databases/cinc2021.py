@@ -176,9 +176,9 @@ _CINC2021_INFO = DataBaseInfo(
     9. "Q0400", "Q2961" are completely flat (constant), while many other records have flat leads, especially V1-V6 leads
     """,
     references=[
-        "https://physionetchallenges.github.io/2021/",
+        "https://moody-challenge.physionet.org/2021/",
         "https://physionet.org/content/challenge-2021/",
-        "https://physionetchallenges.github.io/2020/",
+        "https://moody-challenge.physionet.org/2020/",
         "http://2018.icbeb.org/",
         "https://physionet.org/content/incartdb/",
         "https://physionet.org/content/ptbdb/",

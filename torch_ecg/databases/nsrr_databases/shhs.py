@@ -296,7 +296,7 @@ _SHHS_INFO = DataBaseInfo(
         "https://sleepdata.org/datasets/shhs/pages/",
         "https://sleepdata.org/datasets/shhs/pages/13-hrv-analysis.md",
         "https://en.wikipedia.org/wiki/Sleep_apnea",
-        "https://www.sleepapnea.org/treat/getting-sleep-apnea-diagnosis/sleep-study-details/",
+        "https://www.sleepapnea.org/diagnosis/sleep-studies/",
         "https://www.mayoclinic.org/diseases-conditions/central-sleep-apnea/symptoms-causes/syc-20352109",
         "Eckert DJ, Jordan AS, Merchia P, Malhotra A. Central sleep apnea: Pathophysiology and treatment. Chest. 2007 Feb;131(2):595-607. doi: 10.1378/chest.06.2287. PMID: 17296668; PMCID: PMC2287191.",
         "https://www.mayoclinic.org/diseases-conditions/obstructive-sleep-apnea/symptoms-causes/syc-20352090",

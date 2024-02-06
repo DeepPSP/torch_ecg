@@ -76,7 +76,7 @@ _CPSC2018_INFO = DataBaseInfo(
     ],
     references=[
         "http://2018.icbeb.org/",
-        "https://physionetchallenges.github.io/2020/",
+        "https://moody-challenge.physionet.org/2020/",
     ],
     doi="10.1166/jmihi.2018.2442",
 )

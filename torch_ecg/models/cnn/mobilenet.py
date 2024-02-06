@@ -705,7 +705,7 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
     .. [#v2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018).
              Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the
              IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
-    .. [#v2_pt] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
+    .. [#v2_pt] https://github.com/pytorch/vision/blob/main/torchvision/models/mobilenetv2.py
     .. [#v2_keras] https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
 
     """
@@ -1152,7 +1152,7 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
     .. [#v3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019).
              Searching for mobilenetv3. In Proceedings of the IEEE International Conference
              on Computer Vision (pp. 1314-1324).
-    .. [#v3_pt] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
+    .. [#v3_pt] https://github.com/pytorch/vision/blob/main/torchvision/models/mobilenetv3.py
 
     """
 

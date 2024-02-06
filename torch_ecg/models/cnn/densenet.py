@@ -647,7 +647,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     .. [3] https://github.com/liuzhuang13/DenseNet/tree/master/models
     .. [4] https://github.com/gpleiss/efficient_densenet_pytorch/blob/master/models/densenet.py
     .. [5] https://github.com/bamos/densenet.pytorch/blob/master/densenet.py
-    .. [6] https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
+    .. [6] https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py
 
     """
 

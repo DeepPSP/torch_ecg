@@ -273,7 +273,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
     References
     ----------
     .. [1] https://arxiv.org/abs/2003.13678
-    .. [2] https://github.com/pytorch/vision/blob/master/torchvision/models/regnet.py
+    .. [2] https://github.com/pytorch/vision/blob/main/torchvision/models/regnet.py
 
     Parameters
     ----------

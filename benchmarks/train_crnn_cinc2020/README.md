@@ -1,4 +1,4 @@
-# [PhysioNet/CinC Challenge 2020](https://physionetchallenges.github.io/2020/)
+# [PhysioNet/CinC Challenge 2020](https://moody-challenge.physionet.org/2020/)
 
 Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
 
