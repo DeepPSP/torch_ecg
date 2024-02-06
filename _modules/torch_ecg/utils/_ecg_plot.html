@@ -1126,7 +1126,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -1156,48 +1156,22 @@
     <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mf">8.5</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="c1"># standard_major_colors = {</span>
-<span class="c1">#     &quot;colour1&quot;: (1, 0.6823, 0.776),</span>
-<span class="c1">#     &quot;colour2&quot;: (1, 0.796, 0.866),</span>
-<span class="c1">#     &quot;colour3&quot;: (0.933, 0.8235, 0.8),</span>
-<span class="c1">#     &quot;colour4&quot;: (0.996, 0.807, 0.8039),</span>
-<span class="c1">#     &quot;colour5&quot;: (0.611, 0.627, 0.647),</span>
-<span class="c1">#     &quot;colour6&quot;: (0.4901, 0.498, 0.513),</span>
-<span class="c1">#     &quot;colour7&quot;: (0.4274, 0.196, 0.1843),</span>
-<span class="c1">#     &quot;colour8&quot;: (0.992, 0.7529, 0.7254),</span>
-<span class="c1">#     &quot;colour9&quot;: (0.9215, 0.9372, 0.9725),</span>
-<span class="c1"># }</span>
-
 <span class="n">standard_major_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.6823</span><span class="p">,</span> <span class="mf">0.776</span><span class="p">),</span>
-    <span class="s2">&quot;colour2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.796</span><span class="p">,</span> <span class="mf">0.866</span><span class="p">),</span>
-    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.933</span><span class="p">,</span> <span class="mf">0.8235</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
-    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.807</span><span class="p">,</span> <span class="mf">0.8039</span><span class="p">),</span>
-    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.4274</span><span class="p">,</span> <span class="mf">0.196</span><span class="p">,</span> <span class="mf">0.1843</span><span class="p">),</span>
-    <span class="s2">&quot;colour6&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.992</span><span class="p">,</span> <span class="mf">0.7529</span><span class="p">,</span> <span class="mf">0.7254</span><span class="p">),</span>
+    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.4274</span><span class="p">,</span> <span class="mf">0.196</span><span class="p">,</span> <span class="mf">0.1843</span><span class="p">),</span>  <span class="c1"># brown</span>
+    <span class="s2">&quot;colour2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.796</span><span class="p">,</span> <span class="mf">0.866</span><span class="p">),</span>  <span class="c1"># pink</span>
+    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span>  <span class="c1"># blue</span>
+    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>  <span class="c1"># green</span>
+    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># red</span>
 <span class="p">}</span>
 
 
 <span class="n">standard_minor_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9843</span><span class="p">,</span> <span class="mf">0.9019</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">),</span>
+    <span class="s2">&quot;colour1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5882</span><span class="p">,</span> <span class="mf">0.4196</span><span class="p">,</span> <span class="mf">0.3960</span><span class="p">),</span>
     <span class="s2">&quot;colour2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.9294</span><span class="p">,</span> <span class="mf">0.9725</span><span class="p">),</span>
-    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9529</span><span class="p">,</span> <span class="mf">0.8745</span><span class="p">,</span> <span class="mf">0.8549</span><span class="p">),</span>
-    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">,</span> <span class="mf">0.9529</span><span class="p">),</span>
-    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5882</span><span class="p">,</span> <span class="mf">0.4196</span><span class="p">,</span> <span class="mf">0.3960</span><span class="p">),</span>
-    <span class="s2">&quot;colour6&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.8745</span><span class="p">,</span> <span class="mf">0.8588</span><span class="p">),</span>
+    <span class="s2">&quot;colour3&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span>
+    <span class="s2">&quot;colour4&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+    <span class="s2">&quot;colour5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.996</span><span class="p">,</span> <span class="mf">0.8745</span><span class="p">,</span> <span class="mf">0.8588</span><span class="p">),</span>
 <span class="p">}</span>
-
-<span class="c1"># standard_minor_colors = {</span>
-<span class="c1">#     &quot;colour1&quot;: (0.9843, 0.9019, 0.9529),</span>
-<span class="c1">#     &quot;colour2&quot;: (0.996, 0.9294, 0.9725),</span>
-<span class="c1">#     &quot;colour3&quot;: (0.9529, 0.8745, 0.8549),</span>
-<span class="c1">#     &quot;colour4&quot;: (0.996, 0.9529, 0.9529),</span>
-<span class="c1">#     &quot;colour5&quot;: (0.7607, 0.7725, 0.7843),</span>
-<span class="c1">#     &quot;colour6&quot;: (0.6039, 0.6235, 0.6274),</span>
-<span class="c1">#     &quot;colour7&quot;: (0.5882, 0.4196, 0.3960),</span>
-<span class="c1">#     &quot;colour8&quot;: (0.996, 0.8745, 0.8588),</span>
-<span class="c1">#     &quot;colour9&quot;: (0.9568, 0.9686, 0.9843),</span>
-<span class="c1"># }</span>
 
 <span class="n">papersize_values</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;A0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">33.1</span><span class="p">,</span> <span class="mf">46.8</span><span class="p">),</span>
@@ -1226,8 +1200,8 @@
     <span class="n">ecg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">rec_file_name</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span>
+    <span class="n">rec_file_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
     <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
     <span class="n">pad_inches</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">lead_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1247,8 +1221,9 @@
     <span class="n">show_dc_pulse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">y_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">x_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">standard_colours</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">standard_colours</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">bbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">print_txt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">save_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to plot raw ECG signal.</span>
@@ -1262,9 +1237,9 @@
 <span class="sd">        Sampling rate of the ECG signal.</span>
 <span class="sd">    columns : int</span>
 <span class="sd">        Number of columns to be plotted in each row.</span>
-<span class="sd">    rec_file_name : os.PathLike</span>
+<span class="sd">    rec_file_name : `path-like`</span>
 <span class="sd">        Name of the record file.</span>
-<span class="sd">    output_dir : os.PathLike</span>
+<span class="sd">    output_dir : `path-like`</span>
 <span class="sd">        Output directory.</span>
 <span class="sd">    resolution : int, default ``200``</span>
 <span class="sd">        Resolution of the output image.</span>
@@ -1308,10 +1283,12 @@
 <span class="sd">        Sets the y grid size in inches.</span>
 <span class="sd">    x_grid : float, optional</span>
 <span class="sd">        Sets the x grid size in inches.</span>
-<span class="sd">    standard_colours : bool, default ``False``</span>
-<span class="sd">        If ``True``, uses standard colours for the plot.</span>
+<span class="sd">    standard_colours : {``0``, ``1``, ``2``, ``3``, ``4``, ``5``}, default ``0``</span>
+<span class="sd">        Sets the colour of the plot grid.</span>
 <span class="sd">    bbox : bool, default ``False``</span>
 <span class="sd">        If ``True``, stores the bounding box of the lead in a text file.</span>
+<span class="sd">    print_txt : bool, default ``False``</span>
+<span class="sd">        If ``True``, prints the metadata of the plot.</span>
 <span class="sd">    save_format : {``&quot;png&quot;``, ``&quot;pdf&quot;``, ``&quot;svg&quot;``, ``&quot;jpg&quot;``}, optional</span>
 <span class="sd">        Format to save the plot in.</span>
 <span class="sd">        If ``None``, the plot is not saved.</span>
@@ -1334,6 +1311,8 @@
         <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
 
     <span class="n">secs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ecg</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sample_rate</span>
+
+    <span class="k">assert</span> <span class="n">secs</span> <span class="o">*</span> <span class="n">columns</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Total time of ECG signal of one row cannot exceed 10 seconds&quot;</span>
 
     <span class="k">if</span> <span class="n">lead_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">lead_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ecg</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -1391,8 +1370,8 @@
         <span class="n">color_major</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
         <span class="n">color_minor</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
         <span class="n">color_line</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">standard_colours</span><span class="p">:</span>
-        <span class="n">random_colour_index</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standard_colours</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">random_colour_index</span> <span class="o">=</span> <span class="n">standard_colours</span>
         <span class="n">color_major</span> <span class="o">=</span> <span class="n">standard_major_colors</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_colour_index</span><span class="p">)]</span>
         <span class="n">color_minor</span> <span class="o">=</span> <span class="n">standard_minor_colors</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_colour_index</span><span class="p">)]</span>
         <span class="n">randcolorindex_grey</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
@@ -1462,7 +1441,6 @@
         <span class="c1"># y_offset is computed by shifting by a certain offset based on i,</span>
         <span class="c1"># and also by row_height/2 to account for half the waveform below the axis</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">columns</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-
             <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">row_height</span>
 
         <span class="c1"># x_offset will be distance by which we shift the plot in each iteration</span>
@@ -1603,8 +1581,41 @@
     <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">rec_file_name</span><span class="p">)</span>
     <span class="n">rec_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">print_txt</span><span class="p">:</span>
+        <span class="k">pass</span>
+        <span class="c1"># x_offset = 0.05</span>
+        <span class="c1"># y_offset = int(y_max)</span>
+        <span class="c1"># printed_text, attributes, flag = generate_template(full_header_file)</span>
+
+        <span class="c1"># if flag:</span>
+        <span class="c1">#     for l in range(0, len(printed_text), 1):</span>
+
+        <span class="c1">#         for j in printed_text[l]:</span>
+        <span class="c1">#             curr_l = &#39;&#39;</span>
+        <span class="c1">#             if j in attributes.keys():</span>
+        <span class="c1">#                 curr_l += str(attributes[j])</span>
+        <span class="c1">#             ax.text(x_offset, y_offset, curr_l, fontsize=lead_fontsize)</span>
+        <span class="c1">#             x_offset += 3</span>
+
+        <span class="c1">#         y_offset -= 0.5</span>
+        <span class="c1">#         x_offset = 0.05</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     for line in printed_text:</span>
+        <span class="c1">#         ax.text(x_offset, y_offset, line, fontsize=lead_fontsize)</span>
+        <span class="c1">#         y_offset -= 0.5</span>
+
+    <span class="c1"># change x and y res</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;25mm/s&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lead_fontsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;10mm/mV&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lead_fontsize</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">save_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">save_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;.</span><span class="si">{</span><span class="n">save_format</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">save_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;.</span><span class="si">{</span><span class="n">save_format</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">save_format</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.pdf&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.svg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;save_format must be one of &#39;.png&#39;, &#39;.pdf&#39;, &#39;.svg&#39;, &#39;.jpg&#39;, but got </span><span class="si">{</span><span class="n">save_format</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">x_grid_dots</span><span class="p">,</span> <span class="n">y_grid_dots</span>
 

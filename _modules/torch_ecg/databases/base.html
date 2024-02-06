@@ -1218,10 +1218,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir : str or pathlib.Path, optional</span>
+<span class="sd">    db_dir : `path-like`, optional</span>
 <span class="sd">        Storage path of the database.</span>
 <span class="sd">        If not specified, data will be fetched from Physionet.</span>
-<span class="sd">    working_dir : str, optional</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
 <span class="sd">        Working directory, to store intermediate files and log files.</span>
 <span class="sd">    verbose : int, default 1</span>
 <span class="sd">        Level of logging verbosity.</span>
@@ -1233,8 +1233,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1493,10 +1493,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    db_name : str</span>
 <span class="sd">        Name of the database.</span>
-<span class="sd">    db_dir : os.PathLike, optional</span>
+<span class="sd">    db_dir : `path-like`, optional</span>
 <span class="sd">        Storage path of the database.</span>
 <span class="sd">        If is None, `wfdb` will fetch data from PhysioNet.</span>
-<span class="sd">    working_dir : os.PathLike, optional</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
 <span class="sd">        Working directory, to store intermediate files and log files.</span>
 <span class="sd">    verbose : int, default 1</span>
 <span class="sd">        Verbosity level for logging.</span>
@@ -1512,8 +1512,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1729,7 +1729,12 @@
             <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">allowed_data_format</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`data_format` should be one of `</span><span class="si">{</span><span class="n">allowed_data_format</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_leads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">,],</span> <span class="p">(</span>
+            <span class="k">assert</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
+            <span class="p">],</span> <span class="p">(</span>
                 <span class="s2">&quot;`data_format` should be one of `[&#39;channel_first&#39;, &#39;lead_first&#39;, &#39;channel_last&#39;, &#39;lead_last&#39;]` &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;when the passed number of `leads` is larger than 1, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`&quot;</span>
             <span class="p">)</span>
@@ -1861,12 +1866,12 @@
                         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">` stands for `</span><span class="si">{</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;(&#39;</span><span class="o">+</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PhysioNetDataBase.get_file_download_url"><a class="viewcode-back" href="../../../generated/torch_ecg.databases.PhysioNetDataBase.html#torch_ecg.databases.PhysioNetDataBase.get_file_download_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_file_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PhysioNetDataBase.get_file_download_url"><a class="viewcode-back" href="../../../generated/torch_ecg.databases.PhysioNetDataBase.html#torch_ecg.databases.PhysioNetDataBase.get_file_download_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_file_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the download url of the file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        file_name : os.PathLike</span>
+<span class="sd">        file_name : `path-like`</span>
 <span class="sd">            Name of the file,</span>
 <span class="sd">            e.g. &quot;data/001a.dat&quot;, &quot;training/tr03-0005/tr03-0005.mat&quot;, etc.</span>
 
@@ -1959,9 +1964,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    db_name : str</span>
 <span class="sd">        Name of the database.</span>
-<span class="sd">    db_dir : str or pathlib.Path, optional</span>
+<span class="sd">    db_dir : `path-like`, optional</span>
 <span class="sd">        Local storage path of the database.</span>
-<span class="sd">    working_dir : str, optional</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
 <span class="sd">        Working directory, to store intermediate files and log files.</span>
 <span class="sd">    verbose : int, default 1</span>
 <span class="sd">        Verbosity level for logging.</span>
@@ -1977,8 +1982,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2022,7 +2027,7 @@
 <div class="viewcode-block" id="NSRRDataBase.safe_edf_file_operation"><a class="viewcode-back" href="../../../generated/torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase.safe_edf_file_operation">[docs]</a>    <span class="k">def</span> <span class="nf">safe_edf_file_operation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span>
-        <span class="n">full_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">full_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Safe IO operation for edf file.</span>
 
@@ -2030,7 +2035,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        operation : {&quot;open&quot;, &quot;close&quot;}, optional</span>
 <span class="sd">            Operation name, by default &quot;close&quot;.</span>
-<span class="sd">        full_file_path : os.PathLike, optional</span>
+<span class="sd">        full_file_path : `path-like`, optional</span>
 <span class="sd">            Path of the file which contains the data.</span>
 <span class="sd">            If is None, default path will be used.</span>
 
@@ -2135,9 +2140,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    db_name : str</span>
 <span class="sd">        Name of the database.</span>
-<span class="sd">    db_dir : os.PathLike, optional</span>
+<span class="sd">    db_dir : `path-like`, optional</span>
 <span class="sd">        Local storage path of the database.</span>
-<span class="sd">    working_dir : os.PathLike, optional</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
 <span class="sd">        Working directory, to store intermediate files and log files.</span>
 <span class="sd">    verbose : int, default 1</span>
 <span class="sd">        Verbosity level for logging.</span>
@@ -2149,8 +2154,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
