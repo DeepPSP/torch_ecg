@@ -24,8 +24,7 @@ _DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 
 class CFG(dict):
-    """
-    This class is created in order to renew the :meth:`update` method,
+    """This class is created in order to renew the :meth:`update` method,
     to fit the hierarchical structure of configurations.
 
     Examples
@@ -78,8 +77,7 @@ class CFG(dict):
     __setitem__ = __setattr__
 
     def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:
-        """
-        The new hierarchical update method.
+        """The new hierarchical update method.
 
         Parameters
         ----------
@@ -105,8 +103,7 @@ class CFG(dict):
                     dict.__setitem__(self, k, _new_cfg[k])
 
     def pop(self, key: str, default: Optional[Any] = None) -> Any:
-        """
-        The updated pop method.
+        """The updated pop method.
 
         Parameters
         ----------
