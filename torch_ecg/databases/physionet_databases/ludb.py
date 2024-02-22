@@ -796,8 +796,8 @@ class LUDB(PhysioNetDataBase):
                         twaves[l_idx].append(itv)
 
         palette = {
-            "pwaves": "green",
-            "qrs": "red",
+            "pwaves": "cyan",
+            "qrs": "green",
             "twaves": "yellow",
         }
         plot_alpha = 0.4

@@ -392,8 +392,8 @@ def plot_single_lead(
     if "plt" not in dir():
         import matplotlib.pyplot as plt
     palette = {
-        "p_waves": "green",
-        "qrs": "red",
+        "p_waves": "cyan",
+        "qrs": "green",
         "t_waves": "pink",
     }
     plot_alpha = 0.4

@@ -535,8 +535,8 @@ class SPH(_DataBase):
         else:
             p_waves, qrs, t_waves = [], [], []
         palette = {
-            "p_waves": "green",
-            "qrs": "red",
+            "p_waves": "cyan",
+            "qrs": "green",
             "t_waves": "yellow",
         }
         plot_alpha = 0.4
