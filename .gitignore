@@ -153,3 +153,5 @@ log
 *.h5
 *.pth
 *.pth.tar
+
+tmp*

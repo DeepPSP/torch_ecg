@@ -154,6 +154,7 @@ Miscellaneous
     MovingAverage
     Timer
     timeout
+    np_topk
 
 """
 from . import ecg_arrhythmia_knowledge as EAK
@@ -177,6 +178,7 @@ from .misc import (
     list_sum,
     make_serializable,
     nildent,
+    np_topk,
     remove_parameters_returns_from_docstring,
     str2bool,
     timeout,
@@ -270,6 +272,7 @@ __all__ = [
     "get_required_args",
     "add_kwargs",
     "make_serializable",
+    "np_topk",
     "get_mask",
     "class_weight_to_sample_weight",
     "ensure_lead_fmt",

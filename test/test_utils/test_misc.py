@@ -4,6 +4,7 @@
 import datetime
 import textwrap
 import time
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -33,6 +34,7 @@ from torch_ecg.utils.misc import (
     make_serializable,
     ms2samples,
     nildent,
+    np_topk,
     plot_single_lead,
     read_event_scalars,
     read_log_txt,
@@ -594,3 +596,49 @@ def test_make_serializable():
     obj = make_serializable(x)
     assert obj == [[1, 2, 3], 5.0]
     assert isinstance(obj[1], float) and isinstance(x[1], np.float64)
+
+
+def test_np_topk():
+    arr1d = np.random.choice(100, size=(10,), replace=False)
+    arr2d = np.random.choice(100, size=(4, 4), replace=False)
+    arr3d = np.random.choice(100, size=(4, 4, 4), replace=False)
+
+    # test 1d
+    params = {
+        "1d": product(
+            [arr1d],  # arr
+            [1, 3, 7],  # k
+            [0, -1],  # dim
+            [True, False],  # largest
+        ),
+        "2d": product(
+            [arr2d],  # arr
+            [1, 2, 3],  # k
+            [0, 1, -1, -2],  # dim
+            [True, False],  # largest
+        ),
+        "3d": product(
+            [arr3d],  # arr
+            [1, 2, 3],  # k
+            [0, 1, 2, -1, -2, -3],  # dim
+            [True, False],  # largest
+        ),
+    }
+
+    for _, param in params.items():
+        for arr, k, dim, largest in param:
+            values, indices = np_topk(arr, k=k, dim=dim, largest=largest)
+            torch_values, torch_indices = torch.topk(torch.from_numpy(arr), k=k, dim=dim, largest=largest)
+            assert np.allclose(values, torch_values.numpy())
+            assert np.allclose(indices, torch_indices.numpy())
+
+    # not sorted
+    values, _ = np_topk(arr1d, k=3, sorted=False)
+    assert set(values.tolist()) == set(np_topk(arr1d, k=3, sorted=True)[0].tolist())
+
+    # test errors
+    with pytest.raises(AssertionError, match="k out of bounds"):
+        np_topk(arr1d, k=0)
+
+    with pytest.raises(AssertionError, match="dim out of bounds"):
+        np_topk(arr1d, k=1, dim=1)

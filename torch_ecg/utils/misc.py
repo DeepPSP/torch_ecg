@@ -54,6 +54,7 @@ __all__ = [
     "get_required_args",
     "add_kwargs",
     "make_serializable",
+    "np_topk",
 ]
 
 
@@ -1526,3 +1527,51 @@ def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Un
         return x.item()
     # the other types will be returned directly
     return x
+
+
+def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+    """Find the k largest elements of an array along a specified axis.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input array.
+    k : int
+        Number of elements to retrieve.
+    dim : int, default -1
+        Axis along which to operate. Default is -1 (the last axis).
+    largest : bool, default True
+        If True, find the largest elements, else find the smallest elements.
+    sorted : bool, default True
+        If True, the result is sorted. If False, the result is not sorted.
+
+    Returns
+    -------
+    values : ndarray
+        The k largest values along each axis.
+    indices : ndarray
+        The indices of the k largest values along each axis.
+
+    .. note::
+
+        This function has the same functionality as :func:`torch.topk`,
+        but is implemented using only numpy.
+
+    """
+    arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
+    assert 0 < k <= arr.size, "k out of bounds"
+    assert -arr.ndim <= dim < arr.ndim, "dim out of bounds"
+    dim = dim % arr.ndim  # convert negative dim to positive
+
+    if largest:
+        arr = -arr
+    if sorted:
+        indices = np.take(np.argsort(arr, axis=dim), np.arange(k), axis=dim)
+    else:
+        indices = np.take(np.argpartition(arr, kth=k, axis=dim), np.arange(k), axis=dim)
+    values = np.take_along_axis(arr, indices, axis=dim)
+
+    if largest:
+        values = -values
+
+    return values, indices
