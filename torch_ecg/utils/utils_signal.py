@@ -607,7 +607,7 @@ def butter_bandpass_filter(
     References
     ----------
     .. [#bp1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
-    .. [#bp2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
+    .. [#bp2] https://dsp.stackexchange.com/q/19084
 
     """
     dtype = data.dtype

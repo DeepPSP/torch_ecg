@@ -40,6 +40,7 @@ from torch_ecg.utils.misc import (
     read_log_txt,
     remove_parameters_returns_from_docstring,
     samples2ms,
+    select_k,
     str2bool,
     timeout,
 )
@@ -598,6 +599,28 @@ def test_make_serializable():
     assert isinstance(obj[1], float) and isinstance(x[1], np.float64)
 
 
+def test_select_k():
+    arr = np.random.choice(10, 10, replace=False)
+
+    input_arr = arr.reshape(1, -1).repeat(2, axis=0)  # shape (2, 10)
+    values, indices = select_k(input_arr, k=[1, 3, 7], dim=1, largest=True)
+    assert values.tolist() == [[8, 6, 2], [8, 6, 2]]
+    values, indices = select_k(arr.reshape(1, -1).repeat(2, axis=0), k=[1, 3, 7], dim=1, largest=False)
+    assert values.tolist() == [[1, 3, 7], [1, 3, 7]]
+
+    input_arr = arr.reshape(1, -1).repeat(2, axis=0).T  # shape (10, 2)
+    values, indices = select_k(input_arr, k=[1, 3, 7], dim=0, largest=True)
+    assert values.tolist() == [[8, 8], [6, 6], [2, 2]]
+
+    # test errors
+    input_arr = arr.reshape(1, -1).repeat(2, axis=0)  # shape (2, 10)
+    with pytest.raises(AssertionError, match="k must be unique"):
+        select_k(arr, k=[1, 1, 2])
+    with pytest.raises(AssertionError, match="k must be 1-dimensiona"):
+        select_k(arr, k=np.array([[1, 2, 3]]))
+    # the rest errors tested in `test_np_topk`
+
+
 def test_np_topk():
     arr1d = np.random.choice(100, size=(10,), replace=False)
     arr2d = np.random.choice(100, size=(4, 4), replace=False)
@@ -637,8 +660,11 @@ def test_np_topk():
     assert set(values.tolist()) == set(np_topk(arr1d, k=3, sorted=True)[0].tolist())
 
     # test errors
-    with pytest.raises(AssertionError, match="k out of bounds"):
+    with pytest.raises(AssertionError, match="k must be a positive integer"):
         np_topk(arr1d, k=0)
+
+    with pytest.raises(AssertionError, match="k out of bounds"):
+        np_topk(arr1d, k=10000)
 
     with pytest.raises(AssertionError, match="dim out of bounds"):
         np_topk(arr1d, k=1, dim=1)

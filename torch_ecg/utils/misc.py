@@ -1529,6 +1529,63 @@ def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Un
     return x
 
 
+def select_k(
+    arr: np.ndarray, k: Union[int, List[int], np.ndarray], dim: int = -1, largest: bool = True, sorted: bool = True
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Select elements from an array along a specified axis of specific rankings.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input array.
+    k : int or array_like
+        Number of elements to retrieve. If k is a 1D array, it represents the specific rankings to retrieve.
+        NOTE that the rankings are 0-based, for example the rankings of the top 3 elements are [0, 1, 2].
+    dim : int, default -1
+        Axis along which to operate. Default is -1 (the last axis).
+    largest : bool, default True
+        If True, find the largest elements, else find the smallest elements.
+    sorted : bool, default True
+        If True, the result is sorted. If False, the result is not sorted.
+
+    Returns
+    -------
+    values : numpy.ndarray
+        The selected values along each axis.
+    indices : numpy.ndarray
+        The indices of the selected values along each axis.
+
+    .. note::
+
+        For integer k, this function has the same functionality as :func:`torch.topk`.
+
+    """
+    arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
+    if isinstance(k, (list, np.ndarray)):
+        k = np.asarray(k)
+    else:
+        k = np.arange(k)
+    assert -arr.ndim <= dim < arr.ndim, "dim out of bounds"
+    dim = dim % arr.ndim  # convert negative dim to positive
+    assert k.ndim == 1, f"k must be 1-dimensional, but got {k.ndim} dimensions"
+    assert len(np.unique(k)) == len(k), "k must be unique"
+    assert len(k) > 0, "k must be a non-empty array, or a positive integer"
+    assert 0 <= k.min() <= k.max() <= arr.shape[dim], "k out of bounds"
+
+    if largest:
+        arr = -arr
+    if sorted:
+        indices = np.take(np.argsort(arr, axis=dim), k, axis=dim)
+    else:
+        indices = np.take(np.argpartition(arr, kth=k, axis=dim), k, axis=dim)
+    values = np.take_along_axis(arr, indices, axis=dim)
+
+    if largest:
+        values = -values
+
+    return values, indices
+
+
 def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[np.ndarray, np.ndarray]:
     """Find the k largest elements of an array along a specified axis.
 
@@ -1547,9 +1604,9 @@ def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted
 
     Returns
     -------
-    values : ndarray
+    values : numpy.ndarray
         The k largest values along each axis.
-    indices : ndarray
+    indices : numpy.ndarray
         The indices of the k largest values along each axis.
 
     .. note::
@@ -1558,20 +1615,22 @@ def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted
         but is implemented using only numpy.
 
     """
-    arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
-    assert 0 < k <= arr.size, "k out of bounds"
-    assert -arr.ndim <= dim < arr.ndim, "dim out of bounds"
-    dim = dim % arr.ndim  # convert negative dim to positive
+    # arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
+    # assert -arr.ndim <= dim < arr.ndim, "dim out of bounds"
+    # dim = dim % arr.ndim  # convert negative dim to positive
+    # assert 0 < k <= arr.shape[dim], "k out of bounds"
 
-    if largest:
-        arr = -arr
-    if sorted:
-        indices = np.take(np.argsort(arr, axis=dim), np.arange(k), axis=dim)
-    else:
-        indices = np.take(np.argpartition(arr, kth=k, axis=dim), np.arange(k), axis=dim)
-    values = np.take_along_axis(arr, indices, axis=dim)
+    # if largest:
+    #     arr = -arr
+    # if sorted:
+    #     indices = np.take(np.argsort(arr, axis=dim), np.arange(k), axis=dim)
+    # else:
+    #     indices = np.take(np.argpartition(arr, kth=k, axis=dim), np.arange(k), axis=dim)
+    # values = np.take_along_axis(arr, indices, axis=dim)
 
-    if largest:
-        values = -values
+    # if largest:
+    #     values = -values
 
-    return values, indices
+    # return values, indices
+    assert isinstance(k, int) and k > 0, "k must be a positive integer"
+    return select_k(arr, k, dim, largest, sorted)
