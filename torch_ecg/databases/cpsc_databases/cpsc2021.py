@@ -99,7 +99,7 @@ _CPSC2021_INFO = DataBaseInfo(
         "AF (event, fine) detection",
     ],
     references=[
-        "http://2021.icbeb.org/CPSC2021",
+        # "http://2021.icbeb.org/CPSC2021",  # currently broken
         "https://www.physionet.org/content/cpsc2021/",
     ],
     doi="10.13026/ksya-qw89",

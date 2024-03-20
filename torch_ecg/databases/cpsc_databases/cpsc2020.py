@@ -217,7 +217,7 @@ _CPSC2020_INFO = DataBaseInfo(
 
     """,
     references=[
-        "http://2020.icbeb.org/CSPC2020",
+        # "http://2020.icbeb.org/CSPC2020",  # currently broken
     ],
     doi="10.1166/jmihi.2020.3289",
 )
