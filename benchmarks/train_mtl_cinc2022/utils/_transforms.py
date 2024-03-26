@@ -45,6 +45,7 @@ class PitchShift(torch.nn.Module):
         >>> waveform_shift = transform(waveform)  # (channel, time)
 
     """
+
     __constants__ = [
         "sample_rate",
         "n_steps",

@@ -1629,9 +1629,11 @@ class EPHNOGRAMReader(PCGDataBase):
             channels = [channels]
         assert set(channels).issubset(self._channels), "invalid channels"
         data = {
-            k: torch.from_numpy(data[k].astype(np.float32))
-            if data_format.lower() == "channel_first"
-            else torch.from_numpy(data[k].astype(np.float32).T)
+            k: (
+                torch.from_numpy(data[k].astype(np.float32))
+                if data_format.lower() == "channel_first"
+                else torch.from_numpy(data[k].astype(np.float32).T)
+            )
             for k in channels
             if k in data
         }
