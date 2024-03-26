@@ -75,6 +75,7 @@ jobs:
           mv shhs/ ~/tmp/nsrr-data/
           du -sh ~/tmp/nsrr-data/*
         post: |
+          touch ~/tmp/.keep
           rm -rf ~/tmp/nsrr-data/
           du -sh ~/tmp/*
     - name: Run test with pytest and collect coverage
