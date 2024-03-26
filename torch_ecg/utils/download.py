@@ -300,3 +300,24 @@ def _safe_tar_extract(
             raise Exception("Attempted Path Traversal in Tar File")
 
     tar.extractall(dst_dir, members, numeric_owner=numeric_owner)
+
+
+def url_is_reachable(url: str) -> bool:
+    """Check if a URL is reachable.
+
+    Parameters
+    ----------
+    url : str
+        The URL.
+
+    Returns
+    -------
+    bool
+        Whether the URL is reachable.
+
+    """
+    try:
+        r = requests.head(url, timeout=3)
+        return r.status_code == 200
+    except Exception:
+        return False
