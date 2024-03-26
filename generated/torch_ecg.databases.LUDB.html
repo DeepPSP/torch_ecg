@@ -1015,6 +1015,14 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.timeout.html#torch_ecg.utils.timeout"><code class="docutils literal notranslate"><span class="pre">timeout()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk"><code class="docutils literal notranslate"><span class="pre">np_topk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.select_k.html#torch_ecg.utils.select_k"><code class="docutils literal notranslate"><span class="pre">select_k()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1680,14 +1688,14 @@ This is useful when plotting filtered data</p></li>
 <li><p><strong>leads</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>] or </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The leads of the ECG signal to plot.</p></li>
 <li><p><strong>same_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, all leads are forced to have the same y range.</p></li>
 <li><p><strong>waves</strong> (<em>ECGWaveForm</em><em>, </em><em>optional</em>) – The waves (p waves, t waves, qrs complexes) to plot.</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments to pass to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.8.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot()</span></code></a>.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments to pass to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.8.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot()</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">TODO</p>
 <ol class="arabic simple">
 <li><p>Slice too long records, and plot separately for each segment.</p></li>
-<li><p>Plot waves using <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.8.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan()</span></code></a>.</p></li>
+<li><p>Plot waves using <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.8.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan()</span></code></a>.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

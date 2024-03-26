@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.np\_topk
+=========================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: np_topk

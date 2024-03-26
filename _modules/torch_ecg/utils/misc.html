@@ -1012,6 +1012,14 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout"><code class="docutils literal notranslate"><span class="pre">timeout()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk"><code class="docutils literal notranslate"><span class="pre">np_topk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.select_k.html#torch_ecg.utils.select_k"><code class="docutils literal notranslate"><span class="pre">select_k()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1144,6 +1152,7 @@
     <span class="s2">&quot;get_required_args&quot;</span><span class="p">,</span>
     <span class="s2">&quot;add_kwargs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;make_serializable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;np_topk&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1482,8 +1491,8 @@
     <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
     <span class="n">palette</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;p_waves&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;qrs&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;p_waves&quot;</span><span class="p">:</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;qrs&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
         <span class="s2">&quot;t_waves&quot;</span><span class="p">:</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">plot_alpha</span> <span class="o">=</span> <span class="mf">0.4</span>
@@ -2616,6 +2625,113 @@
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
     <span class="c1"># the other types will be returned directly</span>
     <span class="k">return</span> <span class="n">x</span>
+
+
+<div class="viewcode-block" id="select_k"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.select_k.html#torch_ecg.utils.select_k">[docs]</a><span class="k">def</span> <span class="nf">select_k</span><span class="p">(</span>
+    <span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select elements from an array along a specified axis of specific rankings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : array_like</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    k : int or array_like</span>
+<span class="sd">        Number of elements to retrieve. If k is a 1D array, it represents the specific rankings to retrieve.</span>
+<span class="sd">        NOTE that the rankings are 0-based, for example the rankings of the top 3 elements are [0, 1, 2].</span>
+<span class="sd">    dim : int, default -1</span>
+<span class="sd">        Axis along which to operate. Default is -1 (the last axis).</span>
+<span class="sd">    largest : bool, default True</span>
+<span class="sd">        If True, find the largest elements, else find the smallest elements.</span>
+<span class="sd">    sorted : bool, default True</span>
+<span class="sd">        If True, the result is sorted. If False, the result is not sorted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    values : numpy.ndarray</span>
+<span class="sd">        The selected values along each axis.</span>
+<span class="sd">    indices : numpy.ndarray</span>
+<span class="sd">        The indices of the selected values along each axis.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        For integer k, this function has the same functionality as :func:`torch.topk`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># copy to avoid modifying the input array</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="n">dim</span> <span class="o">&lt;</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;dim out of bounds&quot;</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span> <span class="o">%</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># convert negative dim to positive</span>
+    <span class="k">assert</span> <span class="n">k</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;k must be 1-dimensional, but got </span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="s2">&quot;k must be unique&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;k must be a non-empty array, or a positive integer&quot;</span>
+    <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="s2">&quot;k out of bounds&quot;</span>
+
+    <span class="k">if</span> <span class="n">largest</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="o">-</span><span class="n">arr</span>
+    <span class="k">if</span> <span class="nb">sorted</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">dim</span><span class="p">),</span> <span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">kth</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">dim</span><span class="p">),</span> <span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">largest</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="o">-</span><span class="n">values</span>
+
+    <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">indices</span></div>
+
+
+<div class="viewcode-block" id="np_topk"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk">[docs]</a><span class="k">def</span> <span class="nf">np_topk</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the k largest elements of an array along a specified axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : array_like</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        Number of elements to retrieve.</span>
+<span class="sd">    dim : int, default -1</span>
+<span class="sd">        Axis along which to operate. Default is -1 (the last axis).</span>
+<span class="sd">    largest : bool, default True</span>
+<span class="sd">        If True, find the largest elements, else find the smallest elements.</span>
+<span class="sd">    sorted : bool, default True</span>
+<span class="sd">        If True, the result is sorted. If False, the result is not sorted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    values : numpy.ndarray</span>
+<span class="sd">        The k largest values along each axis.</span>
+<span class="sd">    indices : numpy.ndarray</span>
+<span class="sd">        The indices of the k largest values along each axis.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        This function has the same functionality as :func:`torch.topk`,</span>
+<span class="sd">        but is implemented using only numpy.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># arr = np.asarray(arr).copy()  # copy to avoid modifying the input array</span>
+    <span class="c1"># assert -arr.ndim &lt;= dim &lt; arr.ndim, &quot;dim out of bounds&quot;</span>
+    <span class="c1"># dim = dim % arr.ndim  # convert negative dim to positive</span>
+    <span class="c1"># assert 0 &lt; k &lt;= arr.shape[dim], &quot;k out of bounds&quot;</span>
+
+    <span class="c1"># if largest:</span>
+    <span class="c1">#     arr = -arr</span>
+    <span class="c1"># if sorted:</span>
+    <span class="c1">#     indices = np.take(np.argsort(arr, axis=dim), np.arange(k), axis=dim)</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     indices = np.take(np.argpartition(arr, kth=k, axis=dim), np.arange(k), axis=dim)</span>
+    <span class="c1"># values = np.take_along_axis(arr, indices, axis=dim)</span>
+
+    <span class="c1"># if largest:</span>
+    <span class="c1">#     values = -values</span>
+
+    <span class="c1"># return values, indices</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;k must be a positive integer&quot;</span>
+    <span class="k">return</span> <span class="n">select_k</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">largest</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

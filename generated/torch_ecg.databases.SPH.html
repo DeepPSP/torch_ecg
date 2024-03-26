@@ -1015,6 +1015,14 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.timeout.html#torch_ecg.utils.timeout"><code class="docutils literal notranslate"><span class="pre">timeout()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk"><code class="docutils literal notranslate"><span class="pre">np_topk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.select_k.html#torch_ecg.utils.select_k"><code class="docutils literal notranslate"><span class="pre">select_k()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1148,7 +1156,7 @@
 <span class="w">      </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements}</span><span class="p">,</span>
 <span class="w">     </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Liu, Hui and Wang, Yinglong and Chen, Da and Zhang, Xiyu and Li, Huijie and Bian, Lipan and Shu, Minglei and Chen, Dan}</span><span class="p">,</span>
 <span class="w">        </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.6084/M9.FIGSHARE.C.5779802.V1}</span><span class="p">,</span>
-<span class="w">   </span><span class="na">keywords</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{110201 Cardiology (incl. Cardiovascular Diseases), FOS: Clinical medicine, Cardiology}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">keywords</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Cardiology (incl. Cardiovascular Diseases), Cardiology}</span><span class="p">,</span>
 <span class="w">  </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{figshare}</span><span class="p">,</span>
 <span class="w">       </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2022}</span><span class="p">,</span>
 <span class="w">  </span><span class="na">copyright</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Creative Commons Attribution 4.0 International}</span>
@@ -1353,14 +1361,14 @@ indices of the wave critical points, including
 “p_onsets”, “p_peaks”, “p_offsets”,
 “q_onsets”, “q_peaks”, “r_peaks”, “s_peaks”, “s_offsets”,
 “t_onsets”, “t_peaks”, “t_offsets”.</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments to pass to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.8.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot()</span></code></a>.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments to pass to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.8.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot()</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">TODO</p>
 <ol class="arabic simple">
 <li><p>Slice too long records, and plot separately for each segment.</p></li>
-<li><p>Plot waves using <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.8.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan()</span></code></a>.</p></li>
+<li><p>Plot waves using <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.8.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan()</span></code></a>.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
