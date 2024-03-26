@@ -40,7 +40,8 @@ from cfg import PreprocCfg
 from torch_ecg.cfg import CFG
 
 from .ecg_rpeaks import christov_detect, engzee_detect, gamboa_detect, gqrs_detect, hamilton_detect, ssf_detect, xqrs_detect
-from .ecg_rpeaks_dl import seq_lab_net_detect
+
+# from .ecg_rpeaks_dl import seq_lab_net_detect
 
 __all__ = [
     "preprocess_signal",
@@ -56,7 +57,7 @@ QRS_DETECTORS = {
     "christov": christov_detect,
     "engzee": engzee_detect,
     "gamboa": gamboa_detect,
-    "seq_lab": seq_lab_net_detect,
+    # "seq_lab": seq_lab_net_detect,
 }
 DL_QRS_DETECTORS = [
     "seq_lab",
@@ -177,11 +178,15 @@ def parallel_preprocess_signal(
     epoch_overlap = 2 * epoch_overlap_half
     epoch_forward = epoch_len - epoch_overlap
 
+    if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
+        # load only when needed
+        from .ecg_rpeaks_dl import seq_lab_net_detect
+
     if len(raw_sig) <= 3 * epoch_len:  # too short, no need for parallel computing
         retval = preprocess_signal(raw_sig, fs, cfg)
         if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
-            rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
-            retval.rpeaks = rpeaks
+            # rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
+            retval.rpeaks = seq_lab_net_detect(sig=raw_sig, fs=fs, verbose=verbose).astype(int)
         return retval
 
     l_epoch = [
@@ -231,7 +236,8 @@ def parallel_preprocess_signal(
         start_time = time.time()
 
     if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
-        rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
+        # rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
+        rpeaks = seq_lab_net_detect(sig=raw_sig, fs=fs, verbose=verbose).astype(int)
         if verbose >= 1:
             print(f"R peaks detection using {cfg.rpeaks} took {round(time.time()-start_time, 3)} seconds")
 
