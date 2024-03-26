@@ -16,9 +16,19 @@ from typing import Tuple, Union
 try:
     from keras.models import Model, model_from_json
 except ImportError:
-    from tensorflow.keras.models import model_from_json, Model
+    from tensorflow.keras.models import Model, model_from_json
+
+try:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 from torch import nn
+
+from torch_ecg.utils.download import http_get, url_is_reachable
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,44 +38,65 @@ __all__ = [
 ]
 
 
+_MODEL_URLS = {
+    "keras": {
+        "cnn": "https://www.dropbox.com/scl/fi/6n82j69ut9j8sn79es5kk/CNN.h5?rlkey=o6m0etkm1lj7sg0mjsqsima49&dl=1",
+        "crnn": "https://www.dropbox.com/scl/fi/rkqlcmt6uikowfoaav177/CRNN.h5?rlkey=nqw347n7ek2ueldwglqkeat6j&dl=1",
+    },
+}
+
+_MODEL_ALT_URLS = {
+    "keras": {
+        "cnn": "https://deep-psp.tech/Models/CPSC2019-0416/CNN.h5",
+        "crnn": "https://deep-psp.tech/Models/CPSC2019-0416/CRNN.h5",
+    },
+}
+
+
 def load_model(name: str, **kwargs) -> Union[Model, Tuple[Model, ...], nn.Module, Tuple[nn.Module, ...]]:
-    """
+    """Load model(s) by name.
 
     Parameters
     ----------
-    name: str,
-        name of the model
+    name : str
+        Name of the model, case insensitive, can be one of the followings:
+        - "keras_ecg_seq_lab_net"
+        - "pytorch_ecg_seq_lab_net" (not implemented yet)
+    **kwargs : dict
+        Other keyword arguments to be passed to the model loading function.
 
     Returns
     -------
-    model, or sequence of models, either keras or pytorch
+    model : Model, nn.Module, Tuple[Model, ...], Tuple[nn.Module, ...]
+        Model, or sequence of models, either keras or pytorch.
+
     """
     if name.lower() == "keras_ecg_seq_lab_net":
         models = _load_keras_ecg_seq_lab_net(**kwargs)
         return models
     elif name.lower() == "pytorch_ecg_seq_lab_net":
-        raise NotImplementedError
+        raise NotImplementedError("pytorch model is not implemented yet")
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Unknown model name")
 
 
 def _load_keras_ecg_seq_lab_net(which: str = "both", **kwargs) -> Union[Tuple[Model, Model], Model]:
-    """
-
-    load the CNN model and CRNN model from the entry 0416 of CPSC2019
+    """Load the CNN model and CRNN model from the entry 0416 of CPSC2019.
 
     Parameters
     ----------
-    which: str, default "both",
-        choice of model(s) to load,
-        can be one of "both", "cnn", "crnn", case insensitive
+    which : str, default "both"
+        Choice of model(s) to load,
+        can be one of "both", "cnn", "crnn", case insensitive.
 
     Returns
     -------
-    cnn_model, crnn_model (both or one): Model
+    cnn_model, crnn_model (both or one) : Model
+
     """
     _which = which.lower()
     if _which in ["both", "cnn"]:
+        download_model_if_not_exist("keras-cnn")
         cnn_config_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CNN.json")
         cnn_h5_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CNN.h5")
         cnn_model = model_from_json(open(cnn_config_path).read())
@@ -74,6 +105,7 @@ def _load_keras_ecg_seq_lab_net(which: str = "both", **kwargs) -> Union[Tuple[Mo
         if _which == "cnn":
             return cnn_model
     if _which in ["both", "crnn"]:
+        download_model_if_not_exist("keras-crnn")
         crnn_config_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.json")
         crnn_h5_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.h5")
         crnn_model = model_from_json(open(crnn_config_path).read())
@@ -87,6 +119,47 @@ def _load_keras_ecg_seq_lab_net(which: str = "both", **kwargs) -> Union[Tuple[Mo
 def _load_pytorch_ecg_seq_lab_net():
     """ """
     raise NotImplementedError
+
+
+def download_model_if_not_exist(name: str) -> None:
+    """Download model(s) by name if not exist locally.
+
+    Parameters
+    ----------
+    name : str
+        Name of the model, case insensitive, can be one of the followings:
+        - "keras-cnn"
+        - "keras-crnn"
+
+    Returns
+    -------
+    None
+
+    """
+    if name.lower() == "keras-cnn" and not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CNN.h5")):
+        http_get(
+            url=(
+                _MODEL_URLS["keras"]["cnn"]
+                if url_is_reachable(_MODEL_URLS["keras"]["cnn"])
+                else _MODEL_ALT_URLS["keras"]["cnn"]
+            ),
+            dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
+            filename="CNN.h5",
+            extract=False,
+        )
+    elif name.lower() == "keras-crnn" and not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.h5")):
+        http_get(
+            url=(
+                _MODEL_URLS["keras"]["crnn"]
+                if url_is_reachable(_MODEL_URLS["keras"]["crnn"])
+                else _MODEL_ALT_URLS["keras"]["crnn"]
+            ),
+            dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
+            filename="CRNN.h5",
+            extract=False,
+        )
+    else:
+        raise NotImplementedError(f"model {name} is not implemented yet")
 
 
 """

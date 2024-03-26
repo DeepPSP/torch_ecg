@@ -28,10 +28,10 @@ except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
+from cfg import FeatureCfg
+
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import list_sum
-
-from ..cfg import FeatureCfg
 
 __all__ = [
     "compute_ecg_features",
