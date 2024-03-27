@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.utils.download import http_get
+from torch_ecg.utils.download import http_get, url_is_reachable
 
 _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -44,3 +44,8 @@ def test_http_get():
     ):
         http_get(url, _TMP_DIR, extract=True)
     Path(_TMP_DIR / Path(url).name).unlink()
+
+
+def test_url_is_reachable():
+    assert url_is_reachable("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1")
+    assert not url_is_reachable("https://www.some-unknown-domain.com/unknown-path/unknown-file.zip")
