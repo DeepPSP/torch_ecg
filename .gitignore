@@ -153,5 +153,12 @@ log
 *.h5
 *.pth
 *.pth.tar
+*.pt
+*.pt.tar
+*.keras
+*.model
+*.bin
+*.ckpt.*
+*.safetensors
 
 tmp*

@@ -1,8 +1,10 @@
 """
 NOTE
 ----
-corresponding model (weight) files can be downloaded at
+corresponding model (weight) files can be downloaded at (inside the CPSC0416 folder):
 https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip
+
+The models were trained using old versions of keras and could not be loaded using the latest keras (keras 3.x).
 
 References
 ----------
@@ -136,28 +138,30 @@ def download_model_if_not_exist(name: str) -> None:
     None
 
     """
-    if name.lower() == "keras-cnn" and not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CNN.h5")):
-        http_get(
-            url=(
-                _MODEL_URLS["keras"]["cnn"]
-                if url_is_reachable(_MODEL_URLS["keras"]["cnn"])
-                else _MODEL_ALT_URLS["keras"]["cnn"]
-            ),
-            dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
-            filename="CNN.h5",
-            extract=False,
-        )
-    elif name.lower() == "keras-crnn" and not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.h5")):
-        http_get(
-            url=(
-                _MODEL_URLS["keras"]["crnn"]
-                if url_is_reachable(_MODEL_URLS["keras"]["crnn"])
-                else _MODEL_ALT_URLS["keras"]["crnn"]
-            ),
-            dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
-            filename="CRNN.h5",
-            extract=False,
-        )
+    if name.lower() == "keras-cnn":
+        if not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CNN.h5")):
+            http_get(
+                url=(
+                    _MODEL_URLS["keras"]["cnn"]
+                    if url_is_reachable(_MODEL_URLS["keras"]["cnn"])
+                    else _MODEL_ALT_URLS["keras"]["cnn"]
+                ),
+                dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
+                filename="CNN.h5",
+                extract=False,
+            )
+    elif name.lower() == "keras-crnn":
+        if not os.path.exists(os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.h5")):
+            http_get(
+                url=(
+                    _MODEL_URLS["keras"]["crnn"]
+                    if url_is_reachable(_MODEL_URLS["keras"]["crnn"])
+                    else _MODEL_ALT_URLS["keras"]["crnn"]
+                ),
+                dst_dir=os.path.join(_BASE_DIR, "CPSC2019_0416"),
+                filename="CRNN.h5",
+                extract=False,
+            )
     else:
         raise NotImplementedError(f"model {name} is not implemented yet")
 
