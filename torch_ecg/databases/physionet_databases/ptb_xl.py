@@ -96,7 +96,19 @@ class PTBXL(PhysioNetDataBase):
         try:
             metadata_file = list(self.db_dir.rglob(self.__metadata_file__))[0]
         except IndexError:
-            raise FileNotFoundError(f"metadata file {self.__metadata_file__} not found in {self.db_dir}")
+            # raise FileNotFoundError(f"metadata file {self.__metadata_file__} not found in {self.db_dir}")
+            self.logger.info(
+                f"metadata file {self.__metadata_file__} not found in {self.db_dir}. "
+                "Download the database first using the `download` method."
+            )
+            self._df_records = pd.DataFrame()
+            self._df_metadata = pd.DataFrame()
+            self._df_scp_statements = pd.DataFrame()
+            self._df_images = pd.DataFrame()
+            self._all_records = []
+            self._all_subjects = []
+            self._all_images = []
+            return
         self.db_dir = metadata_file.parent.resolve()
         assert (self.db_dir / self.__scp_statements_file__).exists(), f"scp_statements file not found in {self.db_dir}"
 
