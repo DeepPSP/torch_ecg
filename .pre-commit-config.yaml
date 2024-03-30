@@ -1,5 +1,5 @@
 # ignore svg, txt, json, html files
-exclude: '^.*\.(svg|txt|json|html)$|build|dist'
+exclude: '^.*\.(svg|txt|json|html)$|build|dist|benchmarks\/train_crnn_cinc2023\/utils\/artifact_pipeline\/.*'
 fail_fast: false
 
 repos:
