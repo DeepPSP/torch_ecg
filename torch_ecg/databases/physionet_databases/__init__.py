@@ -18,6 +18,7 @@ from .cinc2021 import CINC2021
 from .ltafdb import LTAFDB
 from .ludb import LUDB
 from .mitdb import MITDB
+from .ptb_xl import PTBXL
 from .qtdb import QTDB
 
 __all__ = [
@@ -31,4 +32,5 @@ __all__ = [
     "LUDB",
     "MITDB",
     "QTDB",
+    "PTBXL",
 ]

@@ -986,18 +986,22 @@ class SizeMixin(object):
 
     @property
     def module_size(self) -> int:
+        """Size of trainable parameters in the model in terms of number of parameters."""
         return compute_module_size(self)
 
     @property
     def module_size_(self) -> str:
+        """Size of trainable parameters in the model in terms of memory capacity."""
         return compute_module_size(self, human=True)
 
     @property
     def sizeof(self) -> int:
+        """Size of the model in terms of number of parameters, including non-trainable parameters and buffers."""
         return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)
 
     @property
     def sizeof_(self) -> str:
+        """Size of the model in terms of memory capacity, including non-trainable parameters and buffers."""
         return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)
 
     @property

@@ -38,6 +38,7 @@ PhysioNet database readers
     LUDB
     MITDB
     QTDB
+    PTBXL
 
 CPSC database readers
 ---------------------
@@ -92,7 +93,7 @@ from .base import (
 from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
 from .nsrr_databases import SHHS
 from .other_databases import CACHET_CADB, SPH
-from .physionet_databases import AFDB, CINC2017, CINC2018, CINC2020, CINC2021, LTAFDB, LUDB, MITDB, QTDB, ApneaECG
+from .physionet_databases import AFDB, CINC2017, CINC2018, CINC2020, CINC2021, LTAFDB, LUDB, MITDB, PTBXL, QTDB, ApneaECG
 
 __all__ = [
     # from physionet
@@ -106,6 +107,7 @@ __all__ = [
     "LUDB",
     "MITDB",
     "QTDB",
+    "PTBXL",
     # from CPSC
     "CPSC2018",
     "CPSC2019",
