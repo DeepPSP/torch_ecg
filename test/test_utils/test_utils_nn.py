@@ -544,7 +544,6 @@ def test_mixin_classes():
     loaded_model, _ = Model1D.from_remote(
         url="https://www.dropbox.com/scl/fi/2eqhnagz1m0w0ka86uegr/test-remote-model.zip?rlkey=1mkuwhx4kykqmc7h4rnou46z0&dl=1",
         model_dir=save_path,
-        compressed=True,
     )
     assert isinstance(loaded_model, Model1D)
     shutil.rmtree(save_path)
