@@ -18,6 +18,7 @@ import torch
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
+from .download import http_get
 from .misc import add_docstring, make_serializable
 from .utils_data import cls_to_bin
 
@@ -1043,7 +1044,9 @@ class CkptMixin(object):
         Parameters
         ----------
         path : `path-like`
-            Path of the checkpoint.
+            Path to the checkpoint.
+            If it is a directory, then this directory should contain only one checkpoint file
+            (with the extension `.pth` or `.pt`).
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
@@ -1056,6 +1059,10 @@ class CkptMixin(object):
             Auxiliary configs that are needed for data preprocessing, etc.
 
         """
+        if Path(path).is_dir():
+            candidates = list(Path(path).glob("*.pth")) + list(Path(path).glob("*.pt"))
+            assert len(candidates) == 1, "The directory should contain only one checkpoint file"
+            path = candidates[0]
         _device = device or DEFAULTS.device
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
@@ -1070,6 +1077,39 @@ class CkptMixin(object):
         model = cls(**kwargs)
         model.load_state_dict(ckpt["model_state_dict"])
         return model, aux_config
+
+    @classmethod
+    def from_remote(
+        cls,
+        url: str,
+        model_dir: Union[str, bytes, os.PathLike],
+        filename: Optional[str] = None,
+        device: Optional[torch.device] = None,
+    ) -> Tuple[nn.Module, dict]:
+        """Load the model from the remote model.
+
+        Parameters
+        ----------
+        url : str
+            URL of the remote model.
+        model_dir : `path-like`
+            Path for downloading the model.
+        filename : str, optional
+            Filename of the model to save, defaults to the basename of the URL.
+        device : torch.device, optional
+            Map location of the model parameters,
+            defaults to "cuda" if available, otherwise "cpu".
+
+        Returns
+        -------
+        model : torch.nn.Module
+            The model loaded from a checkpoint.
+        aux_config : dict
+            Auxiliary configs that are needed for data preprocessing, etc.
+
+        """
+        http_get(url, model_dir, extract=True, filename=filename)
+        return cls.from_checkpoint(model_dir, device=device)
 
     def save(self, path: Union[str, bytes, os.PathLike], train_config: CFG) -> None:
         """Save the model to disk.
