@@ -5,7 +5,7 @@ import json
 import warnings
 from copy import deepcopy
 from random import randint, shuffle
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -15,6 +15,7 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import LUDB as LR
 from ....utils.misc import ReprMixin
+from ....utils.utils_nn import default_collate_fn as collate_fn
 
 __all__ = [
     "LUDBDataset",
@@ -83,7 +84,7 @@ class LUDBDataset(ReprMixin, Dataset):
             return len(self.leads) * len(self.records)
         return len(self.records)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -227,7 +228,9 @@ class _FastDataReader(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.records)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         rec = self.records[index]
         signals = self.reader.load_data(
             rec,

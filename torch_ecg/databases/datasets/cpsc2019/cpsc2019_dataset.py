@@ -3,7 +3,7 @@ import math
 import warnings
 from copy import deepcopy
 from random import shuffle
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -13,6 +13,7 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import CPSC2019 as CR
 from ....utils.misc import ReprMixin
+from ....utils.utils_nn import default_collate_fn as collate_fn
 
 __all__ = [
     "CPSC2019Dataset",
@@ -82,7 +83,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         if not self.lazy:
             self._load_all_data()
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
         if self.lazy:
             signal, label = self.fdr[index]
         else:
@@ -204,7 +205,9 @@ class _FastDataReader(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.records)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         rec_name = self.records[index]
         values = self.reader.load_data(rec_name, units="mV", data_format="flat")
         rpeaks = self.reader.load_ann(rec_name)

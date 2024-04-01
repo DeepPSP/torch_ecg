@@ -19,6 +19,7 @@ from ....cfg import CFG, DEFAULTS
 from ....databases import MITDB as DR
 from ....utils.misc import ReprMixin, add_docstring, get_record_list_recursive3, list_sum
 from ....utils.utils_data import cls_to_bin, ensure_siglen, generate_weight_mask, mask_to_intervals
+from ....utils.utils_nn import default_collate_fn as collate_fn
 from ....utils.utils_signal import remove_spikes_naive
 from .mitdb_cfg import MITDBTrainCfg
 
@@ -359,7 +360,7 @@ class MITDBDataset(ReprMixin, Dataset):
             return len(self._all_data)
         return len(self.fdr)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
         if self.task in ["beat_classification"]:
             return self._all_data[index], self._all_labels[index]
         if self.lazy:
@@ -1311,7 +1312,9 @@ class _FastDataReader(ReprMixin, Dataset):
             "af_event": "rhythm_mask",  # segmentation of AF events
         }
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.task in [
             "qrs_detection",
             "rhythm_segmentation",

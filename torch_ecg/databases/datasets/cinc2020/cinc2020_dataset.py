@@ -3,7 +3,7 @@ import time
 import warnings
 from copy import deepcopy
 from random import sample, shuffle
-from typing import Any, List, Optional, Sequence, Set, Tuple
+from typing import Any, List, Optional, Sequence, Set, Tuple, Union
 
 import numpy as np
 import torch
@@ -15,6 +15,7 @@ from ....cfg import CFG
 from ....databases import CINC2020 as CR
 from ....utils.misc import ReprMixin, list_sum
 from ....utils.utils_data import ensure_siglen
+from ....utils.utils_nn import default_collate_fn as collate_fn
 from ....utils.utils_signal import remove_spikes_naive
 
 __all__ = [
@@ -177,7 +178,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """
         return self._labels
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
         return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
@@ -395,7 +396,9 @@ class _FastDataReader(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.records)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         rec = self.records[index]
         values = self.reader.load_resampled_data(rec, data_format=self.config.data_format, siglen=None)
         for idx in range(values.shape[0]):

@@ -56,6 +56,7 @@ from ....cfg import CFG, DEFAULTS
 from ....databases import CPSC2021 as CR
 from ....utils.misc import ReprMixin, add_docstring, get_record_list_recursive3, list_sum, nildent
 from ....utils.utils_data import generate_weight_mask, mask_to_intervals
+from ....utils.utils_nn import default_collate_fn as collate_fn
 from ....utils.utils_signal import remove_spikes_naive
 from .cpsc2021_cfg import CPSC2021TrainCfg
 
@@ -385,7 +386,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.fdr)
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
         if self.lazy:
             if self.task in ["qrs_detection"]:
                 return self.fdr[index][:2]
@@ -1438,7 +1439,9 @@ class _FastDataReader(ReprMixin, Dataset):
             "main": "af_mask",
         }
 
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.task in [
             "qrs_detection",
             "main",
