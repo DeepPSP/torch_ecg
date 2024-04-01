@@ -389,6 +389,12 @@ class TestCPSC2021Dataset:
             assert data.shape == (config.n_leads, input_len)
             assert qrs_mask.shape == (input_len, 1)
 
+        # test slice indexing
+        data, af_mask, weight_mask = ds[:2]
+        assert data.ndim == 3 and data.shape == (2, config.n_leads, input_len)
+        assert af_mask.ndim == 3 and af_mask.shape == (2, input_len, 1)
+        assert weight_mask.ndim == 3 and weight_mask.shape == (2, input_len, 1)
+
     def test_properties(self):
         assert ds.task == "main"
         assert ds_1.task == "rr_lstm"

@@ -276,6 +276,11 @@ class TestCINC2020Dataset:
             )
             assert target.ndim == 1 and target.shape == (len(config.classes),)
 
+        # test slice indexing
+        data, target = ds[:2]
+        assert data.shape == (2, len(config.leads), config.input_len)
+        assert target.shape == (2, len(config.classes))
+
     def test_load_one_record(self):
         for rec in ds.records:
             data, target = ds._load_one_record(rec)

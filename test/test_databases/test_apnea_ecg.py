@@ -29,7 +29,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 with pytest.warns(RuntimeWarning):
     reader = ApneaECG(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestApneaECG:

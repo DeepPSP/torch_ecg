@@ -85,6 +85,8 @@ class LUDBDataset(ReprMixin, Dataset):
         return len(self.records)
 
     def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+        if isinstance(index, slice):
+            return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -100,7 +102,8 @@ class LUDBDataset(ReprMixin, Dataset):
             labels = labels[lead_idx, ...]
         else:
             # merge labels in all leads to one
-            # TODO: map via self.waveform_priority
+            # TODO: map via self.waveform_priority,
+            # or make it configurable whether to collapse the lead dimension
             labels = np.max(labels, axis=0)
         sampfrom = randint(self.config.start_from, signals.shape[1] - self.config.end_at - self.siglen)
         sampto = sampfrom + self.siglen

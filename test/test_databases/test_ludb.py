@@ -32,7 +32,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = LUDB(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestLUDB:
@@ -139,6 +140,14 @@ class TestLUDBDataset:
             signals, labels = ds[i]
             assert signals.shape == (config.n_leads, config.input_len)
             assert labels.shape == (config.input_len, len(config.classes))
+
+        # test slice indexing
+        signals, labels = ds[:2]
+        assert signals.shape == (2, config.n_leads, config.input_len)
+        # NOTE that the (segmentation) labels have collapsed lead dimension
+        # so the shape is (n_samples, signal_len, n_classes)
+        # instead of (n_samples, n_leads, signal_len, n_classes)
+        assert labels.shape == (2, config.input_len, len(config.classes))
 
     def test_properties(self):
         signals_shape = ds.signals.shape  # (n_samples, n_leads, signal_len)

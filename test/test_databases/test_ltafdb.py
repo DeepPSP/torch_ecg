@@ -28,7 +28,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 with pytest.warns(RuntimeWarning):
     reader = LTAFDB(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestLTAFDB:

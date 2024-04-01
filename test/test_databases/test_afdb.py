@@ -30,7 +30,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 with pytest.warns(RuntimeWarning):
     reader = AFDB(_CWD, verbose=3)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestAFDB:

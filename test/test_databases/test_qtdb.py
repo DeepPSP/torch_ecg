@@ -26,7 +26,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = QTDB(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestQTDB:

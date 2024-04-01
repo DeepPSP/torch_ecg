@@ -26,7 +26,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 with pytest.warns(RuntimeWarning):
     reader = CINC2017(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestCINC2017:

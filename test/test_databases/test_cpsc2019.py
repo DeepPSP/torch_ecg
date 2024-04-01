@@ -28,7 +28,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = CPSC2019(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestCPSC2019:
@@ -143,6 +144,15 @@ class TestCPSC2019Dataset:
             data, bin_mask = ds_1[i]
             assert data.ndim == 2 and data.shape == (1, config_1.input_len)
             assert bin_mask.ndim == 2 and bin_mask.shape == (config_1.input_len, 1)
+
+        # test slice indexing
+        data, bin_mask = ds[:2]
+        assert data.ndim == 3 and data.shape == (2, 1, config.input_len)
+        assert bin_mask.ndim == 3 and bin_mask.shape == (
+            2,
+            config.input_len // config.reduction,
+            1,
+        )
 
     def test_properties(self):
         assert str(ds) == repr(ds)

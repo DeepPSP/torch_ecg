@@ -27,7 +27,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = PTBXL(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestPTBXL:

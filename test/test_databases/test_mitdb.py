@@ -30,7 +30,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = MITDB(_CWD)
-reader.download()
+if len(reader) == 0:
+    reader.download()
 
 
 class TestMITDB:
@@ -163,6 +164,11 @@ class TestMITDBDataset:
         assert rr.shape == ann.shape == wt_mask.shape == (config.rr_lstm.input_len, 1)
 
         # `ds_rhythm` and `ds_af` have bugs now
+
+        # test slice indexing
+        data, ann = ds[:2]
+        assert data.shape == (2, config.n_leads, config[TASK].input_len)
+        assert ann.shape == (2, config[TASK].input_len, 1)
 
     def test_load_seg_data(self):
         seg = ds.all_segments[list(ds.all_segments)[0]][0]
