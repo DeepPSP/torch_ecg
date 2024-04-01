@@ -34,7 +34,7 @@ def http_get(
     proxies: Optional[dict] = None,
     extract: bool = True,
     filename: Optional[str] = None,
-) -> None:
+) -> Path:
     """Get contents of a URL and save to a file.
 
     This function is a modified version of the `download_file` function in
@@ -46,17 +46,21 @@ def http_get(
         URL to download file from.
     dst_dir : `path-like`
         Directory to save the file.
+        If `extract` is ``True``, the extracted content will be saved to `dst_dir`.
     proxies : dict, optional
         Dictionary of proxy settings.
     extract : bool, default True
         Whether to extract the downloaded file.
     filename : str, optional
-        Name of the file to save.
-        If None, the filename will be the same as the URL.
+        Name of the downloaded file.
+        If None, the filename will be the basename of the URL.
+        If `extract` is ``True``, the filename will NOT affect the extracted folder name,
+        which is set to `dst_dir`, and `filename` is only the downloaded file name.
 
     Returns
     -------
-    None
+    final_dst : pathlib.Path
+        Path to the downloaded file or the extracted folder.
 
     References
     ----------
@@ -123,16 +127,21 @@ def http_get(
             _folder = _stem(Path(filename))
         if _folder in os.listdir(dst_dir):
             tmp_folder = str(dst_dir).rstrip(os.sep) + "_tmp"
+            # move (rename) the dst_dir to a temporary folder
             os.rename(dst_dir, tmp_folder)
+            # move (rename) the extracted folder to the destination folder
             os.rename(Path(tmp_folder) / _folder, dst_dir)
             shutil.rmtree(tmp_folder)
+        final_dst = Path(dst_dir)
     else:
         Path(dst_dir).mkdir(parents=True, exist_ok=True)
         if filename is None:
-            shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(pure_url).name)
-        else:  # filename is not None
-            shutil.copyfile(downloaded_file.name, Path(dst_dir) / filename)
+            final_dst = Path(dst_dir) / Path(pure_url).name
+        else:
+            final_dst = Path(dst_dir) / filename
+        shutil.copyfile(downloaded_file.name, final_dst)
     os.remove(downloaded_file.name)
+    return final_dst
 
 
 def _stem(path: Union[str, bytes, os.PathLike]) -> str:
@@ -320,6 +329,11 @@ def url_is_reachable(url: str) -> bool:
         r = requests.head(url, timeout=3)
         # successful responses and redirection messages
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#information_responses
-        return 100 <= r.status_code < 300
+        # Informational responses (100 – 199)
+        # Successful responses (200 – 299)
+        # Redirection messages (300 – 399)
+        # Client error responses (400 – 499)
+        # Server error responses (500 – 599)
+        return 100 <= r.status_code < 400
     except Exception:
         return False
