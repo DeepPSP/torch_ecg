@@ -1405,14 +1405,14 @@ class CINC2023Reader(PhysioNetDataBase):
             source = "deep-psp"
             url = self._url_compressed["sqi_alt"]
         else:
-            warnings.warn("Can reach neither Google Drive nor deep-psp.tech. " "The SQI files will not be downloaded.")
+            warnings.warn("Can reach neither Google Drive nor deep-psp.tech. The SQI files will not be downloaded.")
             return
         if os.access(self.db_dir, os.W_OK):
             dl_dir = self.db_dir
         elif os.access(self.working_dir, os.W_OK):
             dl_dir = self.working_dir
         else:
-            warnings.warn("No access to write the SQI files. " "The SQI files will not be downloaded.")
+            warnings.warn("No write access. The SQI files will not be downloaded.")
             return
         dl_file = str(dl_dir / "CinC2023-SQI.zip")
         if source == "gdrive":

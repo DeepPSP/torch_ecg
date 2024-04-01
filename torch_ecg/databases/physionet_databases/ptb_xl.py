@@ -119,20 +119,22 @@ class PTBXL(PhysioNetDataBase):
         self._df_metadata["patient_id"] = self._df_metadata["patient_id"].astype(int)
         self._df_scp_statements = pd.read_csv(self.db_dir / self.__scp_statements_file__, index_col=0)
 
-        if self._subsample is not None:
-            size = min(
-                len(self._df_metadata),
-                max(1, int(round(self._subsample * len(self._df_metadata)))),
-            )
-            self.logger.debug(f"subsample `{size}` records from `{len(self._df_metadata)}`")
-            self._df_records = self._df_metadata.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
-        else:
-            self._df_records = self._df_metadata.copy()
-
+        self._df_records = self._df_metadata.copy()
         if self.fs == 100:
             self._df_records["path"] = self._df_records["filename_lr"].apply(lambda x: self.db_dir / x)
         else:
             self._df_records["path"] = self._df_records["filename_hr"].apply(lambda x: self.db_dir / x)
+        # keep only records that exist
+        self._df_records = self._df_records[
+            self._df_records["path"].apply(lambda x: x.with_suffix(f".{self.data_ext}").exists())
+        ]
+        if self._subsample is not None:
+            size = min(
+                len(self._df_records),
+                max(1, int(round(self._subsample * len(self._df_records)))),
+            )
+            self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
 
         self._all_records = self._df_records.index.tolist()
         self._all_subjects = self._df_records["patient_id"].unique().tolist()
