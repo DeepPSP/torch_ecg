@@ -122,6 +122,8 @@ class ApneaECG(PhysioNetDataBase):
         super()._ls_rec()
 
         if len(self.all_records) == 0:
+            self._ecg_records = []
+            self._rsp_records = []
             return
 
         self._rsp_records = self._df_records[self._df_records.index.str.match("^[abcx]\\d{2}r$")].index.tolist()
