@@ -6,14 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.utils.download import http_get, url_is_reachable
+from torch_ecg.utils.download import _download_from_google_drive, http_get, url_is_reachable
 
 _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def test_http_get():
-    url = "https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1"
+    # normally, direct downloading from dropbox with `dl=0` will not download the file
+    # http_get internally replaces `dl=0` with `dl=1` to force download
+    url = "https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=0"
     http_get(url, _TMP_DIR / "action-test-zip-extract", extract=True, filename="test.zip")
     shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
 
@@ -44,6 +46,16 @@ def test_http_get():
     ):
         http_get(url, _TMP_DIR, extract=True)
     Path(_TMP_DIR / Path(url).name).unlink()
+
+    # test downloading from Google Drive
+    file_id = "1Yys567-MZIMf3eXGJd8bGrsWIvDatbsZ"
+    url = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
+    with pytest.raises(AssertionError, match="filename can not be inferred from Google Drive URL"):
+        http_get(url, _TMP_DIR)
+    http_get(url, _TMP_DIR, filename="torch-ecg-paper.bib", extract=False)
+    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
+    _download_from_google_drive(file_id, _TMP_DIR / "torch-ecg-paper.bib")
+    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
 
 
 def test_url_is_reachable():

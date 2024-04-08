@@ -11,3 +11,4 @@ tensorboard
 openpyxl
 pre-commit
 packaging
+gdown
