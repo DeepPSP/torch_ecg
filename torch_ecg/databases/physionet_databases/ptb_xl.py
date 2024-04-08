@@ -27,7 +27,6 @@ _PTBXL_INFO = DataBaseInfo(
     6. The PTB-XL database underwent a 10-fold train-test splits (stored in the `strat_fold` field of the metadata file) obtained via stratified sampling while respecting patient assignments, i.e. all records of a particular patient were assigned to the same fold. Records in fold 9 and 10 underwent at least one human evaluation and are therefore of a particularly high label quality. It is proposed to use folds 1-8 as training set, fold 9 as validation set and fold 10 as test set.
     """,
     usage=[
-        "Re-digitization of ECG images",
         "Classification of ECG images",
     ],
     note="""

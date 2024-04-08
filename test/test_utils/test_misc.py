@@ -123,6 +123,13 @@ def test_get_record_list_recursive3():
     assert len(record_list["E"]) == 10
     assert len(record_list["F"]) == 20
     assert len(record_list["G"]) == 20
+    for tranche in list("EFG"):
+        # assert the records come without file extension
+        assert all([not p.endswith(".mat") for p in record_list[tranche]]), record_list[tranche]
+    record_list = get_record_list_recursive3(path, rec_patterns_with_ext, with_suffix=True)
+    for tranche in list("EFG"):
+        # assert the records come with file extension
+        assert all([p.endswith(".mat") for p in record_list[tranche]]), record_list[tranche]
 
 
 def test_dict_to_str():

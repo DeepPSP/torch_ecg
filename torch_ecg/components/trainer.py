@@ -228,7 +228,7 @@ class BaseTrainer(ReprMixin, ABC):
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
                 else:
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}"
-                save_filename = f"{self.save_prefix}{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
+                save_filename = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
                 save_path = self.train_config.checkpoints / save_filename
                 if self.train_config.keep_checkpoint_max != 0:
                     self.save_checkpoint(str(save_path))

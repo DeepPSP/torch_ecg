@@ -135,6 +135,7 @@ def get_record_list_recursive3(
     db_dir: Union[str, bytes, os.PathLike],
     rec_patterns: Union[str, Dict[str, str]],
     relative: bool = True,
+    with_suffix: bool = False,
 ) -> Union[List[str], Dict[str, List[str]]]:
     """Get the list of records in a recursive manner.
 
@@ -153,6 +154,8 @@ def get_record_list_recursive3(
         or patterns of several subsets, e.g. ``{"A": "A(?:\\d+).mat"}``
     relative : bool, default True
         Whether to return the relative path of the records.
+    with_suffix : bool, default False
+        Whether to include the suffix of the records.
 
     Returns
     -------
@@ -178,11 +181,17 @@ def get_record_list_recursive3(
             new_roots += [r / item for item in tmp if (r / item).is_dir()]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
-        res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]
+        if with_suffix:
+            res = [str((item.relative_to(_db_dir) if relative else item)) for item in res]
+        else:
+            res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
-            res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]
+            if with_suffix:
+                res[k] = [str((item.relative_to(_db_dir) if relative else item)) for item in res[k]]
+            else:
+                res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]
             res[k] = sorted(res[k])
     return res
 
