@@ -317,7 +317,6 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     ----------
     db_dir : `path-like`, optional
         Storage path of the database.
-        If not specified, data will be fetched from Physionet.
     working_dir : `path-like`, optional
         Working directory, to store intermediate files and log files.
     verbose : int, default 1

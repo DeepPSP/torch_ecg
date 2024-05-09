@@ -80,7 +80,7 @@ jobs:
           du -sh ~/tmp/*
     - name: Run test with pytest and collect coverage
       run: |
-        pytest -v -s \
+        pytest -vv -s \
         --cov=torch_ecg \
         --ignore=test/test_pipelines \
         test

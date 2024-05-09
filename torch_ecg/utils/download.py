@@ -15,7 +15,7 @@ import urllib
 import warnings
 import zipfile
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Any, Iterable, Optional, Union
 
 import requests
 from tqdm.auto import tqdm
@@ -323,13 +323,15 @@ def _safe_tar_extract(
     tar.extractall(dst_dir, members, numeric_owner=numeric_owner)
 
 
-def url_is_reachable(url: str) -> bool:
+def url_is_reachable(url: str, **kwargs: Any) -> bool:
     """Check if a URL is reachable.
 
     Parameters
     ----------
     url : str
         The URL.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to :meth:`requests.head`.
 
     Returns
     -------
@@ -338,7 +340,8 @@ def url_is_reachable(url: str) -> bool:
 
     """
     try:
-        r = requests.head(url, timeout=3)
+        timeout = kwargs.pop("timeout", 3)
+        r = requests.head(url, timeout=timeout, **kwargs)
         # successful responses and redirection messages
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#information_responses
         # Informational responses (100 – 199)

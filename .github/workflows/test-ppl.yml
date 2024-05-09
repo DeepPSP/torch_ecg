@@ -56,4 +56,4 @@ jobs:
         python -m pip list
     - name: Run test with pytest
       run: |
-        pytest -v -s test/test_pipelines
+        pytest -vv -s test/test_pipelines

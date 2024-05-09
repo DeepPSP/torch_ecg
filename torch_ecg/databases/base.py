@@ -126,6 +126,15 @@ WFDB_Rhythm_Annotations = {
 class _DataBase(ReprMixin, ABC):
     """Universal abstract base class for all databases.
 
+    Abstract methods that should be implemented by the subclass:
+    - `_ls_rec`: Find all records in the database.
+    - `load_data`: Load data from a record.
+    - `load_ann`: Load annotations of a record.
+
+    Abstract properties that should be implemented by the subclass:
+    - `database_info`: The :class:`DataBaseInfo` object of the database.
+    - `url`: URL(s) for downloading the database.
+
     Parameters
     ----------
     db_dir : `path-like`, optional
