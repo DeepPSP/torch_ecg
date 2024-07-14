@@ -715,7 +715,8 @@ def compute_module_size(
             "torch.int64": 8,
             "torch.uint8": 1,
         }
-        n_params = sum([np.prod(item.size()) * size_dict[str(item.dtype)] for item in tensor_containers])
+        # n_params = sum([np.prod(item.size()) * size_dict[str(item.dtype)] for item in tensor_containers])
+        n_params = sum([item.numel() * size_dict[str(item.dtype)] for item in tensor_containers])
         div_count = 0
         while n_params >= 1024 * 0.1:
             n_params /= 1024
@@ -723,7 +724,8 @@ def compute_module_size(
         cvt_dict = {c: u for c, u in enumerate(list("BKMGTP"))}
         n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
     else:
-        n_params = int(sum([np.prod(item.size()) for item in tensor_containers]))
+        # n_params = int(sum([np.prod(item.size()) for item in tensor_containers]))
+        n_params = sum([item.numel() for item in tensor_containers])
     return n_params
 
 

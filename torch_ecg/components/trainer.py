@@ -192,13 +192,14 @@ class BaseTrainer(ReprMixin, ABC):
                         part="train",
                     )
                 # evaluate on val set
-                eval_res = self.evaluate(self.val_loader)
-                self.log_manager.log_metrics(
-                    metrics=eval_res,
-                    step=self.global_step,
-                    epoch=self.epoch,
-                    part="val",
-                )
+                if self.val_loader is not None:
+                    eval_res = self.evaluate(self.val_loader)
+                    self.log_manager.log_metrics(
+                        metrics=eval_res,
+                        step=self.global_step,
+                        epoch=self.epoch,
+                        part="val",
+                    )
 
                 # update best model and best metric if monitor is set
                 if self.train_config.monitor is not None:
