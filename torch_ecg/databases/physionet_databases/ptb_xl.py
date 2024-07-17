@@ -427,7 +427,7 @@ class PTBXLPlus(PhysioNetDataBase):
         return self.load_data(rec, source)
 
     def load_ann(self, rec: Union[str, int], source: str = "12sl") -> Dict[str, Any]:
-        """Load the annotation (the "scp_codes" field) of a record.
+        """Load the annotation (diagnostic statements) of a record.
 
         Parameters
         ----------
@@ -451,6 +451,7 @@ class PTBXLPlus(PhysioNetDataBase):
         ann = df[df["ecg_id"] == rec].iloc[0].to_dict()
         ann.pop("ecg_id")
         ann = {key: literal_eval(val) for key, val in ann.items()}
+        return ann
 
     def load_features(self, rec: Union[str, int], source: str = "12sl") -> Dict[str, float]:
         """Load the features of a record.
