@@ -447,7 +447,7 @@ class PhysioNetDataBase(_DataBase):
         # for those with multiple signal sources like PSG,
         # `self.fs` is default to the frequency of ECG if ECG applicable
         self.fs = kwargs.get("fs", None)
-        self._all_records = None
+        self._all_records = []
         self._version = None
         self._url_compressed = None
 

@@ -70,8 +70,6 @@ class PTBXL(PhysioNetDataBase):
     __name__ = "PTBXL"
     __metadata_file__ = "ptbxl_database.csv"
     __scp_statements_file__ = "scp_statements.csv"
-    __12sl_statements_file__ = "12sl_statements.csv"
-    __12sl_mapping_file__ = "12slv23ToSNOMED.csv"
     __100Hz_dir__ = "records100"
     __500Hz_dir__ = "records500"
 
@@ -118,10 +116,8 @@ class PTBXL(PhysioNetDataBase):
             self._df_records = pd.DataFrame()
             self._df_metadata = pd.DataFrame()
             self._df_scp_statements = pd.DataFrame()
-            self._df_images = pd.DataFrame()
             self._all_records = []
             self._all_subjects = []
-            self._all_images = []
             return
         self.db_dir = metadata_file.parent.resolve()
         assert (self.db_dir / self.__scp_statements_file__).exists(), f"scp_statements file not found in {self.db_dir}"
@@ -292,8 +288,6 @@ class PTBXLPlus(PhysioNetDataBase):
     """
 
     __name__ = "PTBXLPlus"
-    __12sl_statements_file__ = "12sl_statements.csv"
-    __12sl_mapping_file__ = "12slv23ToSNOMED.csv"
 
     def __init__(
         self,
@@ -323,6 +317,9 @@ class PTBXLPlus(PhysioNetDataBase):
         """
         records_file = list(self.db_dir.rglob("RECORDS"))
         if len(records_file) == 0:
+            self._df_records = pd.DataFrame()
+            self._all_records = []
+
             return
         self.db_dir = records_file[0].parent.resolve()
 
