@@ -1221,7 +1221,7 @@ def remove_parameters_returns_from_docstring(
 @contextmanager
 def timeout(duration: float):
     """A context manager that raises a
-    :class:`TimeoutError` after a specified time.
+    :class:`TimeoutError` after a specified time (in seconds).
 
     Modified from [#timeout]_.
 
