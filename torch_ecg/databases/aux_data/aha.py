@@ -11,6 +11,8 @@ import io
 
 import pandas as pd
 
+pd.set_option("future.no_silent_downcasting", True)
+
 __all__ = [
     "df_primary_statements",
     "df_secondary_statements",
