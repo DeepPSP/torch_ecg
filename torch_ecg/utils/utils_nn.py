@@ -20,7 +20,7 @@ from torch import Tensor, nn
 from ..cfg import CFG, DEFAULTS
 from .download import http_get
 from .misc import add_docstring, make_serializable
-from .utils_data import cls_to_bin
+from .utils_data import one_hot_encode
 
 __all__ = [
     "extend_predictions",
@@ -88,7 +88,7 @@ def extend_predictions(preds: Sequence, classes: List[str], extended_classes: Li
         _preds = np.array(preds)
 
     if np.ndim(_preds) == 1:  # categorical predictions
-        extended_preds = cls_to_bin(_preds, len(classes))
+        extended_preds = one_hot_encode(_preds, len(classes))
         extended_preds = extend_predictions(extended_preds, classes, extended_classes)
         extended_preds = np.where(extended_preds == 1)[1]
         return extended_preds

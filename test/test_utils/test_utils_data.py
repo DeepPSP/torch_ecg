@@ -21,6 +21,7 @@ from torch_ecg.utils.utils_data import (
     get_mask,
     mask_to_intervals,
     masks_to_waveforms,
+    one_hot_encode,
     rdheader,
     stratified_train_test_split,
     uniform,
@@ -233,16 +234,16 @@ def test_stratified_train_test_split():
         stratified_train_test_split(df_sample, cols + [extra_col], test_ratio=test_ratio)
 
 
-def test_cls_to_bin():
+def test_one_hot_encode():
     num_classes = 26
     siglen = 1000
     cls_array = torch.randint(0, num_classes, size=(siglen,))
-    bin_array = cls_to_bin(cls_array)
+    bin_array = one_hot_encode(cls_array)
     assert bin_array.shape == (siglen, num_classes)
     assert set(np.unique(bin_array)).issubset({0, 1})
 
     cls_array = DEFAULTS.RNG_randint(0, num_classes - 1, size=(siglen,))
-    bin_array = cls_to_bin(cls_array)
+    bin_array = one_hot_encode(cls_array)
     assert bin_array.shape == (siglen, num_classes)
     assert set(np.unique(bin_array)).issubset({0, 1})
     with pytest.raises(
@@ -252,13 +253,24 @@ def test_cls_to_bin():
             "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
         ),
     ):
-        cls_to_bin(cls_array, num_classes=cls_array.max() - 1)
+        one_hot_encode(cls_array, num_classes=cls_array.max() - 1)
 
     cls_array = DEFAULTS.RNG_randint(0, 1, size=(siglen, num_classes))
-    bin_array = cls_to_bin(cls_array, num_classes=num_classes)
+    bin_array = one_hot_encode(cls_array, num_classes=num_classes)
     assert (bin_array == cls_array).all()
     with pytest.raises(AssertionError, match="`cls_array` should be 1D if num_classes is not specified"):
-        cls_to_bin(cls_array)
+        one_hot_encode(cls_array)
+
+    cls_array = [[1, 5], [2], [0, 1, 4]]
+    bin_array = one_hot_encode(cls_array, num_classes=7)
+    assert (bin_array == np.array([[0, 1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0], [1, 1, 0, 0, 1, 0, 0]])).all()
+    bin_array = one_hot_encode(cls_array)
+    assert (bin_array == np.array([[0, 1, 0, 0, 0, 1], [0, 0, 1, 0, 0, 0], [1, 1, 0, 0, 1, 0]])).all()
+    with pytest.raises(AssertionError, match="all values in the multi-class `cls_array` should be less than `num_classes`"):
+        one_hot_encode(cls_array, num_classes=5)
+
+    with pytest.warns(DeprecationWarning, match="`cls_to_bin` is deprecated, use `one_hot_encode` instead"):
+        bin_array = cls_to_bin(cls_array, num_classes=num_classes)
 
 
 def test_generate_weight_mask():

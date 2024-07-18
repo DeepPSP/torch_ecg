@@ -12,10 +12,10 @@ from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_data import ECGWaveFormNames
 from ..utils.utils_metrics import (
     QRS_score,
-    cls_to_bin,
     compute_wave_delineation_metrics,
     confusion_matrix,
     metrics_from_confusion_matrix,
+    one_hot_pair,
     ovr_confusion_matrix,
 )
 
@@ -147,7 +147,7 @@ class ClassificationMetrics(Metrics):
         weights: Optional[np.ndarray] = None,
         thr: float = 0.5,
     ) -> "ClassificationMetrics":
-        labels, outputs = cls_to_bin(labels, outputs, num_classes)
+        labels, outputs = one_hot_pair(labels, outputs, num_classes)
         num_samples, num_classes = np.shape(labels)
         # probability outputs to binary outputs
         bin_outputs = np.zeros_like(outputs, dtype=int)

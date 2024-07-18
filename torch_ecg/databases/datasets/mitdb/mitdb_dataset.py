@@ -18,7 +18,7 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG, DEFAULTS
 from ....databases import MITDB as DR
 from ....utils.misc import ReprMixin, add_docstring, get_record_list_recursive3, list_sum
-from ....utils.utils_data import cls_to_bin, ensure_siglen, generate_weight_mask, mask_to_intervals
+from ....utils.utils_data import ensure_siglen, generate_weight_mask, mask_to_intervals, one_hot_encode
 from ....utils.utils_nn import default_collate_fn as collate_fn
 from ....utils.utils_signal import remove_spikes_naive
 from .mitdb_cfg import MITDBTrainCfg
@@ -181,7 +181,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 self._all_data = np.array(self._all_data)
                 self._all_labels = np.array(self._all_labels)
                 if self.config[self.task].loss not in ["CrossEntropyLoss"]:
-                    self._all_labels = cls_to_bin(self._all_labels, len(self.config[self.task].classes))
+                    self._all_labels = one_hot_encode(self._all_labels, len(self.config[self.task].classes))
         elif self.task in [
             "qrs_detection",
             "rhythm_segmentation",

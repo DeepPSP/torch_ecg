@@ -6,7 +6,16 @@ import pytest
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.components.metrics import ClassificationMetrics, Metrics, RPeaksDetectionMetrics, WaveDelineationMetrics
-from torch_ecg.utils.utils_metrics import accuracy, auc, f_measure, precision, sensitivity, specificity, top_n_accuracy
+from torch_ecg.utils.utils_metrics import (
+    accuracy,
+    auc,
+    cls_to_bin,
+    f_measure,
+    precision,
+    sensitivity,
+    specificity,
+    top_n_accuracy,
+)
 
 
 def test_classification_metrics():
@@ -20,6 +29,8 @@ def test_classification_metrics():
     outputs_bin = DEFAULTS.RNG_randint(0, 1, (100, 10))
     # categorical outputs (100 samples, 10 classes)
     outputs_cate = DEFAULTS.RNG_randint(0, 9, (100,))
+    # categorical outputs (100 samples, 10 classes, multi-label)
+    outputs_cate_multi = [DEFAULTS.RNG_randint(0, 9, (DEFAULTS.RNG_randint(1, 10),)) for _ in range(100)]
 
     cm(labels, outputs_prob)
     assert isinstance(cm.accuracy, float)
@@ -98,10 +109,12 @@ def test_classification_metrics():
     assert isinstance(cm.area_under_the_precision_recall_curve, np.ndarray)
     assert isinstance(cm.auprc, np.ndarray)
 
-    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"):
+    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary or categorical, AUC may be incorrect"):
         cm(labels, outputs_bin)
-    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary, AUC may be incorrect"):
+    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary or categorical, AUC may be incorrect"):
         cm(labels, outputs_cate)
+    with pytest.warns(RuntimeWarning, match="`outputs` is probably binary or categorical, AUC may be incorrect"):
+        cm(labels, outputs_cate_multi)
 
     assert str(cm) == repr(cm)
 
@@ -222,3 +235,6 @@ def test_metric_functions():
         match="outputs must be of shape \\(n_samples, n_classes\\) to compute AUC",
     ):
         auc(labels, outputs[:, 0])
+
+    with pytest.warns(DeprecationWarning, match="`cls_to_bin` is deprecated, use `one_hot_pair` instead"):
+        cls_to_bin(labels, outputs)

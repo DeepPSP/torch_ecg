@@ -62,7 +62,7 @@ Data operations
     mask_to_intervals
     uniform
     stratified_train_test_split
-    cls_to_bin
+    one_hot_encode
     generate_weight_mask
 
 Interval operations
@@ -190,13 +190,13 @@ from .utils_data import (
     ECGWaveForm,
     ECGWaveFormNames,
     class_weight_to_sample_weight,
-    cls_to_bin,
     ensure_lead_fmt,
     ensure_siglen,
     generate_weight_mask,
     get_mask,
     mask_to_intervals,
     masks_to_waveforms,
+    one_hot_encode,
     stratified_train_test_split,
     uniform,
 )
@@ -287,7 +287,7 @@ __all__ = [
     "mask_to_intervals",
     "uniform",
     "stratified_train_test_split",
-    "cls_to_bin",
+    "one_hot_encode",
     "generate_weight_mask",
     "overlaps",
     "validate_interval",

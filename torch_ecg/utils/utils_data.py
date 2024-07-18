@@ -20,6 +20,7 @@ from wfdb import MultiRecord, Record
 from wfdb.io import _header
 
 from ..cfg import CFG, DEFAULTS
+from .misc import add_docstring
 
 __all__ = [
     "get_mask",
@@ -33,7 +34,7 @@ __all__ = [
     "mask_to_intervals",
     "uniform",
     "stratified_train_test_split",
-    "cls_to_bin",
+    "one_hot_encode",
     "generate_weight_mask",
 ]
 
@@ -688,7 +689,7 @@ def stratified_train_test_split(
         )
     stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
     # map to str to avoid incorrect comparison of nan values
-    df_inspection = df[stratified_cols].copy().applymap(str)
+    df_inspection = df[stratified_cols].copy().map(str)
     for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
@@ -716,22 +717,27 @@ def stratified_train_test_split(
     return df_train, df_test
 
 
-def cls_to_bin(cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None) -> np.ndarray:
+def one_hot_encode(
+    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> np.ndarray:
     """Convert a categorical array to a one-hot array.
 
-    Convert a categorical (class indices) array of shape ``(n,)``
-    to a one-hot (binary) array of shape ``(n, num_classes)``.
+    Convert a categorical (class indices) array of shape ``(num_samples,)``
+    to a one-hot (binary) array of shape ``(num_samples, num_classes)``.
 
     Parameters
     ----------
-    cls_array : numpy.ndarray or torch.Tensor
-        Class indices array (tensor) of shape ``(num_samples,)``;
+    cls_array : numpy.ndarray or torch.Tensor or Sequence[Sequence[int]]]
+        Class indices array (tensor) of shape ``(num_samples,)`` (single-class case),
+        or a list of list of class indices (multi-class case);
         or of shape ``(num_samples, num_samples)`` if `num_classes` is not None,
         in which case `cls_array` should be consistant with `num_classes`,
         and the function will return `cls_array` directly.
     num_classes : int, optional
         Number of classes. If not specified,
         it will be inferred from the values of `cls_array`.
+    dtype : type, default np.float32
+        Data type of the output binary array.
 
     Returns
     -------
@@ -741,29 +747,47 @@ def cls_to_bin(cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] 
     Examples
     --------
     >>> cls_array = torch.randint(0, 26, size=(1000,))
-    >>> bin_array = cls_to_bin(cls_array)
+    >>> bin_array = one_hot_encode(cls_array)
     >>> cls_array = np.random.randint(0, 26, size=(1000,))
-    >>> bin_array = cls_to_bin(cls_array)
+    >>> bin_array = one_hot_encode(cls_array)
+    >>> cls_array = [[1, 5], [2], [0, 1, 4]]
+    >>> bin_array = one_hot_encode(cls_array, num_classes=7)
 
     """
     if isinstance(cls_array, Tensor):
         cls_array = cls_array.cpu().numpy()
     if num_classes is None:
-        assert cls_array.ndim == 1, "`cls_array` should be 1D if num_classes is not specified"
-        num_classes = cls_array.max() + 1
-    if cls_array.ndim == 1:
+        if isinstance(cls_array, np.ndarray):
+            assert cls_array.ndim == 1, "`cls_array` should be 1D if num_classes is not specified"
+            num_classes = cls_array.max() + 1
+        else:  # sequence of sequences of class indices
+            num_classes = max([max(c) for c in cls_array]) + 1
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 1:
         assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
             "num_classes must be greater than 0 and greater than or equal to "
             "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
         )
-    if cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
+    elif isinstance(cls_array, Sequence):
+        assert all(
+            [max(c) < num_classes for c in cls_array]
+        ), "all values in the multi-class `cls_array` should be less than `num_classes`"
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:
-        shape = (cls_array.shape[0], num_classes)
+        shape = (len(cls_array), num_classes)
         bin_array = np.zeros(shape)
         for i in range(shape[0]):
             bin_array[i, cls_array[i]] = 1
-    return bin_array
+    return bin_array.astype(dtype)
+
+
+@add_docstring(one_hot_encode.__doc__.replace("one_hot_encode", "cls_to_bin"))
+def cls_to_bin(
+    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> np.ndarray:
+    """Alias of `one_hot_encode`."""
+    warnings.warn("`cls_to_bin` is deprecated, use `one_hot_encode` instead", DeprecationWarning)
+    return one_hot_encode(cls_array, num_classes, dtype)
 
 
 def generate_weight_mask(

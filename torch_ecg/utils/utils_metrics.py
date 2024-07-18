@@ -112,7 +112,7 @@ def confusion_matrix(
         Confusion matrix, of shape ``(n_classes, n_classes)``.
 
     """
-    labels, outputs = cls_to_bin(labels, outputs, num_classes)
+    labels, outputs = one_hot_pair(labels, outputs, num_classes)
     assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
     assert all([value in (0, 1) for value in np.unique(labels)]), "labels must be binary"
     assert all([value in (0, 1) for value in np.unique(outputs)]), "outputs must be binary"
@@ -156,7 +156,7 @@ def one_vs_rest_confusion_matrix(
         One-vs-rest confusion matrix, of shape ``(n_classes, 2, 2)``.
 
     """
-    labels, outputs = cls_to_bin(labels, outputs, num_classes)
+    labels, outputs = one_hot_pair(labels, outputs, num_classes)
     assert np.shape(labels) == np.shape(outputs), "labels and outputs must have the same shape"
     assert all([value in (0, 1) for value in np.unique(labels)]), "labels must be binary"
     assert all([value in (0, 1) for value in np.unique(outputs)]), "outputs must be binary"
@@ -240,17 +240,17 @@ def metrics_from_confusion_matrix(
     >>> # binarize outputs (100 samples, 10 classes, multi-label)
     >>> outputs = DEFAULTS.RNG_randint(0, 1, (100, 10))
     >>> # would raise
-    >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
+    >>> # RuntimeWarning: `outputs` is probably binary or categorical, AUC may be incorrect
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
     >>> # categorical outputs (100 samples, 10 classes)
     >>> outputs = DEFAULTS.RNG_randint(0, 9, (100,))
     >>> # would raise
-    >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
+    >>> # RuntimeWarning: `outputs` is probably binary or categorical, AUC may be incorrect
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
 
     """
     outputs_ndim = np.ndim(outputs)
-    labels, outputs = cls_to_bin(labels, outputs, num_classes)
+    labels, outputs = one_hot_pair(labels, outputs, num_classes)
     num_samples, num_classes = np.shape(labels)
 
     # probability outputs to binary outputs
@@ -258,7 +258,7 @@ def metrics_from_confusion_matrix(
     bin_outputs[outputs >= thr] = 1
     bin_outputs[outputs < thr] = 0
     if np.unique(outputs).size == 2:
-        warnings.warn("`outputs` is probably binary, AUC may be incorrect", RuntimeWarning)
+        warnings.warn("`outputs` is probably binary or categorical, AUC may be incorrect", RuntimeWarning)
 
     ovr_cm = ovr_confusion_matrix(labels, bin_outputs)
 
@@ -678,22 +678,25 @@ def QRS_score(
     return rec_acc
 
 
-def cls_to_bin(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+def one_hot_pair(
+    labels: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
+    outputs: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
     num_classes: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Convert categorical (of shape ``(n_samples,)``) labels and outputs
+    """Convert categorical (of shape ``(n_samples,)``) labels and outputs
     to binary (of shape ``(n_samples, n_classes)``) labels and outputs if applicable.
 
     Parameters
     ----------
-    labels : numpy.ndarray or torch.Tensor
+    labels : numpy.ndarray or torch.Tensor or Sequence[Sequence[int]]
         Categorical labels of shape ``(n_samples,)``,
+        or categorical labels of length ``(n_samples,)``
+        where each element is a sequence of class indices (multi-label),
         or binary labels of shape ``(n_samples, n_classes)``.
-    outputs : numpy.ndarray or torch.Tensor
-        Categorical outputs of shape ``(n_samples,)``,
+    outputs : numpy.ndarray or torch.Tensor or Sequence[Sequence[int]]
+        Categorical outputs of shape ``(n_samples,)`` (single-label),
+        or categorical outputs of length ``(n_samples,)``
+        where each element is a sequence of class indices (multi-label),
         or binary outputs of shape ``(n_samples, n_classes)``.
     num_classes : int, optional
         Number of classes.
@@ -711,40 +714,56 @@ def cls_to_bin(
         labels = labels.cpu().numpy()
     if isinstance(outputs, Tensor):
         outputs = outputs.cpu().numpy()
-    if labels.ndim == outputs.ndim == 1:
-        assert num_classes is not None, "num_classes is required if both labels and outputs are categorical"
-        shape = (labels.shape[0], num_classes)
-        labels = _cls_to_bin(labels, shape)
-        outputs = _cls_to_bin(outputs, shape)
-    elif labels.ndim == 1:
-        shape = outputs.shape
-        labels = _cls_to_bin(labels, shape)
-    elif outputs.ndim == 1:
-        shape = labels.shape
-        outputs = _cls_to_bin(outputs, shape)
+
+    if num_classes is None:  # determine `num_classes`
+        if isinstance(labels, np.ndarray) and labels.ndim == 2:
+            num_classes = labels.shape[1]
+        elif isinstance(outputs, np.ndarray) and outputs.ndim == 2:
+            num_classes = outputs.shape[1]
+    assert num_classes is not None, "num_classes is required if both labels and outputs are categorical"
+
+    shape = (len(labels), num_classes)
+    labels = _one_hot_pair(labels, shape)
+    outputs = _one_hot_pair(outputs, shape)
+
     return labels, outputs
 
 
-def _cls_to_bin(cls: np.ndarray, shape: Tuple[int]) -> np.ndarray:
+def _one_hot_pair(cls_array: Union[np.ndarray, Sequence[Sequence[int]]], shape: Tuple[int]) -> np.ndarray:
     """Convert categorical array to binary array.
 
     Parameters
     ----------
-    cls : numpy.ndarray
-        Categorical array of shape ``(n_samples,)``.
+    cls_array : numpy.ndarray or Sequence[Sequence[int]]
+        Categorical array of shape ``(n_samples,)``,
+        where each element is a sequence of class indices (multi-label),
+        or an integer of class index (single-label).
     shape: tuple,
         Shape of binary array.
 
     Returns
     -------
     numpy.ndarray
-        Binarized array of `cls` of shape ``(n_samples, n_classes)``.
+        Binarized array of `cls_array` of shape ``(n_samples, n_classes)``.
 
     """
-    bin_ = np.zeros(shape)
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2:
+        return cls_array
+    bin_array = np.zeros(shape)
     for i in range(shape[0]):
-        bin_[i, cls[i]] = 1
-    return bin_
+        bin_array[i, cls_array[i]] = 1
+    return bin_array
+
+
+@add_docstring(one_hot_pair.__doc__)
+def cls_to_bin(
+    labels: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
+    outputs: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
+    num_classes: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Alias of `one_hot_pair`."""
+    warnings.warn("`cls_to_bin` is deprecated, use `one_hot_pair` instead", DeprecationWarning)
+    return one_hot_pair(labels, outputs, num_classes)
 
 
 def compute_wave_delineation_metrics(
