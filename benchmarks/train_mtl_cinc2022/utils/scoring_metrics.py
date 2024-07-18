@@ -9,7 +9,7 @@ from cfg import BaseCfg
 from deprecated import deprecated
 from outputs import CINC2022Outputs
 
-from torch_ecg.utils.utils_metrics import _cls_to_bin
+from torch_ecg.utils.utils_metrics import _one_hot_pair
 
 __all__ = [
     "compute_challenge_metrics",
@@ -116,7 +116,7 @@ def compute_challenge_metrics(
         murmur_binary_outputs = np.concatenate([np.atleast_2d(item.murmur_output.bin_pred) for item in outputs])
         murmur_classes = outputs[0].murmur_output.classes
         if murmur_labels.ndim == 1:
-            murmur_labels = _cls_to_bin(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
+            murmur_labels = _one_hot_pair(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 murmur_labels,
@@ -132,7 +132,7 @@ def compute_challenge_metrics(
         outcome_binary_outputs = np.concatenate([np.atleast_2d(item.outcome_output.bin_pred) for item in outputs])
         outcome_classes = outputs[0].outcome_output.classes
         if outcome_labels.ndim == 1:
-            outcome_labels = _cls_to_bin(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
+            outcome_labels = _one_hot_pair(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 outcome_labels,

@@ -41,7 +41,7 @@ from torch_ecg.models._nets import MLP
 from torch_ecg.models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
 from torch_ecg.utils.misc import ReprMixin, add_docstring, get_kwargs, get_record_list_recursive3, list_sum
 from torch_ecg.utils.utils_data import ensure_siglen, stratified_train_test_split
-from torch_ecg.utils.utils_metrics import _cls_to_bin
+from torch_ecg.utils.utils_metrics import _one_hot_pair
 from torch_ecg.utils.utils_nn import SizeMixin, adjust_cnn_filter_lengths, default_collate_fn
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 
@@ -2415,7 +2415,7 @@ def compute_challenge_metrics(
         murmur_binary_outputs = np.concatenate([np.atleast_2d(item.murmur_output.bin_pred) for item in outputs])
         murmur_classes = outputs[0].murmur_output.classes
         if murmur_labels.ndim == 1:
-            murmur_labels = _cls_to_bin(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
+            murmur_labels = _one_hot_pair(murmur_labels, shape=(len(murmur_labels), len(murmur_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 murmur_labels,
@@ -2431,7 +2431,7 @@ def compute_challenge_metrics(
         outcome_binary_outputs = np.concatenate([np.atleast_2d(item.outcome_output.bin_pred) for item in outputs])
         outcome_classes = outputs[0].outcome_output.classes
         if outcome_labels.ndim == 1:
-            outcome_labels = _cls_to_bin(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
+            outcome_labels = _one_hot_pair(outcome_labels, shape=(len(outcome_labels), len(outcome_classes)))
         metrics.update(
             _compute_challenge_metrics(
                 outcome_labels,
