@@ -689,7 +689,10 @@ def stratified_train_test_split(
         )
     stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
     # map to str to avoid incorrect comparison of nan values
-    df_inspection = df[stratified_cols].copy().map(str)
+    try:
+        df_inspection = df[stratified_cols].copy().map(str)
+    except AttributeError:
+        df_inspection = df[stratified_cols].copy().applymap(str)
     for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
