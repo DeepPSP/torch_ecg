@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.utils.utils_nn &mdash; torch-ecg 0.0.27 documentation</title>
+  <title>torch_ecg.utils.utils_nn &mdash; torch-ecg 0.0.28 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -45,7 +45,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.27 documentation" href="../../../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.28 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -158,6 +158,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.databases.QTDB.html">QTDB</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB"><code class="docutils literal notranslate"><span class="pre">QTDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.databases.PTBXL.html">PTBXL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL"><code class="docutils literal notranslate"><span class="pre">PTBXL</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1116,6 +1120,7 @@
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
+<span class="kn">from</span> <span class="nn">.download</span> <span class="kn">import</span> <span class="n">http_get</span>
 <span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">make_serializable</span>
 <span class="kn">from</span> <span class="nn">.utils_data</span> <span class="kn">import</span> <span class="n">cls_to_bin</span>
 
@@ -1812,7 +1817,8 @@
             <span class="s2">&quot;torch.int64&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
             <span class="s2">&quot;torch.uint8&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">*</span> <span class="n">size_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span><span class="p">])</span>
+        <span class="c1"># n_params = sum([np.prod(item.size()) * size_dict[str(item.dtype)] for item in tensor_containers])</span>
+        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">item</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">size_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span><span class="p">])</span>
         <span class="n">div_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">n_params</span> <span class="o">&gt;=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">:</span>
             <span class="n">n_params</span> <span class="o">/=</span> <span class="mi">1024</span>
@@ -1820,7 +1826,8 @@
         <span class="n">cvt_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">u</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s2">&quot;BKMGTP&quot;</span><span class="p">))}</span>
         <span class="n">n_params</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">n_params</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}{</span><span class="n">cvt_dict</span><span class="p">[</span><span class="n">div_count</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span><span class="p">]))</span>
+        <span class="c1"># n_params = int(sum([np.prod(item.size()) for item in tensor_containers]))</span>
+        <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">item</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tensor_containers</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">n_params</span></div>
 
 
@@ -2084,18 +2091,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of trainable parameters in the model in terms of number of parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">module_size_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of trainable parameters in the model in terms of memory capacity.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of the model in terms of number of parameters, including non-trainable parameters and buffers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sizeof_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of the model in terms of memory capacity, including non-trainable parameters and buffers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -2137,7 +2148,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path : `path-like`</span>
-<span class="sd">            Path of the checkpoint.</span>
+<span class="sd">            Path to the checkpoint.</span>
+<span class="sd">            If it is a directory, then this directory should contain only one checkpoint file</span>
+<span class="sd">            (with the extension `.pth` or `.pt`).</span>
 <span class="sd">        device : torch.device, optional</span>
 <span class="sd">            Map location of the model parameters,</span>
 <span class="sd">            defaults to &quot;cuda&quot; if available, otherwise &quot;cpu&quot;.</span>
@@ -2150,6 +2163,10 @@
 <span class="sd">            Auxiliary configs that are needed for data preprocessing, etc.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pth&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pt&quot;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;The directory should contain only one checkpoint file&quot;</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">_device</span> <span class="o">=</span> <span class="n">device</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span>
         <span class="n">ckpt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">_device</span><span class="p">)</span>
         <span class="n">aux_config</span> <span class="o">=</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train_config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -2164,6 +2181,39 @@
         <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span></div>
+
+<div class="viewcode-block" id="CkptMixin.from_remote"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.from_remote">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_remote</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">model_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the model from the remote model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url : str</span>
+<span class="sd">            URL of the remote model.</span>
+<span class="sd">        model_dir : `path-like`</span>
+<span class="sd">            Path for downloading the model.</span>
+<span class="sd">        filename : str, optional</span>
+<span class="sd">            Filename of the model to save, defaults to the basename of the URL.</span>
+<span class="sd">        device : torch.device, optional</span>
+<span class="sd">            Map location of the model parameters,</span>
+<span class="sd">            defaults to &quot;cuda&quot; if available, otherwise &quot;cpu&quot;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        model : torch.nn.Module</span>
+<span class="sd">            The model loaded from a checkpoint.</span>
+<span class="sd">        aux_config : dict</span>
+<span class="sd">            Auxiliary configs that are needed for data preprocessing, etc.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">http_get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CkptMixin.save"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
@@ -2225,7 +2275,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.27',
+            VERSION:'0.0.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.databases.datasets.cpsc2021.cpsc2021_dataset &mdash; torch-ecg 0.0.27 documentation</title>
+  <title>torch_ecg.databases.datasets.cpsc2021.cpsc2021_dataset &mdash; torch-ecg 0.0.28 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
   
@@ -45,7 +45,7 @@
         <link rel="index" title="Index"
               href="../../../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../../../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.27 documentation" href="../../../../../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.28 documentation" href="../../../../../index.html"/>
         <link rel="up" title="Module code" href="../../../../index.html"/> 
 
   
@@ -158,6 +158,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.QTDB.html">QTDB</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB"><code class="docutils literal notranslate"><span class="pre">QTDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PTBXL.html">PTBXL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL"><code class="docutils literal notranslate"><span class="pre">PTBXL</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1154,6 +1158,7 @@
 <span class="kn">from</span> <span class="nn">....databases</span> <span class="kn">import</span> <span class="n">CPSC2021</span> <span class="k">as</span> <span class="n">CR</span>
 <span class="kn">from</span> <span class="nn">....utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">get_record_list_recursive3</span><span class="p">,</span> <span class="n">list_sum</span><span class="p">,</span> <span class="n">nildent</span>
 <span class="kn">from</span> <span class="nn">....utils.utils_data</span> <span class="kn">import</span> <span class="n">generate_weight_mask</span><span class="p">,</span> <span class="n">mask_to_intervals</span>
+<span class="kn">from</span> <span class="nn">....utils.utils_nn</span> <span class="kn">import</span> <span class="n">default_collate_fn</span> <span class="k">as</span> <span class="n">collate_fn</span>
 <span class="kn">from</span> <span class="nn">....utils.utils_signal</span> <span class="kn">import</span> <span class="n">remove_spikes_naive</span>
 <span class="kn">from</span> <span class="nn">.cpsc2021_cfg</span> <span class="kn">import</span> <span class="n">CPSC2021TrainCfg</span>
 
@@ -1483,7 +1488,7 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lazy</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;qrs_detection&quot;</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fdr</span><span class="p">[</span><span class="n">index</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
@@ -2536,7 +2541,9 @@
             <span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;af_mask&quot;</span><span class="p">,</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">collate_fn</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">index</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="s2">&quot;qrs_detection&quot;</span><span class="p">,</span>
             <span class="s2">&quot;main&quot;</span><span class="p">,</span>
@@ -2641,7 +2648,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../../../',
-            VERSION:'0.0.27',
+            VERSION:'0.0.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

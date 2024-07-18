@@ -1,0 +1,1687 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torch_ecg.databases.physionet_databases.ptb_xl &mdash; torch-ecg 0.0.28 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="torch-ecg 0.0.28 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> torch-ecg
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../databases.html">torch_ecg.databases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#base-classes">Base classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PhysioNetDataBase.html">PhysioNetDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PhysioNetDataBase.html#torch_ecg.databases.PhysioNetDataBase"><code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.NSRRDataBase.html">NSRRDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase"><code class="docutils literal notranslate"><span class="pre">NSRRDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSCDataBase.html">CPSCDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSCDataBase.html#torch_ecg.databases.CPSCDataBase"><code class="docutils literal notranslate"><span class="pre">CPSCDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PSGDataBaseMixin.html">PSGDataBaseMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PSGDataBaseMixin.html#torch_ecg.databases.PSGDataBaseMixin"><code class="docutils literal notranslate"><span class="pre">PSGDataBaseMixin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#physionet-database-readers">PhysioNet database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.AFDB.html">AFDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.AFDB.html#torch_ecg.databases.AFDB"><code class="docutils literal notranslate"><span class="pre">AFDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.ApneaECG.html">ApneaECG</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG"><code class="docutils literal notranslate"><span class="pre">ApneaECG</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2017.html">CINC2017</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2017.html#torch_ecg.databases.CINC2017"><code class="docutils literal notranslate"><span class="pre">CINC2017</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2018.html">CINC2018</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018"><code class="docutils literal notranslate"><span class="pre">CINC2018</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2020.html">CINC2020</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2020.html#torch_ecg.databases.CINC2020"><code class="docutils literal notranslate"><span class="pre">CINC2020</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2021.html">CINC2021</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021"><code class="docutils literal notranslate"><span class="pre">CINC2021</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.LTAFDB.html">LTAFDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.LTAFDB.html#torch_ecg.databases.LTAFDB"><code class="docutils literal notranslate"><span class="pre">LTAFDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.LUDB.html">LUDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.LUDB.html#torch_ecg.databases.LUDB"><code class="docutils literal notranslate"><span class="pre">LUDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.MITDB.html">MITDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.MITDB.html#torch_ecg.databases.MITDB"><code class="docutils literal notranslate"><span class="pre">MITDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.QTDB.html">QTDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB"><code class="docutils literal notranslate"><span class="pre">QTDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PTBXL.html">PTBXL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL"><code class="docutils literal notranslate"><span class="pre">PTBXL</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#cpsc-database-readers">CPSC database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2018.html">CPSC2018</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018"><code class="docutils literal notranslate"><span class="pre">CPSC2018</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2019.html">CPSC2019</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2019.html#torch_ecg.databases.CPSC2019"><code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2020.html">CPSC2020</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2020.html#torch_ecg.databases.CPSC2020"><code class="docutils literal notranslate"><span class="pre">CPSC2020</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2021.html">CPSC2021</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CPSC2021.html#torch_ecg.databases.CPSC2021"><code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#nsrr-database-readers">NSRR database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.SHHS.html">SHHS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS"><code class="docutils literal notranslate"><span class="pre">SHHS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#other-database-readers">Other database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CACHET_CADB.html">CACHET_CADB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB"><code class="docutils literal notranslate"><span class="pre">CACHET_CADB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.SPH.html">SPH</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.SPH.html#torch_ecg.databases.SPH"><code class="docutils literal notranslate"><span class="pre">SPH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../databases.html#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.BeatAnn.html">BeatAnn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.BeatAnn.html#torch_ecg.databases.BeatAnn"><code class="docutils literal notranslate"><span class="pre">BeatAnn</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../databases.html#torch-ecg-databases-datasets">torch_ecg.databases.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html">CINC2020Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html">CINC2021Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.empty"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.from_extern"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.from_extern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.reload_from_extern"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.reload_from_extern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.signals</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.to"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.to()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html">CPSC2019Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html">CPSC2021Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.load_preprocessed_data"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.load_preprocessed_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.plot_seg"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.plot_seg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.reset_task"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.reset_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html">LUDBDataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset"><code class="docutils literal notranslate"><span class="pre">LUDBDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.labels"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.signals"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html">MITDBDataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset"><code class="docutils literal notranslate"><span class="pre">MITDBDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.persistence"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.plot_seg"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.plot_seg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.reset_task"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.reset_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../models.html">torch_ecg.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../models.html#convolutional-neural-backbones">Convolutional neural backbones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.ResNet.html">ResNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.ResNet.html#torch_ecg.models.ResNet"><code class="docutils literal notranslate"><span class="pre">ResNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.RegNet.html">RegNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.RegNet.html#torch_ecg.models.RegNet"><code class="docutils literal notranslate"><span class="pre">RegNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.VGG16.html">VGG16</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.VGG16.html#torch_ecg.models.VGG16"><code class="docutils literal notranslate"><span class="pre">VGG16</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.Xception.html">Xception</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception"><code class="docutils literal notranslate"><span class="pre">Xception</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.DenseNet.html">DenseNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.DenseNet.html#torch_ecg.models.DenseNet"><code class="docutils literal notranslate"><span class="pre">DenseNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV1.html">MobileNetV1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV1.html#torch_ecg.models.MobileNetV1"><code class="docutils literal notranslate"><span class="pre">MobileNetV1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV2.html">MobileNetV2</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV2.html#torch_ecg.models.MobileNetV2"><code class="docutils literal notranslate"><span class="pre">MobileNetV2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV3.html">MobileNetV3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.MobileNetV3.html#torch_ecg.models.MobileNetV3"><code class="docutils literal notranslate"><span class="pre">MobileNetV3</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.MultiScopicCNN.html">MultiScopicCNN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN"><code class="docutils literal notranslate"><span class="pre">MultiScopicCNN</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../models.html#downstream-task-models">Downstream task models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_UNET.html">ECG_UNET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET"><code class="docutils literal notranslate"><span class="pre">ECG_UNET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_SUBTRACT_UNET.html">ECG_SUBTRACT_UNET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_SUBTRACT_UNET.html#torch_ecg.models.ECG_SUBTRACT_UNET"><code class="docutils literal notranslate"><span class="pre">ECG_SUBTRACT_UNET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_CRNN.html">ECG_CRNN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN"><code class="docutils literal notranslate"><span class="pre">ECG_CRNN</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_SEQ_LAB_NET.html">ECG_SEQ_LAB_NET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.ECG_SEQ_LAB_NET.html#torch_ecg.models.ECG_SEQ_LAB_NET"><code class="docutils literal notranslate"><span class="pre">ECG_SEQ_LAB_NET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.RR_LSTM.html">RR_LSTM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.RR_LSTM.html#torch_ecg.models.RR_LSTM"><code class="docutils literal notranslate"><span class="pre">RR_LSTM</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../models.html#saliency-analysis">Saliency analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.GradCam.html">GradCam</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.GradCam.html#torch_ecg.models.GradCam"><code class="docutils literal notranslate"><span class="pre">GradCam</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../losses.html">torch_ecg.models.loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss.forward"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.forward"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html">MaskedBCEWithLogitsLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.FocalLoss.html">FocalLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss"><code class="docutils literal notranslate"><span class="pre">FocalLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss.forward"><code class="docutils literal notranslate"><span class="pre">FocalLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html">AsymmetricLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../augmenters.html">torch_ecg.augmenters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager"><code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.augmenters"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.augmenters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.extra_repr"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.extra_repr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.forward"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.from_config"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.rearrange"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Augmenter.html">Augmenter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter"><code class="docutils literal notranslate"><span class="pre">Augmenter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.forward"><code class="docutils literal notranslate"><span class="pre">Augmenter.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.get_indices"><code class="docutils literal notranslate"><span class="pre">Augmenter.get_indices()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.forward"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.CutMix.html">CutMix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix"><code class="docutils literal notranslate"><span class="pre">CutMix</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CutMix.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix.forward"><code class="docutils literal notranslate"><span class="pre">CutMix.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.LabelSmooth.html">LabelSmooth</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth"><code class="docutils literal notranslate"><span class="pre">LabelSmooth</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">LabelSmooth.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth.forward"><code class="docutils literal notranslate"><span class="pre">LabelSmooth.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Mixup.html">Mixup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup"><code class="docutils literal notranslate"><span class="pre">Mixup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Mixup.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup.forward"><code class="docutils literal notranslate"><span class="pre">Mixup.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomFlip.html">RandomFlip</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip"><code class="docutils literal notranslate"><span class="pre">RandomFlip</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomFlip.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip.forward"><code class="docutils literal notranslate"><span class="pre">RandomFlip.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomMasking.html">RandomMasking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking"><code class="docutils literal notranslate"><span class="pre">RandomMasking</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomMasking.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking.forward"><code class="docutils literal notranslate"><span class="pre">RandomMasking.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomRenormalize.html">RandomRenormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize.forward"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompress.html">StretchCompress</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress"><code class="docutils literal notranslate"><span class="pre">StretchCompress</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">StretchCompress.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.forward"><code class="docutils literal notranslate"><span class="pre">StretchCompress.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html">StretchCompressOffline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.generate"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline.generate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors.html">torch_ecg._preprocessors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html">PreprocManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">PreprocManager.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.from_config"><code class="docutils literal notranslate"><span class="pre">PreprocManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.rearrange"><code class="docutils literal notranslate"><span class="pre">PreprocManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreProcessor.html">PreProcessor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor"><code class="docutils literal notranslate"><span class="pre">PreProcessor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor.apply"><code class="docutils literal notranslate"><span class="pre">PreProcessor.apply()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BandPass.html">BandPass</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass"><code class="docutils literal notranslate"><span class="pre">BandPass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass.apply"><code class="docutils literal notranslate"><span class="pre">BandPass.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BandPass.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BaselineRemove.html">BaselineRemove</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove"><code class="docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove.apply"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Normalize.html">Normalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize"><code class="docutils literal notranslate"><span class="pre">Normalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize.apply"><code class="docutils literal notranslate"><span class="pre">Normalize.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Normalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html">MinMaxNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html#torch_ecg._preprocessors.MinMaxNormalize"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html#torch_ecg._preprocessors.MinMaxNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html">NaiveNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html#torch_ecg._preprocessors.NaiveNormalize"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html#torch_ecg._preprocessors.NaiveNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html">ZScoreNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html#torch_ecg._preprocessors.ZScoreNormalize"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html#torch_ecg._preprocessors.ZScoreNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Resample.html">Resample</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample.apply"><code class="docutils literal notranslate"><span class="pre">Resample.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Resample.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html">torch_ecg._preprocessors.preprocess_multi_lead_signal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html#torch_ecg._preprocessors.preprocess_multi_lead_signal"><code class="docutils literal notranslate"><span class="pre">preprocess_multi_lead_signal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.preprocess_single_lead_signal.html">torch_ecg._preprocessors.preprocess_single_lead_signal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg._preprocessors.preprocess_single_lead_signal.html#torch_ecg._preprocessors.preprocess_single_lead_signal"><code class="docutils literal notranslate"><span class="pre">preprocess_single_lead_signal()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">PreprocManager.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward"><code class="docutils literal notranslate"><span class="pre">PreprocManager.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.from_config"><code class="docutils literal notranslate"><span class="pre">PreprocManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.rearrange"><code class="docutils literal notranslate"><span class="pre">PreprocManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BandPass.html">BandPass</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass"><code class="docutils literal notranslate"><span class="pre">BandPass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass.forward"><code class="docutils literal notranslate"><span class="pre">BandPass.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BaselineRemove.html">BaselineRemove</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove"><code class="docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove.forward"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Normalize.html">Normalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize"><code class="docutils literal notranslate"><span class="pre">Normalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize.forward"><code class="docutils literal notranslate"><span class="pre">Normalize.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.MinMaxNormalize.html">MinMaxNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.MinMaxNormalize.html#torch_ecg.preprocessors.MinMaxNormalize"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.NaiveNormalize.html">NaiveNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.NaiveNormalize.html#torch_ecg.preprocessors.NaiveNormalize"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.ZScoreNormalize.html">ZScoreNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.ZScoreNormalize.html#torch_ecg.preprocessors.ZScoreNormalize"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Resample.html">Resample</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample.forward"><code class="docutils literal notranslate"><span class="pre">Resample.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../components.html">torch_ecg.components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../components.html#input-classes">Input classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.InputConfig.html">InputConfig</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.InputConfig.html#torch_ecg.components.InputConfig"><code class="docutils literal notranslate"><span class="pre">InputConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveformInput.html">WaveformInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveformInput.html#torch_ecg.components.WaveformInput"><code class="docutils literal notranslate"><span class="pre">WaveformInput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.FFTInput.html">FFTInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput"><code class="docutils literal notranslate"><span class="pre">FFTInput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.SpectrogramInput.html">SpectrogramInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput"><code class="docutils literal notranslate"><span class="pre">SpectrogramInput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../components.html#output-classes">Output classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.ClassificationOutput.html">ClassificationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.ClassificationOutput.html#torch_ecg.components.ClassificationOutput"><code class="docutils literal notranslate"><span class="pre">ClassificationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.MultiLabelClassificationOutput.html">MultiLabelClassificationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.MultiLabelClassificationOutput.html#torch_ecg.components.MultiLabelClassificationOutput"><code class="docutils literal notranslate"><span class="pre">MultiLabelClassificationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.SequenceTaggingOutput.html">SequenceTaggingOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.SequenceTaggingOutput.html#torch_ecg.components.SequenceTaggingOutput"><code class="docutils literal notranslate"><span class="pre">SequenceTaggingOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.SequenceLabellingOutput.html">SequenceLabellingOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.SequenceLabellingOutput.html#torch_ecg.components.SequenceLabellingOutput"><code class="docutils literal notranslate"><span class="pre">SequenceLabellingOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveDelineationOutput.html">WaveDelineationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveDelineationOutput.html#torch_ecg.components.WaveDelineationOutput"><code class="docutils literal notranslate"><span class="pre">WaveDelineationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.RPeaksDetectionOutput.html">RPeaksDetectionOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.RPeaksDetectionOutput.html#torch_ecg.components.RPeaksDetectionOutput"><code class="docutils literal notranslate"><span class="pre">RPeaksDetectionOutput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../components.html#loggers">Loggers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.LoggerManager.html">LoggerManager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager"><code class="docutils literal notranslate"><span class="pre">LoggerManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../components.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.ClassificationMetrics.html">ClassificationMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics"><code class="docutils literal notranslate"><span class="pre">ClassificationMetrics</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.RPeaksDetectionMetrics.html">RPeaksDetectionMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.RPeaksDetectionMetrics.html#torch_ecg.components.RPeaksDetectionMetrics"><code class="docutils literal notranslate"><span class="pre">RPeaksDetectionMetrics</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveDelineationMetrics.html">WaveDelineationMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics"><code class="docutils literal notranslate"><span class="pre">WaveDelineationMetrics</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../components.html#trainer">Trainer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.components.BaseTrainer.html">BaseTrainer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer"><code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torch_ecg.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#neural-network-auxiliary-functions-and-classes">Neural network auxiliary functions and classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.extend_predictions.html">torch_ecg.utils.extend_predictions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions"><code class="docutils literal notranslate"><span class="pre">extend_predictions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_output_shape.html">torch_ecg.utils.compute_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_output_shape.html#torch_ecg.utils.compute_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_conv_output_shape.html">torch_ecg.utils.compute_conv_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_conv_output_shape.html#torch_ecg.utils.compute_conv_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_conv_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_deconv_output_shape.html">torch_ecg.utils.compute_deconv_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_deconv_output_shape.html#torch_ecg.utils.compute_deconv_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_deconv_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_maxpool_output_shape.html">torch_ecg.utils.compute_maxpool_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_maxpool_output_shape.html#torch_ecg.utils.compute_maxpool_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_maxpool_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_avgpool_output_shape.html">torch_ecg.utils.compute_avgpool_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_avgpool_output_shape.html#torch_ecg.utils.compute_avgpool_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_avgpool_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_sequential_output_shape.html">torch_ecg.utils.compute_sequential_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_sequential_output_shape.html#torch_ecg.utils.compute_sequential_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_sequential_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_module_size.html">torch_ecg.utils.compute_module_size</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_module_size.html#torch_ecg.utils.compute_module_size"><code class="docutils literal notranslate"><span class="pre">compute_module_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.default_collate_fn.html">torch_ecg.utils.default_collate_fn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.default_collate_fn.html#torch_ecg.utils.default_collate_fn"><code class="docutils literal notranslate"><span class="pre">default_collate_fn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_receptive_field.html">torch_ecg.utils.compute_receptive_field</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_receptive_field.html#torch_ecg.utils.compute_receptive_field"><code class="docutils literal notranslate"><span class="pre">compute_receptive_field()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.adjust_cnn_filter_lengths.html">torch_ecg.utils.adjust_cnn_filter_lengths</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.adjust_cnn_filter_lengths.html#torch_ecg.utils.adjust_cnn_filter_lengths"><code class="docutils literal notranslate"><span class="pre">adjust_cnn_filter_lengths()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.SizeMixin.html">SizeMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.SizeMixin.html#torch_ecg.utils.SizeMixin"><code class="docutils literal notranslate"><span class="pre">SizeMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.CkptMixin.html">CkptMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin"><code class="docutils literal notranslate"><span class="pre">CkptMixin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#signal-processing-functions">Signal processing functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.smooth.html">torch_ecg.utils.smooth</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.smooth.html#torch_ecg.utils.smooth"><code class="docutils literal notranslate"><span class="pre">smooth()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.resample_irregular_timeseries.html">torch_ecg.utils.resample_irregular_timeseries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.resample_irregular_timeseries.html#torch_ecg.utils.resample_irregular_timeseries"><code class="docutils literal notranslate"><span class="pre">resample_irregular_timeseries()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.detect_peaks.html">torch_ecg.utils.detect_peaks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.detect_peaks.html#torch_ecg.utils.detect_peaks"><code class="docutils literal notranslate"><span class="pre">detect_peaks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.remove_spikes_naive.html">torch_ecg.utils.remove_spikes_naive</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.remove_spikes_naive.html#torch_ecg.utils.remove_spikes_naive"><code class="docutils literal notranslate"><span class="pre">remove_spikes_naive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.butter_bandpass_filter.html">torch_ecg.utils.butter_bandpass_filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.butter_bandpass_filter.html#torch_ecg.utils.butter_bandpass_filter"><code class="docutils literal notranslate"><span class="pre">butter_bandpass_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_ampl.html">torch_ecg.utils.get_ampl</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_ampl.html#torch_ecg.utils.get_ampl"><code class="docutils literal notranslate"><span class="pre">get_ampl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.normalize.html">torch_ecg.utils.normalize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.normalize.html#torch_ecg.utils.normalize"><code class="docutils literal notranslate"><span class="pre">normalize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.normalize_t.html">torch_ecg.utils.normalize_t</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.normalize_t.html#torch_ecg.utils.normalize_t"><code class="docutils literal notranslate"><span class="pre">normalize_t()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.resample_t.html">torch_ecg.utils.resample_t</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.resample_t.html#torch_ecg.utils.resample_t"><code class="docutils literal notranslate"><span class="pre">resample_t()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#data-operations">Data operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_mask.html">torch_ecg.utils.get_mask</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_mask.html#torch_ecg.utils.get_mask"><code class="docutils literal notranslate"><span class="pre">get_mask()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.class_weight_to_sample_weight.html">torch_ecg.utils.class_weight_to_sample_weight</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight"><code class="docutils literal notranslate"><span class="pre">class_weight_to_sample_weight()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ensure_lead_fmt.html">torch_ecg.utils.ensure_lead_fmt</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt"><code class="docutils literal notranslate"><span class="pre">ensure_lead_fmt()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ensure_siglen.html">torch_ecg.utils.ensure_siglen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ensure_siglen.html#torch_ecg.utils.ensure_siglen"><code class="docutils literal notranslate"><span class="pre">ensure_siglen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.masks_to_waveforms.html">torch_ecg.utils.masks_to_waveforms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.masks_to_waveforms.html#torch_ecg.utils.masks_to_waveforms"><code class="docutils literal notranslate"><span class="pre">masks_to_waveforms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.mask_to_intervals.html">torch_ecg.utils.mask_to_intervals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.mask_to_intervals.html#torch_ecg.utils.mask_to_intervals"><code class="docutils literal notranslate"><span class="pre">mask_to_intervals()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.uniform.html">torch_ecg.utils.uniform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.stratified_train_test_split.html">torch_ecg.utils.stratified_train_test_split</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split"><code class="docutils literal notranslate"><span class="pre">stratified_train_test_split()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.cls_to_bin.html">torch_ecg.utils.cls_to_bin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin"><code class="docutils literal notranslate"><span class="pre">cls_to_bin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generate_weight_mask.html#torch_ecg.utils.generate_weight_mask"><code class="docutils literal notranslate"><span class="pre">generate_weight_mask()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#interval-operations">Interval operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.overlaps.html">torch_ecg.utils.overlaps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.overlaps.html#torch_ecg.utils.overlaps"><code class="docutils literal notranslate"><span class="pre">overlaps()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.validate_interval.html">torch_ecg.utils.validate_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.validate_interval.html#torch_ecg.utils.validate_interval"><code class="docutils literal notranslate"><span class="pre">validate_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.in_interval.html">torch_ecg.utils.in_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.in_interval.html#torch_ecg.utils.in_interval"><code class="docutils literal notranslate"><span class="pre">in_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.in_generalized_interval.html">torch_ecg.utils.in_generalized_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.in_generalized_interval.html#torch_ecg.utils.in_generalized_interval"><code class="docutils literal notranslate"><span class="pre">in_generalized_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.intervals_union.html">torch_ecg.utils.intervals_union</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.intervals_union.html#torch_ecg.utils.intervals_union"><code class="docutils literal notranslate"><span class="pre">intervals_union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_intervals_union.html">torch_ecg.utils.generalized_intervals_union</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_intervals_union.html#torch_ecg.utils.generalized_intervals_union"><code class="docutils literal notranslate"><span class="pre">generalized_intervals_union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.intervals_intersection.html">torch_ecg.utils.intervals_intersection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.intervals_intersection.html#torch_ecg.utils.intervals_intersection"><code class="docutils literal notranslate"><span class="pre">intervals_intersection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_intervals_intersection.html">torch_ecg.utils.generalized_intervals_intersection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_intervals_intersection.html#torch_ecg.utils.generalized_intervals_intersection"><code class="docutils literal notranslate"><span class="pre">generalized_intervals_intersection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_interval_complement.html">torch_ecg.utils.generalized_interval_complement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_interval_complement.html#torch_ecg.utils.generalized_interval_complement"><code class="docutils literal notranslate"><span class="pre">generalized_interval_complement()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_optimal_covering.html">torch_ecg.utils.get_optimal_covering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_optimal_covering.html#torch_ecg.utils.get_optimal_covering"><code class="docutils literal notranslate"><span class="pre">get_optimal_covering()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.interval_len.html">torch_ecg.utils.interval_len</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.interval_len.html#torch_ecg.utils.interval_len"><code class="docutils literal notranslate"><span class="pre">interval_len()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_interval_len.html">torch_ecg.utils.generalized_interval_len</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.generalized_interval_len.html#torch_ecg.utils.generalized_interval_len"><code class="docutils literal notranslate"><span class="pre">generalized_interval_len()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.find_extrema.html">torch_ecg.utils.find_extrema</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema"><code class="docutils literal notranslate"><span class="pre">find_extrema()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.is_intersect.html">torch_ecg.utils.is_intersect</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.is_intersect.html#torch_ecg.utils.is_intersect"><code class="docutils literal notranslate"><span class="pre">is_intersect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.max_disjoint_covering.html">torch_ecg.utils.max_disjoint_covering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.max_disjoint_covering.html#torch_ecg.utils.max_disjoint_covering"><code class="docutils literal notranslate"><span class="pre">max_disjoint_covering()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#metrics-computations">Metrics computations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.top_n_accuracy.html">torch_ecg.utils.top_n_accuracy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.top_n_accuracy.html#torch_ecg.utils.top_n_accuracy"><code class="docutils literal notranslate"><span class="pre">top_n_accuracy()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.confusion_matrix.html">torch_ecg.utils.confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.confusion_matrix.html#torch_ecg.utils.confusion_matrix"><code class="docutils literal notranslate"><span class="pre">confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ovr_confusion_matrix.html">torch_ecg.utils.ovr_confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ovr_confusion_matrix.html#torch_ecg.utils.ovr_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">ovr_confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.metrics_from_confusion_matrix.html">torch_ecg.utils.metrics_from_confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.metrics_from_confusion_matrix.html#torch_ecg.utils.metrics_from_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">metrics_from_confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_wave_delineation_metrics.html">torch_ecg.utils.compute_wave_delineation_metrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.compute_wave_delineation_metrics.html#torch_ecg.utils.compute_wave_delineation_metrics"><code class="docutils literal notranslate"><span class="pre">compute_wave_delineation_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.QRS_score.html">torch_ecg.utils.QRS_score</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.QRS_score.html#torch_ecg.utils.QRS_score"><code class="docutils literal notranslate"><span class="pre">QRS_score()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#decorators-and-mixins">Decorators and Mixins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.add_docstring.html">torch_ecg.utils.add_docstring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.add_docstring.html#torch_ecg.utils.add_docstring"><code class="docutils literal notranslate"><span class="pre">add_docstring()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.remove_parameters_returns_from_docstring.html">torch_ecg.utils.remove_parameters_returns_from_docstring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.remove_parameters_returns_from_docstring.html#torch_ecg.utils.remove_parameters_returns_from_docstring"><code class="docutils literal notranslate"><span class="pre">remove_parameters_returns_from_docstring()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.default_class_repr.html">torch_ecg.utils.default_class_repr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.default_class_repr.html#torch_ecg.utils.default_class_repr"><code class="docutils literal notranslate"><span class="pre">default_class_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ReprMixin.html">ReprMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ReprMixin.html#torch_ecg.utils.ReprMixin"><code class="docutils literal notranslate"><span class="pre">ReprMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.CitationMixin.html">CitationMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.CitationMixin.html#torch_ecg.utils.CitationMixin"><code class="docutils literal notranslate"><span class="pre">CitationMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_kwargs.html">torch_ecg.utils.get_kwargs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs"><code class="docutils literal notranslate"><span class="pre">get_kwargs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_required_args.html">torch_ecg.utils.get_required_args</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args"><code class="docutils literal notranslate"><span class="pre">get_required_args()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.add_kwargs.html">torch_ecg.utils.add_kwargs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs"><code class="docutils literal notranslate"><span class="pre">add_kwargs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#path-operations">Path operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_record_list_recursive3.html">torch_ecg.utils.get_record_list_recursive3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_record_list_recursive3.html#torch_ecg.utils.get_record_list_recursive3"><code class="docutils literal notranslate"><span class="pre">get_record_list_recursive3()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#string-operations">String operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.dict_to_str.html">torch_ecg.utils.dict_to_str</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.dict_to_str.html#torch_ecg.utils.dict_to_str"><code class="docutils literal notranslate"><span class="pre">dict_to_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.str2bool.html">torch_ecg.utils.str2bool</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.str2bool.html#torch_ecg.utils.str2bool"><code class="docutils literal notranslate"><span class="pre">str2bool()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.nildent.html">torch_ecg.utils.nildent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.nildent.html#torch_ecg.utils.nildent"><code class="docutils literal notranslate"><span class="pre">nildent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_date_str.html">torch_ecg.utils.get_date_str</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.get_date_str.html#torch_ecg.utils.get_date_str"><code class="docutils literal notranslate"><span class="pre">get_date_str()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#visualization-functions">Visualization functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.ecg_plot.html#torch_ecg.utils.ecg_plot"><code class="docutils literal notranslate"><span class="pre">ecg_plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.list_sum.html">torch_ecg.utils.list_sum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.list_sum.html#torch_ecg.utils.list_sum"><code class="docutils literal notranslate"><span class="pre">list_sum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.dicts_equal.html">torch_ecg.utils.dicts_equal</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.dicts_equal.html#torch_ecg.utils.dicts_equal"><code class="docutils literal notranslate"><span class="pre">dicts_equal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.MovingAverage.html">MovingAverage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.MovingAverage.html#torch_ecg.utils.MovingAverage"><code class="docutils literal notranslate"><span class="pre">MovingAverage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.Timer.html">Timer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.Timer.html#torch_ecg.utils.Timer"><code class="docutils literal notranslate"><span class="pre">Timer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout"><code class="docutils literal notranslate"><span class="pre">timeout()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk"><code class="docutils literal notranslate"><span class="pre">np_topk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.utils.select_k.html#torch_ecg.utils.select_k"><code class="docutils literal notranslate"><span class="pre">select_k()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">torch-ecg</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torch_ecg.databases.physionet_databases.ptb_xl</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/DeepPSP/torch_ecg/blob/master/docs/source/_modules/torch_ecg/databases/physionet_databases/ptb_xl" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torch_ecg.databases.physionet_databases.ptb_xl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">wfdb</span>
+
+<span class="kn">from</span> <span class="nn">...cfg</span> <span class="kn">import</span> <span class="n">DEFAULTS</span>
+<span class="kn">from</span> <span class="nn">...utils.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">get_record_list_recursive3</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">PhysioNetDataBase</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;PTBXL&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="n">_PTBXL_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    PTB-XL, a large publicly available electrocardiography dataset</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    1. The PTB-XL database [1]_ is a large database of 21799 clinical 12-lead ECGs from 18869 patients of 10 second length collected with devices from Schiller AG over the course of nearly seven years between October 1989 and June 1996.</span>
+<span class="s2">    2. The raw waveform data of the PTB-XL database was annotated by up to two cardiologists, who assigned potentially multiple ECG statements to each recording which were converted into a standardized set of SCP-ECG statements (scp_codes).</span>
+<span class="s2">    3. The PTB-XL database contains 71 different ECG statements conforming to the SCP-ECG standard, including diagnostic, form, and rhythm statements.</span>
+<span class="s2">    4. The waveform files of the PTB-XL database are stored in WaveForm DataBase (WFDB) format with 16 bit precision at a resolution of 1μV/LSB and a sampling frequency of 500Hz. A downsampled versions of the waveform data at a sampling frequency of 100Hz is also provided.</span>
+<span class="s2">    5. In the metadata file (ptbxl_database.csv), each record of the PTB-XL database is identified by a unique ecg_id. The corresponding patient is encoded via patient_id. The paths to the original record (500 Hz) and a downsampled version of the record (100 Hz) are stored in `filename_hr` and `filename_lr`. The `report` field contains the diagnostic statements assigned to the record by the cardiologists. The `scp_codes` field contains the SCP-ECG statements assigned to the record which are formed as a dictionary with entries of the form `statement: likelihood`, where likelihood is set to 0 if unknown).</span>
+<span class="s2">    6. The PTB-XL database underwent a 10-fold train-test splits (stored in the `strat_fold` field of the metadata file) obtained via stratified sampling while respecting patient assignments, i.e. all records of a particular patient were assigned to the same fold. Records in fold 9 and 10 underwent at least one human evaluation and are therefore of a particularly high label quality. It is proposed to use folds 1-8 as training set, fold 9 as validation set and fold 10 as test set.</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Classification of ECG images&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">note</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">issues</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">references</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://physionet.org/content/ptb-xl/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://physionet.org/content/ptb-xl-plus/&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://doi.org/10.1038/s41597-023-02153-8&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL+ paper</span>
+        <span class="s2">&quot;https://doi.org/10.1038/s41597-020-0495-6&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL paper</span>
+        <span class="s2">&quot;https://doi.org/10.13026/nqsf-pc74&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL+ physionet</span>
+        <span class="s2">&quot;https://doi.org/10.13026/6sec-a640&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL physionet</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="PTBXL"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL">[docs]</a><span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_PTBXL_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PTBXL</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    db_dir : `path-like`</span>
+<span class="sd">        Storage path of the database.</span>
+<span class="sd">        If not specified, data will be fetched from Physionet.</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
+<span class="sd">        Working directory, to store intermediate files and log files.</span>
+<span class="sd">    verbose : int, default 1</span>
+<span class="sd">        Level of logging verbosity.</span>
+<span class="sd">    feature_db_dir : `path-like`, optional</span>
+<span class="sd">        Whether to include the feature database (the `PTB-XL+` database).</span>
+<span class="sd">    kwargs : dict, optional</span>
+<span class="sd">        Auxilliary key word arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;PTBXL&quot;</span>
+    <span class="n">__metadata_file__</span> <span class="o">=</span> <span class="s2">&quot;ptbxl_database.csv&quot;</span>
+    <span class="n">__scp_statements_file__</span> <span class="o">=</span> <span class="s2">&quot;scp_statements.csv&quot;</span>
+    <span class="n">__100Hz_dir__</span> <span class="o">=</span> <span class="s2">&quot;records100&quot;</span>
+    <span class="n">__500Hz_dir__</span> <span class="o">=</span> <span class="s2">&quot;records500&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">feature_db_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;ptb-xl&quot;</span><span class="p">,</span> <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span> <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">feature_db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="n">feature_db_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_db_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feature_reader</span> <span class="o">=</span> <span class="n">PTBXLPlus</span><span class="p">(</span><span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_db_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feature_reader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_ext</span> <span class="o">=</span> <span class="s2">&quot;hea&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">record_pattern</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="se">\\</span><span class="s2">d]</span><span class="si">{5}</span><span class="s2">_[lh]r&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_scp_statements</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="sd">        and store them (path, metadata, etc.) in a dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># locate the true database directory using the metadata file</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">metadata_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__metadata_file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># raise FileNotFoundError(f&quot;metadata file {self.__metadata_file__} not found in {self.db_dir}&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;metadata file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__metadata_file__</span><span class="si">}</span><span class="s2"> not found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Download the database first using the `download` method.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_scp_statements</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="n">metadata_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scp_statements_file__</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;scp_statements file not found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># read metadata file and scp_statements file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metadata_file__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">&quot;patient_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">&quot;patient_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_scp_statements</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scp_statements_file__</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">==</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;filename_lr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;filename_hr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
+        <span class="c1"># keep only records that exist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">),</span>
+                <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">)))),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subsample `</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">` records from `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">)</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SEED</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;patient_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PTBXL.reset_fs"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL.reset_fs">[docs]</a>    <span class="k">def</span> <span class="nf">reset_fs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the default sampling frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fs : int</span>
+<span class="sd">            The new sampling frequency.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PTBXL.load_metadata"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the metadata of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        items : str or list of str, optional</span>
+<span class="sd">            The items to load.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        metadata : dict</span>
+<span class="sd">            The metadata of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">items</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="n">items</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">metadata</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="n">items</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PTBXL.load_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL.load_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">with_interpretation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the annotation (the &quot;scp_codes&quot; field) of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        with_interpretation : bool, default False</span>
+<span class="sd">            Whether to include the interpretation of the statement.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ann : dict</span>
+<span class="sd">            The annotation of the record, of the form ``{statement: likelihood}``.</span>
+<span class="sd">            If ``with_interpretation`` is ``True``, the form is</span>
+<span class="sd">            ``{statement: {&quot;likelihood&quot;: likelihood, ...}}``,</span>
+<span class="sd">            where ``...`` are other information of the statement.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_metadata</span><span class="p">(</span><span class="n">rec</span><span class="p">)[</span><span class="s2">&quot;scp_codes&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">with_interpretation</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">statement</span><span class="p">,</span> <span class="n">likelihood</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">ann</span><span class="p">[</span><span class="n">statement</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;likelihood&quot;</span><span class="p">:</span> <span class="n">likelihood</span><span class="p">}</span>
+                <span class="n">ann</span><span class="p">[</span><span class="n">statement</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_scp_statements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">statement</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">ann</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">database_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataBaseInfo</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_PTBXL_INFO</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_train_val_test_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;strat_fold&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;strat_fold&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;strat_fold&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_train_val_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;strat_fold&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;strat_fold&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="p">}</span></div>
+
+
+<span class="n">_PTBXL_PLUS_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    PTB-XL+, a large publicly available electrocardiography dataset</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    1. This database [1]_ is a comprehensive feature dataset that supplements the PTB-XL database [2]_.</span>
+<span class="s2">    2. The features were extracted via two commercial (the University of Glasgow ECG Analysis Program (Uni-G) [3]_, GE Healthcare&#39;s Marquette™ 12SL™ (12SL) [4]_) and one open-source algorithm (ECGDeli [5]_).</span>
+<span class="s2">    3. There are also automatic diagnosis statements from one commercial ECG analysis algorithm.</span>
+<span class="s2">    4. Features are given a tabular format in the csv files features/12sl_features.csv, features/unig_features.csv and features/ecgdeli_features.csv, with mappings to standardized LOINC IDs given in features/feature_description.csv.</span>
+<span class="s2">    5. Median beats are provided in the median_beats/12sl and median_beats/unig directories.</span>
+<span class="s2">    6. Fiducial points are provided in the fiducial_points/ecgdeli directory.</span>
+<span class="s2">    7. Diagnostic statements are provided in the labels/12sl_statements.csv, labels/unig_statements.csv and labels/ecgdeli_statements.csv files. The subdirectory labels/mapping contains mappings from the 12SL and PTB-XL diagnostic statements to SNOMED codes.</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Evaluation of ECG (classification) models&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">note</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">issues</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    1. The file labels/mapping/ptbxlToSNOMED.csv contains bad lines with inconsistent number of columns.</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">references</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://physionet.org/content/ptb-xl-plus/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://physionet.org/content/ptb-xl/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Macfarlane, P., Devine, B. &amp; Clark, E. (2005). The university of glasgow (uni-g) ecg analysis program. In Computers in Cardiology, 451–454.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;GE Healthcare (2019). Marquette 12SL ECG Analysis Program: Physician’s Guide. General Electric Company. 2056246-002C.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pilia, N., Nagel, C., Lenis, G., Becker, S., Dössel, O., Loewe, A. (2021). ECGdeli - an open source ECG delineation toolbox for MATLAB. SoftwareX 13, 100639.&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;https://doi.org/10.1038/s41597-023-02153-8&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL+ paper</span>
+        <span class="s2">&quot;https://doi.org/10.13026/nqsf-pc74&quot;</span><span class="p">,</span>  <span class="c1"># PTB-XL+ physionet</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_PTBXL_PLUS_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PTBXLPlus</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    db_dir : `path-like`</span>
+<span class="sd">        Storage path of the database.</span>
+<span class="sd">        If not specified, data will be fetched from Physionet.</span>
+<span class="sd">    working_dir : `path-like`, optional</span>
+<span class="sd">        Working directory, to store intermediate files and log files.</span>
+<span class="sd">    verbose : int, default 1</span>
+<span class="sd">        Level of logging verbosity.</span>
+<span class="sd">    kwargs : dict, optional</span>
+<span class="sd">        Auxilliary key word arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;PTBXLPlus&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;ptb-xl-plus&quot;</span><span class="p">,</span>
+            <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>  <span class="c1"># median beats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">&quot;atr&quot;</span>  <span class="c1"># fiducial points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_tables</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_mappings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="sd">        and store them (path, metadata, etc.) in a dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">records_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;RECORDS&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="n">records_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="c1"># features: csv files, exclude the files in the &quot;old&quot; subdirectory</span>
+        <span class="n">feature_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;features&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_tables</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_files</span><span class="p">}</span>
+        <span class="c1"># turn the &quot;ecg_id&quot; column into string of 5 digits</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;ecg_id&quot;</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># labels: csv files: mainly label descriptions and mappings (from 12sl/ptbxl to SNOMED)</span>
+        <span class="n">label_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;labels&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">label_files</span><span class="p">}</span>
+        <span class="n">mapping_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;labels&quot;</span> <span class="o">/</span> <span class="s2">&quot;mapping&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">))</span>
+        <span class="c1"># self._label_mappings = {f.stem: pd.read_csv(f) for f in mapping_files}</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">mapping_files</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ParserError</span><span class="p">:</span>
+                <span class="n">file_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
+                <span class="n">common_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">([</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_content</span><span class="p">])</span>
+                <span class="n">file_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">[:</span> <span class="n">common_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_content</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">file_content</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">file_content</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># turn the &quot;ecg_id&quot; column into string of 5 digits</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;ecg_id&quot;</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># median beats: dat files, including &quot;12sl&quot; and &quot;unig&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;12sl_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
+            <span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;median_beats&quot;</span> <span class="o">/</span> <span class="s2">&quot;12sl&quot;</span><span class="p">,</span>
+            <span class="n">rec_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="se">\\</span><span class="s2">d]+_medians</span><span class="se">\\</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;12sl_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">df_unig</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">df_unig</span><span class="p">[</span><span class="s2">&quot;unig_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
+            <span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;median_beats&quot;</span> <span class="o">/</span> <span class="s2">&quot;unig&quot;</span><span class="p">,</span>
+            <span class="n">rec_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="se">\\</span><span class="s2">d]+_medians</span><span class="se">\\</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">df_unig</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_unig</span><span class="p">[</span><span class="s2">&quot;unig_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="c1"># merge the two dataframes on &quot;ecg_id&quot; and keep empty cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_unig</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">df_unig</span>
+
+        <span class="c1"># fiducial points: atr files</span>
+        <span class="n">df_fiducial</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">df_fiducial</span><span class="p">[</span><span class="s2">&quot;fiducial_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
+            <span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;fiducial_points&quot;</span> <span class="o">/</span> <span class="s2">&quot;ecgdeli&quot;</span><span class="p">,</span>
+            <span class="n">rec_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="se">\\</span><span class="s2">d]+_points_[</span><span class="se">\\</span><span class="s2">w_]+</span><span class="se">\\</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">df_fiducial</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_fiducial</span><span class="p">[</span><span class="s2">&quot;fiducial_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">fiducial_point_files</span> <span class="o">=</span> <span class="n">df_fiducial</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">)[</span><span class="s2">&quot;fiducial_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">df_fiducial</span><span class="p">[</span><span class="s2">&quot;fiducial_point_files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_fiducial</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">fiducial_point_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="c1"># drop duplicates on &quot;ecg_id&quot;</span>
+        <span class="n">df_fiducial</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># merge the two dataframes on &quot;ecg_id&quot; and keep empty cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_fiducial</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">df_fiducial</span>
+
+        <span class="c1"># turn the &quot;ecg_id&quot; column into string of 5 digits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12sl&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the data of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        source : {&quot;12sl&quot;, &quot;unig&quot;}, default &quot;12sl&quot;</span>
+<span class="sd">            The data source to load.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : ndarray</span>
+<span class="sd">            The data of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;12sl&quot;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;12sl_path&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;unig&quot;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;unig_path&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown data source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;record </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2"> not found in </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdrecord</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">p_signal</span>
+
+    <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">load_data</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">load_median_beats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12sl&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of `load_data`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12sl&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the annotation (diagnostic statements) of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        source : {&quot;12sl&quot;, &quot;ptbxl&quot;}, default &quot;12sl&quot;</span>
+<span class="sd">            The annotation source to load.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ann : dict</span>
+<span class="sd">            The annotation of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_statements&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> not found in label tables&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_tables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_statements&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">rec</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">ann</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">)</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">ann</span>
+
+    <span class="k">def</span> <span class="nf">load_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12sl&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the features of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        source : {&quot;12sl&quot;, &quot;unig&quot;, &quot;ecgdeli&quot;}, default &quot;12sl&quot;</span>
+<span class="sd">            The feature source to load.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        features : dict</span>
+<span class="sd">            The features of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_features&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_tables</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> not found in feature tables&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_tables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_features&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">rec</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ecg_id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">features</span>
+
+    <span class="k">def</span> <span class="nf">load_fiducial_points</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the fiducial points of a record.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str or int</span>
+<span class="sd">            The record name (ecg_id) or the index of the record.</span>
+<span class="sd">        leads : str or list of str, optional</span>
+<span class="sd">            The leads to load.</span>
+<span class="sd">            If is None, load all leads.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        fiducial_points : dict</span>
+<span class="sd">            The fiducial points of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+        <span class="n">fiducial_point_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;fiducial_point_files&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fiducial_point_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">leads</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">leads</span> <span class="o">=</span> <span class="p">[</span><span class="n">leads</span><span class="p">]</span>
+        <span class="n">fiducial_points</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">fiducial_point_files</span><span class="p">:</span>
+            <span class="n">lead</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">lead</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="p">)</span>
+            <span class="n">fiducial_points</span><span class="p">[</span><span class="n">lead</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">aux_note</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">fiducial_points</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">database_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataBaseInfo</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_PTBXL_PLUS_INFO</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, WEN Hao, KANG Jingsu.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.0.28',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

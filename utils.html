@@ -9,7 +9,7 @@
 <link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f493.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.utils &mdash; torch-ecg 0.0.27 documentation</title>
+  <title>torch_ecg.utils &mdash; torch-ecg 0.0.28 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
   
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
   
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   
@@ -46,7 +46,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="torch-ecg 0.0.27 documentation" href="index.html"/>
+    <link rel="top" title="torch-ecg 0.0.28 documentation" href="index.html"/>
         <link rel="next" title="torch_ecg.utils.extend_predictions" href="generated/torch_ecg.utils.extend_predictions.html"/>
         <link rel="prev" title="BaseTrainer" href="generated/torch_ecg.components.BaseTrainer.html"/> 
 
@@ -160,6 +160,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="generated/torch_ecg.databases.QTDB.html">QTDB</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB"><code class="docutils literal notranslate"><span class="pre">QTDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/torch_ecg.databases.PTBXL.html">PTBXL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/torch_ecg.databases.PTBXL.html#torch_ecg.databases.PTBXL"><code class="docutils literal notranslate"><span class="pre">PTBXL</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1139,13 +1143,13 @@ throughout the package.</p>
 <td><p>Compute the output shape of a sequential model.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_module_size.html#torch_ecg.utils.compute_module_size" title="torch_ecg.utils.compute_module_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_module_size</span></code></a>(module[, requires_grad, ...])</p></td>
-<td><p>compute the size (number of parameters) of a <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>.</p></td>
+<td><p>compute the size (number of parameters) of a <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.default_collate_fn.html#torch_ecg.utils.default_collate_fn" title="torch_ecg.utils.default_collate_fn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_collate_fn</span></code></a>(batch)</p></td>
 <td><p>Default collate functions for model training.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_receptive_field.html#torch_ecg.utils.compute_receptive_field" title="torch_ecg.utils.compute_receptive_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_receptive_field</span></code></a>([kernel_sizes, ...])</p></td>
-<td><p>Compute the receptive field of several types of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>.</p></td>
+<td><p>Compute the receptive field of several types of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.adjust_cnn_filter_lengths.html#torch_ecg.utils.adjust_cnn_filter_lengths" title="torch_ecg.utils.adjust_cnn_filter_lengths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjust_cnn_filter_lengths</span></code></a>(config, fs[, ...])</p></td>
 <td><p>Adjust the filter lengths in the config for convolutional neural networks, according to the new sampling frequency.</p></td>
@@ -1397,7 +1401,7 @@ throughout the package.</p>
 <td><p>Context manager to time the execution of a block of code.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout" title="torch_ecg.utils.timeout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timeout</span></code></a>(duration)</p></td>
-<td><p>A context manager that raises a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TimeoutError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeoutError</span></code></a> after a specified time.</p></td>
+<td><p>A context manager that raises a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TimeoutError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeoutError</span></code></a> after a specified time (in seconds).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk" title="torch_ecg.utils.np_topk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np_topk</span></code></a>(arr, k[, dim, largest, sorted])</p></td>
 <td><p>Find the k largest elements of an array along a specified axis.</p></td>
@@ -1451,7 +1455,7 @@ throughout the package.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.27',
+            VERSION:'0.0.28',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
