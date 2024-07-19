@@ -378,9 +378,9 @@ def _download_from_google_drive(url_or_id: str, output: Union[str, bytes, os.Pat
         url_or_id = f"https://drive.google.com/u/0/uc?id={url_or_id}"
     # remove trailing query string
     url_or_id = re.sub("/view\\?.*$", "", url_or_id)
-    if re.match("^https://drive.google.com/file/d/", url_or_id) is not None:
+    if re.match("^https://drive\\.google.com/file/d/", url_or_id) is not None:
         url_or_id = re.sub(
-            "^https://drive.google.com/file/d/",
+            "^https://drive\\.google\\.com/file/d/",
             "https://drive.google.com/u/0/uc?id=",
             url_or_id,
         )
