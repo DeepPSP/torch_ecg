@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.one\_hot\_encode
+=================================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: one_hot_encode

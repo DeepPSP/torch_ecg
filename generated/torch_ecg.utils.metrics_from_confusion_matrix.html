@@ -826,8 +826,8 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split"><code class="docutils literal notranslate"><span class="pre">stratified_train_test_split()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.cls_to_bin.html">torch_ecg.utils.cls_to_bin</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin"><code class="docutils literal notranslate"><span class="pre">cls_to_bin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.one_hot_encode.html">torch_ecg.utils.one_hot_encode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_ecg.utils.one_hot_encode.html#torch_ecg.utils.one_hot_encode"><code class="docutils literal notranslate"><span class="pre">one_hot_encode()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a><ul>
@@ -1145,12 +1145,12 @@ If is a float, then NaN will be filled with the specified value.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># binarize outputs (100 samples, 10 classes, multi-label)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># would raise</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># RuntimeWarning: `outputs` is probably binary, AUC may be incorrect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># RuntimeWarning: `outputs` is probably binary or categorical, AUC may be incorrect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># categorical outputs (100 samples, 10 classes)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG_randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># would raise</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># RuntimeWarning: `outputs` is probably binary, AUC may be incorrect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># RuntimeWarning: `outputs` is probably binary or categorical, AUC may be incorrect</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
 </pre></div>
 </div>

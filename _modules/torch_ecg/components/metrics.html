@@ -823,8 +823,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split"><code class="docutils literal notranslate"><span class="pre">stratified_train_test_split()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.cls_to_bin.html">torch_ecg.utils.cls_to_bin</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin"><code class="docutils literal notranslate"><span class="pre">cls_to_bin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.one_hot_encode.html">torch_ecg.utils.one_hot_encode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.one_hot_encode.html#torch_ecg.utils.one_hot_encode"><code class="docutils literal notranslate"><span class="pre">one_hot_encode()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a><ul>
@@ -1114,10 +1114,10 @@
 <span class="kn">from</span> <span class="nn">..utils.utils_data</span> <span class="kn">import</span> <span class="n">ECGWaveFormNames</span>
 <span class="kn">from</span> <span class="nn">..utils.utils_metrics</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">QRS_score</span><span class="p">,</span>
-    <span class="n">cls_to_bin</span><span class="p">,</span>
     <span class="n">compute_wave_delineation_metrics</span><span class="p">,</span>
     <span class="n">confusion_matrix</span><span class="p">,</span>
     <span class="n">metrics_from_confusion_matrix</span><span class="p">,</span>
+    <span class="n">one_hot_pair</span><span class="p">,</span>
     <span class="n">ovr_confusion_matrix</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1249,7 +1249,7 @@
         <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ClassificationMetrics&quot;</span><span class="p">:</span>
-        <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">cls_to_bin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+        <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
         <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
         <span class="c1"># probability outputs to binary outputs</span>
         <span class="n">bin_outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>

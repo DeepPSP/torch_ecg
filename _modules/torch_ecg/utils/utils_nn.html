@@ -823,8 +823,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split"><code class="docutils literal notranslate"><span class="pre">stratified_train_test_split()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.cls_to_bin.html">torch_ecg.utils.cls_to_bin</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin"><code class="docutils literal notranslate"><span class="pre">cls_to_bin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.one_hot_encode.html">torch_ecg.utils.one_hot_encode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.utils.one_hot_encode.html#torch_ecg.utils.one_hot_encode"><code class="docutils literal notranslate"><span class="pre">one_hot_encode()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a><ul>
@@ -1122,7 +1122,7 @@
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span> <span class="nn">.download</span> <span class="kn">import</span> <span class="n">http_get</span>
 <span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">make_serializable</span>
-<span class="kn">from</span> <span class="nn">.utils_data</span> <span class="kn">import</span> <span class="n">cls_to_bin</span>
+<span class="kn">from</span> <span class="nn">.utils_data</span> <span class="kn">import</span> <span class="n">one_hot_encode</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;extend_predictions&quot;</span><span class="p">,</span>
@@ -1190,7 +1190,7 @@
         <span class="n">_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">_preds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># categorical predictions</span>
-        <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">cls_to_bin</span><span class="p">(</span><span class="n">_preds</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
+        <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">one_hot_encode</span><span class="p">(</span><span class="n">_preds</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
         <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">extend_predictions</span><span class="p">(</span><span class="n">extended_preds</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">extended_classes</span><span class="p">)</span>
         <span class="n">extended_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">extended_preds</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">extended_preds</span>
