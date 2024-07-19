@@ -35,7 +35,7 @@ def http_get(
     extract: bool = True,
     filename: Optional[str] = None,
 ) -> Path:
-    """Get contents of a URL and save to a file.
+    """Download contents of a URL and save to a file.
 
     This function is a modified version of the `download_file` function in
     `transformers.file_utils` [1]_.
@@ -164,8 +164,7 @@ def http_get(
 
 
 def _stem(path: Union[str, bytes, os.PathLike]) -> str:
-    """Get filename without extension,
-    especially for .tar.xx files.
+    """Get filename without extension, especially for .tar.xx files.
 
     Parameters
     ----------
@@ -299,8 +298,7 @@ def _safe_tar_extract(
     *,
     numeric_owner: bool = False,
 ) -> None:
-    """Extract members from a tarfile **safely**
-    to a destination directory.
+    """Extract members from a tarfile **safely** to a destination directory.
 
     This function prevents path traversal attacks, by checking that the
     extracted files are within the destination directory.
@@ -320,6 +318,10 @@ def _safe_tar_extract(
         If True, only the numbers for user/group names are used
         and not the names. For more information,
         see :func:`tarfile.TarFile.extractall`.
+
+    Returns
+    -------
+    None
 
     """
     for member in members or tar.getmembers():
@@ -373,6 +375,10 @@ def _download_from_google_drive(url_or_id: str, output: Union[str, bytes, os.Pat
     quiet : bool, default False
         Whether to suppress the output.
 
+    Returns
+    -------
+    None
+
     """
     try:
         import gdown
@@ -382,7 +388,8 @@ def _download_from_google_drive(url_or_id: str, output: Union[str, bytes, os.Pat
     if re.match(file_id_pattern, url_or_id) is not None:
         url_or_id = f"https://drive.google.com/u/0/uc?id={url_or_id}"
     url_parsed = urllib.parse.urlparse(url_or_id)
-    if url_parsed.scheme == "" and url_parsed.netloc == "" and url_parsed.path.startswith("drive.google.com"):
+    if url_parsed.scheme == "" and url_parsed.netloc == "":
+        # no scheme is given, e.g. drive.google.com/file/d/xxx/view?usp=sharing
         url_or_id = f"https://{url_or_id}"
         url_parsed = urllib.parse.urlparse(url_or_id)
     # remove trailing query string
