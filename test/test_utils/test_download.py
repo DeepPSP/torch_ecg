@@ -32,7 +32,7 @@ def test_http_get():
         ),
     ):
         http_get(url, _TMP_DIR, extract=True, filename="test.txt")
-    with pytest.raises(AssertionError, match="file already exists"):
+    with pytest.raises(FileExistsError, match="file already exists"):
         http_get(url, _TMP_DIR, extract=True, filename="test.txt")
     (_TMP_DIR / "test.txt").unlink()
 
@@ -50,11 +50,17 @@ def test_http_get():
     # test downloading from Google Drive
     file_id = "1Yys567-MZIMf3eXGJd8bGrsWIvDatbsZ"
     url = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
+    url_no_scheme = f"drive.google.com/file/d/{file_id}/view?usp=sharing"
+    url_xxx_schme = f"xxx://drive.google.com/file/d/{file_id}/view?usp=sharing"
     with pytest.raises(AssertionError, match="filename can not be inferred from Google Drive URL"):
-        http_get(url, _TMP_DIR)
+        http_get(url_no_scheme, _TMP_DIR)
+    with pytest.raises(ValueError, match="Unsupported URL scheme"):
+        http_get(url_xxx_schme, _TMP_DIR, extract=False, filename="torch-ecg-paper.bib")
     http_get(url, _TMP_DIR, filename="torch-ecg-paper.bib", extract=False)
     (_TMP_DIR / "torch-ecg-paper.bib").unlink()
     _download_from_google_drive(file_id, _TMP_DIR / "torch-ecg-paper.bib")
+    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
+    _download_from_google_drive(url_no_scheme, _TMP_DIR / "torch-ecg-paper.bib")
     (_TMP_DIR / "torch-ecg-paper.bib").unlink()
 
 

@@ -23,7 +23,7 @@ def get_physionet_dbs() -> pd.DataFrame:
     locally stored in the file "./physionet_dbs.csv.gz"
     """
     try:
-        with timeout(5):
+        with timeout(3):
             return pd.DataFrame(wfdb.get_dbs(), columns=["db_name", "db_description"])
     except Exception:  # TimeoutError, ConnectionError, ReadTimeout, ...
         pass

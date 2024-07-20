@@ -11,7 +11,7 @@ import re
 import shutil
 import tarfile
 import tempfile
-import urllib
+import urllib.parse
 import warnings
 import zipfile
 from pathlib import Path
@@ -35,7 +35,7 @@ def http_get(
     extract: bool = True,
     filename: Optional[str] = None,
 ) -> Path:
-    """Get contents of a URL and save to a file.
+    """Download contents of a URL and save to a file.
 
     This function is a modified version of the `download_file` function in
     `transformers.file_utils` [1]_.
@@ -67,12 +67,19 @@ def http_get(
     .. [1] https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
 
     """
-    if filename is not None:
-        assert not (Path(dst_dir) / filename).exists(), "file already exists"
-    # if the URL is from Dropbox, replace the trailing `?dl=0` with `?dl=1`
-    if "dropbox.com" in url and url.endswith("?dl=0"):
-        url = f"{url[:-1]}1"
-    if "drive.google.com" in url:
+    if filename is not None and (Path(dst_dir) / filename).exists():
+        raise FileExistsError("file already exists")
+    url_parsed = urllib.parse.urlparse(url)
+    if url_parsed.scheme == "":
+        # assume https by default
+        url = f"https://{url}"
+        url_parsed = urllib.parse.urlparse(url)
+    if url_parsed.scheme not in ["http", "https"]:
+        raise ValueError(f"Unsupported URL scheme {url_parsed.scheme}")
+    if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
+        url_parsed = url_parsed._replace(query="dl=1")
+        url = url_parsed.geturl()
+    if url_parsed.netloc == "drive.google.com":
         assert filename is not None, "filename can not be inferred from Google Drive URL."
         downloaded_file = tempfile.NamedTemporaryFile(
             dir=dst_dir,
@@ -103,7 +110,7 @@ def http_get(
                 extract = False
         # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"
         # produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"
-        pure_url = urllib.parse.unquote(url.split("?")[0])
+        pure_url = urllib.parse.unquote(url_parsed._replace(query="").geturl())
         parent_dir = Path(dst_dir).parent
         df_suffix = _suffix(pure_url) if filename is None else _suffix(filename)
         downloaded_file = tempfile.NamedTemporaryFile(
@@ -114,7 +121,7 @@ def http_get(
         req = requests.get(url, stream=True, proxies=proxies)
         content_length = req.headers.get("Content-Length")
         total = int(content_length) if content_length is not None else None
-        if req.status_code == 403 or req.status_code == 404:
+        if req.status_code in [403, 404]:
             raise Exception(f"Could not reach {url}.")
         progress = tqdm(unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=1.0)
         for chunk in req.iter_content(chunk_size=1024):
@@ -157,8 +164,7 @@ def http_get(
 
 
 def _stem(path: Union[str, bytes, os.PathLike]) -> str:
-    """Get filename without extension,
-    especially for .tar.xx files.
+    """Get filename without extension, especially for .tar.xx files.
 
     Parameters
     ----------
@@ -292,8 +298,7 @@ def _safe_tar_extract(
     *,
     numeric_owner: bool = False,
 ) -> None:
-    """Extract members from a tarfile **safely**
-    to a destination directory.
+    """Extract members from a tarfile **safely** to a destination directory.
 
     This function prevents path traversal attacks, by checking that the
     extracted files are within the destination directory.
@@ -313,6 +318,10 @@ def _safe_tar_extract(
         If True, only the numbers for user/group names are used
         and not the names. For more information,
         see :func:`tarfile.TarFile.extractall`.
+
+    Returns
+    -------
+    None
 
     """
     for member in members or tar.getmembers():
@@ -366,16 +375,23 @@ def _download_from_google_drive(url_or_id: str, output: Union[str, bytes, os.Pat
     quiet : bool, default False
         Whether to suppress the output.
 
+    Returns
+    -------
+    None
+
     """
     try:
         import gdown
     except (ImportError, ModuleNotFoundError):
         raise ImportError("gdown is required to download from Google Drive.")
-    if url_or_id.startswith("drive.google.com"):
-        url_or_id = f"https://{url_or_id}"
-    if not url_or_id.startswith("https://drive.google.com"):
-        # perhaps is the file ID
+    file_id_pattern = "^1[A-Za-z0-9-_]{32}$"
+    if re.match(file_id_pattern, url_or_id) is not None:
         url_or_id = f"https://drive.google.com/u/0/uc?id={url_or_id}"
+    url_parsed = urllib.parse.urlparse(url_or_id)
+    if url_parsed.scheme == "" and url_parsed.netloc == "":
+        # no scheme is given, e.g. drive.google.com/file/d/xxx/view?usp=sharing
+        url_or_id = f"https://{url_or_id}"
+        url_parsed = urllib.parse.urlparse(url_or_id)
     # remove trailing query string
     url_or_id = re.sub("/view\\?.*$", "", url_or_id)
     if re.match("^https://drive\\.google.com/file/d/", url_or_id) is not None:
