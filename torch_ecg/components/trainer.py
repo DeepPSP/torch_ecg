@@ -371,7 +371,8 @@ class BaseTrainer(ReprMixin, ABC):
     @property
     def save_prefix(self) -> str:
         """The prefix of the saved model name."""
-        return f"{self._model.__name__}_epoch"
+        model_name = self._model.__name__ if hasattr(self._model, "__name__") else self._model.__class__.__name__
+        return f"{model_name}_epoch"
 
     @property
     def train_config(self) -> CFG:
@@ -488,7 +489,8 @@ class BaseTrainer(ReprMixin, ABC):
 
     def extra_log_suffix(self) -> str:
         """Extra suffix for the log file name."""
-        return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
+        model_name = self._model.__name__ if hasattr(self._model, "__name__") else self._model.__class__.__name__
+        return f"{model_name}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> None:
         """Setup the log manager."""
