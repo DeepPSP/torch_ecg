@@ -451,20 +451,19 @@ class PhysioNetDataBase(_DataBase):
         self._version = None
         self._url_compressed = None
 
-        self.df_all_db_info = get_physionet_dbs()
-
-        if self.verbose > 2:
-            self.df_all_db_info = (
-                pd.DataFrame(
-                    wfdb.get_dbs(),
-                    columns=[
-                        "db_name",
-                        "db_description",
-                    ],
+        self.df_all_db_info = get_physionet_dbs(local=(self.verbose <= 2))
+        if self.db_name not in self.df_all_db_info["db_name"].values:
+            if self.verbose <= 2:
+                self.logger.warning(
+                    f"Database `{self.db_name}` is not found in the local database list. "
+                    "Please check if the database name is correct, "
+                    "or call method `_update_db_list()` to update the database list."
                 )
-                .drop_duplicates()
-                .reset_index(drop=True)
-            )
+            else:
+                self.logger.warning(
+                    f"Database `{self.db_name}` is not found in the database list on PhysioNet server. "
+                    "Please check if the database name is correct."
+                )
 
     def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> None:
         """
@@ -871,6 +870,10 @@ class PhysioNetDataBase(_DataBase):
             overwrite=False,
         )
         self._ls_rec()
+
+    def _update_db_list(self) -> None:
+        """Update the database list."""
+        self.df_all_db_info = get_physionet_dbs(local=False)
 
 
 class NSRRDataBase(_DataBase):

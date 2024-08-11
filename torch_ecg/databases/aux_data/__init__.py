@@ -17,14 +17,17 @@ __all__ = [
 ]
 
 
-def get_physionet_dbs() -> pd.DataFrame:
+def get_physionet_dbs(local: bool = True) -> pd.DataFrame:
     """
     load the list of PhysioNet databases,
     locally stored in the file "./physionet_dbs.csv.gz"
     """
-    try:
-        with timeout(3):
-            return pd.DataFrame(wfdb.get_dbs(), columns=["db_name", "db_description"])
-    except Exception:  # TimeoutError, ConnectionError, ReadTimeout, ...
-        pass
+    if not local:
+        try:
+            with timeout(2):
+                return (
+                    pd.DataFrame(wfdb.get_dbs(), columns=["db_name", "db_description"]).drop_duplicates().reset_index(drop=True)
+                )
+        except Exception:  # TimeoutError, ConnectionError, ReadTimeout, ...
+            print("Failed to fetch the list of PhysioNet databases from the remote server.")
     return pd.read_csv(Path(__file__).absolute().parent / "physionet_dbs.csv.gz")
