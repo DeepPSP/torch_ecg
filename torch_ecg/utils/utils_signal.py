@@ -6,7 +6,7 @@ including spatial, temporal, spatio-temporal domains.
 import warnings
 from copy import deepcopy
 from numbers import Real
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import interpolate
@@ -132,7 +132,7 @@ def smooth(
 def resample_irregular_timeseries(
     sig: np.ndarray,
     output_fs: Optional[Real] = None,
-    method: str = "spline",
+    method: Literal["spline", "interp1d"] = "interp1d",
     return_with_time: bool = False,
     tnew: Optional[np.ndarray] = None,
     interp_kw: dict = {},
@@ -152,7 +152,7 @@ def resample_irregular_timeseries(
     output_fs : numbers.Real, optional
         the frequency of the output 1d regular timeseries,
         one and only one of `output_fs` and `tnew` should be specified
-    method : str, default "spline"
+    method : {"spline", "interp1d"}, default "interp1d"
         interpolation method, can be "spline" or "interp1d"
     return_with_time : bool, default False
         return a 2d array, with the 0-th coordinate being time
@@ -217,6 +217,7 @@ def resample_irregular_timeseries(
         print(f"xnew start = {xnew[0]}, end = {xnew[-1]}")
 
     if method.lower() == "spline":
+        # TODO: spline method might not work well for some cases
         m = len(time_series)
         w = interp_kw.get("w", np.ones(shape=(m,)))
         # s = interp_kw.get("s", np.random.uniform(m-np.sqrt(2*m),m+np.sqrt(2*m)))
@@ -227,6 +228,7 @@ def resample_irregular_timeseries(
 
         regular_timeseries = interpolate.splev(xnew, tck)
     elif method.lower() == "interp1d":
+        _interp_kw["fill_value"] = _interp_kw.get("fill_value", "extrapolate")  # avoid above interpolation error
         f = interpolate.interp1d(time_series[:, 0], time_series[:, 1], **_interp_kw)
 
         regular_timeseries = f(xnew)

@@ -33,6 +33,8 @@ with pytest.warns(RuntimeWarning):
 if len(reader) == 0:
     reader.download()
 
+reader._update_db_list()
+
 
 class TestAFDB:
     def test_len(self):
