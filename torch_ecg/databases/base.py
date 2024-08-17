@@ -39,7 +39,7 @@ from pyedflib import EdfReader
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
-from ..utils.download import http_get
+from ..utils.download import aws_client, http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from .aux_data import get_physionet_dbs
 
@@ -833,6 +833,11 @@ class PhysioNetDataBase(_DataBase):
         return posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}")
 
     @property
+    def s3_url(self) -> str:
+        """URL of the database on AWS S3."""
+        return f"s3://physionet-open/{self.db_name}/{self.version}/"
+
+    @property
     def url_(self) -> Union[str, type(None)]:
         """URL of the compressed database file for downloading."""
         if self._url_compressed is not None:
@@ -863,12 +868,15 @@ class PhysioNetDataBase(_DataBase):
                 return
             else:
                 self.logger.info("No compressed database available! Downloading the uncompressed version...")
-        wfdb.dl_database(
-            self.db_name,
-            self.db_dir,
-            keep_subdirs=True,
-            overwrite=False,
-        )
+        if aws_client is not None:
+            http_get(self.s3_url, self.db_dir)
+        else:
+            wfdb.dl_database(
+                self.db_name,
+                self.db_dir,
+                keep_subdirs=True,
+                overwrite=False,
+            )
         self._ls_rec()
 
     def _update_db_list(self) -> None:
