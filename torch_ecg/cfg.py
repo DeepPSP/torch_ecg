@@ -1,6 +1,7 @@
 """
 """
 
+import os
 import random
 import re
 from dataclasses import dataclass
@@ -18,9 +19,11 @@ __all__ = [
 
 
 _PACKAGE_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
-_PACKAGE_CACHE.mkdir(parents=True, exist_ok=True)
+if os.access(_PACKAGE_CACHE.parent, os.W_OK) and not _PACKAGE_CACHE.exists():
+    _PACKAGE_CACHE.mkdir(parents=True, exist_ok=True)
 _DATA_CACHE = _PACKAGE_CACHE / "data"
-_DATA_CACHE.mkdir(parents=True, exist_ok=True)
+if os.access(_DATA_CACHE.parent, os.W_OK) and not _DATA_CACHE.exists():
+    _DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 
 class CFG(dict):

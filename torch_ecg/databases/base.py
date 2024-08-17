@@ -164,7 +164,7 @@ class _DataBase(ReprMixin, ABC):
                 f"`db_dir` is not specified, " f"using default `{db_dir}` as the storage path",
                 RuntimeWarning,
             )
-        self.db_dir = Path(db_dir).expanduser().resolve().absolute()
+        self.db_dir = Path(db_dir).expanduser().resolve()
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
             warnings.warn(

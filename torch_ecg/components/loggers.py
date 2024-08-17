@@ -8,6 +8,7 @@ with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
 import csv
 import logging
 import os
+import warnings
 from abc import ABC, abstractmethod
 from datetime import datetime
 from numbers import Real
@@ -159,7 +160,12 @@ class TxtLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._log_dir.mkdir(parents=True, exist_ok=True)
+        self._W_OK = os.access(self._log_dir, os.W_OK)
+        if self._W_OK:
+            self._log_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            warnings.warn(f"Directory {self._log_dir} is not writable.")
+            return  # do not create the logger if the directory is not writable
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -176,6 +182,8 @@ class TxtLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
+        if not self._W_OK:
+            return
         if step is not None:
             self.step = step
         else:
@@ -194,6 +202,8 @@ class TxtLogger(BaseLogger):
 
     @add_docstring(_log_message_doc)
     def log_message(self, msg: str, level: int = logging.INFO) -> None:
+        if not self._W_OK:
+            return
         self.logger.log(level, msg)
 
     @property
@@ -206,20 +216,29 @@ class TxtLogger(BaseLogger):
 
     @add_docstring(_epoch_start_doc)
     def epoch_start(self, epoch: int) -> None:
+        if not self._W_OK:
+            return
         self.logger.info(f"Train epoch_{epoch}:\n{self.long_sep}")
 
     @add_docstring(_epoch_end_doc)
     def epoch_end(self, epoch: int) -> None:
+        if not self._W_OK:
+            return
         self.logger.info(f"{self.long_sep}\n")
 
     def flush(self) -> None:
         """Flush the log file."""
+        if not self._W_OK:
+            return
         for h in self.logger.handlers:
             if hasattr(h, "flush"):
                 h.flush()
 
     def close(self) -> None:
         """Close the log file."""
+        if not self._W_OK:
+            logging.shutdown()
+            return
         for h in self.logger.handlers:
             h.close()
             self.logger.removeHandler(h)
@@ -245,6 +264,8 @@ class TxtLogger(BaseLogger):
     @property
     def filename(self) -> str:
         """Filename of the log file."""
+        if not self._W_OK:
+            return ""
         return str(self.log_dir / self.log_file)
 
 
@@ -268,7 +289,12 @@ class CSVLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._log_dir.mkdir(parents=True, exist_ok=True)
+        self._W_OK = os.access(self._log_dir, os.W_OK)
+        if self._W_OK:
+            self._log_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            warnings.warn(f"Directory {self._log_dir} is not writable.")
+            return
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -286,6 +312,8 @@ class CSVLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
+        if not self._W_OK:
+            return
         if step is not None:
             self.step = step
         else:
@@ -304,6 +332,9 @@ class CSVLogger(BaseLogger):
 
     def flush(self) -> None:
         """Flush the log file."""
+        if not self._W_OK:
+            self._flushed = True
+            return
         if not self._flushed:
             self.logger.to_csv(self.filename, quoting=csv.QUOTE_NONNUMERIC, index=False)
             self._flushed = True
@@ -336,6 +367,8 @@ class CSVLogger(BaseLogger):
     @property
     def filename(self) -> str:
         """Filename of the log file."""
+        if not self._W_OK:
+            return ""
         return str(self.log_dir / self.log_file)
 
 
@@ -359,7 +392,12 @@ class TensorBoardXLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._log_dir.mkdir(parents=True, exist_ok=True)
+        self._W_OK = os.access(self._log_dir, os.W_OK)
+        if self._W_OK:
+            self._log_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            warnings.warn(f"Directory {self._log_dir} is not writable.")
+            return
         self.logger = tensorboardX.SummaryWriter(str(self._log_dir), filename_suffix=log_suffix or "")
         self.log_file = self.logger.file_writer.event_writer._ev_writer._file_name
         self.step = -1
@@ -372,6 +410,8 @@ class TensorBoardXLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
+        if not self._W_OK:
+            return
         if step is not None:
             self.step = step
         else:
@@ -386,10 +426,14 @@ class TensorBoardXLogger(BaseLogger):
 
     def flush(self) -> None:
         """Flush the log file."""
+        if not self._W_OK:
+            return
         self.logger.flush()
 
     def close(self) -> None:
         """Close the log file."""
+        if not self._W_OK:
+            return
         self.logger.close()
 
     @classmethod
