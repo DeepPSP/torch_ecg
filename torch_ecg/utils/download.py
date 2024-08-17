@@ -8,6 +8,7 @@ for downloading the data files.
 
 import os
 import re
+import shlex
 import shutil
 import tarfile
 import tempfile
@@ -19,6 +20,13 @@ from typing import Any, Iterable, Optional, Union
 
 import requests
 from tqdm.auto import tqdm
+
+try:
+    from awscli.clidriver import AWSCLIEntryPoint
+
+    aws_client = AWSCLIEntryPoint()
+except ImportError:
+    aws_client = None
 
 __all__ = [
     "http_get",
@@ -74,8 +82,14 @@ def http_get(
         # assume https by default
         url = f"https://{url}"
         url_parsed = urllib.parse.urlparse(url)
-    if url_parsed.scheme not in ["http", "https"]:
+    if url_parsed.scheme not in ["http", "https", "s3"]:
         raise ValueError(f"Unsupported URL scheme {url_parsed.scheme}")
+
+    if url_parsed.scheme == "s3":
+        assert aws_client is not None, "awscli is required to download from S3."
+        aws_client.main(shlex.split(f"s3 sync {url} {dst_dir}"))
+        return Path(dst_dir)
+
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
         url_parsed = url_parsed._replace(query="dl=1")
         url = url_parsed.geturl()
