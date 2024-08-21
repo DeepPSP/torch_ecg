@@ -51,6 +51,12 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
+    - name: Install aws cli v2
+      run: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
     - name: List installed Python packages
       run: |
         python -m pip list
