@@ -200,6 +200,9 @@ class BaseTrainer(ReprMixin, ABC):
                         epoch=self.epoch,
                         part="val",
                     )
+                elif self.val_train_loader is not None:
+                    # if no separate val set, use the metrics on the train set
+                    eval_res = eval_train_res
 
                 # update best model and best metric if monitor is set
                 if self.train_config.monitor is not None:
@@ -261,8 +264,11 @@ class BaseTrainer(ReprMixin, ABC):
             self.save_checkpoint(path=str(save_path))
             self.log_manager.log_message(f"best model is saved at {save_path}")
         elif self.train_config.monitor is None:
-            self.log_manager.log_message("no monitor is set, no model is selected and saved as the best model")
+            self.log_manager.log_message("no monitor is set, the last model is selected and saved as the best model")
             self.best_state_dict = self._model.state_dict()
+            save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
+            save_path = self.train_config.model_dir / save_filename
+            self.save_checkpoint(path=str(save_path))
         else:
             raise ValueError("No best model found!")
 
