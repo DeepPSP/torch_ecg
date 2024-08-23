@@ -7,7 +7,7 @@ import warnings
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -1289,7 +1289,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_sleep_ann(
         self,
         rec: Union[str, int],
-        source: str = "event",
+        source: Literal["hrv", "event", "event_profusion"] = "event",
         sleep_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
     ) -> Union[pd.DataFrame, dict]:
@@ -1300,9 +1300,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        source : {"hrv", "event", "event_profusion"}, optional
-            Source of the annotations, case insensitive,
-            by default "event"
+        source : {"hrv", "event", "event_profusion"}, default "event"
+            Source of the annotations, case insensitive.
         sleep_ann_path : `path-like`, optional
             Path of the file which contains the sleep annotations.
             If is None, default path will be used.
@@ -1353,7 +1352,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_sleep_stage_ann(
         self,
         rec: Union[str, int],
-        source: str = "event",
+        source: Literal["hrv", "event", "event_profusion"] = "event",
         sleep_stage_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         sleep_stage_protocol: str = "aasm",
         with_stage_names: bool = True,
@@ -1366,9 +1365,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        source : {"hrv", "event", "event_profusion"}, optional
-            Source of the annotations, case insensitive,
-            by default "event".
+        source : {"hrv", "event", "event_profusion"}, default "event"
+            Source of the annotations, case insensitive.
         sleep_stage_ann_path : `path-like`, optional
             Path of the file which contains the sleep stage annotations.
             If is None, default path will be used.
@@ -1465,7 +1463,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_sleep_event_ann(
         self,
         rec: Union[str, int],
-        source: str = "event",
+        source: Literal["hrv", "event", "event_profusion"] = "event",
         event_types: Optional[List[str]] = None,
         sleep_event_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
     ) -> pd.DataFrame:
@@ -1476,9 +1474,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        source : {"hrv", "event", "event_profusion"}, optional
-            Source of the annotations, case insensitive,
-            by default "event".
+        source : {"hrv", "event", "event_profusion"}, default "event"
+            Source of the annotations, case insensitive.
         event_types : List[str], optional
             List of event types to be loaded, by default None.
             The event types are:
@@ -1657,7 +1654,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def load_apnea_ann(
         self,
         rec: Union[str, int],
-        source: str = "event",
+        source: Literal["event", "event_profusion"] = "event",
         apnea_types: Optional[List[str]] = None,
         apnea_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
@@ -1669,9 +1666,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec : str or int
             Record name, typically in the form "shhs1-200001",
             or index of the record in :attr:`all_records`.
-        source : {"event", "event_profusion"}, optional
-            Source of the annotations, case insensitive,
-            by default "event".
+        source : {"event", "event_profusion"}, default "event"
+            Source of the annotations, case insensitive.
         apnea_types : List[str], optional
             Types of apnea events to load, should be a subset of
             "CSA", "OSA", "MSA", "Hypopnea".
@@ -1748,7 +1744,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rpeak_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         exclude_artifacts: bool = True,
         exclude_abnormal_beats: bool = True,
-        units: Optional[str] = None,
+        units: Optional[Literal["s", "ms"]] = None,
         **kwargs: Any,
     ) -> np.ndarray:
         """Load annotations on R peaks of the record.
@@ -1813,7 +1809,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         rpeak_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
-        units: Union[str, None] = "s",
+        units: Literal["s", "ms", None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
         """Load annotations on RR intervals of the record.
@@ -1915,7 +1911,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         wave_deli_path: Optional[Union[str, bytes, os.PathLike]] = None,
-        units: Optional[str] = None,
+        units: Optional[Literal["s", "ms"]] = None,
     ) -> np.ndarray:
         """Locate "artifacts" in the record.
 
@@ -1967,8 +1963,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         rec: Union[str, int],
         wave_deli_path: Optional[Union[str, bytes, os.PathLike]] = None,
-        abnormal_type: Optional[str] = None,
-        units: Optional[str] = None,
+        abnormal_type: Optional[Literal["VE", "SVE"]] = None,
+        units: Optional[Literal["s", "ms"]] = None,
     ) -> Union[Dict[str, np.ndarray], np.ndarray]:
         """Locate "abnormal beats" in the record.
 
@@ -2104,11 +2100,11 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def plot_ann(
         self,
         rec: Union[str, int],
-        stage_source: Optional[str] = None,
+        stage_source: Optional[Literal["hrv", "event", "event_profusion"]] = None,
         stage_kw: dict = {},
-        event_source: Optional[str] = None,
+        event_source: Optional[Literal["hrv", "event", "event_profusion"]] = None,
         event_kw: dict = {},
-        plot_format: str = "span",
+        plot_format: Literal["span", "hypnogram"] = "span",
     ) -> None:
         """Plot annotations of the record.
 
@@ -2130,8 +2126,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             If is None, then annotations of sleep events of `rec` won't be plotted.
         event_kw : dict, optional
             Key word arguments to the function :meth:`load_sleep_event_ann`.
-        plot_format : {"span", "hypnogram"}, optional
-            Format of the plot, case insensitive, by default "span".
+        plot_format : {"span", "hypnogram"}, default "span"
+            Format of the plot, case insensitive.
 
         TODO
         ----
@@ -2169,7 +2165,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self,
         df_sleep_stage: Optional[pd.DataFrame] = None,
         df_sleep_event: Optional[pd.DataFrame] = None,
-        plot_format: str = "span",
+        plot_format: Literal["span", "hypnogram"] = "span",
     ) -> None:
         """Internal function to plot annotations.
 
@@ -2179,8 +2175,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Sleep stage annotations.
         df_sleep_event : pandas.DataFrame, optional
             Sleep event annotations.
-        plot_format : {"span", "hypnogram"}, optional
-            Format of the plot, case insensitive, by default "span".
+        plot_format : {"span", "hypnogram"}, default "span"
+            Format of the plot, case insensitive.
 
         """
         import matplotlib.patches as mpatches

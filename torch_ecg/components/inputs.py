@@ -5,7 +5,7 @@ import inspect
 import math
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import List, Sequence, Tuple, Union
+from typing import List, Literal, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -30,7 +30,7 @@ class InputConfig(CFG):
 
     Parameters
     ----------
-    input_type : {"waveform", "fft", "spectrogram"}, optional
+    input_type : {"waveform", "fft", "spectrogram"}
         Type of the input.
     n_channels : int
         Number of channels of the input.
@@ -56,7 +56,7 @@ class InputConfig(CFG):
     def __init__(
         self,
         *args: Union[CFG, dict],
-        input_type: str,
+        input_type: Literal["waveform", "fft", "spectrogram"],
         n_channels: int,
         n_samples: int = -1,
         ensure_batch_dim: bool = True,

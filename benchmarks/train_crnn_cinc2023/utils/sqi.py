@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -49,8 +49,8 @@ def compute_sqi(
     segment_config: Optional[dict] = None,
     sqi_window_time: float = 5.0,  # min
     sqi_window_step: float = 1.0,  # min
-    sqi_time_units: Optional[str] = None,
-    return_type: str = "np",
+    sqi_time_units: Literal[None, "s", "m"] = None,
+    return_type: Literal["np", "pd"] = "np",
 ) -> np.ndarray:
     """Compute SQI (Signal Quality Index) for the signal.
 

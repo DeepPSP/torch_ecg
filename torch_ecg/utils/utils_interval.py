@@ -17,7 +17,7 @@ import time
 import warnings
 from copy import deepcopy
 from numbers import Real
-from typing import Any, List, Sequence, Tuple, Union
+from typing import Any, List, Literal, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -857,7 +857,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     return gi_len
 
 
-def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.ndarray:
+def find_extrema(signal: Union[np.ndarray, Sequence], mode: Literal["max", "min", "both"] = "both") -> np.ndarray:
     """Locate local extrema points in a 1D signal.
 
     This function is based on Fermat's Theorem.
@@ -866,9 +866,8 @@ def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.
     ----------
     signal : array_like
         1D input signal.
-    mode : {"max", "min", "both"}, optional
-        Whether to find maxima ("max"), minima ("min"), or both ("both"),
-        by default "both", case insensitive.
+    mode : {"max", "min", "both"}, default "both"
+        Whether to find maxima ("max"), minima ("min"), or both ("both"), case insensitive.
 
     Returns
     -------

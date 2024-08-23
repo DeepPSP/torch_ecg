@@ -6,7 +6,7 @@ from 3 files of the official evaluation repo:
 
 from io import StringIO
 from numbers import Real
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -335,7 +335,7 @@ for c in df_weights.columns:
 def load_weights(
     classes: Sequence[Union[int, str]] = None,
     equivalent_classes: Optional[Union[Dict[str, str], List[List[str]]]] = None,
-    return_fmt: str = "np",
+    return_fmt: Literal["np", "pd"] = "np",
 ) -> Union[np.ndarray, pd.DataFrame]:
     """Load the weight matrix of the `classes`.
 
@@ -347,10 +347,9 @@ def load_weights(
     equivalent_classes : dict or list, optional
         :class:`list` or :class:`dict` of equivalent classes.
         If not specified, defaults to `equiv_class_dict`.
-    return_fmt : {"np", "pd"}, optional
+    return_fmt : {"np", "pd"}, default "np"
         The values in the form of a 2d :class:`~numpy.ndarray`
-        or a :class:`~pandas.DataFrame`,
-        by default "np".
+        or a :class:`~pandas.DataFrame`.
 
     Returns
     -------

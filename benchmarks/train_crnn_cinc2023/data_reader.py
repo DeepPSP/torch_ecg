@@ -7,7 +7,7 @@ import warnings
 from ast import literal_eval
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import gdown
 import numpy as np
@@ -124,7 +124,7 @@ class CINC2023Reader(PhysioNetDataBase):
         Local storage path of the database.
     fs : int, default 100
         (Re-)sampling frequency of the recordings.
-    backend : {"scipy",  "wfdb"}, optional
+    backend : {"scipy", "wfdb"}, optional
         Backend to use, by default "wfdb", case insensitive.
     eeg_bipolar_channels : list of str, optional
         List of EEG channel pairs for bipolar referencing.
@@ -188,7 +188,7 @@ class CINC2023Reader(PhysioNetDataBase):
         self,
         db_dir: Union[str, bytes, os.PathLike],
         fs: int = 100,
-        backend: str = "wfdb",
+        backend: Literal["scipy", "wfdb"] = "wfdb",
         eeg_bipolar_channels: Optional[List[str]] = None,
         eeg_reference_channel: Optional[str] = None,
         working_dir: Optional[Union[str, bytes, os.PathLike]] = None,
@@ -548,7 +548,7 @@ class CINC2023Reader(PhysioNetDataBase):
     def get_absolute_path(
         self,
         rec_or_sbj: Union[str, int],
-        signal_type: Optional[str] = None,
+        signal_type: Optional[Literal["EEG", "ECG", "REF", "OTHER"]] = None,
         extension: Optional[str] = None,
     ) -> Path:
         """Get the absolute path of the signal file or directory,
@@ -593,8 +593,8 @@ class CINC2023Reader(PhysioNetDataBase):
         channels: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        data_format: str = "channel_first",
-        units: Union[str, type(None)] = "uV",
+        data_format: Literal["channel_first", "channel_last", "flat", "plain"] = "channel_first",
+        units: Literal["mV", "uV", "muV", "μV", None] = "uV",
         fs: Optional[int] = None,
         return_fs: bool = False,
         return_channels: bool = False,
@@ -718,8 +718,8 @@ class CINC2023Reader(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        data_format: str = "channel_first",
-        units: Union[str, type(None)] = "uV",
+        data_format: Literal["channel_first", "channel_last"] = "channel_first",
+        units: Literal["mV", "uV", "muV", "μV", None] = "uV",
         fs: Optional[int] = None,
         return_fs: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
@@ -806,11 +806,11 @@ class CINC2023Reader(PhysioNetDataBase):
     def load_aux_data(
         self,
         rec: Union[str, int],
-        signal_type: Optional[str] = None,
+        signal_type: Optional[Literal["ECG", "REF", "OTHER"]] = None,
         channels: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        data_format: str = "channel_first",
+        data_format: Literal["channel_first", "channel_last", "flat", "plain"] = "channel_first",
         fs: Optional[int] = None,
     ) -> Tuple[np.ndarray, List[str], int]:
         """Load auxiliary (**physical**) data from the record.
@@ -1098,8 +1098,8 @@ class CINC2023Reader(PhysioNetDataBase):
         rec: Union[str, int],
         sqi_window_time: float = 5.0,  # min
         sqi_window_step: float = 1.0,  # min
-        sqi_time_units: Optional[str] = "s",
-        return_type: str = "np",
+        sqi_time_units: Literal[None, "s", "m"] = "s",
+        return_type: Literal["np", "pd"] = "np",
     ) -> np.ndarray:
         """Compute EEG SQI (Signal Quality Index) for the record.
 
@@ -1167,7 +1167,12 @@ class CINC2023Reader(PhysioNetDataBase):
     def subject_records_all(self) -> Dict[str, List[str]]:
         return self._subject_records_all
 
-    def plot_correlation(self, target: str = "CPC", col: str = "OHCA", **kwargs: Any) -> tuple:
+    def plot_correlation(
+        self,
+        target: Literal["Outcome", "CPC"] = "CPC",
+        col: Literal["Hospital", "Sex", "OHCA", "Shockable Rhythm"] = "OHCA",
+        **kwargs: Any,
+    ) -> tuple:
         """Plot the correlation between the `target` and the feature `col`.
 
         Parameters
@@ -1279,7 +1284,7 @@ class CINC2023Reader(PhysioNetDataBase):
         method: str = "wilson",
         diff_method: str = "wilson",
         save_path: Optional[Union[Path, str]] = None,
-        return_type: str = "pd",
+        return_type: Literal["pd", "dict", "latex", "md", "markdown", "html"] = "pd",
         overwrite: bool = False,
         dropna: bool = True,
         **kwargs: Any,

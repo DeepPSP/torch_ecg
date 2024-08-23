@@ -2,7 +2,7 @@
 
 import os
 from collections import Counter, defaultdict
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -199,9 +199,9 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "intervals",
+        rhythm_format: Literal["intervals", "mask"] = "intervals",
         rhythm_types: Optional[Sequence[str]] = None,
-        beat_format: str = "beat",
+        beat_format: Literal["beat", "dict"] = "beat",
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> dict:
@@ -219,16 +219,14 @@ class MITDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, optional
-            Format of returned annotation, by default "interval",
-            case insensitive.
+        rhythm_format : {"interval", "mask"}, default "interval"
+            Format of returned annotation, case insensitive.
         rhythm_types : list of str, optional
             Defaults to `self.rhythm_types`.
             If is not None, only the rhythm annotations
             with the specified types will be returned.
-        beat_format : {"beat", "dict"}, optional
-            Format of returned annotation, by default "beat",
-            case insensitive.
+        beat_format : {"beat", "dict"}, default "beat"
+            Format of returned annotation, case insensitive.
         beat_types : List[str], optional
             Beat types to be loaded, by default `self.beat_types`.
             If is not None, only the beat annotations
@@ -320,7 +318,7 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "intervals",
+        rhythm_format: Literal["interval", "mask"] = "interval",
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
@@ -337,9 +335,8 @@ class MITDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, optional
-            Format of returned annotation, by default "interval",
-            case insensitive.
+        rhythm_format : {"interval", "mask"}, default "interval"
+            Format of returned annotation, case insensitive.
         rhythm_types : list of str, optional
             Defaults to `self.rhythm_types`.
             If is not None, only the rhythm annotations
@@ -368,7 +365,7 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        beat_format: str = "beat",
+        beat_format: Literal["beat", "dict"] = "beat",
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
@@ -385,9 +382,8 @@ class MITDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        beat_format : {"beat", "dict"}, optional
-            Format of returned annotation, by default "beat",
-            case insensitive.
+        beat_format : {"beat", "dict"}, default "beat"
+            Format of returned annotation, case insensitive.
         beat_types : List[str], optional
             Beat types to be loaded, by default `self.beat_types`.
             If is not None, only the beat annotations
@@ -518,7 +514,7 @@ class MITDB(PhysioNetDataBase):
                 beat_type_num[k] += v
         return CFG(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
 
-    def _categorize_records(self, by: str) -> Dict[str, List[str]]:
+    def _categorize_records(self, by: Literal["beat", "rhythm"]) -> Dict[str, List[str]]:
         """Categorize records by specific attributes.
 
         Parameters

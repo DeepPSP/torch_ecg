@@ -4,7 +4,7 @@ import math
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
@@ -136,7 +136,7 @@ class AFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        ann_format: str = "interval",
+        ann_format: Literal["interval", "mask"] = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """Load annotations (header) from the .hea files.
@@ -149,9 +149,8 @@ class AFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto: int, optional
             End index of the annotations to be loaded.
-        ann_format : {"interval", "mask"}
-            Format of returned annotation,
-            by default "interval", case insensitive.
+        ann_format : {"interval", "mask"}, default "interval"
+            Format of returned annotation, case insensitive.
         keep_original : bool, default False
             If True, when `ann_format` is "interval",
             intervals (in the form [a,b]) will keep the same with the annotation file,

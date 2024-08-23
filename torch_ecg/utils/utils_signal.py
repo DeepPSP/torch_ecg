@@ -28,7 +28,7 @@ __all__ = [
 def smooth(
     x: np.ndarray,
     window_len: int = 11,
-    window: str = "hanning",
+    window: Literal["flat", "hanning", "hamming", "bartlett", "blackman"] = "hanning",
     mode: str = "valid",
     keep_dtype: bool = True,
 ) -> np.ndarray:
@@ -48,8 +48,8 @@ def smooth(
         Length of the smoothing window,
         (previously should be an odd integer,
         currently can be any (positive) integer).
-    window : {"flat", "hanning", "hamming", "bartlett", "blackman"}, optional
-        Type of window from, by default "hanning".
+    window : {"flat", "hanning", "hamming", "bartlett", "blackman"}, default "hanning"
+        Type of window from.
         See also :func:`numpy.hanning`, :func:`numpy.hamming`, etc.
         Flat type window will produce a moving average smoothing.
     mode : str, default "valid"
@@ -574,7 +574,7 @@ def butter_bandpass_filter(
     highcut: Real,
     fs: Real,
     order: int,
-    btype: Optional[str] = None,
+    btype: Optional[Literal["lohi", "hilo"]] = None,
     verbose: int = 0,
 ) -> np.ndarray:
     """Butterworth bandpass filtering the signals.
@@ -596,8 +596,7 @@ def butter_bandpass_filter(
         Order of the filter.
     btype : {"lohi", "hilo"}, optional
         (special) type of the filter.
-        Ignored for lowpass and highpass filters
-        (as defined by `lowcut` and `highcut`).
+        Ignored for lowpass and highpass filters (as defined by `lowcut` and `highcut`).
     verbose : int, default 0
         Verbosity level for printing.
 
@@ -708,7 +707,7 @@ def get_ampl(
 
 def normalize(
     sig: np.ndarray,
-    method: str,
+    method: Literal["naive", "min-max", "z-score"],
     mean: Union[Real, Iterable[Real]] = 0.0,
     std: Union[Real, Iterable[Real]] = 1.0,
     sig_fmt: str = "channel_first",

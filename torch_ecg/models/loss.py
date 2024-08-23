@@ -24,7 +24,7 @@ built-in loss functions in PyTorch.
 """
 
 from numbers import Real
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import torch
 import torch.nn.functional as F
@@ -432,9 +432,9 @@ class AsymmetricLoss(nn.Module):
         The probability margin
     disable_torch_grad_focal_loss : bool, default False
         If True, disable :func:`torch.grad` for asymmetric focal loss computing.
-    reduction : {"none", "mean", "sum"}, optional
-        Specifies the reduction to apply to the output, by default "mean".
-    implementation : {"alibaba-miil", "deep-psp"}, optional
+    reduction : {"none", "mean", "sum"}, default "mean"
+        Specifies the reduction to apply to the output.
+    implementation : {"alibaba-miil", "deep-psp"}, default "alibaba-miil"
         Implementation by Alibaba-MIIL, or by `DeepPSP`, case insensitive.
 
     NOTE
@@ -464,8 +464,8 @@ class AsymmetricLoss(nn.Module):
         gamma_pos: Real = 1,
         prob_margin: float = 0.05,
         disable_torch_grad_focal_loss: bool = False,
-        reduction: str = "mean",
-        implementation: str = "alibaba-miil",
+        reduction: Literal["none", "mean", "sum"] = "mean",
+        implementation: Literal["alibaba-miil", "deep-psp"] = "alibaba-miil",
     ) -> None:
         super().__init__()
         self.implementation = implementation.lower()

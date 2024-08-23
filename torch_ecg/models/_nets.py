@@ -8,7 +8,7 @@ from inspect import isclass
 from itertools import repeat
 from math import sqrt
 from numbers import Real
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from typing import Any, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -1747,8 +1747,8 @@ class BlurPool(nn.Module, SizeMixin):
         Number of channels of the input tensor.
     filt_size : int, default 3
         Size (length) of the filter.
-    pad_type : {"reflect", "replicate", "zero"}
-        Type of padding, by default "reflect".
+    pad_type : {"reflect", "replicate", "zero"}, default "reflect"
+        Type of padding.
     pad_off : int, default 0
         Padding offset
     **kwargs : dict, optional
@@ -1767,7 +1767,7 @@ class BlurPool(nn.Module, SizeMixin):
         down_scale: int,
         in_channels: int,
         filt_size: int = 3,
-        pad_type: str = "reflect",
+        pad_type: Literal["reflect", "replicate", "zero"] = "reflect",
         pad_off: int = 0,
         **kwargs: Any,
     ) -> None:
@@ -2649,16 +2649,15 @@ class ZeroPadding(nn.Module, SizeMixin):
         Number of channels in the input tensor.
     out_channels : int
         Number of channels in the output tensor.
-    loc : {"head", "tail", "both"}
-        Padding to the head or the tail channel, or both.
-        By default "head", case insensitive.
+    loc : {"head", "tail", "both"}, default "head"
+        Padding to the head or the tail channel, or both, case insensitive.
 
     """
 
     __name__ = "ZeroPadding"
     __LOC__ = ["head", "tail", "both"]
 
-    def __init__(self, in_channels: int, out_channels: int, loc: str = "head") -> None:
+    def __init__(self, in_channels: int, out_channels: int, loc: Literal["head", "tail", "both"] = "head") -> None:
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels

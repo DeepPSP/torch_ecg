@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, Iterable, Union
+from typing import Any, Iterable, Literal, Union
 
 import torch
 
@@ -63,7 +63,7 @@ class Normalize(torch.nn.Module):
 
     def __init__(
         self,
-        method: str = "z-score",
+        method: Literal["naive", "min-max", "z-score"] = "z-score",
         mean: Union[Real, Iterable[Real]] = 0.0,
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,

@@ -1,7 +1,7 @@
 """BandPass filter preprocessor."""
 
 from numbers import Real
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Literal, Optional, Tuple
 
 import numpy as np
 
@@ -21,8 +21,8 @@ class BandPass(PreProcessor):
         Low cutoff frequency
     highcut : numbers.Real, optional
         High cutoff frequency.
-    filter_type : {"butter", "fir"}, optional
-        Type of the bandpass filter, default "butter".
+    filter_type : {"butter", "fir"}, , default "butter"
+        Type of the bandpass filter.
     filter_order : int, optional
         Order of the bandpass filter.
     **kwargs : dict, optional
@@ -45,7 +45,7 @@ class BandPass(PreProcessor):
         self,
         lowcut: Optional[Real] = 0.5,
         highcut: Optional[Real] = 45,
-        filter_type: str = "butter",
+        filter_type: Literal["butter", "fir"] = "butter",
         filter_order: Optional[int] = None,
         **kwargs: Any
     ) -> None:

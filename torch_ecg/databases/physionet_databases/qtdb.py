@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
@@ -337,10 +337,10 @@ class QTDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "intervals",
+        rhythm_format: Literal["intervals", "mask"] = "intervals",
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
-        extension: str = "atr",
+        extension: Literal["atr", "man"] = "atr",
     ) -> Union[Dict[str, list], np.ndarray]:
         """Load rhythm annotations of a record.
 
@@ -355,9 +355,8 @@ class QTDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"intervals", "mask"}, optional
-            Format of returned annotation, by default "intervals",
-            case insensitive.
+        rhythm_format : {"intervals", "mask"}, default "intervals"
+            Format of returned annotation, case insensitive.
         rhythm_types : List[str], optional
             The rhythm types to be loaded, defaults to `self.rhythm_types`.
             If is not None, only the rhythm annotations
@@ -382,10 +381,10 @@ class QTDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        beat_format: str = "beat",
+        beat_format: Literal["beat", "dict"] = "beat",
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
-        extension: str = "atr",
+        extension: Literal["atr", "man"] = "atr",
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """Load beat annotations of the record.
 
@@ -400,9 +399,8 @@ class QTDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        beat_format : {"beat", "dict"}, optional
-            Format of returned annotation, by default "beat",
-            case insensitive.
+        beat_format : {"beat", "dict"}, default "beat"
+            Format of returned annotation, case insensitive.
         beat_types : List[str], optional
             The beat types to be loaded, defaults to `self.beat_types`.
             If is not None, only the beat annotations
@@ -410,9 +408,8 @@ class QTDB(PhysioNetDataBase):
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
-        extension : {"atr", "man"}, optional
-            Extension of the annotation file, by default "atr",
-            case insensitive.
+        extension : {"atr", "man"}, default "atr"
+            Extension of the annotation file, case insensitive.
 
         Returns
         -------
@@ -455,7 +452,7 @@ class QTDB(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
-        extension: str = "atr",
+        extension: Literal["atr", "man"] = "atr",
     ) -> np.ndarray:
         """Load rpeak indices of the record.
 
@@ -474,9 +471,8 @@ class QTDB(PhysioNetDataBase):
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
-        extension : {"atr", "man"}, optional
-            Extension of the annotation file, by default "atr",
-            case insensitive.
+        extension : {"atr", "man"}, default "atr"
+            Extension of the annotation file, case insensitive.
 
         Returns
         -------

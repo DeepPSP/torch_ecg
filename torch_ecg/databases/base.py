@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from numbers import Real
 from pathlib import Path
 from string import punctuation
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -956,15 +956,15 @@ class NSRRDataBase(_DataBase):
 
     def safe_edf_file_operation(
         self,
-        operation: str = "close",
+        operation: Literal["open", "close"] = "close",
         full_file_path: Optional[Union[str, bytes, os.PathLike]] = None,
     ) -> None:
         """Safe IO operation for edf file.
 
         Parameters
         ----------
-        operation : {"open", "close"}, optional
-            Operation name, by default "close".
+        operation : {"open", "close"}, default "close"
+            Operation name.
         full_file_path : `path-like`, optional
             Path of the file which contains the data.
             If is None, default path will be used.

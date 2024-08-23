@@ -5,7 +5,7 @@ utilities for signal processing on PyTorch tensors
 
 import warnings
 from numbers import Real
-from typing import Callable, Iterable, Optional, Union
+from typing import Callable, Iterable, Literal, Optional, Union
 
 import torch
 
@@ -17,7 +17,7 @@ __all__ = [
 
 def normalize(
     sig: torch.Tensor,
-    method: str = "z-score",
+    method: Literal["z-score", "naive", "min-max"] = "z-score",
     mean: Union[Real, Iterable[Real]] = 0.0,
     std: Union[Real, Iterable[Real]] = 1.0,
     per_channel: bool = False,
@@ -43,8 +43,8 @@ def normalize(
     ----------
     sig : torch.Tensor
         Signal to be normalized, assumed to have shape ``(..., n_leads, siglen)``.
-    method : {"z-score", "min-max", "naive"}, optional
-        Normalization method, by default "z-score", case insensitive.
+    method : {"z-score", "min-max", "naive"}, default "z-score"
+        Normalization method, case insensitive.
     mean : numbers.Real or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal, if `method` is "z-score";

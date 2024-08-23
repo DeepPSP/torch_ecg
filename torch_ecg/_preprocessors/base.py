@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from itertools import repeat
 from numbers import Real
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 import numpy as np
 from biosppy.signals.tools import filter_signal
@@ -75,10 +75,10 @@ class PreProcessor(ReprMixin, ABC):
 def preprocess_multi_lead_signal(
     raw_sig: np.ndarray,
     fs: Real,
-    sig_fmt: str = "channel_first",
+    sig_fmt: Literal["channel_first", "lead_first", "channel_last", "lead_last"] = "channel_first",
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
-    filter_type: str = "butter",
+    filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
     """Perform preprocessing for multi-lead ECG signal (with units in mV).
@@ -107,8 +107,8 @@ def preprocess_multi_lead_signal(
         a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
         If is None or empty, bandpass filtering will not be performed.
-    filter_type : {"butter", "fir"}, optional
-        Type of the bandpass filter, default "butter".
+    filter_type : {"butter", "fir"}, default "butter"
+        Type of the bandpass filter.
     filter_order : int, optional
         Order of the bandpass filter.
 
@@ -190,7 +190,7 @@ def preprocess_single_lead_signal(
     fs: Real,
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
-    filter_type: str = "butter",
+    filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
     """Perform preprocessing for single lead ECG signal (with units in mV).
@@ -214,9 +214,9 @@ def preprocess_single_lead_signal(
         a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
         If is None or empty, bandpass filtering will not be performed.
-    filter_type : {"butter", "fir"}, optional
-        Type of the bandpass filter, default "butter".
-    filter_order : int, optional,
+    filter_type : {"butter", "fir"}, default "butter"
+        Type of the bandpass filter.
+    filter_order : int, optional
         Order of the bandpass filter.
 
     Returns

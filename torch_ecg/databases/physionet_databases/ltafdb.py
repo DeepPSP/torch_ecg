@@ -5,7 +5,7 @@ import math
 import os
 from copy import deepcopy
 from numbers import Real
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import wfdb
@@ -168,8 +168,8 @@ class LTAFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "interval",
-        beat_format: str = "beat",
+        rhythm_format: Literal["interval", "mask"] = "interval",
+        beat_format: Literal["beat", "dict"] = "beat",
         keep_original: bool = False,
     ) -> dict:
         """Load rhythm and beat annotations of the record.
@@ -186,12 +186,10 @@ class LTAFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, optional
-            Format of returned annotation, by default "interval",
-            case insensitive.
-        beat_format : {"beat", "dict"}, optional
-            Format of returned annotation, by default "beat",
-            case insensitive.
+        rhythm_format : {"interval", "mask"}, default "interval"
+            Format of returned annotation, case insensitive.
+        beat_format : {"beat", "dict"}, default "beat"
+            Format of returned annotation, case insensitive.
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
@@ -234,7 +232,7 @@ class LTAFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "interval",
+        rhythm_format: Literal["interval", "mask"] = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """Load rhythm annotations of the record.
@@ -251,9 +249,8 @@ class LTAFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, optional
-            Format of returned annotation, by default "interval",
-            case insensitive.
+        rhythm_format : {"interval", "mask"}, default "interval"
+            Format of returned annotation, case insensitive.
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
@@ -324,7 +321,7 @@ class LTAFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        beat_format: str = "beat",
+        beat_format: Literal["beat", "dict"] = "beat",
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """Load beat annotations of the record.
@@ -340,9 +337,8 @@ class LTAFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        beat_format : {"beat", "dict"}, optional
-            Format of returned annotation, by default "beat",
-            case insensitive.
+        beat_format : {"beat", "dict"}, default "beat"
+            Format of returned annotation, case insensitive.
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.

@@ -5,7 +5,7 @@ import os
 import time
 import warnings
 from pathlib import Path
-from typing import Any, List, Optional, Sequence, Union
+from typing import Any, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -188,7 +188,7 @@ class CINC2017(PhysioNetDataBase):
         # ["N", "A", "O", "~"]
         self._all_ann = list(set(self._df_ann.ann.unique().tolist() + self._df_ann_ori.ann.unique().tolist()))
 
-    def load_ann(self, rec: Union[str, int], original: bool = False, ann_format: str = "a") -> str:
+    def load_ann(self, rec: Union[str, int], original: bool = False, ann_format: Literal["a", "f"] = "a") -> str:
         """Load the annotation of the record.
 
         Parameters

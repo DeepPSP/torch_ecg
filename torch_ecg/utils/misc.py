@@ -17,7 +17,7 @@ from functools import reduce, wraps
 from glob import glob
 from numbers import Number, Real
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -445,7 +445,7 @@ def init_logger(
     log_file: Optional[str] = None,
     log_name: Optional[str] = None,
     suffix: Optional[str] = None,
-    mode: str = "a",
+    mode: Literal["a", "w"] = "a",
     verbose: int = 0,
 ) -> logging.Logger:
     """Initialize a logger.
@@ -740,16 +740,15 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
     return True
 
 
-def add_docstring(doc: str, mode: str = "replace") -> Callable:
+def add_docstring(doc: str, mode: Literal["replace", "append", "prepend"] = "replace") -> Callable:
     """Decorator to add docstring to a function or a class.
 
     Parameters
     ----------
     doc : str
         The docstring to be added.
-    mode : {"replace", "append", "prepend"}, optional
-        The mode of the adding to the original docstring,
-        by default "replace", case insensitive.
+    mode : {"replace", "append", "prepend"}, default "replace"
+        The mode of the adding to the original docstring, case insensitive.
 
     """
 

@@ -2,7 +2,7 @@
 features from metadata
 """
 
-from typing import Union
+from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def get_features(patient_metadata: str, ret_type: str = "np") -> Union[np.ndarray, pd.DataFrame, dict]:
+def get_features(patient_metadata: str, ret_type: Literal["np", "pd", "dict"] = "np") -> Union[np.ndarray, pd.DataFrame, dict]:
     """Extract features from the patient metadata.
 
     Adapted from the official repo.
@@ -23,8 +23,8 @@ def get_features(patient_metadata: str, ret_type: str = "np") -> Union[np.ndarra
     ----------
     patient_metadata : str
         The patient metadata.
-    ret_type : {"np", "pd", "dict"}
-        The return type, by default "np".
+    ret_type : {"np", "pd", "dict"}, default "np"
+        The return value type.
 
     Returns
     -------
@@ -86,7 +86,7 @@ def get_features(patient_metadata: str, ret_type: str = "np") -> Union[np.ndarra
     return patient_features
 
 
-def get_labels(patient_metadata: str, ret_type: str = "dict") -> Union[np.ndarray, pd.DataFrame, dict]:
+def get_labels(patient_metadata: str, ret_type: Literal["np", "pd", "dict"] = "dict") -> Union[np.ndarray, pd.DataFrame, dict]:
     """Extract labels from the patient metadata.
 
     Adapted from the official repo.
@@ -95,8 +95,8 @@ def get_labels(patient_metadata: str, ret_type: str = "dict") -> Union[np.ndarra
     ----------
     patient_metadata : str
         The patient metadata.
-    ret_type : {"np", "pd", "dict"}
-        The return type, by default "dict".
+    ret_type : {"np", "pd", "dict"}, default "dict"
+        The return value type.
 
     Returns
     -------

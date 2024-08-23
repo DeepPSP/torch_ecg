@@ -9,7 +9,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from numbers import Real
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -44,7 +44,7 @@ def get_mask(
     critical_points: np.ndarray,
     left_bias: int,
     right_bias: int,
-    return_fmt: str = "mask",
+    return_fmt: Literal["mask", "intervals"] = "mask",
 ) -> Union[np.ndarray, list]:
     """Get the mask around the given critical points.
 

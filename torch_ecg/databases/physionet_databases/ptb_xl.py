@@ -1,7 +1,7 @@
 import os
 from ast import literal_eval
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -389,7 +389,7 @@ class PTBXLPlus(PhysioNetDataBase):
         self._df_records.set_index("ecg_id", inplace=True)
         self._all_records = self._df_records.index.tolist()
 
-    def load_data(self, rec: Union[str, int], source: str = "12sl") -> np.ndarray:
+    def load_data(self, rec: Union[str, int], source: Literal["12sl", "unig"] = "12sl") -> np.ndarray:
         """Load the data of a record.
 
         Parameters
@@ -423,7 +423,7 @@ class PTBXLPlus(PhysioNetDataBase):
         """alias of `load_data`."""
         return self.load_data(rec, source)
 
-    def load_ann(self, rec: Union[str, int], source: str = "12sl") -> Dict[str, Any]:
+    def load_ann(self, rec: Union[str, int], source: Literal["12sl", "ptbxl"] = "12sl") -> Dict[str, Any]:
         """Load the annotation (diagnostic statements) of a record.
 
         Parameters
@@ -450,7 +450,7 @@ class PTBXLPlus(PhysioNetDataBase):
         ann = {key: literal_eval(val) for key, val in ann.items()}
         return ann
 
-    def load_features(self, rec: Union[str, int], source: str = "12sl") -> Dict[str, float]:
+    def load_features(self, rec: Union[str, int], source: Literal["12sl", "unig", "ecgdeli"] = "12sl") -> Dict[str, float]:
         """Load the features of a record.
 
         Parameters

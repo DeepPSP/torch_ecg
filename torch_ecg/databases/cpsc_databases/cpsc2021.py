@@ -7,7 +7,7 @@ import time
 import warnings
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -401,7 +401,7 @@ class CPSC2021(PhysioNetDataBase):
     def load_ann(
         self,
         rec: Union[str, int],
-        field: Optional[str] = None,
+        field: Optional[Literal["rpeaks", "af_episodes", "label", "raw", "wfdb"]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         **kwargs: Any,
@@ -562,7 +562,7 @@ class CPSC2021(PhysioNetDataBase):
         sampto: Optional[int] = None,
         keep_original: bool = False,
         fs: Optional[Real] = None,
-        fmt: str = "intervals",
+        fmt: Literal["intervals", "mask", "c_intervals"] = "intervals",
     ) -> Union[List[List[int]], np.ndarray]:
         """Load the episodes of atrial fibrillation,
         in terms of intervals or mask.

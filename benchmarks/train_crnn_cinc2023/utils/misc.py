@@ -5,7 +5,7 @@ Miscellaneous functions.
 import os
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -38,7 +38,7 @@ def load_challenge_eeg_data(
     data_folder: str,
     patient_id: str,
     hour_limit: Optional[int] = None,
-    backend: str = "scipy",
+    backend: Literal["scipy", "wfdb"] = "scipy",
 ) -> List[Tuple[np.ndarray, int, List[str]]]:
     """Load challenge EEG data given the data folder and patient ID.
 
@@ -53,8 +53,8 @@ def load_challenge_eeg_data(
     hour_limit : int, optional
         The hour limit of the recordings to load.
         None for no limit, by default None.
-    backend : {"scipy", "wfdb"}
-        The backend to use, by default "scipy".
+    backend : {"scipy", "wfdb"}, default "scipy"
+        The backend to use.
 
     Returns
     -------
@@ -166,7 +166,7 @@ def func_indicator(name: str) -> Callable:
 
 
 def load_recording_data(
-    record_name: str, check_values: bool = False, backend: str = "scipy"
+    record_name: str, check_values: bool = False, backend: Literal["scipy", "wfdb"] = "scipy"
 ) -> Tuple[np.ndarray, List[str], float]:
     """Load a recording, including the data, channel names, and sampling frequency.
 
@@ -179,8 +179,8 @@ def load_recording_data(
         The record name.
     check_values : bool, optional
         Whether to check the values, by default False.
-    backend : {"scipy", "wfdb"}
-        The backend to use, by default "scipy".
+    backend : {"scipy", "wfdb"}, default "scipy"
+        The backend to use.
 
     Returns
     -------
@@ -374,7 +374,7 @@ def url_is_reachable(url: str) -> bool:
         return False
 
 
-def get_leaderboard(by_team: Union[bool, str] = False, sort_by: int = 72) -> pd.DataFrame:
+def get_leaderboard(by_team: Union[bool, str] = False, sort_by: Literal[12, 24, 48, 72] = 72) -> pd.DataFrame:
     """Get the leaderboard of the official phase.
 
     Parameters

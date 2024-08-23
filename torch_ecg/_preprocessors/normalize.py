@@ -1,7 +1,7 @@
 """Normalization of the signals."""
 
 from numbers import Real
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Literal, Tuple, Union
 
 import numpy as np
 
@@ -37,9 +37,8 @@ class Normalize(PreProcessor):
 
     Parameters
     ----------
-    method : {"naive", "min-max", "z-score"}, optional
-        Normalization method, case insensitive,
-        default "z-score".
+    method : {"naive", "min-max", "z-score"}, default "z-score"
+        Normalization method, case insensitive.
     mean : numbers.Real or numpy.ndarray, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal.
@@ -66,7 +65,7 @@ class Normalize(PreProcessor):
 
     def __init__(
         self,
-        method: str = "z-score",
+        method: Literal["naive", "min-max", "z-score"] = "z-score",
         mean: Union[Real, np.ndarray] = 0.0,
         std: Union[Real, np.ndarray] = 1.0,
         per_channel: bool = False,

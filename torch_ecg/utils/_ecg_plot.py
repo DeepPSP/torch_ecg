@@ -36,7 +36,7 @@ import os
 import random
 from math import ceil
 from random import randint
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -118,23 +118,23 @@ def ecg_plot(
     full_mode: str = "None",
     store_text_bbox: bool = False,
     units: str = "mV",
-    papersize: Optional[str] = None,
+    papersize: Optional[Literal["A0", "A1", "A2", "A3", "A4", "letter"]] = None,
     x_gap: float = standard_values["x_gap"],
     y_gap: float = standard_values["y_gap"],
     display_factor: float = standard_values["display_factor"],
     line_width: float = standard_values["line_width"],
     title: Optional[str] = None,
-    style: Optional[str] = None,
+    style: Optional[Literal["bw", "color"]] = None,
     row_height: float = standard_values["row_height"],
     show_lead_name: bool = True,
     show_grid: bool = False,
     show_dc_pulse: bool = False,
     y_grid: Optional[float] = None,
     x_grid: Optional[float] = None,
-    standard_colours: int = 0,
+    standard_colours: Literal[0, 1, 2, 3, 4, 5] = 0,
     bbox: bool = False,
     print_txt: bool = False,
-    save_format: Optional[str] = None,
+    save_format: Optional[List[Literal["png", "pdf", "svg", "jpg"]]] = None,
 ) -> Tuple[float, float]:
     """Function to plot raw ECG signal.
 
@@ -151,55 +151,54 @@ def ecg_plot(
         Name of the record file.
     output_dir : `path-like`
         Output directory.
-    resolution : int, default ``200``
+    resolution : int, default 200
         Resolution of the output image.
     pad_inches : int, default ``0``
         Padding of white margin along the image in inches.
     lead_index : List[str], optional
         Order of lead indices to be plotted.
         By default, the order is the same as the order in ``ecg``.
-    full_mode : str, default ``"None"``
+    full_mode : str, default "None"
         Sets the lead to add at the bottom of the paper ECG as a long strip.
         If ``"None"``, no lead is added at the bottom.
         If not ``"None"``, the lead ``"full" + full_mode`` must be present in ``ecg``.
-    store_text_bbox : bool, default ``False``
+    store_text_bbox : bool, default False
         If ``True``, stores the bounding box of the text in a text file.
-    units : str, default ``"mV"``
-        Units of the ECG signal.
-        NOT used currently.
-    papersize : {``"A0"``, ``"A1"``, ``"A2"``, ``"A3"``, ``"A4"``, ``"letter"``}, default ``None``
+    units : str, default "mV"
+        Units of the ECG signal. NOT used currently.
+    papersize : {"A0", "A1", "A2", "A3", "A4", "letter"}, default None
         Size of the paper to plot the ECG on.
-    x_gap : float, default ``1.0``
+    x_gap : float, default 1.0
         Gap between paper x axis border and signal plot.
-    y_gap : float, default ``0.5``
+    y_gap : float, default 0.5
         Gap between paper y axis border and signal plot.
-    display_factor : float, default ``1.0``
+    display_factor : float, default 1.0
         Factor to scale the ECG signal by.
-    line_width : float, default ``0.75``
+    line_width : float, default 0.75
         Width of line tracing the ECG.
     title : str, optional
         Title of the figure.
-    style : {``"bw"``, ``"color"``}, optional
+    style : {"bw", "color"}, optional
         Sets the style of the plot.
-    row_height : float, default ``8.0``
+    row_height : float, default 8.0
         Gap between corresponding ECG rows.
-    show_lead_name : bool, default ``True``
+    show_lead_name : bool, default True
         Option to show lead names or skip.
-    show_grid : bool, default ``False``
+    show_grid : bool, default False
         Turn grid on or off.
-    show_dc_pulse : bool, default ``False``
+    show_dc_pulse : bool, default False
         Option to show DC pulse.
     y_grid : float, optional
         Sets the y grid size in inches.
     x_grid : float, optional
         Sets the x grid size in inches.
-    standard_colours : {``0``, ``1``, ``2``, ``3``, ``4``, ``5``}, default ``0``
+    standard_colours : {0, 1, 2, 3, 4, 5}, default 0
         Sets the colour of the plot grid.
-    bbox : bool, default ``False``
+    bbox : bool, default False
         If ``True``, stores the bounding box of the lead in a text file.
-    print_txt : bool, default ``False``
+    print_txt : bool, default False
         If ``True``, prints the metadata of the plot.
-    save_format : {``"png"``, ``"pdf"``, ``"svg"``, ``"jpg"``}, optional
+    save_format : {"png", "pdf", "svg", "jpg"}, optional
         Format to save the plot in.
         If ``None``, the plot is not saved.
 
