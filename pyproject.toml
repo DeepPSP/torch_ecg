@@ -1,0 +1,129 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "torch-ecg"
+dynamic = ["version"]
+description = "A Deep Learning Framework for ECG Processing Tasks Based on PyTorch"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.7"
+authors = [
+    { name = "DeepPSP", email = "wenh06@gmail.com" },
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "bib-lookup>=0.0.19",
+    "biosppy",
+    "Cython",
+    "deprecate-kwargs",
+    "deprecated",
+    "einops",
+    "matplotlib",
+    "numpy<2.0.0",
+    "pandas",
+    "pyarrow",
+    "pyEDFlib",
+    "PyWavelets",
+    "requests",
+    "scikit-learn",
+    "scipy",
+    "tensorboardX",
+    "torch",
+    "torch-optimizer",
+    "torchsummary",
+    "tqdm",
+    "typing-extensions",
+    "wfdb==3.2.0",
+    "xmltodict",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==24.3.0",
+    "flake8",
+    "gdown",
+    "librosa",
+    "nbsphinx",
+    "numpydoc",
+    "openpyxl",
+    "packaging",
+    "pcg-springer-features",
+    "pre-commit",
+    "pydata-sphinx-theme",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "sphinx-autobuild",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-emoji-favicon",
+    "sphinx-markdown-tables",
+    "sphinx-multiversion",
+    "sphinx-rtd-theme",
+    "sphinx-theme",
+    "sphinx<7.0",
+    "sphinxcontrib-bibtex",
+    "sphinxcontrib-napoleon",
+    "sphinxcontrib-tikz",
+    "tensorboard",
+    "torch_audiomentations",
+    "torchaudio",
+]
+docs = [
+    "nbsphinx",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx-autobuild",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-emoji-favicon",
+    "sphinx-markdown-tables",
+    "sphinx-multiversion",
+    "sphinx-rtd-theme",
+    "sphinx-theme",
+    "sphinx<7.0",
+    "sphinxcontrib-bibtex",
+    "sphinxcontrib-napoleon",
+    "sphinxcontrib-tikz",
+]
+test = [
+    "black==24.3.0",
+    "flake8",
+    "gdown",
+    "librosa",
+    "openpyxl",
+    "packaging",
+    "pcg-springer-features",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "tensorboard",
+    "torch_audiomentations",
+    "torchaudio",
+]
+
+[project.urls]
+Homepage = "https://github.com/DeepPSP/torch_ecg"
+
+[tool.hatch.version]
+path = "torch_ecg/version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/torch_ecg",
+]
