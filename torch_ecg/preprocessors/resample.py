@@ -46,7 +46,7 @@ class Resample(torch.nn.Module):
         dst_fs: Optional[int] = None,
         siglen: Optional[int] = None,
         inplace: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.dst_fs = dst_fs

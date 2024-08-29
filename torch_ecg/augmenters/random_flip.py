@@ -51,7 +51,7 @@ class RandomFlip(Augmenter):
         per_channel: bool = True,
         prob: Union[Sequence[float], float] = [0.4, 0.2],
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.fs = fs

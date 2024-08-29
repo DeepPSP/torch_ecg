@@ -58,7 +58,7 @@ class RandomRenormalize(Augmenter):
         per_channel: bool = False,
         prob: float = 0.5,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.mean = np.array(mean)

@@ -47,7 +47,7 @@ class BandPass(PreProcessor):
         highcut: Optional[Real] = 45,
         filter_type: Literal["butter", "fir"] = "butter",
         filter_order: Optional[int] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         self.lowcut = lowcut
         self.highcut = highcut

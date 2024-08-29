@@ -108,7 +108,7 @@ def test_compute_output_shape():
                 num_filters=num_filters,
                 output_padding=0,
                 channel_last=channel_last,
-                **conv_kw
+                **conv_kw,
             )
             conv_output_tensor = torch.nn.Conv1d(in_channels, num_filters, **conv_kw)(tensor_first)
             if channel_last:
@@ -131,7 +131,7 @@ def test_compute_output_shape():
                 num_filters=num_filters,
                 output_padding=0,
                 channel_last=channel_last,
-                **deconv_kw
+                **deconv_kw,
             )
             deconv_output_tensor = torch.nn.ConvTranspose1d(in_channels, num_filters, **deconv_kw)(tensor_first)
             if channel_last:

@@ -57,7 +57,7 @@ class RandomMasking(Augmenter):
         mask_width: Sequence[Real] = [0.08, 0.18],
         prob: Union[Sequence[Real], Real] = [0.3, 0.15],
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.fs = fs
@@ -77,7 +77,7 @@ class RandomMasking(Augmenter):
         label: Optional[Tensor],
         *extra_tensors: Sequence[Tensor],
         critical_points: Optional[Sequence[Sequence[int]]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Tuple[Tensor, ...]:
         """Forward method of the RandomMasking augmenter.
 

@@ -93,7 +93,7 @@ class BaselineWanderAugmenter(Augmenter):
         gaussian: Optional[np.ndarray] = None,
         prob: float = 0.5,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.fs = fs

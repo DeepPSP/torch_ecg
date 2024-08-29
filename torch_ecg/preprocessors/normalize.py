@@ -68,7 +68,7 @@ class Normalize(torch.nn.Module):
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.method = method.lower()
@@ -162,7 +162,7 @@ class NaiveNormalize(Normalize):
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             method="naive",
@@ -205,6 +205,6 @@ class ZScoreNormalize(Normalize):
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(method="z-score", mean=mean, std=std, per_channel=per_channel, inplace=inplace, **kwargs)

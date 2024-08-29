@@ -7,7 +7,7 @@ name = "torch-ecg"
 dynamic = ["version"]
 description = "A Deep Learning Framework for ECG Processing Tasks Based on PyTorch"
 readme = "README.md"
-license = "MIT"
+license = { file = "LICENSE" }
 requires-python = ">=3.7"
 authors = [
     { name = "DeepPSP", email = "wenh06@gmail.com" },
