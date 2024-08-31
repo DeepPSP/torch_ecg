@@ -68,6 +68,8 @@ class CINC2021Dataset(ReprMixin, Dataset):
         if reader_kwargs.pop("db_dir", None) is not None:
             warnings.warn("`db_dir` is specified in both config and reader_kwargs", RuntimeWarning)
         self.reader = CR(db_dir=self.config.db_dir, **reader_kwargs)
+        if len(self.reader) == 0:
+            warnings.warn("No records found in the database", RuntimeWarning)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
         self._TRANCHES = self.config.tranche_classes.keys()  # ["A", "B", "AB", "E", "F", "G",]
@@ -337,6 +339,9 @@ class CINC2021Dataset(ReprMixin, Dataset):
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
         train_file = self.reader.db_dir_base / f"{self.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
         test_file = self.reader.db_dir_base / f"{self.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
+
+        if len(self.reader) == 0:
+            return []
 
         # TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)
         # to accelerate the validity examinations

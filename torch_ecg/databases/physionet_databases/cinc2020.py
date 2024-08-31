@@ -10,7 +10,7 @@ from copy import deepcopy
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -496,9 +496,9 @@ class CINC2020(PhysioNetDataBase):
         self,
         rec: Union[str, int],
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
-        data_format: str = "channel_first",
-        backend: str = "wfdb",
-        units: Union[str, type(None)] = "mV",
+        data_format: Literal["channel_first", "lead_first", "channel_last", "lead_last"] = "channel_first",
+        backend: Literal["wfdb", "scipy"] = "wfdb",
+        units: Literal["mV", "μV", "uV", None] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
@@ -516,8 +516,8 @@ class CINC2020(PhysioNetDataBase):
             Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first").
-        backend : {"wfdb", "scipy"}, optional
-            The backend data reader, by default "wfdb".
+        backend : {"wfdb", "scipy"}, default "wfdb"
+            The backend data reader.
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
@@ -598,7 +598,7 @@ class CINC2020(PhysioNetDataBase):
             return data, data_fs
         return data
 
-    def load_ann(self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb") -> Union[dict, str]:
+    def load_ann(self, rec: Union[str, int], raw: bool = False, backend: Literal["wfdb", "naive"] = "wfdb") -> Union[dict, str]:
         """Load annotations of the record.
 
         The annotations are stored in the .hea files.
@@ -609,7 +609,7 @@ class CINC2020(PhysioNetDataBase):
             Record name or index of the record in :attr:`all_records`.
         raw : bool, default False
             If True, the raw annotations without parsing will be returned.
-        backend : {"wfdb", "naive"}, optional
+        backend : {"wfdb", "naive"}, default "wfdb"
             If is "wfdb", :func:`wfdb.rdheader`
             will be used to load the annotations.
             If is "naive", annotations will be parsed
@@ -662,19 +662,23 @@ class CINC2020(PhysioNetDataBase):
         header_fp = self.get_header_filepath(rec, with_ext=False)
         header_reader = wfdb.rdheader(str(header_fp))
         ann_dict = {}
-        (
-            ann_dict["rec_name"],
-            ann_dict["nb_leads"],
-            ann_dict["fs"],
-            ann_dict["nb_samples"],
-            ann_dict["datetime"],
-            daytime,
-        ) = header_data[0].split(" ")
+        ann_dict["rec_name"] = header_reader.record_name
+        ann_dict["nb_leads"] = header_reader.n_sig
+        ann_dict["fs"] = header_reader.fs
+        ann_dict["nb_samples"] = header_reader.sig_len
+        if len(header_data[0].split(" ")) >= 6:
+            ann_dict["datetime"], daytime = header_data[0].split(" ")[4:6]
+        else:
+            ann_dict["datetime"], daytime = None, None
 
         ann_dict["nb_leads"] = int(ann_dict["nb_leads"])
         ann_dict["fs"] = int(ann_dict["fs"])
         ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
-        ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
+        if ann_dict["datetime"] is not None and daytime is not None:
+            try:
+                ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
+            except Exception:
+                pass
         try:  # see NOTE. 1.
             ann_dict["age"] = int([line for line in header_reader.comments if "Age" in line][0].split(": ")[-1])
         except Exception:
@@ -749,14 +753,22 @@ class CINC2020(PhysioNetDataBase):
             ann_dict["nb_leads"],
             ann_dict["fs"],
             ann_dict["nb_samples"],
-            ann_dict["datetime"],
-            daytime,
-        ) = header_data[0].split(" ")
+        ) = header_data[0].split(
+            " "
+        )[0:4]
+        if len(header_data[0].split(" ")) >= 6:
+            ann_dict["datetime"], daytime = header_data[0].split(" ")[4:6]
+        else:
+            ann_dict["datetime"], daytime = None, None
 
         ann_dict["nb_leads"] = int(ann_dict["nb_leads"])
         ann_dict["fs"] = int(ann_dict["fs"])
         ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
-        ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
+        if ann_dict["datetime"] is not None and daytime is not None:
+            try:
+                ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
+            except Exception:
+                pass
         try:  # see NOTE. 1.
             ann_dict["age"] = int([line for line in header_data if line.startswith("#Age")][0].split(": ")[-1])
         except Exception:
@@ -1310,17 +1322,16 @@ class CINC2020(PhysioNetDataBase):
             data = np.moveaxis(data, -1, -2)
         return data
 
-    def load_raw_data(self, rec: Union[str, int], backend: str = "scipy") -> np.ndarray:
-        """
-        Load raw data from corresponding files with no further processing,
-        in order to facilitate feeding data into the `run_12ECG_classifier` function
+    def load_raw_data(self, rec: Union[str, int], backend: Literal["scipy", "wfdb"] = "scipy") -> np.ndarray:
+        """Load raw data from corresponding files with no further processing,
+        in order to facilitate feeding data into the `run_12ECG_classifier` function.
 
         Parameters
         ----------
         rec : str or int
             Record name or index of the record in :attr:`all_records`.
-        backend : {"scipy", "wfdb"}, optional
-            The backend data reader, by default "scipy".
+        backend : {"scipy", "wfdb"}, default "scipy"
+            The backend data reader.
             Note that "scipy" provides data in the format of "lead_first",
             while "wfdb" provides data in the format of "lead_last".
 
