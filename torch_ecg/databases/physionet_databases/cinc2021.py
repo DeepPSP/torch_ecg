@@ -840,10 +840,14 @@ class CINC2021(PhysioNetDataBase):
         header_fp = self.get_header_filepath(rec, with_ext=False)
         header_reader = wfdb.rdheader(str(header_fp))
         ann_dict = {}
-        ann_dict["rec_name"] = header_reader.record_name
-        ann_dict["nb_leads"] = header_reader.n_sig
-        ann_dict["fs"] = header_reader.fs
-        ann_dict["nb_samples"] = header_reader.sig_len
+        (
+            ann_dict["rec_name"],
+            ann_dict["nb_leads"],
+            ann_dict["fs"],
+            ann_dict["nb_samples"],
+        ) = header_data[0].split(
+            " "
+        )[0:4]
         if len(header_data[0].split(" ")) >= 6:
             ann_dict["datetime"], daytime = header_data[0].split(" ")[4:6]
         else:
@@ -1055,7 +1059,7 @@ class CINC2021(PhysioNetDataBase):
             of a :class:`~pandas.DataFrame`.
 
         """
-        df_leads = pd.read_csv(io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None)
+        df_leads = pd.read_csv(io.StringIO("\n".join(l_leads_data)), sep="\\s+", header=None)
         df_leads.columns = [
             "filename",
             "fmt+byte_offset",

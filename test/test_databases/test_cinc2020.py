@@ -90,7 +90,7 @@ class TestCINC2020:
             ann_2 = reader.load_ann(rec, backend="naive")
             ann_3 = reader.load_ann(rec, raw=True)
             assert isinstance(ann_1, dict)
-            assert dicts_equal(ann_1, ann_2)
+            assert dicts_equal(ann_1, ann_2), f"{rec}: ann from wfdb and naive are not equal"
             assert isinstance(ann_3, str)
         ann_1 = reader.load_ann(0, backend="wfdb")
         ann_2 = reader.load_ann(0, backend="naive")

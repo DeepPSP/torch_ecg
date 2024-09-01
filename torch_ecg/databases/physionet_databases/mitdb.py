@@ -219,7 +219,7 @@ class MITDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, default "interval"
+        rhythm_format : {"intervals", "mask"}, default "intervals"
             Format of returned annotation, case insensitive.
         rhythm_types : list of str, optional
             Defaults to `self.rhythm_types`.
@@ -318,7 +318,7 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: Literal["interval", "mask"] = "interval",
+        rhythm_format: Literal["intervals", "mask"] = "intervals",
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
@@ -335,7 +335,7 @@ class MITDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, default "interval"
+        rhythm_format : {"intervals", "mask"}, default "intervals"
             Format of returned annotation, case insensitive.
         rhythm_types : list of str, optional
             Defaults to `self.rhythm_types`.

@@ -160,11 +160,12 @@ class TxtLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._W_OK = os.access(self._log_dir, os.W_OK)
-        if self._W_OK:
+        try:
             self._log_dir.mkdir(parents=True, exist_ok=True)
-        else:
+            self._W_OK = os.access(self._log_dir, os.W_OK)
+        except PermissionError:
             warnings.warn(f"Directory {self._log_dir} is not writable.")
+            self._W_OK = False
             return  # do not create the logger if the directory is not writable
         if log_suffix is None:
             log_suffix = ""
@@ -289,11 +290,12 @@ class CSVLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._W_OK = os.access(self._log_dir, os.W_OK)
-        if self._W_OK:
+        try:
             self._log_dir.mkdir(parents=True, exist_ok=True)
-        else:
+            self._W_OK = os.access(self._log_dir, os.W_OK)
+        except PermissionError:
             warnings.warn(f"Directory {self._log_dir} is not writable.")
+            self._W_OK = False
             return
         if log_suffix is None:
             log_suffix = ""
@@ -392,11 +394,12 @@ class TensorBoardXLogger(BaseLogger):
         log_suffix: Optional[str] = None,
     ) -> None:
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._W_OK = os.access(self._log_dir, os.W_OK)
-        if self._W_OK:
+        try:
             self._log_dir.mkdir(parents=True, exist_ok=True)
-        else:
+            self._W_OK = os.access(self._log_dir, os.W_OK)
+        except PermissionError:
             warnings.warn(f"Directory {self._log_dir} is not writable.")
+            self._W_OK = False
             return
         self.logger = tensorboardX.SummaryWriter(str(self._log_dir), filename_suffix=log_suffix or "")
         self.log_file = self.logger.file_writer.event_writer._ev_writer._file_name

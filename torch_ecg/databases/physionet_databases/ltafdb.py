@@ -232,7 +232,7 @@ class LTAFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: Literal["interval", "mask"] = "interval",
+        rhythm_format: Literal["intervals", "mask"] = "intervals",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """Load rhythm annotations of the record.
@@ -249,7 +249,7 @@ class LTAFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, default "interval"
+        rhythm_format : {"intervals", "mask"}, default "intervals"
             Format of returned annotation, case insensitive.
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
@@ -268,9 +268,9 @@ class LTAFDB(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         assert rhythm_format.lower() in [
-            "interval",
+            "intervals",
             "mask",
-        ], f"rhythm_format must be 'interval' or 'mask', got {rhythm_format}"
+        ], f"rhythm_format must be 'intervals' or 'mask', got {rhythm_format}"
         fp = str(self.get_absolute_path(rec))
         header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
