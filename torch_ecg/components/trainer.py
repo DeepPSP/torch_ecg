@@ -683,8 +683,6 @@ class BaseTrainer(ReprMixin, ABC):
             self.criterion = nn.BCELoss(**loss_kw)
         elif self.train_config.loss == "MaskedBCEWithLogitsLoss":
             self.criterion = MaskedBCEWithLogitsLoss(**loss_kw)
-        elif self.train_config.loss == "MaskedBCEWithLogitsLoss":
-            self.criterion = MaskedBCEWithLogitsLoss(**loss_kw)
         elif self.train_config.loss == "FocalLoss":
             self.criterion = FocalLoss(**loss_kw)
         elif self.train_config.loss == "AsymmetricLoss":
