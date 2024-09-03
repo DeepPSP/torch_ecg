@@ -20,6 +20,7 @@ built-in loss functions in PyTorch.
     MaskedBCEWithLogitsLoss
     FocalLoss
     AsymmetricLoss
+    setup_criterion
 
 """
 
@@ -36,6 +37,7 @@ __all__ = [
     "MaskedBCEWithLogitsLoss",
     "FocalLoss",
     "AsymmetricLoss",
+    "setup_criterion",
 ]
 
 
@@ -85,7 +87,6 @@ def weighted_binary_cross_entropy(
         raise ValueError(f"Target size ({targets.size()}) must be the same as input size ({sigmoid_x.size()})")
 
     loss = -pos_weight * targets * sigmoid_x.log() - (1 - targets) * (1 - sigmoid_x).log()
-    # print(pos_weight, targets, sigmoid_x)
 
     if weight is not None:
         loss = loss * weight
@@ -620,3 +621,40 @@ class AsymmetricLoss(nn.Module):
         else:
             self.loss = -self.loss
         return self.loss
+
+
+def setup_criterion(name: str, **kwargs: Any) -> nn.Module:
+    """Setup the criterion (loss function).
+
+    Parameters
+    ----------
+    name : str
+        The name of the criterion.
+    **kwargs : Any
+        The keyword arguments for the criterion.
+
+    Returns
+    -------
+    nn.Module
+        The criterion (loss function).
+
+    """
+    if name == "BCEWithLogitsWithClassWeightLoss":
+        criterion = BCEWithLogitsWithClassWeightLoss(**kwargs)
+    elif name == "MaskedBCEWithLogitsLoss":
+        criterion = MaskedBCEWithLogitsLoss(**kwargs)
+    elif name == "FocalLoss":
+        criterion = FocalLoss(**kwargs)
+    elif name == "AsymmetricLoss":
+        criterion = AsymmetricLoss(**kwargs)
+    elif name.startswith("nn."):
+        criterion = eval(name)(**kwargs)
+    else:
+        raise NotImplementedError(
+            f"loss `{name}` not implemented! "
+            "Please use one of the following: `BCEWithLogitsWithClassWeightLoss`, "
+            "`MaskedBCEWithLogitsLoss`, `FocalLoss`, `AsymmetricLoss`, "
+            "or any loss function in `torch.nn`."
+        )
+
+    return criterion

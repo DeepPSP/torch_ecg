@@ -20,7 +20,7 @@ from tqdm.auto import tqdm
 
 from ..augmenters import AugmenterManager
 from ..cfg import CFG, DEFAULTS
-from ..models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
+from ..models.loss import setup_criterion
 from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
 from ..utils.utils_nn import default_collate_fn
 from .loggers import LoggerManager
@@ -675,27 +675,8 @@ class BaseTrainer(ReprMixin, ABC):
         for k, v in loss_kw.items():
             if isinstance(v, torch.Tensor):
                 loss_kw[k] = v.to(device=self.device, dtype=self.dtype)
-        if self.train_config.loss == "BCEWithLogitsLoss":
-            self.criterion = nn.BCEWithLogitsLoss(**loss_kw)
-        elif self.train_config.loss == "BCEWithLogitsWithClassWeightLoss":
-            self.criterion = BCEWithLogitsWithClassWeightLoss(**loss_kw)
-        elif self.train_config.loss == "BCELoss":
-            self.criterion = nn.BCELoss(**loss_kw)
-        elif self.train_config.loss == "MaskedBCEWithLogitsLoss":
-            self.criterion = MaskedBCEWithLogitsLoss(**loss_kw)
-        elif self.train_config.loss == "FocalLoss":
-            self.criterion = FocalLoss(**loss_kw)
-        elif self.train_config.loss == "AsymmetricLoss":
-            self.criterion = AsymmetricLoss(**loss_kw)
-        elif self.train_config.loss == "CrossEntropyLoss":
-            self.criterion = nn.CrossEntropyLoss(**loss_kw)
-        else:
-            raise NotImplementedError(
-                f"loss `{self.train_config.loss}` not implemented! "
-                "Please use one of the following: `BCEWithLogitsLoss`, `BCEWithLogitsWithClassWeightLoss`, "
-                "`BCELoss`, `MaskedBCEWithLogitsLoss`, `MaskedBCEWithLogitsLoss`, `FocalLoss`, "
-                "`AsymmetricLoss`, `CrossEntropyLoss`, or override this method to setup your own criterion."
-            )
+        self.criterion = setup_criterion(self.train_config.loss, **loss_kw)
+        self.criterion.to(self.device)
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
         """Check if `model_config` is compatible with the current model configuration.
