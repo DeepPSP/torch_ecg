@@ -168,7 +168,7 @@ class LTAFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: Literal["interval", "mask"] = "interval",
+        rhythm_format: Literal["intervals", "mask"] = "intervals",
         beat_format: Literal["beat", "dict"] = "beat",
         keep_original: bool = False,
     ) -> dict:
@@ -186,7 +186,7 @@ class LTAFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto : int, optional
             End index of the annotations to be loaded.
-        rhythm_format : {"interval", "mask"}, default "interval"
+        rhythm_format : {"intervals", "mask"}, default "intervals"
             Format of returned annotation, case insensitive.
         beat_format : {"beat", "dict"}, default "beat"
             Format of returned annotation, case insensitive.
@@ -531,7 +531,7 @@ class LTAFDB(PhysioNetDataBase):
                 rec,
                 sampfrom=sampfrom,
                 sampto=sampto,
-                rhythm_format="interval",
+                rhythm_format="intervals",
                 keep_original=False,
             )
         else:

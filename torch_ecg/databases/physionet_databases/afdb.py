@@ -136,7 +136,7 @@ class AFDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        ann_format: Literal["interval", "mask"] = "interval",
+        ann_format: Literal["intervals", "mask"] = "intervals",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """Load annotations (header) from the .hea files.
@@ -149,10 +149,10 @@ class AFDB(PhysioNetDataBase):
             Start index of the annotations to be loaded.
         sampto: int, optional
             End index of the annotations to be loaded.
-        ann_format : {"interval", "mask"}, default "interval"
+        ann_format : {"intervals", "mask"}, default "intervals"
             Format of returned annotation, case insensitive.
         keep_original : bool, default False
-            If True, when `ann_format` is "interval",
+            If True, when `ann_format` is "intervals",
             intervals (in the form [a,b]) will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
 
@@ -351,7 +351,7 @@ class AFDB(PhysioNetDataBase):
                 rec,
                 sampfrom=sampfrom,
                 sampto=sampto,
-                ann_format="interval",
+                ann_format="intervals",
                 keep_original=False,
             )
         else:
