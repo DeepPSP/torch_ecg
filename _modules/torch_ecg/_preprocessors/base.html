@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1105,7 +1109,7 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">biosppy.signals.tools</span> <span class="kn">import</span> <span class="n">filter_signal</span>
@@ -1177,10 +1181,10 @@
 <div class="viewcode-block" id="preprocess_multi_lead_signal"><a class="viewcode-back" href="../../../generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html#torch_ecg._preprocessors.preprocess_multi_lead_signal">[docs]</a><span class="k">def</span> <span class="nf">preprocess_multi_lead_signal</span><span class="p">(</span>
     <span class="n">raw_sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">sig_fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+    <span class="n">sig_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
     <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">filter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
+    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for multi-lead ECG signal (with units in mV).</span>
@@ -1209,8 +1213,8 @@
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
 <span class="sd">        If is None or empty, bandpass filtering will not be performed.</span>
-<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, optional</span>
-<span class="sd">        Type of the bandpass filter, default &quot;butter&quot;.</span>
+<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, default &quot;butter&quot;</span>
+<span class="sd">        Type of the bandpass filter.</span>
 <span class="sd">    filter_order : int, optional</span>
 <span class="sd">        Order of the bandpass filter.</span>
 
@@ -1292,7 +1296,7 @@
     <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
     <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">filter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
+    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for single lead ECG signal (with units in mV).</span>
@@ -1316,9 +1320,9 @@
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
 <span class="sd">        If is None or empty, bandpass filtering will not be performed.</span>
-<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, optional</span>
-<span class="sd">        Type of the bandpass filter, default &quot;butter&quot;.</span>
-<span class="sd">    filter_order : int, optional,</span>
+<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, default &quot;butter&quot;</span>
+<span class="sd">        Type of the bandpass filter.</span>
+<span class="sd">    filter_order : int, optional</span>
 <span class="sd">        Order of the bandpass filter.</span>
 
 <span class="sd">    Returns</span>

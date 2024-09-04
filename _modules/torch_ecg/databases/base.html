@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1130,7 +1134,7 @@
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -1141,7 +1145,7 @@
 
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">_DATA_CACHE</span><span class="p">,</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">ecg_arrhythmia_knowledge</span> <span class="k">as</span> <span class="n">EAK</span>  <span class="c1"># noqa : F401</span>
-<span class="kn">from</span> <span class="nn">..utils.download</span> <span class="kn">import</span> <span class="n">http_get</span>
+<span class="kn">from</span> <span class="nn">..utils.download</span> <span class="kn">import</span> <span class="n">aws_client</span><span class="p">,</span> <span class="n">http_get</span>
 <span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">CitationMixin</span><span class="p">,</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">dict_to_str</span><span class="p">,</span> <span class="n">get_record_list_recursive</span><span class="p">,</span> <span class="n">init_logger</span>
 <span class="kn">from</span> <span class="nn">.aux_data</span> <span class="kn">import</span> <span class="n">get_physionet_dbs</span>
 
@@ -1266,7 +1270,7 @@
                 <span class="sa">f</span><span class="s2">&quot;`db_dir` is not specified, &quot;</span> <span class="sa">f</span><span class="s2">&quot;using default `</span><span class="si">{</span><span class="n">db_dir</span><span class="si">}</span><span class="s2">` as the storage path&quot;</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1553,20 +1557,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_url_compressed</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_all_db_info</span> <span class="o">=</span> <span class="n">get_physionet_dbs</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_all_db_info</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                    <span class="n">wfdb</span><span class="o">.</span><span class="n">get_dbs</span><span class="p">(),</span>
-                    <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-                        <span class="s2">&quot;db_name&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;db_description&quot;</span><span class="p">,</span>
-                    <span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_all_db_info</span> <span class="o">=</span> <span class="n">get_physionet_dbs</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_all_db_info</span><span class="p">[</span><span class="s2">&quot;db_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Database `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">` is not found in the local database list. &quot;</span>
+                    <span class="s2">&quot;Please check if the database name is correct, &quot;</span>
+                    <span class="s2">&quot;or call method `_update_db_list()` to update the database list.&quot;</span>
                 <span class="p">)</span>
-                <span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Database `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">` is not found in the database list on PhysioNet server. &quot;</span>
+                    <span class="s2">&quot;Please check if the database name is correct.&quot;</span>
+                <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">local</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1936,6 +1939,11 @@
         <span class="k">return</span> <span class="n">posixpath</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wfdb</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">PN_INDEX_URL</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">s3_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;URL of the database on AWS S3.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;s3://physionet-open/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">/&quot;</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">url_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;URL of the compressed database file for downloading.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_compressed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1966,13 +1974,20 @@
                 <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No compressed database available! Downloading the uncompressed version...&quot;</span><span class="p">)</span>
-        <span class="n">wfdb</span><span class="o">.</span><span class="n">dl_database</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span>
-            <span class="n">keep_subdirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span></div></div>
+        <span class="k">if</span> <span class="n">aws_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">http_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s3_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wfdb</span><span class="o">.</span><span class="n">dl_database</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span>
+                <span class="n">keep_subdirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_db_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the database list.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_all_db_info</span> <span class="o">=</span> <span class="n">get_physionet_dbs</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NSRRDataBase"><a class="viewcode-back" href="../../../generated/torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase">[docs]</a><span class="k">class</span> <span class="nc">NSRRDataBase</span><span class="p">(</span><span class="n">_DataBase</span><span class="p">):</span>
@@ -2047,15 +2062,15 @@
 
 <div class="viewcode-block" id="NSRRDataBase.safe_edf_file_operation"><a class="viewcode-back" href="../../../generated/torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase.safe_edf_file_operation">[docs]</a>    <span class="k">def</span> <span class="nf">safe_edf_file_operation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span>
+        <span class="n">operation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span>
         <span class="n">full_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Safe IO operation for edf file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        operation : {&quot;open&quot;, &quot;close&quot;}, optional</span>
-<span class="sd">            Operation name, by default &quot;close&quot;.</span>
+<span class="sd">        operation : {&quot;open&quot;, &quot;close&quot;}, default &quot;close&quot;</span>
+<span class="sd">            Operation name.</span>
 <span class="sd">        full_file_path : `path-like`, optional</span>
 <span class="sd">            Path of the file which contains the data.</span>
 <span class="sd">            If is None, default path will be used.</span>

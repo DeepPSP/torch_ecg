@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1170,6 +1174,8 @@
         <span class="k">if</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;db_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`db_dir` is specified in both config and reader_kwargs&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">CR</span><span class="p">(</span><span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No records found in the database&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="c1"># assert self.config.db_dir is not None, &quot;db_dir must be specified&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_TRANCHES</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_classes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># [&quot;A&quot;, &quot;B&quot;, &quot;AB&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;,]</span>
@@ -1439,6 +1445,9 @@
         <span class="n">file_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_siglen_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">siglen</span><span class="si">}{</span><span class="n">ns</span><span class="si">}</span><span class="s2">.json&quot;</span>
         <span class="n">train_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">_train_ratio_</span><span class="si">{</span><span class="n">_train_ratio</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">test_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">_test_ratio_</span><span class="si">{</span><span class="n">_test_ratio</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
 
         <span class="c1"># TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)</span>
         <span class="c1"># to accelerate the validity examinations</span>

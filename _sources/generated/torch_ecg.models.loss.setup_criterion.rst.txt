@@ -1,0 +1,6 @@
+﻿torch\_ecg.models.loss.setup\_criterion
+=======================================
+
+.. currentmodule:: torch_ecg.models.loss
+
+.. autofunction:: setup_criterion

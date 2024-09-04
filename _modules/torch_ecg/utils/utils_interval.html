@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1119,7 +1123,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -1959,7 +1963,7 @@
     <span class="k">return</span> <span class="n">gi_len</span></div>
 
 
-<div class="viewcode-block" id="find_extrema"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema">[docs]</a><span class="k">def</span> <span class="nf">find_extrema</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="find_extrema"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema">[docs]</a><span class="k">def</span> <span class="nf">find_extrema</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Locate local extrema points in a 1D signal.</span>
 
 <span class="sd">    This function is based on Fermat&#39;s Theorem.</span>
@@ -1968,9 +1972,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    signal : array_like</span>
 <span class="sd">        1D input signal.</span>
-<span class="sd">    mode : {&quot;max&quot;, &quot;min&quot;, &quot;both&quot;}, optional</span>
-<span class="sd">        Whether to find maxima (&quot;max&quot;), minima (&quot;min&quot;), or both (&quot;both&quot;),</span>
-<span class="sd">        by default &quot;both&quot;, case insensitive.</span>
+<span class="sd">    mode : {&quot;max&quot;, &quot;min&quot;, &quot;both&quot;}, default &quot;both&quot;</span>
+<span class="sd">        Whether to find maxima (&quot;max&quot;), minima (&quot;min&quot;), or both (&quot;both&quot;), case insensitive.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

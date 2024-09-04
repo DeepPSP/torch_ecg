@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1108,7 +1112,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
@@ -1130,7 +1134,7 @@
 <div class="viewcode-block" id="smooth"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.smooth.html#torch_ecg.utils.smooth">[docs]</a><span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">window_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span>
-    <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hanning&quot;</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span> <span class="s2">&quot;hanning&quot;</span><span class="p">,</span> <span class="s2">&quot;hamming&quot;</span><span class="p">,</span> <span class="s2">&quot;bartlett&quot;</span><span class="p">,</span> <span class="s2">&quot;blackman&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hanning&quot;</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span>
     <span class="n">keep_dtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1150,8 +1154,8 @@
 <span class="sd">        Length of the smoothing window,</span>
 <span class="sd">        (previously should be an odd integer,</span>
 <span class="sd">        currently can be any (positive) integer).</span>
-<span class="sd">    window : {&quot;flat&quot;, &quot;hanning&quot;, &quot;hamming&quot;, &quot;bartlett&quot;, &quot;blackman&quot;}, optional</span>
-<span class="sd">        Type of window from, by default &quot;hanning&quot;.</span>
+<span class="sd">    window : {&quot;flat&quot;, &quot;hanning&quot;, &quot;hamming&quot;, &quot;bartlett&quot;, &quot;blackman&quot;}, default &quot;hanning&quot;</span>
+<span class="sd">        Type of window from.</span>
 <span class="sd">        See also :func:`numpy.hanning`, :func:`numpy.hamming`, etc.</span>
 <span class="sd">        Flat type window will produce a moving average smoothing.</span>
 <span class="sd">    mode : str, default &quot;valid&quot;</span>
@@ -1234,7 +1238,7 @@
 <div class="viewcode-block" id="resample_irregular_timeseries"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.resample_irregular_timeseries.html#torch_ecg.utils.resample_irregular_timeseries">[docs]</a><span class="k">def</span> <span class="nf">resample_irregular_timeseries</span><span class="p">(</span>
     <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">output_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spline&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spline&quot;</span><span class="p">,</span> <span class="s2">&quot;interp1d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;interp1d&quot;</span><span class="p">,</span>
     <span class="n">return_with_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">tnew</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interp_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -1254,7 +1258,7 @@
 <span class="sd">    output_fs : numbers.Real, optional</span>
 <span class="sd">        the frequency of the output 1d regular timeseries,</span>
 <span class="sd">        one and only one of `output_fs` and `tnew` should be specified</span>
-<span class="sd">    method : str, default &quot;spline&quot;</span>
+<span class="sd">    method : {&quot;spline&quot;, &quot;interp1d&quot;}, default &quot;interp1d&quot;</span>
 <span class="sd">        interpolation method, can be &quot;spline&quot; or &quot;interp1d&quot;</span>
 <span class="sd">    return_with_time : bool, default False</span>
 <span class="sd">        return a 2d array, with the 0-th coordinate being time</span>
@@ -1319,6 +1323,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;xnew start = </span><span class="si">{</span><span class="n">xnew</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, end = </span><span class="si">{</span><span class="n">xnew</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: spline method might not work well for some cases</span>
         <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">interp_kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">,)))</span>
         <span class="c1"># s = interp_kw.get(&quot;s&quot;, np.random.uniform(m-np.sqrt(2*m),m+np.sqrt(2*m)))</span>
@@ -1329,6 +1334,7 @@
 
         <span class="n">regular_timeseries</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">xnew</span><span class="p">,</span> <span class="n">tck</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;interp1d&quot;</span><span class="p">:</span>
+        <span class="n">_interp_kw</span><span class="p">[</span><span class="s2">&quot;fill_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_interp_kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>  <span class="c1"># avoid above interpolation error</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">time_series</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">time_series</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">_interp_kw</span><span class="p">)</span>
 
         <span class="n">regular_timeseries</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xnew</span><span class="p">)</span>
@@ -1674,7 +1680,7 @@
     <span class="n">highcut</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
     <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
     <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">btype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">btype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;lohi&quot;</span><span class="p">,</span> <span class="s2">&quot;hilo&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Butterworth bandpass filtering the signals.</span>
@@ -1696,8 +1702,7 @@
 <span class="sd">        Order of the filter.</span>
 <span class="sd">    btype : {&quot;lohi&quot;, &quot;hilo&quot;}, optional</span>
 <span class="sd">        (special) type of the filter.</span>
-<span class="sd">        Ignored for lowpass and highpass filters</span>
-<span class="sd">        (as defined by `lowcut` and `highcut`).</span>
+<span class="sd">        Ignored for lowpass and highpass filters (as defined by `lowcut` and `highcut`).</span>
 <span class="sd">    verbose : int, default 0</span>
 <span class="sd">        Verbosity level for printing.</span>
 
@@ -1808,7 +1813,7 @@
 
 <div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.normalize.html#torch_ecg.utils.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span>
     <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;naive&quot;</span><span class="p">,</span> <span class="s2">&quot;min-max&quot;</span><span class="p">,</span> <span class="s2">&quot;z-score&quot;</span><span class="p">],</span>
     <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">sig_fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>

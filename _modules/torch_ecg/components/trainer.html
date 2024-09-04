@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1122,7 +1126,7 @@
 
 <span class="kn">from</span> <span class="nn">..augmenters</span> <span class="kn">import</span> <span class="n">AugmenterManager</span>
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
-<span class="kn">from</span> <span class="nn">..models.loss</span> <span class="kn">import</span> <span class="n">AsymmetricLoss</span><span class="p">,</span> <span class="n">BCEWithLogitsWithClassWeightLoss</span><span class="p">,</span> <span class="n">FocalLoss</span><span class="p">,</span> <span class="n">MaskedBCEWithLogitsLoss</span>
+<span class="kn">from</span> <span class="nn">..models.loss</span> <span class="kn">import</span> <span class="n">setup_criterion</span>
 <span class="kn">from</span> <span class="nn">..utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">dict_to_str</span><span class="p">,</span> <span class="n">dicts_equal</span><span class="p">,</span> <span class="n">get_date_str</span><span class="p">,</span> <span class="n">get_kwargs</span>
 <span class="kn">from</span> <span class="nn">..utils.utils_nn</span> <span class="kn">import</span> <span class="n">default_collate_fn</span>
 <span class="kn">from</span> <span class="nn">.loggers</span> <span class="kn">import</span> <span class="n">LoggerManager</span>
@@ -1302,6 +1306,9 @@
                         <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
                         <span class="n">part</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># if no separate val set, use the metrics on the train set</span>
+                    <span class="n">eval_res</span> <span class="o">=</span> <span class="n">eval_train_res</span>
 
                 <span class="c1"># update best model and best metric if monitor is set</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1363,8 +1370,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best model is saved at </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;no monitor is set, no model is selected and saved as the best model&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;no monitor is set, the last model is selected and saved as the best model&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">best_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+            <span class="n">save_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">.pth.tar&quot;</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">save_filename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No best model found!&quot;</span><span class="p">)</span>
 
@@ -1473,7 +1483,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">save_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The prefix of the saved model name.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_epoch&quot;</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_epoch&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">train_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFG</span><span class="p">:</span>
@@ -1590,7 +1601,8 @@
 
 <div class="viewcode-block" id="BaseTrainer.extra_log_suffix"><a class="viewcode-back" href="../../../generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.extra_log_suffix">[docs]</a>    <span class="k">def</span> <span class="nf">extra_log_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extra suffix for the log file name.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">_LR_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2">_BS_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">_LR_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2">_BS_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_setup_log_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the log manager.&quot;&quot;&quot;</span>
@@ -1769,29 +1781,8 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loss_kw</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
                 <span class="n">loss_kw</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;BCEWithLogitsLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;BCEWithLogitsWithClassWeightLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">BCEWithLogitsWithClassWeightLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;BCELoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;MaskedBCEWithLogitsLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">MaskedBCEWithLogitsLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;MaskedBCEWithLogitsLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">MaskedBCEWithLogitsLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;FocalLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">FocalLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;AsymmetricLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">AsymmetricLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;CrossEntropyLoss&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;loss `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span><span class="si">}</span><span class="s2">` not implemented! &quot;</span>
-                <span class="s2">&quot;Please use one of the following: `BCEWithLogitsLoss`, `BCEWithLogitsWithClassWeightLoss`, &quot;</span>
-                <span class="s2">&quot;`BCELoss`, `MaskedBCEWithLogitsLoss`, `MaskedBCEWithLogitsLoss`, `FocalLoss`, &quot;</span>
-                <span class="s2">&quot;`AsymmetricLoss`, `CrossEntropyLoss`, or override this method to setup your own criterion.&quot;</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">setup_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> <span class="o">**</span><span class="n">loss_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_model_config_compatability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if `model_config` is compatible with the current model configuration.</span>

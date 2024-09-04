@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1109,7 +1113,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -2391,7 +2395,7 @@
 <div class="viewcode-block" id="SHHS.load_sleep_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_sleep_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_sleep_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hrv&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">sleep_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
@@ -2402,9 +2406,8 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
-<span class="sd">            Source of the annotations, case insensitive,</span>
-<span class="sd">            by default &quot;event&quot;</span>
+<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, default &quot;event&quot;</span>
+<span class="sd">            Source of the annotations, case insensitive.</span>
 <span class="sd">        sleep_ann_path : `path-like`, optional</span>
 <span class="sd">            Path of the file which contains the sleep annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
@@ -2455,7 +2458,7 @@
 <div class="viewcode-block" id="SHHS.load_sleep_stage_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_sleep_stage_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_sleep_stage_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hrv&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">sleep_stage_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sleep_stage_protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;aasm&quot;</span><span class="p">,</span>
         <span class="n">with_stage_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2468,9 +2471,8 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
-<span class="sd">            Source of the annotations, case insensitive,</span>
-<span class="sd">            by default &quot;event&quot;.</span>
+<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, default &quot;event&quot;</span>
+<span class="sd">            Source of the annotations, case insensitive.</span>
 <span class="sd">        sleep_stage_ann_path : `path-like`, optional</span>
 <span class="sd">            Path of the file which contains the sleep stage annotations.</span>
 <span class="sd">            If is None, default path will be used.</span>
@@ -2567,7 +2569,7 @@
 <div class="viewcode-block" id="SHHS.load_sleep_event_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_sleep_event_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_sleep_event_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hrv&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">event_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sleep_event_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -2578,9 +2580,8 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
-<span class="sd">            Source of the annotations, case insensitive,</span>
-<span class="sd">            by default &quot;event&quot;.</span>
+<span class="sd">        source : {&quot;hrv&quot;, &quot;event&quot;, &quot;event_profusion&quot;}, default &quot;event&quot;</span>
+<span class="sd">            Source of the annotations, case insensitive.</span>
 <span class="sd">        event_types : List[str], optional</span>
 <span class="sd">            List of event types to be loaded, by default None.</span>
 <span class="sd">            The event types are:</span>
@@ -2759,7 +2760,7 @@
 <div class="viewcode-block" id="SHHS.load_apnea_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.load_apnea_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_apnea_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span>
         <span class="n">apnea_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">apnea_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -2771,9 +2772,8 @@
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name, typically in the form &quot;shhs1-200001&quot;,</span>
 <span class="sd">            or index of the record in :attr:`all_records`.</span>
-<span class="sd">        source : {&quot;event&quot;, &quot;event_profusion&quot;}, optional</span>
-<span class="sd">            Source of the annotations, case insensitive,</span>
-<span class="sd">            by default &quot;event&quot;.</span>
+<span class="sd">        source : {&quot;event&quot;, &quot;event_profusion&quot;}, default &quot;event&quot;</span>
+<span class="sd">            Source of the annotations, case insensitive.</span>
 <span class="sd">        apnea_types : List[str], optional</span>
 <span class="sd">            Types of apnea events to load, should be a subset of</span>
 <span class="sd">            &quot;CSA&quot;, &quot;OSA&quot;, &quot;MSA&quot;, &quot;Hypopnea&quot;.</span>
@@ -2850,7 +2850,7 @@
         <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exclude_artifacts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">exclude_abnormal_beats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on R peaks of the record.</span>
@@ -2915,7 +2915,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">rpeak_ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations on RR intervals of the record.</span>
@@ -3017,7 +3017,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Locate &quot;artifacts&quot; in the record.</span>
 
@@ -3069,8 +3069,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">wave_deli_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">abnormal_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">abnormal_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;VE&quot;</span><span class="p">,</span> <span class="s2">&quot;SVE&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;ms&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Locate &quot;abnormal beats&quot; in the record.</span>
 
@@ -3206,11 +3206,11 @@
 <div class="viewcode-block" id="SHHS.plot_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS.plot_ann">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">stage_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stage_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hrv&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">stage_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">event_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;hrv&quot;</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event_profusion&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">event_kw</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">plot_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
+        <span class="n">plot_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="s2">&quot;hypnogram&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot annotations of the record.</span>
 
@@ -3232,8 +3232,8 @@
 <span class="sd">            If is None, then annotations of sleep events of `rec` won&#39;t be plotted.</span>
 <span class="sd">        event_kw : dict, optional</span>
 <span class="sd">            Key word arguments to the function :meth:`load_sleep_event_ann`.</span>
-<span class="sd">        plot_format : {&quot;span&quot;, &quot;hypnogram&quot;}, optional</span>
-<span class="sd">            Format of the plot, case insensitive, by default &quot;span&quot;.</span>
+<span class="sd">        plot_format : {&quot;span&quot;, &quot;hypnogram&quot;}, default &quot;span&quot;</span>
+<span class="sd">            Format of the plot, case insensitive.</span>
 
 <span class="sd">        TODO</span>
 <span class="sd">        ----</span>
@@ -3271,7 +3271,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">df_sleep_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">df_sleep_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">plot_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
+        <span class="n">plot_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="s2">&quot;hypnogram&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal function to plot annotations.</span>
 
@@ -3281,8 +3281,8 @@
 <span class="sd">            Sleep stage annotations.</span>
 <span class="sd">        df_sleep_event : pandas.DataFrame, optional</span>
 <span class="sd">            Sleep event annotations.</span>
-<span class="sd">        plot_format : {&quot;span&quot;, &quot;hypnogram&quot;}, optional</span>
-<span class="sd">            Format of the plot, case insensitive, by default &quot;span&quot;.</span>
+<span class="sd">        plot_format : {&quot;span&quot;, &quot;hypnogram&quot;}, default &quot;span&quot;</span>
+<span class="sd">            Format of the plot, case insensitive.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>

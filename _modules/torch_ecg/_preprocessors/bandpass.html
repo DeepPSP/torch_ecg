@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1103,7 +1107,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;BandPass filter preprocessor.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -1123,8 +1127,8 @@
 <span class="sd">        Low cutoff frequency</span>
 <span class="sd">    highcut : numbers.Real, optional</span>
 <span class="sd">        High cutoff frequency.</span>
-<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, optional</span>
-<span class="sd">        Type of the bandpass filter, default &quot;butter&quot;.</span>
+<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, , default &quot;butter&quot;</span>
+<span class="sd">        Type of the bandpass filter.</span>
 <span class="sd">    filter_order : int, optional</span>
 <span class="sd">        Order of the bandpass filter.</span>
 <span class="sd">    **kwargs : dict, optional</span>
@@ -1147,9 +1151,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">lowcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">highcut</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="mi">45</span><span class="p">,</span>
-        <span class="n">filter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
+        <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
         <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="o">=</span> <span class="n">lowcut</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">highcut</span> <span class="o">=</span> <span class="n">highcut</span>

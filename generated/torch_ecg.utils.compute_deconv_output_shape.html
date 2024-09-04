@@ -37,7 +37,7 @@
   
     <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   
@@ -387,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1111,7 +1115,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_shape</strong> (<em>Sequence</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>None</em><em>]</em><em>]</em>) – Shape of an input <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a>.
+<li><p><strong>input_shape</strong> (<em>Sequence</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>None</em><em>]</em><em>]</em>) – Shape of an input <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a>.
 The first dimension is the batch dimension,
 which is allowed to be <cite>None</cite>.</p></li>
 <li><p><strong>num_filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of filters, also the channel dimension.</p></li>
@@ -1130,7 +1134,7 @@ asymmetric paddings for all dimensions or for each dimension.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>output_shape</strong> – Shape of the output <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a>.</p>
+<dd class="field-even"><p><strong>output_shape</strong> – Shape of the output <a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>

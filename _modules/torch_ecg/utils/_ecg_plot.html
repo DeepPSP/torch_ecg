@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1138,7 +1142,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -1220,23 +1224,23 @@
     <span class="n">full_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
     <span class="n">store_text_bbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-    <span class="n">papersize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">papersize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;A0&quot;</span><span class="p">,</span> <span class="s2">&quot;A1&quot;</span><span class="p">,</span> <span class="s2">&quot;A2&quot;</span><span class="p">,</span> <span class="s2">&quot;A3&quot;</span><span class="p">,</span> <span class="s2">&quot;A4&quot;</span><span class="p">,</span> <span class="s2">&quot;letter&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">x_gap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;x_gap&quot;</span><span class="p">],</span>
     <span class="n">y_gap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;y_gap&quot;</span><span class="p">],</span>
     <span class="n">display_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;display_factor&quot;</span><span class="p">],</span>
     <span class="n">line_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;line_width&quot;</span><span class="p">],</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;bw&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">row_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">standard_values</span><span class="p">[</span><span class="s2">&quot;row_height&quot;</span><span class="p">],</span>
     <span class="n">show_lead_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">show_grid</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">show_dc_pulse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">y_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">x_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">standard_colours</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">standard_colours</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">bbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">print_txt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">save_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to plot raw ECG signal.</span>
 
@@ -1253,55 +1257,54 @@
 <span class="sd">        Name of the record file.</span>
 <span class="sd">    output_dir : `path-like`</span>
 <span class="sd">        Output directory.</span>
-<span class="sd">    resolution : int, default ``200``</span>
+<span class="sd">    resolution : int, default 200</span>
 <span class="sd">        Resolution of the output image.</span>
 <span class="sd">    pad_inches : int, default ``0``</span>
 <span class="sd">        Padding of white margin along the image in inches.</span>
 <span class="sd">    lead_index : List[str], optional</span>
 <span class="sd">        Order of lead indices to be plotted.</span>
 <span class="sd">        By default, the order is the same as the order in ``ecg``.</span>
-<span class="sd">    full_mode : str, default ``&quot;None&quot;``</span>
+<span class="sd">    full_mode : str, default &quot;None&quot;</span>
 <span class="sd">        Sets the lead to add at the bottom of the paper ECG as a long strip.</span>
 <span class="sd">        If ``&quot;None&quot;``, no lead is added at the bottom.</span>
 <span class="sd">        If not ``&quot;None&quot;``, the lead ``&quot;full&quot; + full_mode`` must be present in ``ecg``.</span>
-<span class="sd">    store_text_bbox : bool, default ``False``</span>
+<span class="sd">    store_text_bbox : bool, default False</span>
 <span class="sd">        If ``True``, stores the bounding box of the text in a text file.</span>
-<span class="sd">    units : str, default ``&quot;mV&quot;``</span>
-<span class="sd">        Units of the ECG signal.</span>
-<span class="sd">        NOT used currently.</span>
-<span class="sd">    papersize : {``&quot;A0&quot;``, ``&quot;A1&quot;``, ``&quot;A2&quot;``, ``&quot;A3&quot;``, ``&quot;A4&quot;``, ``&quot;letter&quot;``}, default ``None``</span>
+<span class="sd">    units : str, default &quot;mV&quot;</span>
+<span class="sd">        Units of the ECG signal. NOT used currently.</span>
+<span class="sd">    papersize : {&quot;A0&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;A4&quot;, &quot;letter&quot;}, default None</span>
 <span class="sd">        Size of the paper to plot the ECG on.</span>
-<span class="sd">    x_gap : float, default ``1.0``</span>
+<span class="sd">    x_gap : float, default 1.0</span>
 <span class="sd">        Gap between paper x axis border and signal plot.</span>
-<span class="sd">    y_gap : float, default ``0.5``</span>
+<span class="sd">    y_gap : float, default 0.5</span>
 <span class="sd">        Gap between paper y axis border and signal plot.</span>
-<span class="sd">    display_factor : float, default ``1.0``</span>
+<span class="sd">    display_factor : float, default 1.0</span>
 <span class="sd">        Factor to scale the ECG signal by.</span>
-<span class="sd">    line_width : float, default ``0.75``</span>
+<span class="sd">    line_width : float, default 0.75</span>
 <span class="sd">        Width of line tracing the ECG.</span>
 <span class="sd">    title : str, optional</span>
 <span class="sd">        Title of the figure.</span>
-<span class="sd">    style : {``&quot;bw&quot;``, ``&quot;color&quot;``}, optional</span>
+<span class="sd">    style : {&quot;bw&quot;, &quot;color&quot;}, optional</span>
 <span class="sd">        Sets the style of the plot.</span>
-<span class="sd">    row_height : float, default ``8.0``</span>
+<span class="sd">    row_height : float, default 8.0</span>
 <span class="sd">        Gap between corresponding ECG rows.</span>
-<span class="sd">    show_lead_name : bool, default ``True``</span>
+<span class="sd">    show_lead_name : bool, default True</span>
 <span class="sd">        Option to show lead names or skip.</span>
-<span class="sd">    show_grid : bool, default ``False``</span>
+<span class="sd">    show_grid : bool, default False</span>
 <span class="sd">        Turn grid on or off.</span>
-<span class="sd">    show_dc_pulse : bool, default ``False``</span>
+<span class="sd">    show_dc_pulse : bool, default False</span>
 <span class="sd">        Option to show DC pulse.</span>
 <span class="sd">    y_grid : float, optional</span>
 <span class="sd">        Sets the y grid size in inches.</span>
 <span class="sd">    x_grid : float, optional</span>
 <span class="sd">        Sets the x grid size in inches.</span>
-<span class="sd">    standard_colours : {``0``, ``1``, ``2``, ``3``, ``4``, ``5``}, default ``0``</span>
+<span class="sd">    standard_colours : {0, 1, 2, 3, 4, 5}, default 0</span>
 <span class="sd">        Sets the colour of the plot grid.</span>
-<span class="sd">    bbox : bool, default ``False``</span>
+<span class="sd">    bbox : bool, default False</span>
 <span class="sd">        If ``True``, stores the bounding box of the lead in a text file.</span>
-<span class="sd">    print_txt : bool, default ``False``</span>
+<span class="sd">    print_txt : bool, default False</span>
 <span class="sd">        If ``True``, prints the metadata of the plot.</span>
-<span class="sd">    save_format : {``&quot;png&quot;``, ``&quot;pdf&quot;``, ``&quot;svg&quot;``, ``&quot;jpg&quot;``}, optional</span>
+<span class="sd">    save_format : {&quot;png&quot;, &quot;pdf&quot;, &quot;svg&quot;, &quot;jpg&quot;}, optional</span>
 <span class="sd">        Format to save the plot in.</span>
 <span class="sd">        If ``None``, the plot is not saved.</span>
 

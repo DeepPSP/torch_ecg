@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1106,7 +1110,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">wfdb</span>
@@ -1238,7 +1242,7 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
+        <span class="n">ann_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations (header) from the .hea files.</span>
@@ -1251,11 +1255,10 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto: int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        ann_format : {&quot;interval&quot;, &quot;mask&quot;}</span>
-<span class="sd">            Format of returned annotation,</span>
-<span class="sd">            by default &quot;interval&quot;, case insensitive.</span>
+<span class="sd">        ann_format : {&quot;intervals&quot;, &quot;mask&quot;}, default &quot;intervals&quot;</span>
+<span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        keep_original : bool, default False</span>
-<span class="sd">            If True, when `ann_format` is &quot;interval&quot;,</span>
+<span class="sd">            If True, when `ann_format` is &quot;intervals&quot;,</span>
 <span class="sd">            intervals (in the form [a,b]) will keep the same with the annotation file,</span>
 <span class="sd">            otherwise subtract `sampfrom` if specified.</span>
 
@@ -1454,7 +1457,7 @@
                 <span class="n">rec</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
-                <span class="n">ann_format</span><span class="o">=</span><span class="s2">&quot;interval&quot;</span><span class="p">,</span>
+                <span class="n">ann_format</span><span class="o">=</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
                 <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

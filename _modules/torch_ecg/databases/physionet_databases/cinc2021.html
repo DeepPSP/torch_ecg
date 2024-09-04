@@ -36,7 +36,7 @@
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
-    <link rel="stylesheet" href="../../../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" type="text/css" />
   
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
@@ -384,6 +384,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion"><code class="docutils literal notranslate"><span class="pre">setup_criterion()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1113,7 +1117,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -1768,8 +1772,8 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wfdb&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;wfdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wfdb&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mV&quot;</span><span class="p">,</span> <span class="s2">&quot;μV&quot;</span><span class="p">,</span> <span class="s2">&quot;uV&quot;</span><span class="p">,</span> <span class="s2">&quot;muV&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
@@ -1785,8 +1789,8 @@
 <span class="sd">            Format of the ECG data,</span>
 <span class="sd">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
 <span class="sd">            &quot;channel_first&quot; (alias &quot;lead_first&quot;)</span>
-<span class="sd">        backend : {&quot;wfdb&quot;, &quot;scipy&quot;}, optional</span>
-<span class="sd">            The backend data reader, by default &quot;wfdb&quot;.</span>
+<span class="sd">        backend : {&quot;wfdb&quot;, &quot;scipy&quot;}, default &quot;wfdb&quot;</span>
+<span class="sd">            The backend data reader.</span>
 <span class="sd">        units : str or None, default &quot;mV&quot;</span>
 <span class="sd">            Units of the output signal, can also be &quot;μV&quot; (aliases &quot;uV&quot;, &quot;muV&quot;).</span>
 <span class="sd">            None for digital data, without digital-to-physical conversion.</span>
@@ -1876,7 +1880,7 @@
             <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_fs</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="CINC2021.load_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021.load_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wfdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="CINC2021.load_ann"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021.load_ann">[docs]</a>    <span class="k">def</span> <span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;wfdb&quot;</span><span class="p">,</span> <span class="s2">&quot;naive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;wfdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the annotations of the record.</span>
 
 <span class="sd">        The annotations (header) are stored in the .hea files.</span>
@@ -1888,8 +1892,8 @@
 <span class="sd">        raw : bool, default False</span>
 <span class="sd">            If True, the raw annotations without</span>
 <span class="sd">            being parsed will be returned.</span>
-<span class="sd">        backend : {&quot;wfdb&quot;, &quot;naive&quot;}, optional</span>
-<span class="sd">            The backend data reader, by default &quot;wfdb&quot;.</span>
+<span class="sd">        backend : {&quot;wfdb&quot;, &quot;naive&quot;}, default &quot;wfdb&quot;</span>
+<span class="sd">            The backend data reader.</span>
 <span class="sd">            If is &quot;wfdb&quot;, :func:`wfdb.rdheader` will be used</span>
 <span class="sd">            to load the annotations;</span>
 <span class="sd">            if is &quot;naive&quot;, annotations will be parsed from</span>
@@ -1947,17 +1951,22 @@
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">],</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">],</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">],</span>
-            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span>
-            <span class="n">daytime</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
+            <span class="s2">&quot; &quot;</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">])</span>
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">])</span>
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">])</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span><span class="p">]),</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%b-%Y %H:%M:%S&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">daytime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span><span class="p">]),</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%b-%Y %H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># see NOTE. 1.</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span> <span class="k">if</span> <span class="s2">&quot;Age&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -2040,17 +2049,22 @@
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">],</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">],</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">],</span>
-            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span>
-            <span class="n">daytime</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
+            <span class="s2">&quot; &quot;</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span> <span class="o">=</span> <span class="n">header_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_leads&quot;</span><span class="p">])</span>
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">])</span>
         <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;nb_samples&quot;</span><span class="p">])</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span><span class="p">]),</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%b-%Y %H:%M:%S&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">daytime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">daytime</span><span class="p">]),</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%b-%Y %H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># see NOTE. 1.</span>
             <span class="n">ann_dict</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_data</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#Age&quot;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -2151,7 +2165,7 @@
 <span class="sd">            of a :class:`~pandas.DataFrame`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">df_leads</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l_leads_data</span><span class="p">)),</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">df_leads</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l_leads_data</span><span class="p">)),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">s+&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">df_leads</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
             <span class="s2">&quot;fmt+byte_offset&quot;</span><span class="p">,</span>
@@ -2648,17 +2662,17 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="CINC2021.load_raw_data"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021.load_raw_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scipy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load raw data from corresponding files with no further processing,</span>
-<span class="sd">        in order to facilitate feeding data into the `run_12ECG_classifier` function</span>
+<div class="viewcode-block" id="CINC2021.load_raw_data"><a class="viewcode-back" href="../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021.load_raw_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;wfdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scipy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load raw data from corresponding files with no further processing.</span>
+
+<span class="sd">        This method facilitates feeding data into the `run_12ECG_classifier` function.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
-<span class="sd">        backend : {&quot;scipy&quot;, &quot;wfdb&quot;}, optional</span>
-<span class="sd">            The backend data reader, by default &quot;scipy&quot;.</span>
+<span class="sd">        backend : {&quot;scipy&quot;, &quot;wfdb&quot;}, default &quot;scipy&quot;</span>
+<span class="sd">            The backend data reader.</span>
 <span class="sd">            Note that &quot;scipy&quot; provides data in the format of &quot;lead_first&quot;,</span>
 <span class="sd">            while &quot;wfdb&quot; provides data in the format of &quot;lead_last&quot;.</span>
 
