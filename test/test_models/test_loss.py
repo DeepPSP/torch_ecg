@@ -10,6 +10,7 @@ from torch_ecg.models.loss import (
     FocalLoss,
     MaskedBCEWithLogitsLoss,
     WeightedBCELoss,
+    setup_criterion,
 )
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -139,3 +140,14 @@ def test_mbce():
         < criterion_mbce(inp, targ_mixed_soft, weight_mask).item()
         < criterion_mbce(inp, targ_0, weight_mask).item()
     )
+
+
+def test_setup_criterion():
+    criterion = setup_criterion("WeightedBCELoss", pos_weight=torch.ones((1, 2)))
+    criterion = setup_criterion("BCEWithLogitsWithClassWeightLoss", class_weight=class_weight)
+    criterion = setup_criterion("FocalLoss", class_weight=class_weight)
+    criterion = setup_criterion("AsymmetricLoss")
+    criterion = setup_criterion("MaskedBCEWithLogitsLoss")
+
+    for name in torch.nn.modules.loss.__all__:
+        criterion = setup_criterion(name)

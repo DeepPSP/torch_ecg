@@ -639,7 +639,9 @@ def setup_criterion(name: str, **kwargs: Any) -> nn.Module:
         The criterion (loss function).
 
     """
-    if name == "BCEWithLogitsWithClassWeightLoss":
+    if name == "WeightedBCELoss":
+        criterion = WeightedBCELoss(**kwargs)
+    elif name == "BCEWithLogitsWithClassWeightLoss":
         criterion = BCEWithLogitsWithClassWeightLoss(**kwargs)
     elif name == "MaskedBCEWithLogitsLoss":
         criterion = MaskedBCEWithLogitsLoss(**kwargs)
@@ -649,6 +651,8 @@ def setup_criterion(name: str, **kwargs: Any) -> nn.Module:
         criterion = AsymmetricLoss(**kwargs)
     elif name.startswith("nn."):
         criterion = eval(name)(**kwargs)
+    elif name in nn.modules.loss.__all__:
+        criterion = getattr(nn, name)(**kwargs)
     else:
         raise NotImplementedError(
             f"loss `{name}` not implemented! "
