@@ -6,10 +6,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f493.png">
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.utils.one_hot_encode &mdash; torch-ecg 0.0.29 documentation</title>
+  <title>torch_ecg.utils.one_hot_encode &mdash; torch-ecg 0.0.30 documentation</title>
   
 
   
@@ -46,7 +46,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.29 documentation" href="../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.30 documentation" href="../index.html"/>
         <link rel="up" title="torch_ecg.utils" href="../utils.html"/>
         <link rel="next" title="torch_ecg.utils.generate_weight_mask" href="torch_ecg.utils.generate_weight_mask.html"/>
         <link rel="prev" title="torch_ecg.utils.stratified_train_test_split" href="torch_ecg.utils.stratified_train_test_split.html"/> 
@@ -1117,14 +1117,14 @@ to a one-hot (binary) array of shape <code class="docutils literal notranslate">
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls_array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.4)"><em>torch.Tensor</em></a><em> or </em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>]</em><em>]</em>) – Class indices array (tensor) of shape <code class="docutils literal notranslate"><span class="pre">(num_samples,)</span></code> (single-class case),
+<li><p><strong>cls_array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.4)"><em>torch.Tensor</em></a><em> or </em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>]</em><em>]</em>) – Class indices array (tensor) of shape <code class="docutils literal notranslate"><span class="pre">(num_samples,)</span></code> (single-class case),
 or a list of list of class indices (multi-class case);
 or of shape <code class="docutils literal notranslate"><span class="pre">(num_samples,</span> <span class="pre">num_samples)</span></code> if <cite>num_classes</cite> is not None,
 in which case <cite>cls_array</cite> should be consistant with <cite>num_classes</cite>,
 and the function will return <cite>cls_array</cite> directly.</p></li>
-<li><p><strong>num_classes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of classes. If not specified,
+<li><p><strong>num_classes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of classes. If not specified,
 it will be inferred from the values of <cite>cls_array</cite>.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><em>type</em></a><em>, </em><em>default np.float32</em>) – Data type of the output binary array.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><em>type</em></a><em>, </em><em>default np.float32</em>) – Data type of the output binary array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1188,7 +1188,7 @@ it will be inferred from the values of <cite>cls_array</cite>.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.29',
+            VERSION:'0.0.30',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

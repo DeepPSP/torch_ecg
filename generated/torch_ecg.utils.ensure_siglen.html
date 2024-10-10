@@ -6,10 +6,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f493.png">
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torch_ecg.utils.ensure_siglen &mdash; torch-ecg 0.0.29 documentation</title>
+  <title>torch_ecg.utils.ensure_siglen &mdash; torch-ecg 0.0.30 documentation</title>
   
 
   
@@ -46,7 +46,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.29 documentation" href="../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.30 documentation" href="../index.html"/>
         <link rel="up" title="torch_ecg.utils" href="../utils.html"/>
         <link rel="next" title="torch_ecg.utils.masks_to_waveforms" href="torch_ecg.utils.masks_to_waveforms.html"/>
         <link rel="prev" title="torch_ecg.utils.ensure_lead_fmt" href="torch_ecg.utils.ensure_lead_fmt.html"/> 
@@ -1110,7 +1110,7 @@
 <h1>torch_ecg.utils.ensure_siglen<a class="headerlink" href="#torch-ecg-utils-ensure-siglen" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_ecg.utils.ensure_siglen">
-<span class="sig-prename descclassname"><span class="pre">torch_ecg.utils.</span></span><span class="sig-name descname"><span class="pre">ensure_siglen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">siglen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lead_first'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/utils/utils_data.html#ensure_siglen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.utils.ensure_siglen" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_ecg.utils.</span></span><span class="sig-name descname"><span class="pre">ensure_siglen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">siglen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lead_first'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/utils/utils_data.html#ensure_siglen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.utils.ensure_siglen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ensure the (ECG) signal to be of specified length.</p>
 <p>Strategy:</p>
 <blockquote>
@@ -1128,11 +1128,11 @@ each with <code class="docutils literal notranslate"><span class="pre">(1</span>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a>) – Values of the <cite>n_leads</cite>-lead (ECG) signal.</p></li>
-<li><p><strong>siglen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Length of the signal supposed to have.</p></li>
-<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>default &quot;lead_first&quot;</em>) – Format of the input and output values, can be one of
+<li><p><strong>siglen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Length of the signal supposed to have.</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default &quot;lead_first&quot;</em>) – Format of the input and output values, can be one of
 “lead_first” (alias “channel_first”),
 “lead_last” (alias “channel_last”), case insensitive.</p></li>
-<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Tolerance of the length of <cite>values</cite> to be
+<li><p><strong>tolerance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Tolerance of the length of <cite>values</cite> to be
 longer than <cite>siglen</cite> in percentage.</p></li>
 </ul>
 </dd>
@@ -1202,7 +1202,7 @@ of <code class="docutils literal notranslate"><span class="pre">ndim=3</span></c
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.29',
+            VERSION:'0.0.30',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

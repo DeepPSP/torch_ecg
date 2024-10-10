@@ -6,10 +6,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f493.png">
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RPeaksDetectionOutput &mdash; torch-ecg 0.0.29 documentation</title>
+  <title>RPeaksDetectionOutput &mdash; torch-ecg 0.0.30 documentation</title>
   
 
   
@@ -46,7 +46,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.29 documentation" href="../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.30 documentation" href="../index.html"/>
         <link rel="up" title="torch_ecg.components" href="../components.html"/>
         <link rel="next" title="LoggerManager" href="torch_ecg.components.LoggerManager.html"/>
         <link rel="prev" title="WaveDelineationOutput" href="torch_ecg.components.WaveDelineationOutput.html"/> 
@@ -1110,13 +1110,13 @@
 <h1>RPeaksDetectionOutput<a class="headerlink" href="#rpeaksdetectionoutput" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torch_ecg.components.RPeaksDetectionOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_ecg.components.</span></span><span class="sig-name descname"><span class="pre">RPeaksDetectionOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_ecg.components.</span></span><span class="sig-name descname"><span class="pre">RPeaksDetectionOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOutput</span></code></p>
 <p>Class that maintains the output of an R peaks detection task.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rpeak_indices</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>]</em>) – Rpeak indices for each batch sample.</p></li>
+<li><p><strong>rpeak_indices</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>]</em>) – Rpeak indices for each batch sample.</p></li>
 <li><p><strong>prob</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a>) – Probabilities at each time step (each sample point),
 of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">signal_length)</span></code>.</p></li>
 </ul>
@@ -1145,13 +1145,13 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.components.RPeaksDetectionOutput.compute_metrics">
-<span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">thr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.075</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics" title="torch_ecg.components.metrics.ClassificationMetrics"><span class="pre">ClassificationMetrics</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput.compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput.compute_metrics" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">thr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.075</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics" title="torch_ecg.components.metrics.ClassificationMetrics"><span class="pre">ClassificationMetrics</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput.compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput.compute_metrics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute metrics from the output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Sampling frequency of the signal corresponding to the masks.</p></li>
-<li><p><strong>thr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>default 0.075</em>) – Threshold for a prediction to be truth positive,
+<li><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Sampling frequency of the signal corresponding to the masks.</p></li>
+<li><p><strong>thr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>default 0.075</em>) – Threshold for a prediction to be truth positive,
 with units in seconds.</p></li>
 </ul>
 </dd>
@@ -1166,7 +1166,7 @@ with units in seconds.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.components.RPeaksDetectionOutput.required_fields">
-<span class="sig-name descname"><span class="pre">required_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.12)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput.required_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput.required_fields" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">required_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.13)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/torch_ecg/components/outputs.html#RPeaksDetectionOutput.required_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.RPeaksDetectionOutput.required_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>The required fields of the output class.</p>
 </dd></dl>
 
@@ -1215,7 +1215,7 @@ with units in seconds.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.29',
+            VERSION:'0.0.30',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
