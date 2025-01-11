@@ -46,7 +46,7 @@ dependencies = [
     "torchsummary",
     "tqdm",
     "typing-extensions",
-    "wfdb==3.2.0",
+    "wfdb",
     "xmltodict",
 ]
 
