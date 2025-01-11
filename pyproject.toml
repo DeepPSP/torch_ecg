@@ -22,16 +22,17 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "bib-lookup>=0.0.19",
+    "bib-lookup",
     "biosppy",
     "Cython",
     "deprecate-kwargs",
     "deprecated",
     "einops",
     "matplotlib",
-    "numpy<2.0.0",
+    "numpy",
     "pandas",
     "pyarrow",
     "pyEDFlib",
@@ -51,7 +52,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black==24.3.0",
+    "black==24.10.0",
     "flake8",
     "gdown",
     "librosa",
@@ -74,7 +75,7 @@ dev = [
     "sphinx-multiversion",
     "sphinx-rtd-theme",
     "sphinx-theme",
-    "sphinx<7.0",
+    "sphinx",
     "sphinxcontrib-bibtex",
     "sphinxcontrib-napoleon",
     "sphinxcontrib-tikz",
@@ -95,13 +96,13 @@ docs = [
     "sphinx-multiversion",
     "sphinx-rtd-theme",
     "sphinx-theme",
-    "sphinx<7.0",
+    "sphinx",
     "sphinxcontrib-bibtex",
     "sphinxcontrib-napoleon",
     "sphinxcontrib-tikz",
 ]
 test = [
-    "black==24.3.0",
+    "black==24.10.0",
     "flake8",
     "gdown",
     "librosa",
