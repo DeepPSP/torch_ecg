@@ -417,7 +417,7 @@ class AsymmetricLoss(nn.Module):
 
     where :math:`p_m = \\max(p-m, 0)` is the shifted probability,
     with probability margin :math:`m`.
-    The loss on one label of one sample is
+    The loss on one label :math:`y` of one sample is
 
     .. math::
 

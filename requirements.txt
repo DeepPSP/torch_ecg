@@ -1,4 +1,4 @@
-numpy<2.0.0
+numpy
 scipy
 Cython
 pandas
@@ -19,5 +19,5 @@ requests
 xmltodict
 einops
 matplotlib
-bib-lookup>=0.0.19
+bib-lookup
 typing-extensions
