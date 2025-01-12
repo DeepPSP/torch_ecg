@@ -6,10 +6,12 @@ for downloading the data files.
 
 """
 
+import collections
 import os
 import re
-import shlex
+import shlex  # noqa: F401
 import shutil
+import subprocess  # noqa: F401
 import tarfile
 import tempfile
 import urllib.parse
@@ -87,7 +89,33 @@ def http_get(
 
     if url_parsed.scheme == "s3":
         assert aws_client is not None, "awscli is required to download from S3."
-        aws_client.main(shlex.split(f"s3 sync {url} {dst_dir}"))
+        # command = f"s3 sync --no-sign-request {url} {dst_dir}"
+        # aws_client.main(shlex.split(command))
+        command = f"aws s3 sync --no-sign-request {url} {dst_dir}"
+        process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        download_count = 0
+        debug_stdout = collections.deque(maxlen=10)
+        while 1:
+            line = process.stdout.readline().decode("utf-8", errors="replace")
+            if line.rstrip():
+                debug_stdout.append(line)
+                if "download: s3:" in line:
+                    download_count += 1
+                    # print(line)
+            exitcode = process.poll()
+            if exitcode is not None:
+                for line in process.stdout:
+                    debug_stdout.append(line.decode("utf-8", errors="replace"))
+                if exitcode is not None and exitcode != 0:
+                    error_msg = "\n".join(debug_stdout)
+                    process.communicate()
+                    process.stdout.close()
+                    raise subprocess.CalledProcessError(exitcode, error_msg)
+                else:
+                    break
+            print(f"Downloaded {download_count} files from S3...", end="\r")
+        process.communicate()
+        process.stdout.close()
         return Path(dst_dir)
 
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":

@@ -866,9 +866,29 @@ class PhysioNetDataBase(_DataBase):
             print(f"{url} is not available, try {new_url} instead")
         return self._url_compressed
 
-    def download(self, compressed: bool = True) -> None:
-        """Download the database from PhysioNet."""
-        if compressed:
+    def download(self, compressed: bool = True, use_s3: bool = True) -> None:
+        """Download the database from PhysioNet.
+
+        Parameters
+        ----------
+        compressed : bool, default True
+            Whether to download the compressed database file.
+        use_s3 : bool, default True
+            Whether to download the database from AWS S3.
+            NOTE: files on AWS S3 are not compressed (larger total size);
+            `use_s3` has **higher** priority than `compressed`;
+            if AWS client is not available, the database will be downloaded from PhysioNet.
+
+        Returns
+        -------
+        None
+
+        """
+        if aws_client is None:
+            if use_s3:
+                self.logger.warning("AWS client is not available! Downloading the database from PhysioNet...")
+            use_s3 = False
+        if compressed and not use_s3:
             if self.url_ is not None:
                 http_get(self.url_, self.db_dir, extract=True)
                 self._ls_rec()

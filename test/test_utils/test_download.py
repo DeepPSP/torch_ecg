@@ -63,6 +63,10 @@ def test_http_get():
     _download_from_google_drive(url_no_scheme, _TMP_DIR / "torch-ecg-paper.bib")
     (_TMP_DIR / "torch-ecg-paper.bib").unlink()
 
+    # test downloading from AWS S3
+    (_TMP_DIR / "ludb").mkdir(exist_ok=True)
+    http_get("s3://physionet-open/ludb/1.0.1/", _TMP_DIR / "ludb")
+
 
 def test_url_is_reachable():
     assert url_is_reachable("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1")
