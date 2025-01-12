@@ -123,6 +123,13 @@ WFDB_Rhythm_Annotations = {
 }
 
 
+if "get_version" in dir(wfdb.io.download):
+    wfdb_get_version = wfdb.io.download.get_version
+else:
+    # for older versions of `wfdb`
+    wfdb_get_version = wfdb.io.record.get_version
+
+
 class _DataBase(ReprMixin, ABC):
     """Universal abstract base class for all databases.
 
@@ -813,7 +820,7 @@ class PhysioNetDataBase(_DataBase):
         if self._version is not None:
             return self._version
         try:
-            self._version = wfdb.io.record.get_version(self.db_name)
+            self._version = wfdb_get_version(self.db_name)
         except Exception:
             warnings.warn(
                 "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",

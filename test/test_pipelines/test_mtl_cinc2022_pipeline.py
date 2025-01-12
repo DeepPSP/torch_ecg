@@ -49,7 +49,7 @@ from torch_ecg.utils.utils_signal import butter_bandpass_filter
 # set paths
 _CWD = Path(__file__).absolute().parents[1] / "tmp" / "test_mtl_cinc2022_pipeline"
 _CWD.mkdir(parents=True, exist_ok=True)
-_DB_DIR = _CWD.parents[2] / "sample-data" / "cinc2022"
+_DB_DIR = _CWD / "sample-data" / "cinc2022"
 _DB_DIR.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
