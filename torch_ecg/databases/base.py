@@ -39,7 +39,7 @@ from pyedflib import EdfReader
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
-from ..utils.download import aws_client, http_get
+from ..utils.download import http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from .aux_data import get_physionet_dbs
 
@@ -884,19 +884,15 @@ class PhysioNetDataBase(_DataBase):
         None
 
         """
-        if aws_client is None:
-            if use_s3:
-                self.logger.warning("AWS client is not available! Downloading the database from PhysioNet...")
-            use_s3 = False
-        if compressed and not use_s3:
+        if use_s3:
+            http_get(self.s3_url, self.db_dir)
+        elif compressed:
             if self.url_ is not None:
                 http_get(self.url_, self.db_dir, extract=True)
                 self._ls_rec()
                 return
             else:
                 self.logger.info("No compressed database available! Downloading the uncompressed version...")
-        if aws_client is not None:
-            http_get(self.s3_url, self.db_dir)
         else:
             wfdb.dl_database(
                 self.db_name,

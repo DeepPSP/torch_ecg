@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  PYTHON_PRIMARY_VERSION: '3.10'
+
 jobs:
   build:
     # Don't run on forked repos.
@@ -33,7 +36,8 @@ jobs:
     - name: Install system libraries
       run: |
         sudo apt update
-        sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 -y
+        sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 git -y
+        if command -v aws &> /dev/null; then aws --version; else echo "aws cli not found"; fi
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -56,11 +60,27 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
-    - name: Install aws cli v2
-      uses: unfor19/install-aws-cli-action@v1
-      with:
-        version: 2
-        verbose: true
+    - name: Re-install AWS cli v2 from source
+      # AWS cli v2 is pre-installed, but via executable, which does not provide python interface
+      # Installing from source will provide python interface
+      run: |
+        aws --version
+        which aws
+        readlink -f $(which aws)
+        echo "Uninstalling aws-cli v2"
+        sudo rm /usr/local/bin/aws
+        sudo rm /usr/local/bin/aws_completer
+        sudo rm -rf /usr/local/aws-cli
+        git clone https://github.com/aws/aws-cli.git
+        cd aws-cli
+        git checkout v2
+        echo "Installing aws-cli v2"
+        pip install -r requirements-dev.txt
+        pip install -e .
+        echo "Checking aws-cli installation"
+        aws --version
+        which aws
+        readlink -f $(which aws)
     - name: List installed Python packages
       run: |
         python -m pip list
@@ -95,7 +115,7 @@ jobs:
         --ignore=test/test_pipelines \
         test
     - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.8'
+      if: matrix.python-version == ${{ env.PYTHON_PRIMARY_VERSION }}
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true # optional (default = false)

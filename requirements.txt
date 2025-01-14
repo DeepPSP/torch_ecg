@@ -4,6 +4,7 @@ Cython
 pandas
 pyarrow
 scikit-learn
+boto3
 wfdb
 biosppy
 torch

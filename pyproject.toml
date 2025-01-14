@@ -27,6 +27,7 @@ classifiers = [
 dependencies = [
     "bib-lookup",
     "biosppy",
+    "boto3",
     "Cython",
     "deprecate-kwargs",
     "deprecated",

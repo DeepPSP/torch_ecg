@@ -9,9 +9,9 @@ for downloading the data files.
 import collections
 import os
 import re
-import shlex  # noqa: F401
+import shlex
 import shutil
-import subprocess  # noqa: F401
+import subprocess
 import tarfile
 import tempfile
 import urllib.parse
@@ -20,15 +20,11 @@ import zipfile
 from pathlib import Path
 from typing import Any, Iterable, Optional, Union
 
+import boto3
 import requests
+from botocore import UNSIGNED
+from botocore.client import Config
 from tqdm.auto import tqdm
-
-try:
-    from awscli.clidriver import AWSCLIEntryPoint
-
-    aws_client = AWSCLIEntryPoint()
-except ImportError:
-    aws_client = None
 
 __all__ = [
     "http_get",
@@ -88,34 +84,7 @@ def http_get(
         raise ValueError(f"Unsupported URL scheme {url_parsed.scheme}")
 
     if url_parsed.scheme == "s3":
-        assert aws_client is not None, "awscli is required to download from S3."
-        # command = f"s3 sync --no-sign-request {url} {dst_dir}"
-        # aws_client.main(shlex.split(command))
-        command = f"aws s3 sync --no-sign-request {url} {dst_dir}"
-        process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        download_count = 0
-        debug_stdout = collections.deque(maxlen=10)
-        while 1:
-            line = process.stdout.readline().decode("utf-8", errors="replace")
-            if line.rstrip():
-                debug_stdout.append(line)
-                if "download: s3:" in line:
-                    download_count += 1
-                    # print(line)
-            exitcode = process.poll()
-            if exitcode is not None:
-                for line in process.stdout:
-                    debug_stdout.append(line.decode("utf-8", errors="replace"))
-                if exitcode is not None and exitcode != 0:
-                    error_msg = "\n".join(debug_stdout)
-                    process.communicate()
-                    process.stdout.close()
-                    raise subprocess.CalledProcessError(exitcode, error_msg)
-                else:
-                    break
-            print(f"Downloaded {download_count} files from S3...", end="\r")
-        process.communicate()
-        process.stdout.close()
+        _download_from_aws_s3_using_awscli(url, dst_dir)
         return Path(dst_dir)
 
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
@@ -444,3 +413,146 @@ def _download_from_google_drive(url_or_id: str, output: Union[str, bytes, os.Pat
         )
         print(f"Redirecting to {url_or_id}")
     gdown.download(url_or_id, str(output), quiet=quiet)
+
+
+def count_aws_s3_bucket(bucket_name: str, prefix: str = "") -> int:
+    """Count the number of objects in an AWS S3 bucket.
+
+    Parameters
+    ----------
+    bucket_name : str
+        The bucket name.
+    prefix : str, optional
+        The prefix to filter the objects,
+        for example, "ludb/1.0.1/".
+
+    Returns
+    -------
+    int
+        The number of objects in the bucket.
+
+    """
+    s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+    paginator = s3.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+    object_count = 0
+    for page in page_iterator:
+        if "Contents" in page:
+            object_count += len(page["Contents"])
+
+    s3.close()
+
+    return object_count
+
+
+def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.PathLike]) -> None:
+    """Download a file from AWS S3 using boto3.
+
+    Currently, much slower than using awscli.
+
+    Parameters
+    ----------
+    url : str
+        The URL of the file.
+        For example, "s3://bucket-name/files/pre-fix".
+    dst_dir : `path-like`
+        The output directory.
+
+    Returns
+    -------
+    None
+
+    """
+    pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
+    match = re.match(pattern, url)
+    if match is None:
+        raise ValueError(f"Invalid S3 URL: {url}")
+    bucket_name = match.group("bucket_name")
+    prefix = match.group("prefix")
+    if prefix.startswith("files/"):
+        prefix = prefix.replace("files/", "")
+
+    s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+    paginator = s3.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+    object_count = 0
+    for page in page_iterator:
+        if "Contents" in page:
+            object_count += len(page["Contents"])
+    if object_count == 0:
+        raise ValueError(f"No objects found in S3 bucket: {bucket_name}")
+    print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {object_count}")
+
+    with tqdm(total=object_count, dynamic_ncols=True, mininterval=1.0) as pbar:
+        for page in page_iterator:
+            if "Contents" in page:
+                for obj in page["Contents"]:
+                    key = obj["Key"]
+                    dst_file = Path(dst_dir) / key
+                    if not dst_file.parent.exists():
+                        dst_file.parent.mkdir(parents=True, exist_ok=True)
+                        s3.download_file(bucket_name, key, str(dst_file))
+                    pbar.update(1)
+
+    s3.close()
+
+
+def _download_from_aws_s3_using_awscli(url: str, dst_dir: Union[str, bytes, os.PathLike]) -> None:
+    """Download a file from AWS S3 using awscli.
+
+    Parameters
+    ----------
+    url : str
+        The URL of the file.
+        For example, "s3://bucket-name/files/pre-fix".
+    dst_dir : `path-like`
+        The output directory.
+
+    Returns
+    -------
+    None
+
+    """
+    assert shutil.which("aws"), "AWS cli is required to download from S3."
+
+    pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
+    match = re.match(pattern, url)
+    if match is None:
+        raise ValueError(f"Invalid S3 URL: {url}")
+    bucket_name = match.group("bucket_name")
+    prefix = match.group("prefix")
+    if prefix.startswith("files/"):
+        prefix = prefix.replace("files/", "")
+    object_count = count_aws_s3_bucket(bucket_name, prefix)
+    print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {object_count}")
+
+    pbar = tqdm(total=object_count, dynamic_ncols=True, mininterval=1.0)
+    download_count = 0
+    command = f"aws s3 sync --no-sign-request {url} {dst_dir}"
+    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    debug_stdout = collections.deque(maxlen=10)
+    while 1:
+        line = process.stdout.readline().decode("utf-8", errors="replace")
+        if line.rstrip():
+            debug_stdout.append(line)
+            if "download: s3:" in line:
+                download_count += 1
+                pbar.update(1)
+        exitcode = process.poll()
+        if exitcode is not None:
+            for line in process.stdout:
+                debug_stdout.append(line.decode("utf-8", errors="replace"))
+            if exitcode is not None and exitcode != 0:
+                error_msg = "\n".join(debug_stdout)
+                process.communicate()
+                process.stdout.close()
+                raise subprocess.CalledProcessError(exitcode, error_msg)
+            else:
+                break
+    process.communicate()
+    process.stdout.close()
+    # object_count - download_count files skipped for they already exist
+    pbar.update(object_count - download_count)
+    pbar.close()
+    print(f"Downloaded {download_count} files from S3.")
