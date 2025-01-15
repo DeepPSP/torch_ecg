@@ -12,7 +12,7 @@ jobs:
     # Don't run on forked repos.
     if: github.repository_owner == 'DeepPSP'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
@@ -78,10 +78,14 @@ jobs:
           nsrr download shhs/datasets/hrv-analysis/ --token=${{ secrets.NSRR_TOKEN }}
           mkdir -p ~/tmp/nsrr-data/
           mv shhs/ ~/tmp/nsrr-data/
-          du -sh ~/tmp/nsrr-data/*
+          cd ~/tmp/nsrr-data/
+          du -sh $(ls -A)
         post: |
-          rm -rf ~/tmp/nsrr-data/
-          du -sh ~/tmp/nsrr-data/*
+          cd ~/tmp/
+          du -sh $(ls -A)
+          touch .keep
+          rm -rf ./nsrr-data/
+          du -sh $(ls -A)
     - name: Run test SHHS with pytest
       run: |
         pytest -vv -s test/test_databases/test_shhs.py

@@ -14,14 +14,14 @@ on:
 env:
   ARTIFACT_NAME: torch_ecg_dist
   ARTIFACT_DIR: dist
-  # OS_NAME_VERSION: ubuntu-latest
+  # OS_NAME_VERSION: ubuntu-22.04
 
 jobs:
   build:
     # Don't run on forked repos.
     if: github.repository_owner == 'DeepPSP'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
     # publishing is separate from building
     needs: build
     name: Upload release to PyPI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: release
     permissions:
@@ -81,7 +81,7 @@ jobs:
   github-release:
     # github release and changelog
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
