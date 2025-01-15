@@ -41,6 +41,7 @@ dependencies = [
     "requests",
     "scikit-learn",
     "scipy",
+    "soundfile",
     "tensorboardX",
     "torch",
     "torch-optimizer",

@@ -33,7 +33,7 @@ jobs:
     - name: Install system libraries
       run: |
         sudo apt update
-        sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 -y
+        sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 git -y
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -55,6 +55,8 @@ jobs:
         python -m pip uninstall torch-ecg --yes # Remove if already installed
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
+        python -m pip uninstall wfdb --yes
+        python -m pip install git+https://github.com/MIT-LCP/wfdb-python.git --upgrade --no-deps
         python -m pip freeze
     - name: Install aws cli v2
       uses: unfor19/install-aws-cli-action@v1

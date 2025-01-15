@@ -59,6 +59,8 @@ jobs:
         python -m pip uninstall torch-ecg --yes # Remove if already installed
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
+        python -m pip uninstall wfdb --yes
+        python -m pip install git+https://github.com/MIT-LCP/wfdb-python.git --upgrade --no-deps
         python -m pip freeze
     # - name: Re-install AWS cli v2 from source
     #   # deprecated
