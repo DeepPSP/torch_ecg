@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.utils.download import _download_from_google_drive, http_get, url_is_reachable
+from torch_ecg.utils.download import _download_from_aws_s3_using_boto3, _download_from_google_drive, http_get, url_is_reachable
 
 _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -63,9 +63,14 @@ def test_http_get():
     _download_from_google_drive(url_no_scheme, _TMP_DIR / "torch-ecg-paper.bib")
     (_TMP_DIR / "torch-ecg-paper.bib").unlink()
 
-    # test downloading from AWS S3
+    # test downloading from AWS S3 (by default using AWS CLI)
     (_TMP_DIR / "ludb").mkdir(exist_ok=True)
     http_get("s3://physionet-open/ludb/1.0.1/", _TMP_DIR / "ludb")
+
+    # test downloading from AWS S3 (by using boto3)
+    shutil.rmtree(_TMP_DIR / "ludb")
+    (_TMP_DIR / "ludb").mkdir(exist_ok=True)
+    _download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/", _TMP_DIR / "ludb")
 
 
 def test_url_is_reachable():

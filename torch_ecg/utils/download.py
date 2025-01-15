@@ -514,7 +514,7 @@ def _download_from_aws_s3_using_awscli(url: str, dst_dir: Union[str, bytes, os.P
     None
 
     """
-    assert shutil.which("aws"), "AWS cli is required to download from S3."
+    assert shutil.which("aws") is not None, "AWS cli is required to download from S3."
 
     pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
     match = re.match(pattern, url)

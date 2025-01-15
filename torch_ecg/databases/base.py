@@ -19,6 +19,7 @@ import os
 import posixpath
 import pprint
 import re
+import shutil
 import textwrap
 import time
 import warnings
@@ -884,6 +885,9 @@ class PhysioNetDataBase(_DataBase):
         None
 
         """
+        if shutil.which("aws") is None:
+            use_s3 = False
+            self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")
         if use_s3:
             http_get(self.s3_url, self.db_dir)
         elif compressed:

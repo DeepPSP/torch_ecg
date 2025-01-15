@@ -419,7 +419,7 @@ class LUDB(PhysioNetDataBase):
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads)
-        _ann_ext = [f"{ld.lower()}" for ld in _leads]  # for Version 1.0.0, it is f"{l.lower()}"
+        _ann_ext = [f"{ld.lower()}" for ld in _leads]  # for Version 1.0.0, it is f"{ld.lower()}"
         ann_dict["waves"] = CFG({ld: [] for ld in _leads})
         for ld, ext in zip(_leads, _ann_ext):
             ann = wfdb.rdann(rec_fp, extension=ext)
