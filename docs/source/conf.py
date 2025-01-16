@@ -14,7 +14,7 @@
 import sys
 from pathlib import Path
 
-import pydata_sphinx_theme
+import pydata_sphinx_theme  # noqa: F401
 import sphinx_book_theme
 import sphinx_rtd_theme
 import sphinx_theme
@@ -37,8 +37,10 @@ copyright = "2021, WEN Hao, KANG Jingsu"
 author = "WEN Hao, KANG Jingsu"
 
 # The full version, including alpha/beta/rc tags
-release = Path(src_root / "version.py").read_text().split("=")[1].strip()[1:-1]
+version = Path(src_root / "version.py").read_text().split("=")[1].strip()[1:-1]
+release = version
 
+today_fmt = "%Y/%m/%d"
 
 # -- General configuration ---------------------------------------------------
 
@@ -72,8 +74,7 @@ bibtex_footbibliography_header = bibtex_bibliography_header
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "np": ("https://numpy.org/doc/stable/", None),
-    # "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
     "wfdb": ("https://wfdb.readthedocs.io/en/latest/", None),
@@ -90,7 +91,7 @@ html_context = {
     "github_user": "DeepPSP",  # Username
     "github_repo": "torch_ecg",  # Repo name
     "github_version": "master",  # Version
-    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
+    "conf_py_path": "docs/source/",  # Path in the checkout to the docs root
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -120,7 +121,7 @@ napoleon_custom_sections = [
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-_theme_name = "stanford_theme"  # "sphinx_book_theme", "pydata_sphinx_theme", etc.
+_theme_name = "pydata_sphinx_theme"  # "stanford_theme" "sphinx_book_theme", etc.
 
 if _theme_name == "stanford_theme":
     html_theme = "stanford_theme"
@@ -151,10 +152,26 @@ elif _theme_name == "sphinx_book_theme":
     }
 elif _theme_name == "pydata_sphinx_theme":
     html_theme = "pydata_sphinx_theme"
-    html_theme_path = [pydata_sphinx_theme.get_html_theme_path()]
+    html_logo = "_static/images/deep-psp-logo.png"
+    html_sidebars = {"index": ["search-button-field"], "**": ["search-button-field", "sidebar-nav-bs"]}
     html_theme_options = {
         "collapse_navigation": False,
-        "display_version": True,
+        "header_links_before_dropdown": 6,
+        # "display_version": True,
+        "icon_links": [
+            {
+                "name": "GitHub",
+                "url": "https://github.com/DeepPSP/torch_ecg",
+                "icon": "fa-brands fa-github",
+            },
+        ],
+        "logo": {
+            "text": "torch-ecg",
+        },
+        "navbar_start": ["navbar-logo"],
+        "navbar_end": ["theme-switcher", "navbar-icon-links"],
+        "navbar_persistent": [],
+        "secondary_sidebar_items": ["page-toc"],
     }
 else:
     raise ValueError(f"Unknown theme name: {_theme_name}")

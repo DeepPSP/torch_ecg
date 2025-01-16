@@ -32,6 +32,7 @@ _PTBXL_INFO = DataBaseInfo(
         "Classification of ECG images",
     ],
     note="""
+    1. A new comprehensive feature database named PTB-XL+ [2]_ was created to supplement the PTB-XL database.
     """,
     issues="""
     """,
