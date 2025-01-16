@@ -60,31 +60,8 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip uninstall wfdb --yes
-        python -m pip install git+https://github.com/MIT-LCP/wfdb-python.git --upgrade --no-deps
+        python -m pip install git+https://github.com/wenh06/wfdb-python.git@ricker-wavelet --upgrade --no-deps
         python -m pip freeze
-    # - name: Re-install AWS cli v2 from source
-    #   # deprecated
-    #   # AWS cli v2 is pre-installed, but via executable, which does not provide python interface
-    #   # Installing from source will provide python interface
-    #   run: |
-    #     aws --version
-    #     which aws
-    #     readlink -f $(which aws)
-    #     echo "Uninstalling aws-cli v2"
-    #     sudo rm /usr/local/bin/aws
-    #     sudo rm /usr/local/bin/aws_completer
-    #     sudo rm -rf /usr/local/aws-cli
-    #     git clone https://github.com/aws/aws-cli.git
-    #     cd aws-cli
-    #     git checkout v2
-    #     echo "Installing aws-cli v2"
-    #     pip install -r requirements-dev.txt
-    #     pip install -e .
-    #     echo "Checking aws-cli installation"
-    #     pip list
-    #     aws --version
-    #     which aws
-    #     readlink -f $(which aws)
     - name: List installed Python packages
       run: |
         python -m pip list
