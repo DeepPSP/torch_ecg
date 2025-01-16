@@ -100,7 +100,7 @@ class CINC2017(PhysioNetDataBase):
 
         self._all_records = []
         self._df_ann = pd.DataFrame()
-        self._df_ann_ori = pd.DataFrame()
+        self._df_ann_ori = {}
         self._all_ann = []
         self._ls_rec()
 
@@ -128,6 +128,8 @@ class CINC2017(PhysioNetDataBase):
         """Find all records in the database directory
         and store them (path, metadata, etc.) in some private attributes.
         """
+        if set(["training", "validation"]).issubset([f.name for f in self.db_dir.iterdir() if f.is_dir()]):
+            self.db_dir = self.db_dir / "training"
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
@@ -175,30 +177,35 @@ class CINC2017(PhysioNetDataBase):
                 "Cannot find the annotation file `REFERENCE.csv`!",
                 RuntimeWarning,
             )
-        ann_file = list(self.db_dir.rglob("REFERENCE-original.csv"))
-        if len(ann_file) > 0:
-            self._df_ann_ori = pd.read_csv(ann_file[0], header=None)
-            self._df_ann_ori.columns = ["rec", "ann"]
+        self._df_ann["rec"] = self._df_ann["rec"].apply(lambda x: Path(x).stem)
+        self._df_ann_ori = {}
+        ann_files = list(self.db_dir.rglob("REFERENCE-v*.csv"))
+        if len(ann_files) > 0:
+            for ann_file in ann_files:
+                ann_version = ann_file.stem.split("-")[-1]
+                self._df_ann_ori[ann_version] = pd.read_csv(ann_file, header=None)
+                self._df_ann_ori[ann_version].columns = ["rec", "ann"]
+                self._df_ann_ori[ann_version]["rec"] = self._df_ann_ori[ann_version]["rec"].apply(lambda x: Path(x).stem)
         else:
-            self._df_ann_ori = pd.DataFrame(columns=["rec", "ann"])
             warnings.warn(
-                "Cannot find the annotation file `REFERENCE-original.csv`!",
+                "Cannot find the annotation file `REFERENCE-v*.csv`!",
                 RuntimeWarning,
             )
         # ["N", "A", "O", "~"]
-        self._all_ann = list(set(self._df_ann.ann.unique().tolist() + self._df_ann_ori.ann.unique().tolist()))
+        self._all_ann = set(self._df_ann.ann.unique().tolist())
+        for ann_version in self._df_ann_ori.keys():
+            self._all_ann.update(self._df_ann_ori[ann_version].ann.unique().tolist())
+        self._all_ann = list(self._all_ann)
 
-    def load_ann(self, rec: Union[str, int], original: bool = False, ann_format: Literal["a", "f"] = "a") -> str:
+    def load_ann(self, rec: Union[str, int], version: Optional[int] = None, ann_format: Literal["a", "f"] = "a") -> str:
         """Load the annotation of the record.
 
         Parameters
         ----------
         rec : str or int
             Record name or index of the record in :attr:`all_records`.
-        original : bool, default False
-            If True, load annotations from
-            the annotation file ``REFERENCE-original.csv``,
-            otherwise from ``REFERENCE.csv``.
+        version : int, optional
+            Version of the annotation file, by default the latest version.
         ann_format : {"a", "f"}, optional
             Format of returned annotation, by default "a".
 
@@ -214,8 +221,10 @@ class CINC2017(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         assert rec in self.all_records and ann_format.lower() in ["a", "f"]
-        if original:
-            df = self._df_ann_ori
+        if version is not None:
+            if f"v{version}" not in self._df_ann_ori:
+                raise ValueError(f"Annotation version v{version} does not exist! Choose from {list(self._df_ann_ori.keys())}")
+            df = self._df_ann_ori[f"v{version}"]
         else:
             df = self._df_ann
         row = df[df.rec == rec].iloc[0]
@@ -358,3 +367,8 @@ class CINC2017(PhysioNetDataBase):
     @property
     def database_info(self) -> DataBaseInfo:
         return _CINC2017_INFO
+
+    @property
+    def s3_url(self) -> str:
+        """URL of the database on AWS S3."""
+        return f"{super().s3_url}training/"

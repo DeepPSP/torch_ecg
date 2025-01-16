@@ -95,7 +95,10 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
     verbose : int, default 1
         Level of logging verbosity.
     kwargs : dict, optional
-        Auxilliary key word arguments.
+        Auxilliary key word arguments, including:
+
+        - `subset` : {"training", "test"}, default "training"
+            The subset of the database to use.
 
     """
 

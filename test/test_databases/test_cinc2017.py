@@ -61,11 +61,13 @@ class TestCINC2017:
     def test_load_ann(self):
         rec = 0
         ann = reader.load_ann(rec)
-        ann_1 = reader.load_ann(rec, original=True)
+        ann_1 = reader.load_ann(rec, version=1)
         ann_2 = reader.load_ann(rec, ann_format="f")
         assert ann in reader.d_ann_names
         assert ann_1 in reader.d_ann_names
         assert ann_2 in reader.d_ann_names.values()
+        with pytest.raises(ValueError, match="Annotation version v100 does not exist! Choose from "):
+            reader.load_ann(rec, version=100)
 
     def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
