@@ -86,21 +86,14 @@ class TestCINC2020:
 
     def test_load_ann(self):
         for rec in reader:
-            ann_1 = reader.load_ann(rec, backend="wfdb")
-            ann_2 = reader.load_ann(rec, backend="naive")
+            ann_1 = reader.load_ann(rec)
             ann_3 = reader.load_ann(rec, raw=True)
             assert isinstance(ann_1, dict)
-            assert dicts_equal(ann_1, ann_2), f"{rec}: ann from wfdb and naive are not equal"
             assert isinstance(ann_3, str)
-        ann_1 = reader.load_ann(0, backend="wfdb")
-        ann_2 = reader.load_ann(0, backend="naive")
+        ann_1 = reader.load_ann(0)
         ann_3 = reader.load_ann(0, raw=True)
         assert isinstance(ann_1, dict)
-        assert dicts_equal(ann_1, ann_2)
         assert isinstance(ann_3, str)
-
-        with pytest.raises(ValueError, match="backend `numpy` not supported for loading annotations"):
-            reader.load_ann(0, backend="numpy")
 
     def test_load_header(self):
         # alias for `load_ann`

@@ -598,7 +598,7 @@ class CINC2020(PhysioNetDataBase):
             return data, data_fs
         return data
 
-    def load_ann(self, rec: Union[str, int], raw: bool = False, backend: Literal["wfdb", "naive"] = "wfdb") -> Union[dict, str]:
+    def load_ann(self, rec: Union[str, int], raw: bool = False) -> Union[dict, str]:
         """Load annotations of the record.
 
         The annotations are stored in the .hea files.
@@ -609,11 +609,6 @@ class CINC2020(PhysioNetDataBase):
             Record name or index of the record in :attr:`all_records`.
         raw : bool, default False
             If True, the raw annotations without parsing will be returned.
-        backend : {"wfdb", "naive"}, default "wfdb"
-            If is "wfdb", :func:`wfdb.rdheader`
-            will be used to load the annotations.
-            If is "naive", annotations will be parsed
-            from the lines read from the header files.
 
         Returns
         -------
@@ -631,12 +626,7 @@ class CINC2020(PhysioNetDataBase):
             ann_dict = "\n".join(header_data)
             return ann_dict
 
-        if backend.lower() == "wfdb":
-            ann_dict = self._load_ann_wfdb(rec, header_data)
-        elif backend.lower() == "naive":
-            ann_dict = self._load_ann_naive(header_data)
-        else:
-            raise ValueError(f"backend `{backend.lower()}` not supported for loading annotations")
+        ann_dict = self._load_ann_wfdb(rec, header_data)
         return ann_dict
 
     def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
@@ -733,71 +723,6 @@ class CINC2020(PhysioNetDataBase):
         df_leads.index = df_leads["lead_name"]
         df_leads.index.name = None
         ann_dict["df_leads"] = df_leads
-
-        return ann_dict
-
-    def _load_ann_naive(self, header_data: List[str]) -> dict:
-        """Load annotations (header) using raw data
-        read directly from a header file.
-
-        Parameters
-        ----------
-        header_data : List[str]
-            The list of lines read directly from a header file.
-
-        Returns
-        -------
-        ann_dict : dict
-            The annotations with items in `self.ann_items`.
-
-        """
-        ann_dict = {}
-        (
-            ann_dict["rec_name"],
-            ann_dict["nb_leads"],
-            ann_dict["fs"],
-            ann_dict["nb_samples"],
-        ) = header_data[0].split(
-            " "
-        )[0:4]
-        if len(header_data[0].split(" ")) >= 6:
-            ann_dict["datetime"], daytime = header_data[0].split(" ")[4:6]
-        else:
-            ann_dict["datetime"], daytime = None, None
-
-        ann_dict["nb_leads"] = int(ann_dict["nb_leads"])
-        ann_dict["fs"] = int(ann_dict["fs"])
-        ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
-        if ann_dict["datetime"] is not None and daytime is not None:
-            try:
-                ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
-            except Exception:
-                pass
-        try:  # see NOTE. 1.
-            ann_dict["age"] = int([line for line in header_data if line.startswith("#Age")][0].split(": ")[-1])
-        except Exception:
-            ann_dict["age"] = np.nan
-        try:
-            ann_dict["sex"] = [line for line in header_data if line.startswith("#Sex")][0].split(": ")[-1]
-        except Exception:
-            ann_dict["sex"] = "Unknown"
-        try:
-            ann_dict["medical_prescription"] = [line for line in header_data if line.startswith("#Rx")][0].split(": ")[-1]
-        except Exception:
-            ann_dict["medical_prescription"] = "Unknown"
-        try:
-            ann_dict["history"] = [line for line in header_data if line.startswith("#Hx")][0].split(": ")[-1]
-        except Exception:
-            ann_dict["history"] = "Unknown"
-        try:
-            ann_dict["symptom_or_surgery"] = [line for line in header_data if line.startswith("#Sx")][0].split(": ")[-1]
-        except Exception:
-            ann_dict["symptom_or_surgery"] = "Unknown"
-
-        l_Dx = [line for line in header_data if line.startswith("#Dx")][0].split(": ")[-1].split(",")
-        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(l_Dx)
-
-        ann_dict["df_leads"] = self._parse_leads(header_data[1:13])
 
         return ann_dict
 
