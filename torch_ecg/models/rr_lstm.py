@@ -10,7 +10,7 @@ References
 
 import warnings
 from copy import deepcopy
-from typing import Any, List, Optional, Sequence, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import torch
 from einops import rearrange
@@ -281,13 +281,20 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         )
 
     @classmethod
-    def from_v1(cls, v1_ckpt: str, device: Optional[torch.device] = None) -> "RR_LSTM":
+    def from_v1(
+        cls, v1_ckpt: str, device: Optional[torch.device] = None, return_config: bool = False
+    ) -> Union["RR_LSTM", Tuple["RR_LSTM", dict]]:
         """Restore an instance of the model from a v1 checkpoint.
 
         Parameters
         ----------
         v1_ckpt : str
             Path to the v1 checkpoint file.
+        device : torch.device, optional
+            The device to load the model to.
+            Defaults to "cuda" if available, otherwise "cpu".
+        return_config : bool, default False
+            Whether to return the config dict.
 
         Returns
         -------
@@ -295,7 +302,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             The model instance restored from the v1 checkpoint.
 
         """
-        v1_model, _ = RR_LSTM_v1.from_checkpoint(v1_ckpt, device=device)
+        v1_model, train_config = RR_LSTM_v1.from_checkpoint(v1_ckpt, device=device)
         model = cls(classes=v1_model.classes, config=v1_model.config)
         model = model.to(v1_model.device)
         model.lstm.load_state_dict(v1_model.lstm.state_dict())
@@ -303,6 +310,8 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             model.attn.load_state_dict(v1_model.attn.state_dict())
         model.clf.load_state_dict(v1_model.clf.state_dict())
         del v1_model
+        if return_config:
+            return model, train_config
         return model
 
 

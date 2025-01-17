@@ -131,6 +131,8 @@ def test_from_v1():
     model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config)
     model_v1.save(_TMP_DIR / "ecg_crnn_v1.pth", {"classes": classes, "n_leads": n_leads})
     model = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth")
+    del model
+    model, _ = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth", return_config=True)
     (_TMP_DIR / "ecg_crnn_v1.pth").unlink()
     del model_v1, model
 

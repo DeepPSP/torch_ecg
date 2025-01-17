@@ -238,5 +238,7 @@ def test_from_v1():
     model_v1 = RR_LSTM_v1(classes=classes, config=config)
     model_v1.save(_TMP_DIR / "rr_lstm_v1.pth", {"classes": classes})
     model = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth")
+    del model
+    model, _ = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth", return_config=True)
     (_TMP_DIR / "rr_lstm_v1.pth").unlink()
     del model_v1, model

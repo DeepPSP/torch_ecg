@@ -3,7 +3,7 @@
 
 import warnings
 from copy import deepcopy
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -110,21 +110,30 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         return output_shape
 
     @classmethod
-    def from_v1(cls, v1_ckpt: str, device: Optional[torch.device] = None) -> "ECG_SEQ_LAB_NET":
+    def from_v1(
+        cls, v1_ckpt: str, device: Optional[torch.device] = None, return_config: bool = False
+    ) -> Union["ECG_SEQ_LAB_NET", Tuple["ECG_SEQ_LAB_NET", dict]]:
         """Convert the v1 model to the current version.
 
         Parameters
         ----------
         v1_ckpt : str
             Path to the v1 checkpoint file.
+        device : torch.device, optional
+            The device to load the model to.
+            Defaults to "cuda" if available, otherwise "cpu".
+        return_config : bool, default False
+            Whether to return the config dict.
 
         Returns
         -------
         model : ECG_SEQ_LAB_NET
             The converted model.
+        config : dict
+            The config dict. (if `return_config` is `True`)
 
         """
-        v1_model, _ = ECG_SEQ_LAB_NET_v1.from_checkpoint(v1_ckpt, device=device)
+        v1_model, train_config = ECG_SEQ_LAB_NET_v1.from_checkpoint(v1_ckpt, device=device)
         model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config)
         model = model.to(v1_model.device)
         model.cnn.load_state_dict(v1_model.cnn.state_dict())
@@ -134,6 +143,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
             model.attn.load_state_dict(v1_model.attn.state_dict())
         model.clf.load_state_dict(v1_model.clf.state_dict())
         del v1_model
+        if return_config:
+            return model, train_config
         return model
 
     @property
