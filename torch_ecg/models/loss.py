@@ -80,7 +80,7 @@ def weighted_binary_cross_entropy(
 
     References
     ----------
-    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660
 
     """
     if not (targets.size() == sigmoid_x.size()):
@@ -126,7 +126,7 @@ class WeightedBCELoss(nn.Module):
 
     References
     ----------
-    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660
 
     """
 

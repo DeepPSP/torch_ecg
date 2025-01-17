@@ -67,7 +67,7 @@ def test_base_input():
     )
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {BaseInput.__name__} with abstract method",
+        match=f"Can't instantiate abstract class {BaseInput.__name__}",
     ):
         bi = BaseInput(input_config)
 
@@ -206,7 +206,7 @@ def test_spectral_input():
     )
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {_SpectralInput.__name__} with abstract method",
+        match=f"Can't instantiate abstract class {_SpectralInput.__name__}",
     ):
         si = _SpectralInput(input_config)
 

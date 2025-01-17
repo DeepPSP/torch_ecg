@@ -31,7 +31,7 @@ N_LEADS = 12
 def test_base_augmenter():
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {Augmenter.__name__} with abstract method",
+        match=f"Can't instantiate abstract class {Augmenter.__name__}",
     ):
         aug = Augmenter()
 

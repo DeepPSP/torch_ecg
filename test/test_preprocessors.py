@@ -268,6 +268,6 @@ def test_preprocess_single_lead_signal():
 def test_base_preprocessor():
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {PreProcessor.__name__} with abstract method",
+        match=f"Can't instantiate abstract class {PreProcessor.__name__}",
     ):
         PreProcessor()

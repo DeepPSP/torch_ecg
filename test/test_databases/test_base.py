@@ -23,25 +23,25 @@ from torch_ecg.databases.datasets import list_datasets
 def test_base_database():
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {_DataBase.__name__} with abstract methods",
+        match=f"Can't instantiate abstract class {_DataBase.__name__}",
     ):
         db = _DataBase()
 
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {PhysioNetDataBase.__name__} with abstract method",
+        match=f"Can't instantiate abstract class {PhysioNetDataBase.__name__}",
     ):
         db = PhysioNetDataBase()
 
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {NSRRDataBase.__name__} with abstract methods",
+        match=f"Can't instantiate abstract class {NSRRDataBase.__name__}",
     ):
         db = NSRRDataBase()
 
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {CPSCDataBase.__name__} with abstract methods",
+        match=f"Can't instantiate abstract class {CPSCDataBase.__name__}",
     ):
         db = CPSCDataBase()
 
