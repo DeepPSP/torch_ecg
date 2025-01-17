@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import numpy as np
 import pandas as pd
 import wfdb
+from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring, get_record_list_recursive3
@@ -238,7 +239,7 @@ class PTBXL(PhysioNetDataBase):
 
 _PTBXL_PLUS_INFO = DataBaseInfo(
     title="""
-    PTB-XL+, a large publicly available electrocardiography dataset
+    PTB-XL+, a comprehensive electrocardiographic feature dataset
     """,
     about="""
     1. This database [1]_ is a comprehensive feature dataset that supplements the PTB-XL database [2]_.
@@ -390,6 +391,9 @@ class PTBXLPlus(PhysioNetDataBase):
         self._df_records.set_index("ecg_id", inplace=True)
         self._all_records = self._df_records.index.tolist()
 
+        # Fix potential bugs in the database
+        self._fix_bugs()
+
     def load_data(self, rec: Union[str, int], source: Literal["12sl", "unig"] = "12sl") -> np.ndarray:
         """Load the data of a record.
 
@@ -518,3 +522,30 @@ class PTBXLPlus(PhysioNetDataBase):
     @property
     def database_info(self) -> DataBaseInfo:
         return _PTBXL_PLUS_INFO
+
+    def _fix_bugs(self):
+        """Fix bugs in the database.
+
+        See https://github.com/MIT-LCP/wfdb-python/issues/528
+        """
+        flag_file = self.db_dir / "median_beats" / "12sl" / ".fixed"
+        if flag_file.exists() or self.version > "1.0.1":
+            return
+
+        # fix the bug in the 12sl median beats
+        with tqdm(
+            self._df_records["12sl_path"].dropna(),
+            total=len(self._df_records["12sl_path"].dropna()),
+            desc="Fixing bugs in 12sl median beats header files",
+            unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
+            disable=(self.verbose < 1),
+        ) as pbar:
+            for path in pbar:
+                header_file = Path(path).with_suffix(".hea")
+                header_content = header_file.read_text()
+                header_content = header_content.replace("ge_median_beats_wfdb/", "")
+                header_file.write_text(header_content)
+
+        flag_file.touch()
