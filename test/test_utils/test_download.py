@@ -6,7 +6,13 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.utils.download import _download_from_aws_s3_using_boto3, _download_from_google_drive, http_get, url_is_reachable
+from torch_ecg.utils.download import (
+    _download_from_aws_s3_using_boto3,
+    _download_from_google_drive,
+    http_get,
+    is_compressed_file,
+    url_is_reachable,
+)
 
 _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -17,6 +23,10 @@ def test_http_get():
     # http_get internally replaces `dl=0` with `dl=1` to force download
     url = "https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=0"
     http_get(url, _TMP_DIR / "action-test-zip-extract", extract=True, filename="test.zip")
+    shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
+    http_get(url, _TMP_DIR / "action-test-zip-extract", extract="auto", filename="test.zip")
+    shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
+    http_get(url, _TMP_DIR / "action-test-zip-extract", extract="auto")
     shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
 
     url = (
@@ -35,6 +45,9 @@ def test_http_get():
     with pytest.raises(FileExistsError, match="file already exists"):
         http_get(url, _TMP_DIR, extract=True, filename="test.txt")
     (_TMP_DIR / "test.txt").unlink()
+    http_get(url, _TMP_DIR, extract="auto", filename="test.txt")
+    (_TMP_DIR / "test.txt").unlink()
+    http_get(url, _TMP_DIR, extract="auto")
 
     with pytest.warns(
         RuntimeWarning,
@@ -76,3 +89,18 @@ def test_http_get():
 def test_url_is_reachable():
     assert url_is_reachable("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1")
     assert not url_is_reachable("https://www.some-unknown-domain.com/unknown-path/unknown-file.zip")
+
+
+def test_is_compressed_file():
+    assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txt")
+    assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract")
+    assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test")
+    assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.pth.tar")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.gz")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tgz")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.bz2")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tbz2")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.xz")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txz")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.zip")
+    assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.7z")

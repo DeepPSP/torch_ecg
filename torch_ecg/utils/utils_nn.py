@@ -1110,8 +1110,8 @@ class CkptMixin(object):
             Auxiliary configs that are needed for data preprocessing, etc.
 
         """
-        http_get(url, model_dir, extract=True, filename=filename)
-        return cls.from_checkpoint(model_dir, device=device)
+        model_path_or_dir = http_get(url, model_dir, extract="auto", filename=filename)
+        return cls.from_checkpoint(model_path_or_dir, device=device)
 
     def save(self, path: Union[str, bytes, os.PathLike], train_config: CFG) -> None:
         """Save the model to disk.

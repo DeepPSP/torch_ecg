@@ -14,11 +14,12 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+import time
 import urllib.parse
 import warnings
 import zipfile
 from pathlib import Path
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Literal, Optional, Union
 
 import boto3
 import requests
@@ -38,7 +39,7 @@ def http_get(
     url: str,
     dst_dir: Union[str, bytes, os.PathLike],
     proxies: Optional[dict] = None,
-    extract: bool = True,
+    extract: Literal[True, False, "auto"] = "auto",
     filename: Optional[str] = None,
 ) -> Path:
     """Download contents of a URL and save to a file.
@@ -55,8 +56,9 @@ def http_get(
         If `extract` is ``True``, the extracted content will be saved to `dst_dir`.
     proxies : dict, optional
         Dictionary of proxy settings.
-    extract : bool, default True
+    extract : {True, False, "auto"}, default "auto"
         Whether to extract the downloaded file.
+        "auto" will extract if the file is a `zip` file or a compressed `tar` file.
     filename : str, optional
         Name of the downloaded file.
         If None, the filename will be the basename of the URL.
@@ -83,6 +85,8 @@ def http_get(
     if url_parsed.scheme not in ["http", "https", "s3"]:
         raise ValueError(f"Unsupported URL scheme {url_parsed.scheme}")
 
+    assert extract in [True, False, "auto"], "extract must be True, False, or 'auto'."
+
     if url_parsed.scheme == "s3":
         _download_from_aws_s3_using_awscli(url, dst_dir)
         return Path(dst_dir)
@@ -90,8 +94,22 @@ def http_get(
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
         url_parsed = url_parsed._replace(query="dl=1")
         url = url_parsed.geturl()
+
     if url_parsed.netloc == "drive.google.com":
         assert filename is not None, "filename can not be inferred from Google Drive URL."
+    if extract == "auto":
+        # determine whether to extract based on the file extension
+        if filename is not None:
+            if is_compressed_file(filename):
+                extract = True
+            else:
+                extract = False
+        elif is_compressed_file(url):
+            extract = True
+        else:
+            extract = False
+
+    if url_parsed.netloc == "drive.google.com":
         downloaded_file = tempfile.NamedTemporaryFile(
             dir=dst_dir,
             delete=False,
@@ -141,14 +159,19 @@ def http_get(
                 downloaded_file.write(chunk)
         progress.close()
         downloaded_file.close()
+
+    # add a delay to avoid the error "process cannot access the file because it is being used by another process"
+    time.sleep(0.1)
+
     if extract:
         if ".zip" in df_suffix:
             _unzip_file(str(downloaded_file.name), str(dst_dir))
-        elif ".tar" in df_suffix:  # tar files
+        # elif ".tar" in df_suffix:  # tar files
+        elif re.search("\\.(tar(\\.(gz|bz2|lz|xz|tz|zst))?|tgz|tbz2|tlz|txz|tzst)$", df_suffix) is not None:
             _untar_file(str(downloaded_file.name), str(dst_dir))
         else:
             os.remove(downloaded_file.name)
-            raise Exception(f"Unknown file type {df_suffix}")
+            raise Exception(f"Unsupported (compressed) archived file type {df_suffix}")
         # avoid the case the compressed file is a folder with the same name
         # DO NOT use _stem(Path(pure_url))
         if filename is None:
@@ -189,7 +212,7 @@ def _stem(path: Union[str, bytes, os.PathLike]) -> str:
 
     """
     ret = Path(path).stem
-    if Path(ret).suffix in [".tar", ".gz", ".bz2", ".xz", ".zip", ".7z"]:
+    if Path(ret).suffix in [".tar", ".gz", ".tz", ".lz", ".bz2", ".xz", ".zip", ".7z"]:
         return _stem(ret)
     return ret
 
@@ -217,6 +240,8 @@ def _suffix(path: Union[str, bytes, os.PathLike], ignore_pattern: str = PHYSIONE
 def is_compressed_file(path: Union[str, bytes, os.PathLike]) -> bool:
     """Check if the path points to a valid compressed file.
 
+    NOTE: a `.pth.tar` file is NOT considered a compressed file.
+
     Parameters
     ----------
     path : `path-like`
@@ -229,7 +254,8 @@ def is_compressed_file(path: Union[str, bytes, os.PathLike]) -> bool:
         False otherwise.
 
     """
-    compressed_file_pattern = "(\\.zip)|(\\.tar)"
+    # compressed_file_pattern = "(\\.zip)|(\\.tar)"
+    compressed_file_pattern = "^(?!.*\\.pth\\.tar$).*\\.(zip|7z|tar(\\.(gz|bz2|lz|xz|tz|zst))?|tgz|tbz2|tlz|txz|tzst)$"
     return re.search(compressed_file_pattern, _suffix(path)) is not None
 
 
