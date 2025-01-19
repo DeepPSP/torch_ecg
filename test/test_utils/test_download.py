@@ -2,6 +2,7 @@
 """
 
 import shutil
+import urllib.parse
 from pathlib import Path
 
 import pytest
@@ -92,6 +93,7 @@ def test_url_is_reachable():
 
 
 def test_is_compressed_file():
+    # check local files
     assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txt")
     assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract")
     assert not is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test")
@@ -104,3 +106,6 @@ def test_is_compressed_file():
     assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txz")
     assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.zip")
     assert is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.7z")
+
+    # check remote files (by URL)
+    assert is_compressed_file(urllib.parse.urlparse("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=0").path)

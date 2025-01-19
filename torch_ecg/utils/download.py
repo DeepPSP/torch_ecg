@@ -94,6 +94,9 @@ def http_get(
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
         url_parsed = url_parsed._replace(query="dl=1")
         url = url_parsed.geturl()
+    # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"
+    # produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"
+    pure_url = urllib.parse.unquote(url_parsed._replace(query="").geturl())
 
     if url_parsed.netloc == "drive.google.com":
         assert filename is not None, "filename can not be inferred from Google Drive URL."
@@ -104,7 +107,7 @@ def http_get(
                 extract = True
             else:
                 extract = False
-        elif is_compressed_file(url):
+        elif is_compressed_file(url_parsed.path):
             extract = True
         else:
             extract = False
@@ -118,7 +121,7 @@ def http_get(
         df_suffix = _suffix(filename)
     else:
         print(f"Downloading {url}.")
-        if not is_compressed_file(url) and extract:
+        if not is_compressed_file(url_parsed.path) and extract:
             if filename is not None:
                 if not is_compressed_file(filename):
                     warnings.warn(
@@ -137,9 +140,6 @@ def http_get(
                     RuntimeWarning,
                 )
                 extract = False
-        # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"
-        # produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"
-        pure_url = urllib.parse.unquote(url_parsed._replace(query="").geturl())
         parent_dir = Path(dst_dir).parent
         df_suffix = _suffix(pure_url) if filename is None else _suffix(filename)
         downloaded_file = tempfile.NamedTemporaryFile(

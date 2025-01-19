@@ -34,21 +34,6 @@ http_get(
 reader = CACHET_CADB(_CWD)
 
 
-# def download_short_format_data_with_retry(n: int = 3):
-#     try:
-#         with pytest.warns(
-#             RuntimeWarning,
-#             match="The files are large, and the connections are unstable",
-#         ):
-#             reader.download("cachet-cadb_short_format_without_context.hdf5.zip")
-#     except Exception as e:
-#         if n > 0:
-#             download_short_format_data_with_retry(n - 1)
-
-
-# download_short_format_data_with_retry()
-
-
 class TestCACHET_CADB:
     def test_len(self):
         assert len(reader) == 2
