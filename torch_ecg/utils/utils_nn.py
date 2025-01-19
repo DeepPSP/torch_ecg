@@ -15,6 +15,7 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+from easydict import EasyDict
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
@@ -38,6 +39,16 @@ __all__ = [
     "SizeMixin",
     "CkptMixin",
 ]
+
+
+def _get_np_dtypes():
+    return [eval(f"np.dtypes.{dtype}") for dtype in dir(np.dtypes) if dtype.endswith("DType")]
+
+
+if hasattr(torch.serialization, "add_safe_globals"):
+    torch.serialization.add_safe_globals(
+        [CFG, EasyDict, np.core.multiarray._reconstruct, np.ndarray, np.dtype] + _get_np_dtypes()
+    )
 
 
 def extend_predictions(preds: Sequence, classes: List[str], extended_classes: List[str]) -> np.ndarray:
@@ -1066,7 +1077,11 @@ class CkptMixin(object):
             assert len(candidates) == 1, "The directory should contain only one checkpoint file"
             path = candidates[0]
         _device = device or DEFAULTS.device
-        ckpt = torch.load(path, map_location=_device)
+        if hasattr(torch.serialization, "add_safe_globals"):
+            weights_only = True
+        else:
+            weights_only = False
+        ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
         kwargs = dict(
