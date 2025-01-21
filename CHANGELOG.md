@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Functions for downloading PhysioNet data from AWS S3. It is now made the default way to download data from PhysioNet.
+- Add `easydict` as a dependency for backward compatibility (loading old models with safe-mode `torch.load`).
 
 ### Changed
 
