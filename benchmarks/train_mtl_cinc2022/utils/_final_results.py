@@ -61,15 +61,18 @@ def _fetch_final_results() -> Dict[str, pd.DataFrame]:
 def _http_get(url: str, fname: Union[str, bytes, os.PathLike]) -> None:
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))
-    with open(fname, "wb") as file, tqdm(
-        desc=Path(fname).name,
-        total=total,
-        unit="iB",
-        unit_scale=True,
-        unit_divisor=1024,
-        dynamic_ncols=True,
-        mininterval=1.0,
-    ) as bar:
+    with (
+        open(fname, "wb") as file,
+        tqdm(
+            desc=Path(fname).name,
+            total=total,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as bar,
+    ):
         for data in resp.iter_content(chunk_size=1024):
             size = file.write(data)
             bar.update(size)
