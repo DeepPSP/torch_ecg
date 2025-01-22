@@ -781,7 +781,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                   the array (with values 0, 1 for each class) of binary prediction.
 
         """
-        raise NotImplementedError("implement a task specific inference method")
+        raise NotImplementedError("Implement a task-specific inference method.")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None

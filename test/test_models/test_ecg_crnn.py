@@ -79,10 +79,10 @@ def test_warns_errors():
     with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads).to(DEVICE)
 
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model.inference(inp)
 
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model_v1.inference(inp)
 
     config = deepcopy(ECG_CRNN_CONFIG)

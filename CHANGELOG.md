@@ -27,3 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix IO issues with several PhysioNet databases.
 
 ### Security
+
+- Models are now loaded using safe-mode `torch.load` with `weights_only=True` by default.

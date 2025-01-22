@@ -74,9 +74,9 @@ def test_warns_errors():
     with pytest.warns(RuntimeWarning, match="No config is provided, using default config"):
         model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12).to(DEVICE)
 
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model.inference(inp)
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model_v1.inference(inp)
 
 

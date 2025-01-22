@@ -644,7 +644,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     @torch.no_grad()
     def inference(self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5) -> Tensor:
         """Method for making inference on a single input."""
-        raise NotImplementedError("implement a task specific inference method")
+        raise NotImplementedError("Implement a task-specific inference method.")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None

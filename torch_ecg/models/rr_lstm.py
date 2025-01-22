@@ -241,7 +241,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     @torch.no_grad()
     def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> BaseOutput:
         """Inference method for the model."""
-        raise NotImplementedError("implement a task specific inference method")
+        raise NotImplementedError("Implement a task-specific inference method.")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
@@ -535,7 +535,7 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     @torch.no_grad()
     def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> BaseOutput:
         """Inference method for the model."""
-        raise NotImplementedError("implement a task specific inference method")
+        raise NotImplementedError("Implement a task-specific inference method.")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None

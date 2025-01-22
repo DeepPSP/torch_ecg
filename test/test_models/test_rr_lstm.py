@@ -210,9 +210,9 @@ def test_warns_errors():
     ):
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model.inference(inp)
-    with pytest.raises(NotImplementedError, match="implement a task specific inference method"):
+    with pytest.raises(NotImplementedError, match="Implement a task-specific inference method."):
         model_v1.inference(inp)
 
     config = deepcopy(RR_LSTM_CONFIG)
