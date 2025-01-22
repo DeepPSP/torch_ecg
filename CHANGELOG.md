@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Test files (in the [sample-data](sample-data) directory) are updated.
 - `requires-python` is updated from `>=3.7` to `>=3.9`.
+- Add keyword argument `weights_only` to `from_checkpoint` and `from_remote` methods of the models (indeed the `CkptMixin` class). The default value is `"auto"`, which means the behavior is the same as before. It checks if `torch.serialization` has `add_safe_globals` attribute. If it does, it will use safe-mode `torch.load` with `weights_only=True`. Otherwise, it will use `torch.load` with `weights_only=False`.
 
 ### Deprecated
 

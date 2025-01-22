@@ -4,6 +4,7 @@ utilities for nn models
 """
 
 import os
+import pickle
 import re
 import warnings
 from copy import deepcopy
@@ -11,7 +12,7 @@ from itertools import chain, repeat
 from math import floor
 from numbers import Real
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -1050,7 +1051,10 @@ class CkptMixin(object):
 
     @classmethod
     def from_checkpoint(
-        cls, path: Union[str, bytes, os.PathLike], device: Optional[torch.device] = None
+        cls,
+        path: Union[str, bytes, os.PathLike],
+        device: Optional[torch.device] = None,
+        weights_only: Literal[True, False, "auto"] = "auto",
     ) -> Tuple[nn.Module, dict]:
         """Load a model from a checkpoint.
 
@@ -1063,6 +1067,10 @@ class CkptMixin(object):
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
+        weights_only : {"auto", True, False}, default "auto"
+            Whether to load only the weights of the model.
+
+            .. versionadded:: 0.0.31
 
         Returns
         -------
@@ -1077,11 +1085,19 @@ class CkptMixin(object):
             assert len(candidates) == 1, "The directory should contain only one checkpoint file"
             path = candidates[0]
         _device = device or DEFAULTS.device
-        if hasattr(torch.serialization, "add_safe_globals"):
-            weights_only = True
-        else:
-            weights_only = False
-        ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
+        if weights_only == "auto":
+            if hasattr(torch.serialization, "add_safe_globals"):
+                weights_only = True
+            else:
+                weights_only = False
+        try:
+            ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
+        except pickle.UnpicklingError as pue:
+            raise RuntimeError(
+                "Maybe you are trying to load a model trained with numpy 1, "
+                f"but the current numpy version is {np.__version__}. "
+                "Try setting `weights_only=False` and load the model again."
+            ) from pue
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
         kwargs = dict(
@@ -1102,6 +1118,7 @@ class CkptMixin(object):
         model_dir: Union[str, bytes, os.PathLike],
         filename: Optional[str] = None,
         device: Optional[torch.device] = None,
+        weights_only: Literal[True, False, "auto"] = "auto",
     ) -> Tuple[nn.Module, dict]:
         """Load the model from the remote model.
 
@@ -1116,6 +1133,10 @@ class CkptMixin(object):
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
+        weights_only : {"auto", True, False}, default "auto"
+            Whether to load only the weights of the model.
+
+            .. versionadded:: 0.0.31
 
         Returns
         -------
@@ -1126,7 +1147,7 @@ class CkptMixin(object):
 
         """
         model_path_or_dir = http_get(url, model_dir, extract="auto", filename=filename)
-        return cls.from_checkpoint(model_path_or_dir, device=device)
+        return cls.from_checkpoint(model_path_or_dir, device=device, weights_only=weights_only)
 
     def save(self, path: Union[str, bytes, os.PathLike], train_config: CFG) -> None:
         """Save the model to disk.
