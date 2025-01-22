@@ -1,0 +1,19 @@
+{
+  "name": "torch-ecg-devcontainer",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.10",
+      "installJupyterlab": true
+    }
+  },
+  "postCreateCommand": "apt update && apt install -y build-essential git ffmpeg libsm6 libxext6 vim libsndfile1 libxrender1 unzip wget curl && pip install -r requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  }
+}
