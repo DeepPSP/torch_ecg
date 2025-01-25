@@ -65,7 +65,7 @@ The system design is depicted as follows
    Tutorial <tutorial>
    API Reference <api/index>
    Examples <examples>
-
+   Changelog <CHANGELOG>
 
 Citation
 =========

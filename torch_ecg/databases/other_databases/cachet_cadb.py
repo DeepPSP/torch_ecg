@@ -215,10 +215,11 @@ class CACHET_CADB(_DataBase):
         self._df_records["header_path"] = self._df_records["record"].apply(
             lambda x: self._full_data_dir / f"{x}/{self.header_ext}"
         )
+        self._subject_records = self._df_records.groupby("subject")["record"].apply(sorted).to_dict()
         self._df_records.set_index("record", inplace=True)
-        self._subject_records = {
-            subject: sorted(self._df_records[self._df_records["subject"] == subject].index) for subject in self._all_subjects
-        }
+        # self._subject_records = {
+        #     subject: sorted(self._df_records[self._df_records["subject"] == subject].index) for subject in self._all_subjects
+        # }
 
         # the table of metadata
         self._df_metadata = pd.DataFrame([self.get_record_metadata(rec) for rec in self._all_records])
