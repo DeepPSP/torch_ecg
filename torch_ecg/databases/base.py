@@ -399,13 +399,41 @@ class _DataBase(ReprMixin, ABC):
     @property
     @abstractmethod
     def url(self) -> Union[str, List[str]]:
-        """URL(s) for downloading the database."""
+        """URL(s) for downloading the database.
+        
+        .. versionadded:: 0.0.4
+        """
         raise NotImplementedError
 
     def __len__(self) -> int:
+        """Number of records in the database.
+        
+        .. versionadded:: 0.0.6
+
+        Returns
+        -------
+        int
+            Number of records in the database.
+
+        """
         return len(self.all_records)
 
     def __getitem__(self, index: int) -> str:
+        """Get the record name by index.
+
+        .. versionadded:: 0.0.6
+
+        Parameters
+        ----------
+        index : int
+            Index of the record in :attr:`all_records`.
+
+        Returns
+        -------
+        str
+            Record name.
+
+        """
         return self.all_records[index]
 
 
@@ -832,12 +860,15 @@ class PhysioNetDataBase(_DataBase):
 
     @property
     def webpage(self) -> str:
-        """URL of the database webpage"""
+        """URL of the database webpage."""
         return posixpath.join(wfdb.io.download.PN_CONTENT_URL, f"{self.db_name}/{self.version}")
 
     @property
     def url(self) -> str:
-        """URL of the database index page for downloading."""
+        """URL of the database index page for downloading.
+
+        .. versionadded:: 0.0.4
+        """
         return posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}")
 
     @property
@@ -874,11 +905,15 @@ class PhysioNetDataBase(_DataBase):
         ----------
         compressed : bool, default True
             Whether to download the compressed database file.
+
+            .. versionadded:: 0.0.5
         use_s3 : bool, default True
             Whether to download the database from AWS S3.
             NOTE: files on AWS S3 are not compressed (larger total size);
             `use_s3` has **higher** priority than `compressed`;
             if AWS client is not available, the database will be downloaded from PhysioNet.
+
+            .. versionadded:: 0.0.31
 
         Returns
         -------

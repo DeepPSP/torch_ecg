@@ -565,20 +565,18 @@ Security
 Added
 ~~~~~
 
+- Methods ``__len__`` and ``__getitem__`` for the base class ``_DataBase``.
+
 Changed
 ~~~~~~~
 
-Deprecated
-~~~~~~~~~~
-
-Removed
-~~~~~~~
-
-Fixed
-~~~~~
-
-Security
-~~~~~~~~
+- The base class of ``CPSC2021`` is changed from ``CPSCDataBase`` to
+  ``PhysioNetDataBase``.
+- Function ``compute_output_shape`` is enhanced to support different
+  paddings in two ends of the input signal.
+- ``README`` is updated.
+- Docstrings of many classes and functions are updated.
+- ``black`` is used for code formatting.
 
 `0.0.5 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.4...v0.0.5>`__ - 2022-03-27
 ----------------------------------------------------------------------------------------
@@ -586,20 +584,24 @@ Security
 Added
 ~~~~~
 
+- Cached list of PhysioNet databases as a data file
+  stored in the package.
+- ``requests`` as a dependency in the ``requirements.txt`` file.
+
 Changed
 ~~~~~~~
 
-Deprecated
-~~~~~~~~~~
-
-Removed
-~~~~~~~
+- An optional argument ``btype`` is added to the function
+  ``butter_bandpass_filter`` to specify the type of the filter:
+  ``"lohi"``, ``"hilo"``.
+- A ``compressed`` argument is added to the ``download`` method of the
+  ``PhysioNetDataBase`` class to specify whether to download the
+  compressed version of the database.
 
 Fixed
 ~~~~~
 
-Security
-~~~~~~~~
+- Fix bugs in the function ``preprocess_multi_lead_signal``.
 
 `0.0.4 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.2...v0.0.4>`__ - 2022-03-26
 ----------------------------------------------------------------------------------------
@@ -607,19 +609,19 @@ Security
 Added
 ~~~~~
 
-- `ReprMixin` class for better representation of the classes (e.g., models,
+- ``ReprMixin`` class for better representation of the classes (e.g., models,
   preprocessors, database readers, etc.).
 - Added model_dir to default config.
-- `Dataset` classes for generating input data for the models:
-   - `CINC2020`
-   - `CINC2021`
-   - `CPSC2019`
-   - `CPSC2021`
-   - `LUDB`
-- `sample-data` directory for storing sample data for testing.
-- Add `url` property to the database classes.
+- ``Dataset`` classes for generating input data for the models:
+   - ``CINC2020``
+   - ``CINC2021``
+   - ``CPSC2019``
+   - ``CPSC2021``
+   - ``LUDB``
+- ``sample-data`` directory for storing sample data for testing.
+- ``url`` property to the database classes.
 - Utility functions for the computation of metrics.
-- `BeatAnn` class for better annotation of ECG beats.
+- ``BeatAnn`` class for better annotation of ECG beats.
 - Download utility functions.
 - Output classes for the models. The output classes are used to store the
   output of the models and provide methods for post-processing.
@@ -628,12 +630,12 @@ Changed
 ~~~~~~~
 
 - Manipulation of custom preprocessor classes is enhanced.
-- SizeMixin class is improved for better computation of the sizes of the models.
-- Replace `os` with `pathlib`, which is more flexible for path operations.
+- ``SizeMixin`` class is improved for better computation of the sizes of the models.
+- Replace ``os`` with ``pathlib``, which is more flexible for path operations.
 - Several database reader classes are updated: mitdb, ltafdb.
-- Improve `PhysioNetDataBase` by using wfdb built-in methods of
+- Improve ``PhysioNetDataBase`` by using wfdb built-in methods of
   getting database version string and downloading the database.
-- Update the `README` file.
+- Update the ``README`` file.
 
 Removed
 ~~~~~~~
@@ -643,7 +645,7 @@ Removed
 Fixed
 ~~~~~
 
-- Fix bugs in the `flush` method of the `TxtLogger`.
+- Fix bugs in the ``flush`` method of the ``TxtLogger``.
 
 0.0.3 - 2022-03-24 [YANKED]
 -----------------------------

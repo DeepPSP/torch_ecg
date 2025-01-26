@@ -597,6 +597,8 @@ def butter_bandpass_filter(
     btype : {"lohi", "hilo"}, optional
         (special) type of the filter.
         Ignored for lowpass and highpass filters (as defined by `lowcut` and `highcut`).
+
+        .. versionadded:: 0.0.5
     verbose : int, default 0
         Verbosity level for printing.
 
