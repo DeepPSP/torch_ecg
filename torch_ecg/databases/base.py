@@ -400,14 +400,14 @@ class _DataBase(ReprMixin, ABC):
     @abstractmethod
     def url(self) -> Union[str, List[str]]:
         """URL(s) for downloading the database.
-        
+
         .. versionadded:: 0.0.4
         """
         raise NotImplementedError
 
     def __len__(self) -> int:
         """Number of records in the database.
-        
+
         .. versionadded:: 0.0.6
 
         Returns
@@ -652,6 +652,8 @@ class PhysioNetDataBase(_DataBase):
             otherwise, the original sampling frequency will be used.
         return_fs : bool, default False
             Whether to return the sampling frequency of the output signal.
+
+            .. versionadded:: 0.0.28
 
         Returns
         -------

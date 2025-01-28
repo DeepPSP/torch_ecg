@@ -65,6 +65,8 @@ def http_get(
         If `extract` is ``True``, the filename will NOT affect the extracted folder name,
         which is set to `dst_dir`, and `filename` is only the downloaded file name.
 
+        .. versionadded:: 0.0.20
+
     Returns
     -------
     final_dst : pathlib.Path

@@ -225,12 +225,16 @@ class MITDB(PhysioNetDataBase):
             Defaults to `self.rhythm_types`.
             If is not None, only the rhythm annotations
             with the specified types will be returned.
+
+            .. versionadded:: 0.0.16
         beat_format : {"beat", "dict"}, default "beat"
             Format of returned annotation, case insensitive.
         beat_types : List[str], optional
             Beat types to be loaded, by default `self.beat_types`.
             If is not None, only the beat annotations
             with the specified types will be returned.
+
+            .. versionadded:: 0.0.16
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
@@ -341,6 +345,8 @@ class MITDB(PhysioNetDataBase):
             Defaults to `self.rhythm_types`.
             If is not None, only the rhythm annotations
             with the specified types will be returned.
+
+            .. versionadded:: 0.0.16
         keep_original : bool, default False
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
@@ -479,7 +485,10 @@ class MITDB(PhysioNetDataBase):
 
     @property
     def df_stats_expanded(self) -> pd.DataFrame:
-        """Expanded DataFrame of the statistics of the dataset."""
+        """Expanded DataFrame of the statistics of the dataset.
+
+        .. versionadded:: 0.0.16
+        """
         df = self.df_stats.copy(deep=True)
         for bt in self.beat_types:
             df[f"beat_{bt}"] = df["beat_type_num"].apply(lambda d: d.get(bt, 0))

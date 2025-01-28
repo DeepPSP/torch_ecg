@@ -76,6 +76,8 @@ def get_record_list_recursive(db_dir: Union[str, bytes, os.PathLike], rec_ext: s
     relative : bool, default True
         Whether to return the relative path of the records.
 
+        .. versionadded:: 0.0.19
+
     Returns
     -------
     List[str]
@@ -154,8 +156,12 @@ def get_record_list_recursive3(
         or patterns of several subsets, e.g. ``{"A": "A(?:\\d+).mat"}``
     relative : bool, default True
         Whether to return the relative path of the records.
+
+        .. versionadded:: 0.0.19
     with_suffix : bool, default False
         Whether to include the suffix of the records.
+
+        .. versionadded:: 0.0.29
 
     Returns
     -------
@@ -671,6 +677,8 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
         Whether allow the equality of two arrays with different types,
         including `list`, `tuple`, `numpy.ndarray`, `torch.Tensor`,
         **NOT** including `pandas.DataFrame`, `pandas.Series`.
+
+        .. versionadded:: 0.0.26
 
     Returns
     -------

@@ -237,10 +237,11 @@ class SPH(_DataBase):
                 - "a": abbreviations
                 - "f": full names
                 - "c": AHACode
-
         ignore_modifier : bool, default True
             Whether to ignore the modifiers of the annotations or not.
-            For example, "60+310" will be converted to "60"
+            For example, "60+310" will be converted to "60".
+
+            .. versionadded:: 0.0.26
 
         Returns
         -------

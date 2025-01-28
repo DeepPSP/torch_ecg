@@ -972,6 +972,10 @@ def max_disjoint_covering(
         If True, the indices of the intervals in the input `intervals`
         of the output covering will also be returned.
 
+        .. versionchanged:: 0.0.26
+    verbose : int, default 0
+        The verbosity level.
+
     Returns
     -------
     covering : GeneralizedInterval

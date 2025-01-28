@@ -320,7 +320,9 @@ class FeedForward(Module):
 
 
 class EncoderLayer(SizeMixin, Module):
-    """A layer unit in encoder. Combines multihead self attention and feed forward."""
+    """
+    A layer unit in encoder. Combines multihead self attention and feed forward.
+    """
 
     def __init__(
         self,

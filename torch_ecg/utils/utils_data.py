@@ -673,6 +673,8 @@ def stratified_train_test_split(
     reset_index : bool, default False
         Whether to reset the index of the dataframes.
 
+        .. versionadded:: 0.0.21
+
     Returns
     -------
     df_train : pandas.DataFrame

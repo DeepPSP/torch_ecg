@@ -668,9 +668,13 @@ def compute_module_size(
         The :class:`~torch.nn.Module` to compute the size.
     requires_grad : bool, default True
         Whether to only count the parameters that require gradients.
+
+        .. versionadded:: 0.0.26
     include_buffers : bool, default False
         Whether to include the buffers.
         If `requires_grad` is True, then `include_buffers` is ignored.
+
+        .. versionadded:: 0.0.26
     human : bool, default False
         Size is returned in a way that is easy to read by a human,
         by appending a suffix corresponding to the unit (B, K, M, G, T, P).
@@ -800,6 +804,8 @@ def compute_receptive_field(
     fs : numbers.Real, optional
         Sampling frequency of the input signal.
         If is not ``None``, then the receptive field is returned in seconds.
+
+        .. versionadded:: 0.0.28
 
     Returns
     -------

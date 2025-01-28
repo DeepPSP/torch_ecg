@@ -39,6 +39,8 @@ class InputConfig(CFG):
     ensure_batch_dim : bool
         Whether to ensure the transformed input has a batch dimension.
 
+        .. versionadded:: 0.0.26
+
     Examples
     --------
     .. code-block:: python

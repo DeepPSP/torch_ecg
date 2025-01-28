@@ -2519,14 +2519,16 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_stage_names = []
         self.update_sleep_stage_names()
         self._to_simplified_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 2, 3: 3, 4: 3}
-        """9 to nan?
+        """
+        9 to nan?
         0 --- awake
         1 --- REM
         2 --- N1 (NREM1/2), shallow sleep
         3 --- N2 (NREM3/4), deep sleep
         """
         self._to_aasm_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 4}
-        """9 to nan?
+        """
+        9 to nan?
         0 --- awake
         1 --- REM
         2 --- N1 (NREM1)

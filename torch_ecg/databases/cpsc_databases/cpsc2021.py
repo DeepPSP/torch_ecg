@@ -1004,7 +1004,7 @@ class CPSC2021(PhysioNetDataBase):
     @property
     def url_(self) -> str:
         """URL of the compressed database file.
-        
+
         .. versionadded:: 0.0.5
         """
         if self._url_compressed is not None:

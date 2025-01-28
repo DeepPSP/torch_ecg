@@ -376,7 +376,8 @@ class UpDoubleConv(nn.Module, SizeMixin):
 
 
 class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
-    """U-Net for (multi-lead) ECG wave delineation.
+    """
+    U-Net for (multi-lead) ECG wave delineation.
 
     The U-Net is a fully convolutional network originally
     proposed for biomedical image segmentation [1]_.

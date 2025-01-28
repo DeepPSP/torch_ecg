@@ -94,7 +94,7 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
 
     __name__ = "MobileNetSeparableConv"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         in_channels: int,
@@ -465,7 +465,7 @@ class InvertedResidual(nn.Module, SizeMixin):
 
     __name__ = "InvertedResidual"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         in_channels: int,
@@ -869,7 +869,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
 
     __name__ = "InvertedResidualBlock"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         in_channels: int,
@@ -1011,7 +1011,7 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
 
     __name__ = "MobileNetV3_STEM"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         in_channels: int,

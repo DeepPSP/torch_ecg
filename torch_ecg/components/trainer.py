@@ -65,10 +65,11 @@ class BaseTrainer(ReprMixin, ABC):
             - "optimizer": str
                 - "decay": float, optional, depending on the optimizer
                 - "momentum": float, optional, depending on the optimizer
-
     collate_fn : callable, optional
         The collate function for the data loader,
         defaults to :meth:`default_collate_fn`.
+
+        .. versionadded:: 0.0.23
     device : torch.device, optional
         The device to be used for training.
     lazy : bool, default False

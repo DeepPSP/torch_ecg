@@ -316,7 +316,7 @@ class Bn_Activation(nn.Sequential, SizeMixin):
 
     __name__ = "Bn_Activation"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         num_features: int,
@@ -428,7 +428,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
 
     __name__ = "Conv_Bn_Activation"
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         in_channels: int,
@@ -1454,7 +1454,7 @@ class DownSample(nn.Sequential, SizeMixin):
     ]
     # fmt: on
 
-    @deprecate_kwargs([["norm", "batch_norm"]])
+    @deprecate_kwargs([["norm", "batch_norm"]], version="0.0.16")
     def __init__(
         self,
         down_scale: int,
@@ -2375,7 +2375,7 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
 
     __name__ = "MultiHeadAttention"
 
-    @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]])
+    @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]], version="0.0.26")
     def __init__(
         self,
         in_features: int,
@@ -2475,7 +2475,7 @@ class SelfAttention(nn.Module, SizeMixin):
 
     __name__ = "SelfAttention"
 
-    @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]])
+    @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]], version="0.0.26")
     def __init__(
         self,
         in_features: int,
