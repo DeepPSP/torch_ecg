@@ -12,3 +12,8 @@ svg {
 .eqno {
     float: right;
 }
+
+/* fix: ship to main content while print webpage (pydata theme) */
+.skip-link {
+    position: absolute;
+  }

@@ -3,8 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to torch-ecg's documentation!
-=====================================
+*****************************************************
+torch-ecg documentation
+*****************************************************
+
+**Date**: |today| **Version**: |version|
 
 ECG Deep Learning Framework Implemented using PyTorch.
 
@@ -55,31 +58,14 @@ The system design is depicted as follows
    \draw[black,rounded corners=5, dashed, thick] ([xshift=-0.7em, yshift=1.1em]cfg.west) rectangle ([xshift=0.7em, yshift=-0.9em]model.east);
 
 .. toctree::
-   :caption: Getting started
    :maxdepth: 1
+   :caption: Contents:
 
-   install
-   tutorial
-
-.. toctree::
-   :glob:
-   :caption: API Reference
-   :maxdepth: 1
-
-   databases
-   models
-   losses
-   augmenters
-   preprocessors
-   components
-   utils
-
-.. toctree::
-   :caption: Examples
-   :maxdepth: 1
-
-   examples
-
+   Installation <install>
+   Tutorial <tutorial>
+   API Reference <api/index>
+   Examples <examples>
+   Changelog <CHANGELOG>
 
 Citation
 =========

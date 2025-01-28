@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
+    <title>torch_ecg.utils.extend_predictions &#8212; torch-ecg 0.0.31 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=97348ffd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/torch_ecg.utils.extend_predictions';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="torch_ecg.utils.compute_output_shape" href="torch_ecg.utils.compute_output_shape.html" />
+    <link rel="prev" title="torch_ecg.utils" href="../utils.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.31" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/deep-psp-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../_static/deep-psp-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">torch-ecg</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../databases.html">torch_ecg.databases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.PhysioNetDataBase.html">PhysioNetDataBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.NSRRDataBase.html">NSRRDataBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CPSCDataBase.html">CPSCDataBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.PSGDataBaseMixin.html">PSGDataBaseMixin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.AFDB.html">AFDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.ApneaECG.html">ApneaECG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CINC2017.html">CINC2017</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CINC2018.html">CINC2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CINC2020.html">CINC2020</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CINC2021.html">CINC2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.LTAFDB.html">LTAFDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.LUDB.html">LUDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.MITDB.html">MITDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.QTDB.html">QTDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.PTBXL.html">PTBXL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CPSC2018.html">CPSC2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CPSC2019.html">CPSC2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CPSC2020.html">CPSC2020</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CPSC2021.html">CPSC2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.SHHS.html">SHHS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CACHET_CADB.html">CACHET_CADB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.SPH.html">SPH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.BeatAnn.html">BeatAnn</a></li>
+</ul>
+</details></li>
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../models.html">torch_ecg.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ResNet.html">ResNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.RegNet.html">RegNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.VGG16.html">VGG16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.Xception.html">Xception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.DenseNet.html">DenseNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MobileNetV1.html">MobileNetV1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MobileNetV2.html">MobileNetV2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MobileNetV3.html">MobileNetV3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MultiScopicCNN.html">MultiScopicCNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ECG_UNET.html">ECG_UNET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ECG_SUBTRACT_UNET.html">ECG_SUBTRACT_UNET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ECG_CRNN.html">ECG_CRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ECG_SEQ_LAB_NET.html">ECG_SEQ_LAB_NET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.RR_LSTM.html">RR_LSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.GradCam.html">GradCam</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">torch_ecg.models.loss</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html">MaskedBCEWithLogitsLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.FocalLoss.html">FocalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.AsymmetricLoss.html">AsymmetricLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.setup_criterion.html">torch_ecg.models.loss.setup_criterion</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../augmenters.html">torch_ecg.augmenters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.Augmenter.html">Augmenter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.CutMix.html">CutMix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.LabelSmooth.html">LabelSmooth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.Mixup.html">Mixup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.RandomFlip.html">RandomFlip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.RandomMasking.html">RandomMasking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.RandomRenormalize.html">RandomRenormalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.StretchCompress.html">StretchCompress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.StretchCompressOffline.html">StretchCompressOffline</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../preprocessors.html">torch_ecg._preprocessors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.PreprocManager.html">PreprocManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.PreProcessor.html">PreProcessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.BandPass.html">BandPass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.BaselineRemove.html">BaselineRemove</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.Normalize.html">Normalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.MinMaxNormalize.html">MinMaxNormalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.NaiveNormalize.html">NaiveNormalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.ZScoreNormalize.html">ZScoreNormalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.Resample.html">Resample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.preprocess_multi_lead_signal.html">torch_ecg._preprocessors.preprocess_multi_lead_signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg._preprocessors.preprocess_single_lead_signal.html">torch_ecg._preprocessors.preprocess_single_lead_signal</a></li>
+</ul>
+</details></li>
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../components.html">torch_ecg.components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.InputConfig.html">InputConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.WaveformInput.html">WaveformInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.FFTInput.html">FFTInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.SpectrogramInput.html">SpectrogramInput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.ClassificationOutput.html">ClassificationOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.MultiLabelClassificationOutput.html">MultiLabelClassificationOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.SequenceTaggingOutput.html">SequenceTaggingOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.SequenceLabellingOutput.html">SequenceLabellingOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.WaveDelineationOutput.html">WaveDelineationOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.RPeaksDetectionOutput.html">RPeaksDetectionOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.LoggerManager.html">LoggerManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.ClassificationMetrics.html">ClassificationMetrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.RPeaksDetectionMetrics.html">RPeaksDetectionMetrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.WaveDelineationMetrics.html">WaveDelineationMetrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.components.BaseTrainer.html">BaseTrainer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../utils.html">torch_ecg.utils</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torch_ecg.utils.extend_predictions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_output_shape.html">torch_ecg.utils.compute_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_conv_output_shape.html">torch_ecg.utils.compute_conv_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_deconv_output_shape.html">torch_ecg.utils.compute_deconv_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_maxpool_output_shape.html">torch_ecg.utils.compute_maxpool_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_avgpool_output_shape.html">torch_ecg.utils.compute_avgpool_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_sequential_output_shape.html">torch_ecg.utils.compute_sequential_output_shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_module_size.html">torch_ecg.utils.compute_module_size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.default_collate_fn.html">torch_ecg.utils.default_collate_fn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_receptive_field.html">torch_ecg.utils.compute_receptive_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.adjust_cnn_filter_lengths.html">torch_ecg.utils.adjust_cnn_filter_lengths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.SizeMixin.html">SizeMixin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.CkptMixin.html">CkptMixin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.smooth.html">torch_ecg.utils.smooth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.resample_irregular_timeseries.html">torch_ecg.utils.resample_irregular_timeseries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.detect_peaks.html">torch_ecg.utils.detect_peaks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.remove_spikes_naive.html">torch_ecg.utils.remove_spikes_naive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.butter_bandpass_filter.html">torch_ecg.utils.butter_bandpass_filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_ampl.html">torch_ecg.utils.get_ampl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.normalize.html">torch_ecg.utils.normalize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.normalize_t.html">torch_ecg.utils.normalize_t</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.resample_t.html">torch_ecg.utils.resample_t</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_mask.html">torch_ecg.utils.get_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.class_weight_to_sample_weight.html">torch_ecg.utils.class_weight_to_sample_weight</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ensure_lead_fmt.html">torch_ecg.utils.ensure_lead_fmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ensure_siglen.html">torch_ecg.utils.ensure_siglen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.masks_to_waveforms.html">torch_ecg.utils.masks_to_waveforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.mask_to_intervals.html">torch_ecg.utils.mask_to_intervals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.uniform.html">torch_ecg.utils.uniform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.stratified_train_test_split.html">torch_ecg.utils.stratified_train_test_split</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.one_hot_encode.html">torch_ecg.utils.one_hot_encode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.overlaps.html">torch_ecg.utils.overlaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.validate_interval.html">torch_ecg.utils.validate_interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.in_interval.html">torch_ecg.utils.in_interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.in_generalized_interval.html">torch_ecg.utils.in_generalized_interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.intervals_union.html">torch_ecg.utils.intervals_union</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generalized_intervals_union.html">torch_ecg.utils.generalized_intervals_union</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.intervals_intersection.html">torch_ecg.utils.intervals_intersection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generalized_intervals_intersection.html">torch_ecg.utils.generalized_intervals_intersection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generalized_interval_complement.html">torch_ecg.utils.generalized_interval_complement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_optimal_covering.html">torch_ecg.utils.get_optimal_covering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.interval_len.html">torch_ecg.utils.interval_len</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generalized_interval_len.html">torch_ecg.utils.generalized_interval_len</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.find_extrema.html">torch_ecg.utils.find_extrema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.is_intersect.html">torch_ecg.utils.is_intersect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.max_disjoint_covering.html">torch_ecg.utils.max_disjoint_covering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.top_n_accuracy.html">torch_ecg.utils.top_n_accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.confusion_matrix.html">torch_ecg.utils.confusion_matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ovr_confusion_matrix.html">torch_ecg.utils.ovr_confusion_matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.metrics_from_confusion_matrix.html">torch_ecg.utils.metrics_from_confusion_matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.compute_wave_delineation_metrics.html">torch_ecg.utils.compute_wave_delineation_metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.QRS_score.html">torch_ecg.utils.QRS_score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.add_docstring.html">torch_ecg.utils.add_docstring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.remove_parameters_returns_from_docstring.html">torch_ecg.utils.remove_parameters_returns_from_docstring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.default_class_repr.html">torch_ecg.utils.default_class_repr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ReprMixin.html">ReprMixin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.CitationMixin.html">CitationMixin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_kwargs.html">torch_ecg.utils.get_kwargs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_required_args.html">torch_ecg.utils.get_required_args</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.add_kwargs.html">torch_ecg.utils.add_kwargs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_record_list_recursive3.html">torch_ecg.utils.get_record_list_recursive3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.dict_to_str.html">torch_ecg.utils.dict_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.str2bool.html">torch_ecg.utils.str2bool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.nildent.html">torch_ecg.utils.nildent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_date_str.html">torch_ecg.utils.get_date_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.list_sum.html">torch_ecg.utils.list_sum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.dicts_equal.html">torch_ecg.utils.dicts_equal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.MovingAverage.html">MovingAverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.Timer.html">Timer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../utils.html" class="nav-link">torch_ecg.utils</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torch_ecg.utils.extend_predictions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="torch-ecg-utils-extend-predictions">
+<h1>torch_ecg.utils.extend_predictions<a class="headerlink" href="#torch-ecg-utils-extend-predictions" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_ecg.utils.extend_predictions">
+<span class="sig-prename descclassname"><span class="pre">torch_ecg.utils.</span></span><span class="sig-name descname"><span class="pre">extend_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.13)"><span class="pre">Sequence</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extended_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/utils/utils_nn.html#extend_predictions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.utils.extend_predictions" title="Link to this definition">#</a></dt>
+<dd><p>Extend the prediction arrays to prediction arrays in larger range of classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preds</strong> (<em>array_like</em>) – Array of predictions (scalar or binary) of shape
+<code class="docutils literal notranslate"><span class="pre">(n_records,</span> <span class="pre">n_classes)</span></code>,
+or categorical predictions of shape <code class="docutils literal notranslate"><span class="pre">(n_classes,)</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">n_classes</span> <span class="pre">=</span> <span class="pre">len(classes)</span></code>.</p></li>
+<li><p><strong>classes</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – Classes of the predictions of <cite>preds</cite>.</p></li>
+<li><p><strong>extended_classes</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – A superset of <cite>classes</cite>.
+The predictions will be extended to this range of classes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>extended_preds</strong> – The extended array of predictions, with indices in <cite>extended_classes</cite>,
+of shape <code class="docutils literal notranslate"><span class="pre">(n_records,</span> <span class="pre">n_classes)</span></code>, or <code class="docutils literal notranslate"><span class="pre">(n_classes,)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n_records</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span>
+<span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NSR&quot;</span><span class="p">,</span> <span class="s2">&quot;AF&quot;</span><span class="p">,</span> <span class="s2">&quot;PVC&quot;</span><span class="p">]</span>
+<span class="n">extended_classes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AF&quot;</span><span class="p">,</span> <span class="s2">&quot;RBBB&quot;</span><span class="p">,</span> <span class="s2">&quot;PVC&quot;</span><span class="p">,</span> <span class="s2">&quot;NSR&quot;</span><span class="p">]</span>
+<span class="n">scalar_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_records</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">)</span>
+<span class="n">extended_pred</span> <span class="o">=</span> <span class="n">extend_predictions</span><span class="p">(</span><span class="n">scalar_pred</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">extended_classes</span><span class="p">)</span>
+<span class="n">bin_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">n_records</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">))</span>
+<span class="n">extended_pred</span> <span class="o">=</span> <span class="n">extend_predictions</span><span class="p">(</span><span class="n">bin_pred</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">extended_classes</span><span class="p">)</span>
+<span class="n">cate_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="p">(</span><span class="n">n_records</span><span class="p">,))</span>
+<span class="n">extended_pred</span> <span class="o">=</span> <span class="n">extend_predictions</span><span class="p">(</span><span class="n">cate_pred</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">extended_classes</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../utils.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">torch_ecg.utils</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="torch_ecg.utils.compute_output_shape.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">torch_ecg.utils.compute_output_shape</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torch_ecg.utils.extend_predictions"><code class="docutils literal notranslate"><span class="pre">extend_predictions()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2021, WEN Hao, KANG Jingsu.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
