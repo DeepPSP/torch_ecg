@@ -380,7 +380,7 @@ Security
   patch: Fix a potential security vulnerability in the
   ``torch_ecg.utils.download.http_get`` function.
 
-`0.0.25 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.24...v0.0.25>`__ - 2022-10-08
+`0.0.25 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.23...v0.0.25>`__ - 2022-10-08
 ----------------------------------------------------------------------------------------
 
 Added
