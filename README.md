@@ -51,6 +51,7 @@ The system design is depicted as follows
 - [Work in progress](#work-in-progress)
 - [Citation](#citation)
 - [Thanks](#thanks)
+- [Change Log](CHANGELOG.rst)
 
 <!-- tocstop -->
 

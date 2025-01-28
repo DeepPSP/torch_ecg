@@ -8,13 +8,34 @@ Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.30...HEAD>`__
+`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...HEAD>`__
 ----------------------------------------------------------------------------
 
 Added
 ~~~~~
 
-- Functions for downloading PhysioNet data from AWS S3. It is now made
+Changed
+~~~~~~~
+
+Deprecated
+~~~~~~~~~~
+
+Removed
+~~~~~~~
+
+Fixed
+~~~~~
+
+Security
+~~~~~~~~
+
+`0.0.31 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.30...v0.0.31>`__ - 2025-01-28
+----------------------------------------------------------------------------------------
+
+Added
+~~~~~
+
+- Add functions for downloading PhysioNet data from AWS S3. It is now made
   the default way to download data from PhysioNet.
 - Add ``easydict`` as a dependency for backward compatibility (loading
   old models using safe-mode ``torch.load`` with ``weights_only=True``.
