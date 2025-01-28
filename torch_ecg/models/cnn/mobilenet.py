@@ -645,7 +645,7 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 
     MobileNet V2 is an upgraded version of MobileNet V1, originally proposed in
     [#v2]_. It uses inverted residual blocks instead of the original residual
-    blocks. Torchvision's implementation [#v2_pt] and Keras' implementation [#v2_keras]_
+    blocks. Torchvision's implementation [#v2_pt]_ and Keras' implementation [#v2_keras]_
     are used as references.
 
     Parameters
@@ -653,8 +653,8 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
     in_channels : int
         Number of channels in the input signal tensor.
     config : dict
-        Other hyper-parameters of the Module, ref. corr. config file
-        keyword arguments that have to be set are as follows:
+        Other hyper-parameters of the Module, ref. corresponding config file.
+        Keyword arguments that have to be set are as follows:
 
         - groups: int,
           number of groups in the pointwise convolutional layer(s).
@@ -1085,7 +1085,7 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
     in_channels : int
         Number of channels in the input signal tensor.
     config : dict
-        Other hyper-parameters of the Module, ref. corr. config file.
+        Other hyper-parameters of the Module, ref. corresponding config file.
         Keyword arguments that must be set:
 
             - groups: int,

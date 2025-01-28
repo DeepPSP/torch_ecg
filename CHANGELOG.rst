@@ -926,12 +926,14 @@ Added
   segmentation (R-peak detection, wave delineation, etc., ref.
   ``torch_ecg.models``).
 - Add several benchmark studies for ECG signal analysis tasks:
+
    - CinC2020, multi-label classification.
    - CinC2021, multi-label classification.
    - CPSC2019, QRS detection.
    - CPSC2020, single-label classification.
    - CPSC2021, single-label classification.
    - LUDB, wave delineation.
+
   ref. the ``benchmarks`` directory of the project.
 - Add documentation for the project (ref. ``docs`` directory).
 - Add CodeQL action for security analysis (ref. ``.github/workflows``).
