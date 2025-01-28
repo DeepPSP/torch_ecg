@@ -167,6 +167,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../CHANGELOG.html">
+    Changelog
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -261,6 +268,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../examples.html">
     Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../CHANGELOG.html">
+    Changelog
   </a>
 </li>
 
@@ -566,14 +580,14 @@
 <p>MobileNet V2.</p>
 <p>MobileNet V2 is an upgraded version of MobileNet V1, originally proposed in
 <a class="footnote-reference brackets" href="#v2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. It uses inverted residual blocks instead of the original residual
-blocks. Torchvision’s implementation [#v2_pt] and Keras’ implementation <a class="footnote-reference brackets" href="#v2-keras" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
+blocks. Torchvision’s implementation <a class="footnote-reference brackets" href="#v2-pt" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and Keras’ implementation <a class="footnote-reference brackets" href="#v2-keras" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
 are used as references.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of channels in the input signal tensor.</p></li>
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – <p>Other hyper-parameters of the Module, ref. corr. config file
-keyword arguments that have to be set are as follows:</p>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – <p>Other hyper-parameters of the Module, ref. corresponding config file.
+Keyword arguments that have to be set are as follows:</p>
 <ul>
 <li><p>groups: int,
 number of groups in the pointwise convolutional layer(s).</p></li>
@@ -642,11 +656,11 @@ Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the
 IEEE conference on computer vision and pattern recognition (pp. 4510-4520).</p>
 </aside>
 <aside class="footnote brackets" id="v2-pt" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p><a class="github reference external" href="https://github.com/pytorch/vision/blob/main/torchvision/models/mobilenetv2.py">pytorch/vision</a></p>
 </aside>
 <aside class="footnote brackets" id="v2-keras" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p><a class="github reference external" href="https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py">keras-team/keras-applications</a></p>
 </aside>
 </aside>

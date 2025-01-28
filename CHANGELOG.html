@@ -1,0 +1,1689 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
+    <title>Changelog &#8212; torch-ecg 0.0.31 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'CHANGELOG';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Examples" href="examples.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.31" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/deep-psp-logo.png" class="logo__image only-light" alt=""/>
+    <img src="_static/deep-psp-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">torch-ecg</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Changelog</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.1.0/">Keep a
+Changelog</a>, and this project
+adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic
+Versioning</a>.</p>
+<section id="unreleased">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+</section>
+<section id="deprecated">
+<h3>Deprecated<a class="headerlink" href="#deprecated" title="Link to this heading">#</a></h3>
+</section>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Link to this heading">#</a></h3>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+</section>
+<section id="security">
+<h3>Security<a class="headerlink" href="#security" title="Link to this heading">#</a></h3>
+</section>
+</section>
+<section id="id1">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.30...v0.0.31">0.0.31</a> - 2025-01-28<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add functions for downloading PhysioNet data from AWS S3. It is now made
+the default way to download data from PhysioNet.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">easydict</span></code> as a dependency for backward compatibility (loading
+old models using safe-mode <code class="docutils literal notranslate"><span class="pre">torch.load</span></code> with <code class="docutils literal notranslate"><span class="pre">weights_only=True</span></code>.
+Extra dependencies are added with
+<code class="docutils literal notranslate"><span class="pre">torch.serialization.add_safe_globals</span></code>).</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Changed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Test files (in the <code class="docutils literal notranslate"><span class="pre">sample-data</span></code> directory) are updated.</p></li>
+<li><p>Add keyword argument <code class="docutils literal notranslate"><span class="pre">weights_only</span></code> to <code class="docutils literal notranslate"><span class="pre">from_checkpoint</span></code> and
+<code class="docutils literal notranslate"><span class="pre">from_remote</span></code> methods of the models (indeed the <code class="docutils literal notranslate"><span class="pre">CkptMixin</span></code>
+class). The default value is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, which means the behavior is
+the same as before. It checks if <code class="docutils literal notranslate"><span class="pre">torch.serialization</span></code> has
+<code class="docutils literal notranslate"><span class="pre">add_safe_globals</span></code> attribute. If it does, it will use safe-mode
+<code class="docutils literal notranslate"><span class="pre">torch.load</span></code> with <code class="docutils literal notranslate"><span class="pre">weights_only=True</span></code>. Otherwise, it will use
+<code class="docutils literal notranslate"><span class="pre">torch.load</span></code> with <code class="docutils literal notranslate"><span class="pre">weights_only=False</span></code>.</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>Deprecated<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Support for Python 3.7, 3.8 is deprecated. The minimum supported Python
+version is now 3.9. In the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file, the field
+<code class="docutils literal notranslate"><span class="pre">requires-python</span></code> is updated from <code class="docutils literal notranslate"><span class="pre">&gt;=3.7</span></code> to <code class="docutils literal notranslate"><span class="pre">&gt;=3.9</span></code>.</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Removed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Restrictions on the version of <code class="docutils literal notranslate"><span class="pre">wfdb</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> packages are
+removed.</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Fixed<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix IO issues with several PhysioNet databases.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Security<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Models are now loaded using safe-mode <code class="docutils literal notranslate"><span class="pre">torch.load</span></code> with
+<code class="docutils literal notranslate"><span class="pre">weights_only=True</span></code> by default.</p></li>
+</ul>
+</section>
+</section>
+<section id="id8">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.29...v0.0.30">0.0.30</a> - 2024-10-10<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h3>Added<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add support for AWS S3 in the download utility function <code class="docutils literal notranslate"><span class="pre">http_get</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download</span></code> module. PhysioNet now provides
+data download links from AWS S3, and the download utility function
+can now handle these links if AWS CLI is installed. This feature is
+implemented but not put into use yet.</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>Changed<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Change the default value of the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument of the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_signal.resample_irregular_timeseries</span></code> function
+from <code class="docutils literal notranslate"><span class="pre">&quot;spline&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;interp1d&quot;</span></code>. The former is probably not
+correctly implemented.</p></li>
+<li><p>Update the logger classes: add checking of the write access of the
+<code class="docutils literal notranslate"><span class="pre">log_dir</span></code>. If the directory is not writable, the default log dir
+<code class="docutils literal notranslate"><span class="pre">~/.cache/torch_ecg/logs</span></code> is used (ref. <code class="docutils literal notranslate"><span class="pre">torch_ecg.cfg.DEFAULTS.log_dir</span></code>).</p></li>
+<li><p>Update the selection mechanism of the final model for the trainer
+classes: if no monitor is specified, the last model is selected by
+default (previously, no model was selected and saved).</p></li>
+<li><p>The main part of the <code class="docutils literal notranslate"><span class="pre">_setup_criterion</span></code> method of the <code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code>
+class is moved to the function <code class="docutils literal notranslate"><span class="pre">setup_criterion</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.models.loss</span></code> module. The method is simplified and
+enhanced.</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>Deprecated<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Script <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is deprecated. The package building system is
+switched to <code class="docutils literal notranslate"><span class="pre">hatchling</span></code>.</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>Removed<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove redundancy in base trainer classes: identical <code class="docutils literal notranslate"><span class="pre">if</span></code> blocks
+are removed from the <code class="docutils literal notranslate"><span class="pre">_setup_criterion</span></code> method of the <code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code>
+class.</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>Fixed<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix potential error in getting model name in the trainer classes.</p></li>
+<li><p>Fix bugs in the <code class="docutils literal notranslate"><span class="pre">CINC2020</span></code> and <code class="docutils literal notranslate"><span class="pre">CINC2021</span></code> database reader classes
+for parsing the header files.</p></li>
+</ul>
+</section>
+</section>
+<section id="id14">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.28...v0.0.29">0.0.29</a> - 2024-07-21<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h3>Added<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add keyword argument <code class="docutils literal notranslate"><span class="pre">with_suffix</span></code> to function
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.get_record_list_recursive3</span></code>.</p></li>
+<li><p>Add function <code class="docutils literal notranslate"><span class="pre">_download_from_google_drive</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download</span></code> module for downloading files from Google
+Drive.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">gdown</span></code> as a dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+<li><p>Add database reader class <code class="docutils literal notranslate"><span class="pre">PTBXLPlus</span></code> for the PTB-XL+ database in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.physionet_databases</span></code>.</p></li>
+<li><p>Add github-release job to the publish action for creating a release
+on GitHub automatically.</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>Changed<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Improve the main training loop method of the base trainer class
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.components.trainers.BaseTrainer</span></code>.</p></li>
+<li><p>Allow passing additional keyword arguments to pass to <code class="docutils literal notranslate"><span class="pre">requests.head</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">url_is_reachable</span></code> function of the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download</span></code>
+module (via adding the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> argument).</p></li>
+<li><p>Restrict version of <code class="docutils literal notranslate"><span class="pre">numpy</span></code> to be <code class="docutils literal notranslate"><span class="pre">&lt;=2.0.0</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file. <code class="docutils literal notranslate"><span class="pre">numpy</span></code> version <code class="docutils literal notranslate"><span class="pre">2.0.0</span></code> is a breaking
+update, and a large proportion of the dependencies of this project
+are not compatible with it yet.</p></li>
+<li><p>Enhance the <code class="docutils literal notranslate"><span class="pre">cls_to_bin</span></code> function and rename it to <code class="docutils literal notranslate"><span class="pre">one_hot_encode</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data</span></code> module.</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>Fixed<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Enhance compatibility for different <code class="docutils literal notranslate"><span class="pre">pandas</span></code> versions.</p></li>
+<li><p>Fix errors for taking length of an empty database reader class.</p></li>
+</ul>
+</section>
+<section id="id18">
+<h3>Security<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix code scanning alert - Incomplete regular expression for hostnames
+<a class="reference external" href="https://github.com/DeepPSP/torch_ecg/pull/21">#21</a>.</p></li>
+<li><p>Fix code scanning alert - Incomplete URL substring sanitization
+<a class="reference external" href="https://github.com/DeepPSP/torch_ecg/pull/23">#23</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id19">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.27...v0.0.28">0.0.28</a> - 2024-04-02<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<section id="id20">
+<h3>Added<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add CD workflow for the publish action with GitHub Action.</p></li>
+<li><p>Add an optional argument <code class="docutils literal notranslate"><span class="pre">return_fs</span></code> for the <code class="docutils literal notranslate"><span class="pre">load_data</span></code>
+method for the database reader classes. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the sampling
+frequency of the record is returned along with the data as a tuple.
+To keep the behavior consistent, the default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>Add an optional parameter <code class="docutils literal notranslate"><span class="pre">fs</span></code> for the function <code class="docutils literal notranslate"><span class="pre">compute_receptive_field</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_nn</span></code> module. If <code class="docutils literal notranslate"><span class="pre">fs</span></code> is provided, the
+receptive field is computed based on the sampling frequency.</p></li>
+<li><p>Add method <code class="docutils literal notranslate"><span class="pre">compute_receptive_field</span></code> for several convolutional neural
+network models (layers) in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.models._nets</span></code> module.</p></li>
+<li><p>Add helper function <code class="docutils literal notranslate"><span class="pre">make_serializable</span></code> in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc</span></code>
+module for making an object serializable (with the <code class="docutils literal notranslate"><span class="pre">json</span></code> package).
+It will convert all <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays to <code class="docutils literal notranslate"><span class="pre">list</span></code> in an object, and
+also convert <code class="docutils literal notranslate"><span class="pre">numpy</span></code> data types to python data types in the object
+recursively.</p></li>
+<li><p>Add helper function <code class="docutils literal notranslate"><span class="pre">url_is_reachable</span></code> in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download</span></code>
+module for checking if a URL is reachable.</p></li>
+<li><p>Add database reader class <code class="docutils literal notranslate"><span class="pre">PTBXL</span></code> for the PTB-XL database in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.physionet_databases</span></code>.</p></li>
+<li><p>Add class method <code class="docutils literal notranslate"><span class="pre">from_remote</span></code> for <code class="docutils literal notranslate"><span class="pre">CkptMixin</span></code> classes. It is used
+to load a model from a remote location (e.g., a URL) directly.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">sphinx-emoji-favicon</span></code> as a dependency for generating the favicon
+for the documentation.</p></li>
+<li><p>Add utility function <code class="docutils literal notranslate"><span class="pre">ecg_plot</span></code> from
+<a class="reference external" href="https://github.com/alphanumericslab/ecg-image-kit/.">ecg-image-kit</a>.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">pyarrow</span></code> as a dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+<li><p>Add benchmark study <code class="docutils literal notranslate"><span class="pre">train_crnn_cinc2023</span></code> for the CinC2023 challenge.</p></li>
+</ul>
+</section>
+<section id="id21">
+<h3>Changed<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Change the default value <code class="docutils literal notranslate"><span class="pre">reset_index</span></code> of the utility function
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data.stratified_train_test_split</span></code> from
+<code class="docutils literal notranslate"><span class="pre">True</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>Enhance the decorator <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.add_kwargs</span></code> so that
+the signature of the decorated function is also updated.</p></li>
+<li><p>Update the documentation: use <code class="docutils literal notranslate"><span class="pre">sphinx_toolbox.collapse</span></code> and
+<code class="docutils literal notranslate"><span class="pre">sphinxcontrib.bibtex</span></code>; add citation info in the index page.</p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes accept slice index for the <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>
+method.</p></li>
+</ul>
+</section>
+<section id="id22">
+<h3>Deprecated<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Support for Python 3.6 is deprecated. The minimum supported Python
+version is updated to 3.7.</p></li>
+</ul>
+</section>
+<section id="id23">
+<h3>Removed<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove broken links in the docstrings of the database reader classes.</p></li>
+<li><p>Remove unused scripts <code class="docutils literal notranslate"><span class="pre">formatting.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">push2pypi.sh</span></code>.</p></li>
+</ul>
+</section>
+<section id="id24">
+<h3>Fixed<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix errors in the decorator <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.add_kwargs</span></code>
+when a bound method is decorated.</p></li>
+<li><p>Fix bugs related to data overflow for preprocessor classes that
+work with <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays as reported in issue
+<a class="reference external" href="https://github.com/DeepPSP/torch_ecg/issues/12">#12</a>.</p></li>
+<li><p>Fix bugs in augmentor class <code class="docutils literal notranslate"><span class="pre">StretchCompress</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.augmenters</span></code> module.</p></li>
+<li><p>Fix dtype error when calling <code class="docutils literal notranslate"><span class="pre">compute_class_weight</span></code> from
+<code class="docutils literal notranslate"><span class="pre">sklearn.utils</span></code>.</p></li>
+<li><p>Fix the issue when handling nan values in in computing metrics.</p></li>
+<li><p>Fix errors for the <code class="docutils literal notranslate"><span class="pre">ApneaECG</span></code> database reader class when passing
+a path that does not exist or a path that contains no records at
+initialization.</p></li>
+</ul>
+</section>
+</section>
+<section id="id25">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.26...v0.0.27">0.0.27</a> - 2023-03-14<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<section id="id26">
+<h3>Added<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add default configs for blocks of the <code class="docutils literal notranslate"><span class="pre">ResNet</span></code> model in the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.models.cnn</span></code> module.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">RegNet</span></code> model in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.models.cnn</span></code> module.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">CutMix</span></code> augmentor in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.augmenters</span></code> module.</p></li>
+<li><p>Add support for <code class="docutils literal notranslate"><span class="pre">torch.nn.Dropout1d</span></code> in the models.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">.readthedocs.yml</span></code> to the project. The documentation is
+now hosted on Read the Docs besides GitHub Pages.</p></li>
+</ul>
+</section>
+<section id="id27">
+<h3>Changed<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Move <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.preproc</span></code> to <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils._preproc</span></code>.</p></li>
+<li><p>Allow <code class="docutils literal notranslate"><span class="pre">embed_dim</span></code> of <code class="docutils literal notranslate"><span class="pre">SelfAttention</span></code> layer not divisible by
+<code class="docutils literal notranslate"><span class="pre">num_heads</span></code> via adding a linear projection layer before the
+multi-head attention layer.</p></li>
+<li><p>Documentation is largely improved.</p></li>
+</ul>
+</section>
+<section id="id28">
+<h3>Deprecated<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Drop compability for older versions of <code class="docutils literal notranslate"><span class="pre">torch</span></code> (1.5 and below).</p></li>
+</ul>
+</section>
+<section id="id29">
+<h3>Removed<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> from the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+<li><p>Clear unused methods in the <code class="docutils literal notranslate"><span class="pre">CINC2020</span></code> and <code class="docutils literal notranslate"><span class="pre">CINC2021</span></code> database
+reader classes.</p></li>
+<li><p>Clear unused layers in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.models._nets</span></code> module.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils._pantompkins</span></code> module. It contains
+the implementation of the Pan-Tompkins algorithm for QRS detection,
+modified from old versions of the <code class="docutils literal notranslate"><span class="pre">wfdb</span></code> package. It is moved to
+the <code class="docutils literal notranslate"><span class="pre">legacy</span></code> folder of the project.</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">WandbLogger</span></code> class from the <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.loggers</span></code>
+module.</p></li>
+</ul>
+</section>
+<section id="id30">
+<h3>Fixed<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix bugs when passing <code class="docutils literal notranslate"><span class="pre">units=None</span></code> for the <code class="docutils literal notranslate"><span class="pre">load_data</span></code> method
+of the PhysioNet database reader classes.</p></li>
+</ul>
+</section>
+</section>
+<section id="id31">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.25...v0.0.26">0.0.26</a> - 2022-12-25<a class="headerlink" href="#id31" title="Link to this heading">#</a></h2>
+<section id="id32">
+<h3>Added<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add a default <code class="docutils literal notranslate"><span class="pre">load_data</span></code> method for physionet databases reader
+classes in the base class <code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code>. In most cases,
+in the inherited classes, one does not need to implement the
+<code class="docutils literal notranslate"><span class="pre">load_data</span></code> method, as the default method is sufficient. This
+method is a slight improvement over <code class="docutils literal notranslate"><span class="pre">wfdb.rdrecord</span></code>.</p></li>
+<li><p>Add decorator <code class="docutils literal notranslate"><span class="pre">add_kwargs</span></code> in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc</span></code> module
+for adding keyword arguments to a function or method.</p></li>
+<li><p>Add functions <code class="docutils literal notranslate"><span class="pre">list_databases</span></code>, <code class="docutils literal notranslate"><span class="pre">list_datasets</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.datasets</span></code> module for listing available databases reader
+classes and <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">save</span></code> method for the <code class="docutils literal notranslate"><span class="pre">CkptMixin</span></code> class. It is used to save
+the model to a file.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">_normalize_leads</span></code> a method of the base <code class="docutils literal notranslate"><span class="pre">_DataBase</span></code> class
+in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base</span></code> module. It is used to normalize
+the names of the ECG leads.</p></li>
+<li><p>Add subsampling functionality for database reader classes.</p></li>
+<li><p>Add benchmark study <code class="docutils literal notranslate"><span class="pre">train_mtl_cinc2022</span></code> for the CinC2022 challenge.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">CITATIONS.bib</span></code> file for storing BibTeX entries of the
+papers related to the project.</p></li>
+<li><p>Add 10 sample data from the CPSC2018 database for testing in the
+<code class="docutils literal notranslate"><span class="pre">sample-data</span></code> directory.</p></li>
+</ul>
+</section>
+<section id="id33">
+<h3>Changed<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">CitationMixin</span></code> from the <code class="docutils literal notranslate"><span class="pre">bib-lookup</span></code> package as the base
+class for the <code class="docutils literal notranslate"><span class="pre">DataBaseInfo</span></code> class in <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">CitationMixin</span></code> as one of the base classes for the models
+in <code class="docutils literal notranslate"><span class="pre">torch_ecg.models</span></code>.</p></li>
+<li><p>Allow dummy (empty) preprocessor managers, a warning instead of an
+error is raised in such cases.</p></li>
+<li><p>Enhance error message for the computation of metrics.</p></li>
+<li><p>Add keyword argument <code class="docutils literal notranslate"><span class="pre">requires_grad</span></code> and <code class="docutils literal notranslate"><span class="pre">include_buffers</span></code> to
+the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_nn.compute_module_size</span></code> function.
+The <code class="docutils literal notranslate"><span class="pre">dtype</span></code> argument is removed as the data type of the model
+is now inferred from the model itself.</p></li>
+<li><p>Improve several database reader classes: <code class="docutils literal notranslate"><span class="pre">CPSC2018</span></code>, <code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code>,
+<code class="docutils literal notranslate"><span class="pre">CINC2017</span></code>, <code class="docutils literal notranslate"><span class="pre">ApneaECG</span></code>, <code class="docutils literal notranslate"><span class="pre">MITDB</span></code>, <code class="docutils literal notranslate"><span class="pre">SPH</span></code>.</p></li>
+<li><p>Add asymmetric zero pad for convolution layers, so that when
+<code class="docutils literal notranslate"><span class="pre">stride</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">kernel_size</span></code> is even, strict <code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>
+padding is conducted.</p></li>
+<li><p>Use loggers instead of <code class="docutils literal notranslate"><span class="pre">print</span></code> in database reader classes.</p></li>
+<li><p>Integrate code coverage into the CI workflow. The coverage report
+is generated and uploaded to Codecov.</p></li>
+<li><p>More unit tests are added, and the existing ones are updated.
+Code coverage is largely improved.</p></li>
+</ul>
+</section>
+<section id="id34">
+<h3>Deprecated<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Drop compatibility for <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> &lt; 4.29.1</p></li>
+</ul>
+</section>
+<section id="id35">
+<h3>Removed<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove unused rpeaks detection methods in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.rpeaks</span></code>
+module.</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">_normalize_leads</span></code> method in <code class="docutils literal notranslate"><span class="pre">LUDB</span></code> database reader class.</p></li>
+<li><p>Remove unused functions in the file of the <code class="docutils literal notranslate"><span class="pre">CPSC2020</span></code> database reader
+class.</p></li>
+</ul>
+</section>
+<section id="id36">
+<h3>Fixed<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix bugs in the config class <code class="docutils literal notranslate"><span class="pre">torch_ecg.cfg.CFG</span></code>.</p></li>
+<li><p>Fix errors in the <code class="docutils literal notranslate"><span class="pre">plot</span></code> method of <code class="docutils literal notranslate"><span class="pre">CINC2020</span></code> and <code class="docutils literal notranslate"><span class="pre">CINC2021</span></code>
+database reader classes.</p></li>
+</ul>
+</section>
+<section id="id37">
+<h3>Security<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/advisories/GHSA-gw9q-c7gh-j9vm">CVE-2007-4559</a>
+patch: Fix a potential security vulnerability in the
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download.http_get</span></code> function.</p></li>
+</ul>
+</section>
+</section>
+<section id="id38">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.23...v0.0.25">0.0.25</a> - 2022-10-08<a class="headerlink" href="#id38" title="Link to this heading">#</a></h2>
+<section id="id39">
+<h3>Added<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add docstring utility function <code class="docutils literal notranslate"><span class="pre">remove_parameters_returns_from_docstring</span></code>
+in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc</span></code>.</p></li>
+<li><p>Add abstract property <code class="docutils literal notranslate"><span class="pre">database_info</span></code> to the base class <code class="docutils literal notranslate"><span class="pre">_DataBase</span></code> in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base</span></code> so that when implementing a new database reader
+class that inherits from the base class, its <code class="docutils literal notranslate"><span class="pre">DataBaseInfo</span></code> must be
+implemented and assigned to the property.</p></li>
+<li><p>Add method <code class="docutils literal notranslate"><span class="pre">get_citation</span></code> to the base abstract class <code class="docutils literal notranslate"><span class="pre">_DataBase</span></code> in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base</span></code> which enhances the process for getting citations
+for the databases.</p></li>
+<li><p>Add database reader class <code class="docutils literal notranslate"><span class="pre">CACHET_CADB</span></code> for the CACHET-CADB database in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.other_databases</span></code>.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">download</span></code> method for the base abstract class <code class="docutils literal notranslate"><span class="pre">CPSCDataBase</span></code> in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base</span></code>.</p></li>
+</ul>
+</section>
+<section id="id40">
+<h3>Changed<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Improve the warning message for passing an non-existing path when
+initializing a database reader class.</p></li>
+<li><p>Change the default behavior of the <code class="docutils literal notranslate"><span class="pre">download</span></code> method for
+<code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code> class: default to download the compressed
+version of the database.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file in the <code class="docutils literal notranslate"><span class="pre">torch_ecg/databases</span></code> directory.</p></li>
+</ul>
+</section>
+<section id="id41">
+<h3>Fixed<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">register_buffer</span></code> in custom loss classes for constant tensors
+to avoid potential device mismatch issues.</p></li>
+<li><p>Rename and update the data file <code class="docutils literal notranslate"><span class="pre">physionet_dbs.csv.tar.gz</span></code> to
+<code class="docutils literal notranslate"><span class="pre">physionet_dbs.csv.gz</span></code> to comply with the changement of the
+<code class="docutils literal notranslate"><span class="pre">pandas.read_csv</span></code> function from version 1.4.x to 1.5.x.</p></li>
+<li><p>Fix the incorrect usage of <code class="docutils literal notranslate"><span class="pre">NoReturn</span></code> type hints. It is replaced
+with <code class="docutils literal notranslate"><span class="pre">None</span></code> to indicate that the function/method does not return
+anything.</p></li>
+</ul>
+</section>
+</section>
+<section id="yanked">
+<h2>0.0.24 - 2022-08-13 [YANKED]<a class="headerlink" href="#yanked" title="Link to this heading">#</a></h2>
+<p>This release was yanked.</p>
+</section>
+<section id="id42">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.22...v0.0.23">0.0.23</a> - 2022-08-09<a class="headerlink" href="#id42" title="Link to this heading">#</a></h2>
+<section id="id43">
+<h3>Added<a class="headerlink" href="#id43" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">collate_fn</span></code> as an optional argument for <code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code> class
+in <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.trainers</span></code>.</p></li>
+</ul>
+</section>
+<section id="id44">
+<h3>Changed<a class="headerlink" href="#id44" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Let <code class="docutils literal notranslate"><span class="pre">db_dir</span></code> attribute of the database reader classes be absolute
+when instantiated, to avoid potential <code class="docutils literal notranslate"><span class="pre">pathlib</span></code> errors.</p></li>
+<li><p>Update utility function <cite>torch_ecg.utils.utils_nn.adjust_cnn_filter_lengths`</cite>:
+avoid assigning unnecessary fs to dict-type config items; change default
+value of the <code class="docutils literal notranslate"><span class="pre">pattern</span></code> argument from <code class="docutils literal notranslate"><span class="pre">&quot;filter_length|filt_size&quot;</span></code> to
+<code class="docutils literal notranslate"><span class="pre">&quot;filter_length|filter_size&quot;</span></code> to avoid unintended changement of configs
+for <code class="docutils literal notranslate"><span class="pre">BlurPool</span></code> (in <code class="docutils literal notranslate"><span class="pre">torch_ecg.models._nets</span></code>).</p></li>
+<li><p>Enhance error message for <code class="docutils literal notranslate"><span class="pre">BlurPool</span></code> in <code class="docutils literal notranslate"><span class="pre">torch_ecg.models._nets</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id45">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.21...v0.0.22">0.0.22</a> - 2022-08-05<a class="headerlink" href="#id45" title="Link to this heading">#</a></h2>
+<section id="id46">
+<h3>Changed<a class="headerlink" href="#id46" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Make utility function <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data.default_collate_fn</span></code>
+support <code class="docutils literal notranslate"><span class="pre">dict</span></code> type batched data.</p></li>
+<li><p>Update docstrings of several metrics utility functions in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_metrics</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id47">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.20...v0.0.21">0.0.21</a> - 2022-08-01<a class="headerlink" href="#id47" title="Link to this heading">#</a></h2>
+<section id="id48">
+<h3>Added<a class="headerlink" href="#id48" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add utility function <code class="docutils literal notranslate"><span class="pre">get_kwargs</span></code> in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc</span></code> for
+getting (keyword) arguments from a function/method.</p></li>
+<li><p>Add AHA diagnosis statements in <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.aux_data</span></code>.</p></li>
+<li><p>Add argument <code class="docutils literal notranslate"><span class="pre">reset_index</span></code> to the utility function
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data.stratified_train_test_split</span></code>.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">typing-extensions</span></code> as a dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>
+file.</p></li>
+<li><p>Add database reader class <code class="docutils literal notranslate"><span class="pre">QTDB</span></code> for the QTDB database in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.physionet_databases</span></code>.</p></li>
+</ul>
+</section>
+<section id="id49">
+<h3>Changed<a class="headerlink" href="#id49" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Enhance data handling (typicall when using the <code class="docutils literal notranslate"><span class="pre">load_data</span></code> method of
+the database reader classes) with precise dtypes via
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.cfg.DEFAUTLS</span></code>.</p></li>
+<li><p>Update the setup of optimizer for the base trainer class
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.components.trainers.BaseTrainer</span></code>.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">DataBaseInfo</span></code> class for the <code class="docutils literal notranslate"><span class="pre">SPH</span></code> database.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file in the <code class="docutils literal notranslate"><span class="pre">torch_ecg/databases</span></code> directory.</p></li>
+<li><p>Update plotted figures of the benchmark studies.</p></li>
+<li><p>Rename <code class="docutils literal notranslate"><span class="pre">SequenceLabelingOutput</span></code> to <code class="docutils literal notranslate"><span class="pre">SequenceLabellingOutput</span></code>
+(typo fixed) in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.outputs</span></code> module.</p></li>
+<li><p>Enhance docstring of <code class="docutils literal notranslate"><span class="pre">LUDB</span></code> database reader class via updating its
+<code class="docutils literal notranslate"><span class="pre">DataBaseInfo</span></code> class.</p></li>
+<li><p>Append the <code class="docutils literal notranslate"><span class="pre">_ls_rec</span></code> method as the last step in the <code class="docutils literal notranslate"><span class="pre">download</span></code>
+method of the database reader classes.</p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data.ECGWaveForm</span></code> from a <code class="docutils literal notranslate"><span class="pre">namedtuple</span></code>
+to a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p></li>
+</ul>
+</section>
+<section id="id50">
+<h3>Removed<a class="headerlink" href="#id50" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bib_lookup.py</span></code> is removed from the project. It is now delivered in
+an isolated package <code class="docutils literal notranslate"><span class="pre">bib_lookup</span></code> published on PyPI, and added as a
+dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+<li><p>Remove unnecessary script <code class="docutils literal notranslate"><span class="pre">exec_git.py</span></code>.</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">joblib</span></code> in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+</ul>
+</section>
+</section>
+<section id="id51">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.19...v0.0.20">0.0.20</a> - 2022-06-15<a class="headerlink" href="#id51" title="Link to this heading">#</a></h2>
+<section id="id52">
+<h3>Added<a class="headerlink" href="#id52" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add database reader class <code class="docutils literal notranslate"><span class="pre">SPH</span></code> for the SPH database in
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.other_databases</span></code>.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> <code class="docutils literal notranslate"><span class="pre">DataBaseInfo</span></code> for storing information of a
+database. It has attributes <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">about</span></code>, <code class="docutils literal notranslate"><span class="pre">note</span></code>,
+<code class="docutils literal notranslate"><span class="pre">usage</span></code>, <code class="docutils literal notranslate"><span class="pre">issues</span></code>, <code class="docutils literal notranslate"><span class="pre">reference</span></code>, etc., and has a method
+<code class="docutils literal notranslate"><span class="pre">format_database_docstring</span></code> for formatting the docstring of a
+database reader class. The generated docstring can be assigned to
+corresponding database reader class via the <code class="docutils literal notranslate"><span class="pre">add_docstring</span></code>
+decorator (in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc</span></code>).</p></li>
+<li><p>Add default cache directory <code class="docutils literal notranslate"><span class="pre">~/.cache/torch_ecg</span></code> for storing
+downloaded data files, model weight files, etc.</p></li>
+<li><p>Add helper function <code class="docutils literal notranslate"><span class="pre">is_compressed_file</span></code> for checking if a file is
+compressed in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.download</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id53">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.18...v0.0.19">0.0.19</a> - 2022-06-09<a class="headerlink" href="#id53" title="Link to this heading">#</a></h2>
+<section id="id54">
+<h3>Added<a class="headerlink" href="#id54" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add argument <code class="docutils literal notranslate"><span class="pre">relative</span></code> to the utility function <code class="docutils literal notranslate"><span class="pre">get_record_list_recursive3</span></code>.</p></li>
+<li><p>Add attribute <code class="docutils literal notranslate"><span class="pre">_df_records</span></code> to the database reader classes. The attribute
+stores the DataFrame of the records of the database, containing paths to the
+records and other information (labels, demographics, etc.).</p></li>
+</ul>
+</section>
+<section id="id55">
+<h3>Fixed<a class="headerlink" href="#id55" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix bugs in the download utility function <code class="docutils literal notranslate"><span class="pre">http_get</span></code>.</p></li>
+<li><p>Fix bugs in the database reader classe <code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id56">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.16...v0.0.18">0.0.18</a> - 2022-06-05<a class="headerlink" href="#id56" title="Link to this heading">#</a></h2>
+<section id="id57">
+<h3>Added<a class="headerlink" href="#id57" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add property <code class="docutils literal notranslate"><span class="pre">in_channels</span></code> for the models.The number of input channels
+is stored as a private attribute <code class="docutils literal notranslate"><span class="pre">_in_channels</span></code>, and the property
+<code class="docutils literal notranslate"><span class="pre">in_channels</span></code> makes it easier to access the value.</p></li>
+<li><p>Add warning message to the <code class="docutils literal notranslate"><span class="pre">download</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code> database
+reader class.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">get_absolute_path</span></code> method for the database reader classes to
+uniformly handle the path operations.</p></li>
+</ul>
+</section>
+<section id="id58">
+<h3>Changed<a class="headerlink" href="#id58" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>All all absolute imports are replaced with relative imports.</p></li>
+<li><p>Update citation and images for several benchmark studies</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">downlaod</span></code> link for the <code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code> database reader class
+(ref. property <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.CPSC2019.url</span></code>).</p></li>
+</ul>
+</section>
+<section id="id59">
+<h3>Removed<a class="headerlink" href="#id59" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.deprecate_kwargs</span></code> decorator. It is
+delivered in an isolated package <code class="docutils literal notranslate"><span class="pre">deprecate_kwargs</span></code> published on PyPI,
+and added as a dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+</ul>
+</section>
+<section id="id60">
+<h3>Fixed<a class="headerlink" href="#id60" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix errors in the <code class="docutils literal notranslate"><span class="pre">_ls_rec</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code> database reader
+class.</p></li>
+<li><p>Fix bugs in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.deprecate_kwargs</span></code> decorator.</p></li>
+<li><p>Fix the issue that <code class="docutils literal notranslate"><span class="pre">tensorboardX</span></code> is incompatible with the latest version
+of <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id61">
+<h2>0.0.17 - 2022-05-03 [YANKED]<a class="headerlink" href="#id61" title="Link to this heading">#</a></h2>
+<p>This release was yanked.</p>
+</section>
+<section id="id62">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.15...v0.0.16">0.0.16</a> - 2022-04-28<a class="headerlink" href="#id62" title="Link to this heading">#</a></h2>
+<section id="id63">
+<h3>Added<a class="headerlink" href="#id63" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add method <code class="docutils literal notranslate"><span class="pre">_categorize_records</span></code> for the <code class="docutils literal notranslate"><span class="pre">MITDB</span></code> database reader class,
+categorize records by specific attributes. Related helper properties
+<code class="docutils literal notranslate"><span class="pre">beat_types_records</span></code> and <code class="docutils literal notranslate"><span class="pre">rhythm_types_records</span></code> are added.</p></li>
+<li><p>Add method <code class="docutils literal notranslate"><span class="pre">_aggregate_stats</span></code> for the <code class="docutils literal notranslate"><span class="pre">MITDB</span></code> database reader class.
+Related helper properties <code class="docutils literal notranslate"><span class="pre">df_stats</span></code> and <code class="docutils literal notranslate"><span class="pre">db_stats</span></code> are added.</p></li>
+<li><p>Add  function <code class="docutils literal notranslate"><span class="pre">cls_to_bin</span></code> for converting categorical (typically multi-label)
+class labels to binary class labels (2D array with 0/1 values).</p></li>
+<li><p>Add context manager <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.timeout</span></code> for setting a timeout for
+a block of code.</p></li>
+<li><p>Add context manager <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.Timer</span></code> to time the execution of
+a block of code.</p></li>
+<li><p>Add module <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.inputs</span></code> for input data classes.</p></li>
+<li><p>Add class <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> (in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils</span></code>) for generating spectrogram
+input data. This class is modified from the <code class="docutils literal notranslate"><span class="pre">torchaudio.transforms.Spectrogram</span></code>.</p></li>
+<li><p>Add decorator <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.misc.deprecate_kwargs</span></code> for deprecating keyword
+arguments of a function/method.</p></li>
+<li><p>Top-level module <code class="docutils literal notranslate"><span class="pre">torch_ecg.ssl</span></code> for self-supervised learning methods and
+models is introduced, but not implemented yet.</p></li>
+<li><p>Add helper function <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_nn.compute_sequential_output_shape</span></code>
+to simplify the computation of output shape of sequential models.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mobilenet_v3</span></code> model is added to the <code class="docutils literal notranslate"><span class="pre">torch_ecg.models</span></code> module. It is
+now available as a cnn backbone choice for the <code class="docutils literal notranslate"><span class="pre">ECG_CRNN</span></code> model (and for other
+downstream task models).</p></li>
+</ul>
+</section>
+<section id="id64">
+<h3>Changed<a class="headerlink" href="#id64" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">numpy</span></code>’s default <code class="docutils literal notranslate"><span class="pre">rng</span></code> for random number generation in place
+of <code class="docutils literal notranslate"><span class="pre">np.random</span></code> and Python built-in <code class="docutils literal notranslate"><span class="pre">random</span></code> module.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file.</p></li>
+<li><p>Move the function <code class="docutils literal notranslate"><span class="pre">generate_weight_mask</span></code> from <code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code> dataset
+to <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_data</span></code>.</p></li>
+<li><p>Database reader <code class="docutils literal notranslate"><span class="pre">MITDB</span></code> is enhanced: add properties <code class="docutils literal notranslate"><span class="pre">df_stats_expanded</span></code>;
+add arguments <code class="docutils literal notranslate"><span class="pre">beat_types</span></code> and <code class="docutils literal notranslate"><span class="pre">rhythm_types</span></code> to the data and annotation
+loading methods.</p></li>
+<li><p>Downloading function <code class="docutils literal notranslate"><span class="pre">http_get</span></code> is enhanced to support downloading
+normal files other than compressed files.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">__init__</span></code> file of the <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils</span></code> module.</p></li>
+<li><p>Database reader class <code class="docutils literal notranslate"><span class="pre">CinC2017</span></code> is updated: add property <code class="docutils literal notranslate"><span class="pre">_validation_set</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ECG_UNET</span></code> model is simplified by removing the unnecessary zero padding
+along the channel axis.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file.</p></li>
+</ul>
+</section>
+<section id="id65">
+<h3>Deprecated<a class="headerlink" href="#id65" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Keyword argument <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> in model building blocks (ref. <code class="docutils literal notranslate"><span class="pre">torch_ecg.models</span></code>)
+is deprecated. Use <code class="docutils literal notranslate"><span class="pre">norm</span></code> instead.</p></li>
+</ul>
+</section>
+<section id="id66">
+<h3>Removed<a class="headerlink" href="#id66" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Redundant functions in <code class="docutils literal notranslate"><span class="pre">torch_ecg.utils.utils_interval</span></code> are removed:
+<code class="docutils literal notranslate"><span class="pre">diff_with_step</span></code>, <code class="docutils literal notranslate"><span class="pre">mask_to_intervals</span></code>.</p></li>
+</ul>
+</section>
+<section id="id67">
+<h3>Fixed<a class="headerlink" href="#id67" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove redudant code for the <code class="docutils literal notranslate"><span class="pre">ECG_UNET</span></code> model which might cause error in
+computing output shapes.</p></li>
+</ul>
+</section>
+</section>
+<section id="id68">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.14...v0.0.15">0.0.15</a> - 2022-04-14<a class="headerlink" href="#id68" title="Link to this heading">#</a></h2>
+<section id="id69">
+<h3>Changed<a class="headerlink" href="#id69" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">pathlib.Path.parents</span></code> instead of sequence of <code class="docutils literal notranslate"><span class="pre">pathlib.Path..parent</span></code>
+to get the parent directory of a file path.</p></li>
+<li><p>Type hints and docstrings of some database reader classes are enhanced:
+<code class="docutils literal notranslate"><span class="pre">ApneaECG</span></code>, <code class="docutils literal notranslate"><span class="pre">CINC2020</span></code>, <code class="docutils literal notranslate"><span class="pre">CINC2021</span></code>.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file: add citation information for the package.</p></li>
+</ul>
+</section>
+</section>
+<section id="id70">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.13...v0.0.14">0.0.14</a> - 2022-04-10<a class="headerlink" href="#id70" title="Link to this heading">#</a></h2>
+<section id="id71">
+<h3>Added<a class="headerlink" href="#id71" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Implements the lead-wise mechanism (as a method <code class="docutils literal notranslate"><span class="pre">_assign_weights_lead_wise</span></code>)
+for the <code class="docutils literal notranslate"><span class="pre">Conv_Bn_Activation</span></code> layer in the <code class="docutils literal notranslate"><span class="pre">torch_ecg.models._nets</span></code> module.</p></li>
+<li><p>Implements <code class="docutils literal notranslate"><span class="pre">assign_weights_lead_wise</span></code> for model <code class="docutils literal notranslate"><span class="pre">MultiScopicCNN</span></code>
+(in <code class="docutils literal notranslate"><span class="pre">torch_ecg.models</span></code>).</p></li>
+<li><p>Zenodo configuration file <code class="docutils literal notranslate"><span class="pre">.zenodo.json</span></code> is added.</p></li>
+</ul>
+</section>
+<section id="id72">
+<h3>Changed<a class="headerlink" href="#id72" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file: add <code class="docutils literal notranslate"><span class="pre">:point_right:</span> <span class="pre">[Back</span> <span class="pre">to</span> <span class="pre">TOC](#torch_ecg)</span></code>
+to the end of long sections.</p></li>
+</ul>
+</section>
+<section id="id73">
+<h3>Fixed<a class="headerlink" href="#id73" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix errors in the computation of classification metrics.</p></li>
+</ul>
+</section>
+</section>
+<section id="id74">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.12...v0.0.13">0.0.13</a> - 2022-04-09<a class="headerlink" href="#id74" title="Link to this heading">#</a></h2>
+<section id="id75">
+<h3>Added<a class="headerlink" href="#id75" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add metrics computation class <code class="docutils literal notranslate"><span class="pre">WaveDelineationMetrics</span></code> for evaluating the
+performance of ECG wave delineation models.</p></li>
+<li><p>Add methods for computing the metrics to the output classes (in the module
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.components.outputs</span></code>).</p></li>
+<li><p>Add script <code class="docutils literal notranslate"><span class="pre">push2pypi.sh</span></code> for pushing the package to PyPI.</p></li>
+<li><p>Add attribute <code class="docutils literal notranslate"><span class="pre">global_pool_size</span></code> to the configuration of the classification
+models (<code class="docutils literal notranslate"><span class="pre">torch_ecg.models.ECG_CRNN</span></code>).</p></li>
+</ul>
+</section>
+<section id="id76">
+<h3>Changed<a class="headerlink" href="#id76" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">flake8</span></code> check ignore list is updated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">README</span></code> is updated.</p></li>
+</ul>
+</section>
+<section id="id77">
+<h3>Removed<a class="headerlink" href="#id77" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Usage of <code class="docutils literal notranslate"><span class="pre">easydict</span></code> is removed. Now we use <code class="docutils literal notranslate"><span class="pre">torch_ecg.cfg.CFG</span></code> for
+configuration.</p></li>
+</ul>
+</section>
+<section id="id78">
+<h3>Fixed<a class="headerlink" href="#id78" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Computation of the metric of <cite>mean_error</cite> for ECG wave delineation is corrected.</p></li>
+<li><p>Fix bugs in <code class="docutils literal notranslate"><span class="pre">SpaceToDepth</span></code> layer (<code class="docutils literal notranslate"><span class="pre">torch_ecg.models.resnet</span></code>).</p></li>
+</ul>
+</section>
+</section>
+<section id="id79">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.11...v0.0.12">0.0.12</a> - 2022-04-05<a class="headerlink" href="#id79" title="Link to this heading">#</a></h2>
+<section id="id80">
+<h3>Changed<a class="headerlink" href="#id80" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Some out-of-date <code class="docutils literal notranslate"><span class="pre">sample-data</span></code> files are updated, unnecessary files
+are removed.</p></li>
+<li><p>Passing a path that does not exist to a database reader class now raises
+no error, but a warning is issued instead.</p></li>
+<li><p>Include <code class="docutils literal notranslate"><span class="pre">isort</span></code> and <code class="docutils literal notranslate"><span class="pre">flake8</span></code> in the code formatting and linting steps.
+Code are reformatted and linted.</p></li>
+</ul>
+</section>
+</section>
+<section id="id81">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.10...v0.0.11">0.0.11</a> - 2022-04-03<a class="headerlink" href="#id81" title="Link to this heading">#</a></h2>
+<section id="id82">
+<h3>Changed<a class="headerlink" href="#id82" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Docstrings are cleaned up.</p></li>
+<li><p>Unit tests are updated.</p></li>
+</ul>
+</section>
+</section>
+<section id="id83">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.9...v0.0.10">0.0.10</a> - 2022-04-01<a class="headerlink" href="#id83" title="Link to this heading">#</a></h2>
+<section id="id84">
+<h3>Added<a class="headerlink" href="#id84" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">BibLookup</span></code> class for looking up BibTeX entries from DOIs
+of papers related to datasets and models.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">RPeaksDetectionMetrics</span></code> class to the <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.metrics</span></code>
+module for evaluating the performance of R-peaks detection models.</p></li>
+<li><p>Add CI workflow for running tests via GitHub Actions.</p></li>
+</ul>
+</section>
+<section id="id85">
+<h3>Changed<a class="headerlink" href="#id85" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The loading methods (<code class="docutils literal notranslate"><span class="pre">load_data</span></code>, <code class="docutils literal notranslate"><span class="pre">load_ann</span></code>, etc.) of the database
+reader classes are enhanced to accept <code class="docutils literal notranslate"><span class="pre">int</span></code> type record name argument
+(<code class="docutils literal notranslate"><span class="pre">rec</span></code>), which redirects to the record with the corresponding index
+in the <code class="docutils literal notranslate"><span class="pre">all_records</span></code> attribute of the database reader class.</p></li>
+</ul>
+</section>
+</section>
+<section id="id86">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.8...v0.0.9">0.0.9</a> - 2023-03-30<a class="headerlink" href="#id86" title="Link to this heading">#</a></h2>
+<section id="id87">
+<h3>Added<a class="headerlink" href="#id87" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add decorator <code class="docutils literal notranslate"><span class="pre">add_docstring</span></code> for adding/modifying docstrings of functions
+and classes.</p></li>
+<li><p>Add method <code class="docutils literal notranslate"><span class="pre">append</span></code> for the <code class="docutils literal notranslate"><span class="pre">BaseOutput</span></code> class.</p></li>
+<li><dl class="simple">
+<dt>Add several metrics computation functions in <code class="docutils literal notranslate"><span class="pre">torch_ecg/utils/utils_metrics.py</span></code>:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">confusion_matrix</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ovr_confusion_matrix</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accuracy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f_measure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QRS_score</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Add top-level module <code class="docutils literal notranslate"><span class="pre">torch_ecg.components</span></code>.</p></li>
+<li><p>Add classes for metrics computation to the <code class="docutils literal notranslate"><span class="pre">torch_ecg.components.metrics</span></code> module.</p></li>
+</ul>
+</section>
+<section id="id88">
+<h3>Changed<a class="headerlink" href="#id88" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes and corresponding config classes are added to the
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file of the <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.dataset</span></code> module
+so that they can be imported directly from the module.</p></li>
+<li><p>Logger classes, output classes, and trainer classes are moved to the new
+module <code class="docutils literal notranslate"><span class="pre">torch_ecg.components</span></code>.</p></li>
+<li><p>Callbacks in <code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code> are enhanced, allowing empty monitor, and allowing
+non-positive number of checkpoints to be saved (i.e., no checkpoint is saved).</p></li>
+</ul>
+</section>
+</section>
+<section id="id89">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.7...v0.0.8">0.0.8</a> - 2022-03-29<a class="headerlink" href="#id89" title="Link to this heading">#</a></h2>
+<section id="id90">
+<h3>Fixed<a class="headerlink" href="#id90" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Bugs in extracting compressed files in the <code class="docutils literal notranslate"><span class="pre">http_get</span></code> function
+of the <code class="docutils literal notranslate"><span class="pre">utils.download</span></code> module.</p></li>
+</ul>
+</section>
+<section id="id91">
+<h3>Security<a class="headerlink" href="#id91" title="Link to this heading">#</a></h3>
+</section>
+</section>
+<section id="id92">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.6...v0.0.7">0.0.7</a> - 2022-03-28<a class="headerlink" href="#id92" title="Link to this heading">#</a></h2>
+<section id="id93">
+<h3>Fixed<a class="headerlink" href="#id93" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Import errors for early versions of pytorch.</p></li>
+<li><p>Cached table of PhysioNet databases is added as <code class="docutils literal notranslate"><span class="pre">package_data</span></code> in
+<code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to avoid the error of missing the table file when
+installing the package.</p></li>
+</ul>
+</section>
+<section id="id94">
+<h3>Security<a class="headerlink" href="#id94" title="Link to this heading">#</a></h3>
+</section>
+</section>
+<section id="id95">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.5...v0.0.6">0.0.6</a> - 2022-03-28<a class="headerlink" href="#id95" title="Link to this heading">#</a></h2>
+<section id="id96">
+<h3>Added<a class="headerlink" href="#id96" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add methods <code class="docutils literal notranslate"><span class="pre">__len__</span></code> and <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> for the base class
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases.base._DataBase</span></code>.</p></li>
+</ul>
+</section>
+<section id="id97">
+<h3>Changed<a class="headerlink" href="#id97" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The base class of <code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code> is changed from <code class="docutils literal notranslate"><span class="pre">CPSCDataBase</span></code> to
+<code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code>.</p></li>
+<li><p>Function <code class="docutils literal notranslate"><span class="pre">compute_output_shape</span></code> is enhanced to support different
+paddings in two ends of the input signal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">README</span></code> is updated.</p></li>
+<li><p>Docstrings of many classes and functions are updated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">black</span></code> is used for code formatting.</p></li>
+</ul>
+</section>
+</section>
+<section id="id98">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.4...v0.0.5">0.0.5</a> - 2022-03-27<a class="headerlink" href="#id98" title="Link to this heading">#</a></h2>
+<section id="id99">
+<h3>Added<a class="headerlink" href="#id99" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add cached table of PhysioNet databases as a data file
+stored in the package.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">requests</span></code> as a dependency in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p></li>
+</ul>
+</section>
+<section id="id100">
+<h3>Changed<a class="headerlink" href="#id100" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>An optional argument <code class="docutils literal notranslate"><span class="pre">btype</span></code> is added to the function
+<code class="docutils literal notranslate"><span class="pre">butter_bandpass_filter</span></code> to specify the type of the filter:
+<code class="docutils literal notranslate"><span class="pre">&quot;lohi&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hilo&quot;</span></code>.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">compressed</span></code> argument is added to the <code class="docutils literal notranslate"><span class="pre">download</span></code> method of the
+<code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code> class to specify whether to download the
+compressed version of the database.</p></li>
+</ul>
+</section>
+<section id="id101">
+<h3>Fixed<a class="headerlink" href="#id101" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix bugs in the function <code class="docutils literal notranslate"><span class="pre">preprocess_multi_lead_signal</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id102">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.2...v0.0.4">0.0.4</a> - 2022-03-26<a class="headerlink" href="#id102" title="Link to this heading">#</a></h2>
+<section id="id103">
+<h3>Added<a class="headerlink" href="#id103" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">ReprMixin</span></code> class for better representation of the classes
+(e.g., models, preprocessors, database readers, etc.).</p></li>
+<li><p>Added model_dir to default config.</p></li>
+<li><dl class="simple">
+<dt>Add <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> classes for generating input data for the models:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">CINC2020</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CINC2021</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LUDB</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">sample-data</span></code> directory for storing sample data for testing.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">url</span></code> property to the database classes.</p></li>
+<li><p>Add utility functions for the computation of metrics.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">BeatAnn</span></code> class for better annotation of ECG beats.</p></li>
+<li><p>Add download utility functions.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Output</span></code> classes for the models. The output classes are used to
+store the output of the models and provide methods for post-processing.</p></li>
+</ul>
+</section>
+<section id="id104">
+<h3>Changed<a class="headerlink" href="#id104" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Manipulation of custom preprocessor classes is enhanced.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SizeMixin</span></code> class is improved for better computation of the sizes of the models.</p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">os</span></code> with <code class="docutils literal notranslate"><span class="pre">pathlib</span></code>, which is more flexible for path operations.</p></li>
+<li><p>Several database reader classes are updated: mitdb, ltafdb.</p></li>
+<li><p>Improve <code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code> by using wfdb built-in methods of
+getting database version string and downloading the database.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">README</span></code> file.</p></li>
+</ul>
+</section>
+<section id="id105">
+<h3>Removed<a class="headerlink" href="#id105" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Unnecessary imports are removed.</p></li>
+</ul>
+</section>
+<section id="id106">
+<h3>Fixed<a class="headerlink" href="#id106" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix bugs in the <code class="docutils literal notranslate"><span class="pre">flush</span></code> method of the <code class="docutils literal notranslate"><span class="pre">TxtLogger</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id107">
+<h2>0.0.3 - 2022-03-24 [YANKED]<a class="headerlink" href="#id107" title="Link to this heading">#</a></h2>
+<p>This release was yanked.</p>
+</section>
+<section id="id108">
+<h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/releases/tag/v0.0.2">0.0.2</a> - 2022-03-04<a class="headerlink" href="#id108" title="Link to this heading">#</a></h2>
+<section id="id109">
+<h3>Added<a class="headerlink" href="#id109" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Preprocessor</span></code> classes for ECG data preprocessing (ref.
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.preprocessors</span></code>).</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Augmenter</span></code> classes for ECG data augmentation (ref.
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.augmenters</span></code>).</p></li>
+<li><p>Add database reader classes for reading ECG data from different
+sources (ref. <code class="docutils literal notranslate"><span class="pre">torch_ecg.databases</span></code>).</p></li>
+<li><p>Add model classes for ECG signal analysis, including classification,
+segmentation (R-peak detection, wave delineation, etc., ref.
+<code class="docutils literal notranslate"><span class="pre">torch_ecg.models</span></code>).</p></li>
+<li><p>Add several benchmark studies for ECG signal analysis tasks:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CinC2020, multi-label classification.</p></li>
+<li><p>CinC2021, multi-label classification.</p></li>
+<li><p>CPSC2019, QRS detection.</p></li>
+<li><p>CPSC2020, single-label classification.</p></li>
+<li><p>CPSC2021, single-label classification.</p></li>
+<li><p>LUDB, wave delineation.</p></li>
+</ul>
+</div></blockquote>
+<p>ref. the <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> directory of the project.</p>
+</li>
+<li><p>Add documentation for the project (ref. <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory).</p></li>
+<li><p>Add CodeQL action for security analysis (ref. <code class="docutils literal notranslate"><span class="pre">.github/workflows</span></code>).</p></li>
+<li><p>Add unit tests for the project (ref. <code class="docutils literal notranslate"><span class="pre">test</span></code> directory).</p></li>
+</ul>
+</section>
+</section>
+<section id="id110">
+<h2>0.0.1 - 2022-03-03 [YANKED]<a class="headerlink" href="#id110" title="Link to this heading">#</a></h2>
+<p>This release was yanked.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="examples.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deprecated">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#security">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.0.31 - 2025-01-28</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">0.0.30 - 2024-10-10</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">0.0.29 - 2024-07-21</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">0.0.28 - 2024-04-02</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">0.0.27 - 2023-03-14</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">0.0.26 - 2022-12-25</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">0.0.25 - 2022-10-08</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#yanked">0.0.24 - 2022-08-13 [YANKED]</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">0.0.23 - 2022-08-09</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id43">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id44">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id45">0.0.22 - 2022-08-05</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id46">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id47">0.0.21 - 2022-08-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id48">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id49">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id50">Removed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id51">0.0.20 - 2022-06-15</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id52">Added</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id53">0.0.19 - 2022-06-09</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id54">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id55">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id56">0.0.18 - 2022-06-05</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id57">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id58">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id59">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id60">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id61">0.0.17 - 2022-05-03 [YANKED]</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id62">0.0.16 - 2022-04-28</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id63">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id64">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id65">Deprecated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id66">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id67">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id68">0.0.15 - 2022-04-14</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id69">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id70">0.0.14 - 2022-04-10</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id71">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id72">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id73">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id74">0.0.13 - 2022-04-09</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id75">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id76">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id77">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id78">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id79">0.0.12 - 2022-04-05</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id80">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id81">0.0.11 - 2022-04-03</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id82">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id83">0.0.10 - 2022-04-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id84">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id85">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id86">0.0.9 - 2023-03-30</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id87">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id88">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id89">0.0.8 - 2022-03-29</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id90">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id91">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id92">0.0.7 - 2022-03-28</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id93">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id94">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id95">0.0.6 - 2022-03-28</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id96">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id97">Changed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id98">0.0.5 - 2022-03-27</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id99">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id100">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id101">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id102">0.0.4 - 2022-03-26</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id103">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id104">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id105">Removed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id106">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id107">0.0.3 - 2022-03-24 [YANKED]</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id108">0.0.2 - 2022-03-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id109">Added</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id110">0.0.1 - 2022-03-03 [YANKED]</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2021, WEN Hao, KANG Jingsu.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
