@@ -45,8 +45,7 @@ Added
 Changed
 ~~~~~~~
 
-- Test files (in the `sample-data <sample-data>`__ directory) are
-  updated.
+- Test files (in the ``sample-data`` directory) are updated.
 - Add keyword argument ``weights_only`` to ``from_checkpoint`` and
   ``from_remote`` methods of the models (indeed the ``CkptMixin``
   class). The default value is ``"auto"``, which means the behavior is
