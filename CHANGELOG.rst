@@ -31,6 +31,8 @@ Fixed
 
 - Correctly update the `_df_metadata` attribute of the `PTBXL` database reader
   classes after filtering records.
+- Enhance the `save` method of the `torch_ecg.utils.utils_nn.CkptMixin` class:
+  non-safe items in the configs are removed before saving the model.
 
 Security
 ~~~~~~~~

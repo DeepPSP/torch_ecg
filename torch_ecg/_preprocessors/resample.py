@@ -53,6 +53,7 @@ class Resample(PreProcessor):
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
+
                 - 1d array, which is a single-lead ECG;
                 - 2d array, which is a multi-lead ECG of "lead_first" format;
                 - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.

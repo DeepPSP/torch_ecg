@@ -77,6 +77,7 @@ def http_get(
     .. [1] https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
 
     """
+    Path(dst_dir).mkdir(parents=True, exist_ok=True)
     if filename is not None and (Path(dst_dir) / filename).exists():
         raise FileExistsError("file already exists")
     url_parsed = urllib.parse.urlparse(url)
@@ -121,6 +122,7 @@ def http_get(
         )
         _download_from_google_drive(url, downloaded_file.name)
         df_suffix = _suffix(filename)
+        downloaded_file.close()
     else:
         print(f"Downloading {url}.")
         if not is_compressed_file(url_parsed.path) and extract:

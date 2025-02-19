@@ -11,7 +11,7 @@ from copy import deepcopy
 from itertools import chain, repeat
 from math import floor
 from numbers import Real
-from pathlib import Path
+from pathlib import Path, PosixPath, WindowsPath
 from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -19,9 +19,9 @@ import torch
 from easydict import EasyDict
 from torch import Tensor, nn
 
-from ..cfg import CFG, DEFAULTS
+from ..cfg import CFG, DEFAULTS, DTYPE
 from .download import http_get
-from .misc import add_docstring, make_serializable
+from .misc import add_docstring, is_stdtypes, make_serializable
 from .utils_data import one_hot_encode
 
 __all__ = [
@@ -46,10 +46,20 @@ def _get_np_dtypes():
     return [eval(f"np.dtypes.{dtype}") for dtype in dir(np.dtypes) if dtype.endswith("DType")]
 
 
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    # fmt: off
+    _safe_globals = [
+        CFG, DTYPE, EasyDict,
+        Path, PosixPath, WindowsPath,
+        np.core.multiarray._reconstruct,
+        np.ndarray, np.dtype,
+        np.float32, np.float64, np.int32, np.int64, np.uint8, np.int8,
+    ] + _get_np_dtypes()
+    # fmt: on
+
 if hasattr(torch.serialization, "add_safe_globals"):
-    torch.serialization.add_safe_globals(
-        [CFG, EasyDict, np.core.multiarray._reconstruct, np.ndarray, np.dtype] + _get_np_dtypes()
-    )
+    torch.serialization.add_safe_globals(_safe_globals)
 
 
 def extend_predictions(preds: Sequence, classes: List[str], extended_classes: List[str]) -> np.ndarray:
@@ -1052,6 +1062,43 @@ class SizeMixin(object):
         return str(self.device)
 
 
+def make_safe_globals(obj: CFG) -> CFG:
+    """Make a dictionary or a dictionary-like object safe for serialization.
+
+    Parameters
+    ----------
+    obj : dict
+        The dictionary or dictionary-like object.
+
+    Returns
+    -------
+    CFG
+        The safe dictionary.
+
+    """
+    if isinstance(obj, (CFG, dict)):
+        sg = {k: make_safe_globals(v) for k, v in obj.items()}
+        sg = CFG({k: v for k, v in sg.items() if v is not None})
+    elif isinstance(obj, (list, tuple)):
+        sg = [make_safe_globals(item) for item in obj]
+        sg = [item for item in sg if item is not None]
+    elif isinstance(obj, set):
+        sg = {make_safe_globals(item) for item in obj}
+        sg = {item for item in sg if item is not None}
+    elif isinstance(obj, frozenset):
+        sg = frozenset({make_safe_globals(item) for item in obj})
+        sg = frozenset({item for item in sg if item is not None})
+    elif isinstance(obj, tuple(item for item in _safe_globals if isinstance(item, type))):
+        sg = obj
+    elif type(obj).__module__.startswith("torch"):
+        sg = obj
+    elif is_stdtypes(obj):
+        sg = obj
+    else:
+        sg = None
+    return sg
+
+
 class CkptMixin(object):
     """Mixin class for loading from checkpoint class methods"""
 
@@ -1174,11 +1221,13 @@ class CkptMixin(object):
         path = Path(path)
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
+        _model_config = make_safe_globals(self.config)
+        _train_config = make_safe_globals(train_config)
         torch.save(
             {
                 "model_state_dict": self.state_dict(),
-                "model_config": self.config,
-                "train_config": train_config,
+                "model_config": _model_config,
+                "train_config": _train_config,
             },
             path,
         )

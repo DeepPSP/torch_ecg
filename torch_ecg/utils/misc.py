@@ -55,6 +55,7 @@ __all__ = [
     "add_kwargs",
     "make_serializable",
     "np_topk",
+    "is_stdtypes",
 ]
 
 
@@ -1650,3 +1651,40 @@ def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted
     # return values, indices
     assert isinstance(k, int) and k > 0, "k must be a positive integer"
     return select_k(arr, k, dim, largest, sorted)
+
+
+def is_stdtypes(x: Any) -> bool:
+    """Check if an object is an instance of Python
+    built-in standard data types.
+
+    For more information, see [#stdtypes]_.
+
+    Parameters
+    ----------
+    x : Any
+        Object to be checked.
+
+    Returns
+    -------
+    bool
+        True if `x` is a standard data type, False otherwise.
+
+    References
+    ----------
+    .. [#stdtypes] https://docs.python.org/3/library/stdtypes.html
+
+    """
+    # return type(x).__module__ == "builtins"
+    # fmt: off
+    builtins = (
+        int, float, complex,
+        bool,
+        list, tuple, range,
+        str,
+        bytes, bytearray, memoryview,
+        set, frozenset,
+        dict,
+        type(None),
+    )
+    # fmt: on
+    return isinstance(x, builtins)
