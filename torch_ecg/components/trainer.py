@@ -150,6 +150,20 @@ class BaseTrainer(ReprMixin, ABC):
 
         self._setup_criterion()
 
+        if self.train_config.monitor is not None:
+            # if monitor is set but val_loader is None, use train_loader for validation
+            # and choose the best model based on the metrics on the train set
+            if self.val_loader is None and self.val_train_loader is None:
+                self.val_train_loader = self.train_loader
+                self.log_manager.log_message(
+                    (
+                        "No separate validation set is provided, while monitor is set. "
+                        "The training set will be used for validation, "
+                        "and the best model will be selected based on the metrics on the training set"
+                    ),
+                    level=logging.WARNING,
+                )
+
         msg = textwrap.dedent(
             f"""
             Starting training:
@@ -184,7 +198,7 @@ class BaseTrainer(ReprMixin, ABC):
                 self.train_one_epoch(pbar)
 
                 # evaluate on train set, if debug is True
-                if self.train_config.debug:
+                if self.val_train_loader is not None:
                     eval_train_res = self.evaluate(self.val_train_loader)
                     self.log_manager.log_metrics(
                         metrics=eval_train_res,
@@ -192,6 +206,8 @@ class BaseTrainer(ReprMixin, ABC):
                         epoch=self.epoch,
                         part="train",
                     )
+                else:
+                    eval_train_res = {}
                 # evaluate on val set
                 if self.val_loader is not None:
                     eval_res = self.evaluate(self.val_loader)
@@ -204,6 +220,8 @@ class BaseTrainer(ReprMixin, ABC):
                 elif self.val_train_loader is not None:
                     # if no separate val set, use the metrics on the train set
                     eval_res = eval_train_res
+                else:
+                    eval_res = {}
 
                 # update best model and best metric if monitor is set
                 if self.train_config.monitor is not None:
@@ -697,9 +715,7 @@ class BaseTrainer(ReprMixin, ABC):
         return dicts_equal(self.model_config, model_config)
 
     def resume_from_checkpoint(self, checkpoint: Union[str, dict]) -> None:
-        """NOT finished, NOT checked,
-
-        Resume a training process from a checkpoint.
+        """Resume a training process from a checkpoint.
 
         Parameters
         ----------
@@ -710,6 +726,10 @@ class BaseTrainer(ReprMixin, ABC):
             "model_state_dict", "optimizer_state_dict",
             "model_config", "train_config", "epoch"
             to resume a training process.
+
+        .. note::
+
+            NOT finished, NOT tested.
 
         """
         if isinstance(checkpoint, str):
