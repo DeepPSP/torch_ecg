@@ -140,6 +140,7 @@ class PTBXL(PhysioNetDataBase):
         self._df_records = self._df_records[
             self._df_records["path"].apply(lambda x: x.with_suffix(f".{self.data_ext}").exists())
         ]
+        self._df_metadata = self._df_metadata.loc[self._df_records.index]
         if self._subsample is not None:
             size = min(
                 len(self._df_records),
@@ -147,6 +148,7 @@ class PTBXL(PhysioNetDataBase):
             )
             self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
             self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_metadata = self._df_metadata.loc[self._df_records.index]
 
         self._all_records = self._df_records.index.tolist()
         self._all_subjects = self._df_records["patient_id"].unique().tolist()

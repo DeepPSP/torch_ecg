@@ -1114,9 +1114,6 @@ class CINC2020(PhysioNetDataBase):
 
         nb_leads = len(_leads)
 
-        seg_len = self.fs[tranche] * 25  # 25 seconds
-        nb_segs = _data.shape[1] // seg_len
-
         t = np.arange(_data.shape[1]) / self.fs[tranche]
         duration = len(t) / self.fs[tranche]
         fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))

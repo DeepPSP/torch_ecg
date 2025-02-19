@@ -26,6 +26,9 @@ Removed
 Fixed
 ~~~~~
 
+- Correctly update the `_df_metadata` attribute of the `PTBXL` database reader
+  classes after filtering records.
+
 Security
 ~~~~~~~~
 
@@ -112,7 +115,7 @@ Deprecated
 ~~~~~~~~~~
 
 - Script ``setup.py`` is deprecated. The package building system is
-  switched to ``hatchling``.
+  switched to ``hatch``.
 
 Removed
 ~~~~~~~
