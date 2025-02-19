@@ -1090,7 +1090,7 @@ def make_safe_globals(obj: CFG) -> CFG:
         sg = frozenset({item for item in sg if item is not None})
     elif isinstance(obj, tuple(item for item in _safe_globals if isinstance(item, type))):
         sg = obj
-    elif type(obj).__module__.startswith("torch"):
+    elif type(obj).__module__ == "torch" or type(obj).__module__.startswith("torch."):
         sg = obj
     elif is_stdtypes(obj):
         sg = obj

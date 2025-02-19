@@ -35,6 +35,8 @@ Fixed
   non-safe items in the configs are removed before saving the model.
 - Fix errors when monitor is specified while the validation dataloader is not
   provided in the `torch_ecg.components.BaseTrainer` class.
+- Enhance the `save_checkpoint` method of the `torch_ecg.components.BaseTrainer` class:
+  non-safe items in the configs are removed before saving the model.
 
 Security
 ~~~~~~~~

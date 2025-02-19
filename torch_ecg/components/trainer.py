@@ -22,7 +22,7 @@ from ..augmenters import AugmenterManager
 from ..cfg import CFG, DEFAULTS
 from ..models.loss import setup_criterion
 from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
-from ..utils.utils_nn import default_collate_fn
+from ..utils.utils_nn import default_collate_fn, make_safe_globals
 from .loggers import LoggerManager
 
 __all__ = [
@@ -767,8 +767,8 @@ class BaseTrainer(ReprMixin, ABC):
             {
                 "model_state_dict": self._model.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict(),
-                "model_config": self.model_config,
-                "train_config": self.train_config,
+                "model_config": make_safe_globals(self.model_config),
+                "train_config": make_safe_globals(self.train_config),
                 "epoch": self.epoch,
             },
             path,
