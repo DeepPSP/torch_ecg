@@ -149,6 +149,58 @@ def test_remove_spikes_naive():
     new_sig = remove_spikes_naive(sig)
     assert (sig == new_sig).all()
 
+    # test 2D signal
+    sig = DEFAULTS.RNG.normal(size=(2, siglen))
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, pos] = 100
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, pos] = -100
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, pos] = np.nan
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, pos] = np.inf
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, pos] = -np.inf
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, pos] = 15
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, pos] = -15
+    sig[0, 0] = np.nan
+
+    new_sig = remove_spikes_naive(sig, threshold=50, inplace=False)
+    assert (new_sig <= 50).all() and (new_sig >= -50).all()
+    assert (not (new_sig <= 10).all()) and (not (new_sig >= -10).all())
+    new_sig = remove_spikes_naive(sig, threshold=12, inplace=False)
+    assert (new_sig <= 12).all() and (new_sig >= -12).all()
+
+    # test 3D signal
+    sig = DEFAULTS.RNG.normal(size=(2, 2, siglen))
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, 0, pos] = 100
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, 0, pos] = -100
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, 1, pos] = np.nan
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, 1, pos] = np.inf
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, 0, pos] = -np.inf
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[1, 0, pos] = 15
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
+    sig[0, 1, pos] = -15
+    sig[0, 1, 0] = np.nan
+
+    new_sig = remove_spikes_naive(sig, threshold=50, inplace=False)
+    assert (new_sig <= 50).all() and (new_sig >= -50).all()
+    assert (not (new_sig <= 10).all()) and (not (new_sig >= -10).all())
+    new_sig = remove_spikes_naive(sig, threshold=12, inplace=False)
+    assert (new_sig <= 12).all() and (new_sig >= -12).all()
+
+    with pytest.raises(AssertionError, match="Only 1D, 2D or 3D signal is supported"):
+        sig = DEFAULTS.RNG.normal(size=(1, 2, 2, siglen))
+        remove_spikes_naive(sig)
+
 
 def test_butter_bandpass_filter():
     data = sample_rec.p_signal.T  # (n_channels, n_samples)

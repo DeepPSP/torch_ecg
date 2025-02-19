@@ -467,7 +467,9 @@ def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = T
     Parameters
     ----------
     sig : numpy.ndarray
-        1D signal with potential spikes.
+        1D, 2D or 3D signal with potential spikes.
+        The last dimension is the time dimension.
+        The signal can be single-lead, multi-lead, or batched signals.
     threshold : numbers.Real, optional
         Values of `sig` that are larger than `threshold` will be removed.
     inplace : bool, optional
@@ -491,6 +493,9 @@ def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = T
         sig = remove_spikes_naive(sig)
 
     """
+    assert sig.ndim <= 3, f"Only 1D, 2D or 3D signal is supported, but got {sig.ndim}D signal"
+    if sig.ndim >= 2:
+        return np.apply_along_axis(lambda x: remove_spikes_naive(x, threshold, inplace), axis=-1, arr=sig)
     dtype = sig.dtype
     b = list(
         filter(

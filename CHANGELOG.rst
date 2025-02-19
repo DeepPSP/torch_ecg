@@ -17,6 +17,9 @@ Added
 Changed
 ~~~~~~~
 
+- Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
+  support 2D and 3D input signals.
+
 Deprecated
 ~~~~~~~~~~
 
