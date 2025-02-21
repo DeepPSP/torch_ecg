@@ -49,6 +49,7 @@ dependencies = [
     "typing-extensions",
     "wfdb",
     "xmltodict",
+    "PeakUtils",
 ]
 
 [project.optional-dependencies]
