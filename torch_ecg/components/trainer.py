@@ -251,8 +251,9 @@ class BaseTrainer(ReprMixin, ABC):
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
                 else:
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}"
-                save_filename = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-                save_path = self.train_config.checkpoints / save_filename
+                # save_filename = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
+                save_folder = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}"
+                save_path = self.train_config.checkpoints / save_folder
                 if self.train_config.keep_checkpoint_max != 0:
                     self.save_checkpoint(str(save_path))
                     self.saved_models.append(save_path)
@@ -275,19 +276,21 @@ class BaseTrainer(ReprMixin, ABC):
         # save the best model
         if self.best_metric > -np.inf:
             if self.train_config.final_model_name:
-                save_filename = self.train_config.final_model_name
+                save_folder = self.train_config.final_model_name
             else:
                 save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
-                save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-            save_path = self.train_config.model_dir / save_filename
+                # save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
+                save_folder = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}"
+            save_path = self.train_config.model_dir / save_folder
             # self.save_checkpoint(path=str(save_path))
             self._model.save(path=str(save_path), train_config=self.train_config)
             self.log_manager.log_message(f"best model is saved at {save_path}")
         elif self.train_config.monitor is None:
             self.log_manager.log_message("no monitor is set, the last model is selected and saved as the best model")
             self.best_state_dict = self._model.state_dict()
-            save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
-            save_path = self.train_config.model_dir / save_filename
+            # save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
+            save_folder = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}"
+            save_path = self.train_config.model_dir / save_folder
             # self.save_checkpoint(path=str(save_path))
             self._model.save(path=str(save_path), train_config=self.train_config)
         else:
@@ -765,16 +768,30 @@ class BaseTrainer(ReprMixin, ABC):
             Path to save the checkpoint
 
         """
-        torch.save(
-            {
-                "model_state_dict": self._model.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-                "model_config": make_safe_globals(self.model_config),
-                "train_config": make_safe_globals(self.train_config),
-                "epoch": self.epoch,
-            },
-            path,
-        )
+        # if self._model has method `save`, then use it
+        if hasattr(self._model, "save"):
+            self._model.save(
+                path=path,
+                train_config=self.train_config,
+                extra_items={
+                    "optimizer_state_dict": self.optimizer.state_dict(),
+                    "epoch": self.epoch,
+                },
+                use_safetensors=True,
+            )
+        else:
+            if not str(path).endswith(".pth.tar"):
+                path = Path(path).with_suffix(".pth.tar")
+            torch.save(
+                {
+                    "model_state_dict": self._model.state_dict(),
+                    "optimizer_state_dict": self.optimizer.state_dict(),
+                    "model_config": make_safe_globals(self.model_config),
+                    "train_config": make_safe_globals(self.train_config),
+                    "epoch": self.epoch,
+                },
+                path,
+            )
 
     def extra_repr_keys(self) -> List[str]:
         return [

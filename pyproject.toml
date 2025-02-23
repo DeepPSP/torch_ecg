@@ -38,6 +38,7 @@ dependencies = [
     "pyEDFlib",
     "PyWavelets",
     "requests",
+    "safetensors",
     "scikit-learn",
     "scipy",
     "soundfile",

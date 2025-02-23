@@ -19,6 +19,9 @@ Changed
 
 - Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
   support 2D and 3D input signals.
+- Use `save_file` and `load_file` from the `safetensors` package for saving
+  and loading files in place of `torch.save` and `torch.load` in the `CkptMixin`
+  class in `torch_ecg.utils.utils_nn`.
 
 Deprecated
 ~~~~~~~~~~

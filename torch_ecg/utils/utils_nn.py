@@ -3,6 +3,7 @@ utilities for nn models
 
 """
 
+import json
 import os
 import pickle
 import re
@@ -17,6 +18,7 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 from easydict import EasyDict
+from safetensors.torch import load_file, save_file
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS, DTYPE
@@ -1122,8 +1124,9 @@ class CkptMixin(object):
         ----------
         path : `path-like`
             Path to the checkpoint.
-            If it is a directory, then this directory should contain only one checkpoint file
-            (with the extension `.pth` or `.pt`).
+            If it is a directory, then this directory should be one of the following cases:
+                - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.
+                - contain only one checkpoint file (with the extension `.pth` or `.pt`).
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
@@ -1140,16 +1143,41 @@ class CkptMixin(object):
             Auxiliary configs that are needed for data preprocessing, etc.
 
         """
-        if Path(path).is_dir():
-            candidates = list(Path(path).glob("*.pth")) + list(Path(path).glob("*.pt"))
-            assert len(candidates) == 1, "The directory should contain only one checkpoint file"
-            path = candidates[0]
         _device = device or DEFAULTS.device
         if weights_only == "auto":
             if hasattr(torch.serialization, "add_safe_globals"):
                 weights_only = True
             else:
                 weights_only = False
+
+        if Path(path).is_dir():
+            candidates = list(Path(path).glob("*.pth")) + list(Path(path).glob("*.pt"))
+            assert len(candidates) in [0, 1], "The directory should contain only one checkpoint file"
+            if len(candidates) == 0:
+                # the directory should contain a `model.safetensors` file, a `model_config.json` file,
+                # and a `train_config.json` file
+                model_path = Path(path) / "model.safetensors"
+                train_config_path = Path(path) / "train_config.json"
+                model_config_path = Path(path) / "model_config.json"
+                assert model_path.exists(), "model.safetensors file not found"
+                assert train_config_path.exists(), "train_config.json file not found"
+                assert model_config_path.exists(), "model_config.json file not found"
+                train_config = json.loads(train_config_path.read_text())
+                model_config = json.loads(model_config_path.read_text())
+                aux_config = train_config
+                kwargs = dict(config=model_config)
+                if "classes" in aux_config:
+                    kwargs["classes"] = aux_config["classes"]
+                if "n_leads" in aux_config:
+                    kwargs["n_leads"] = aux_config["n_leads"]
+                model = cls(**kwargs)
+                model.load_state_dict(load_file(model_path, device=_device))
+                return model, aux_config
+
+            # we have only one checkpoint file in the directory
+            # and we will use `torch.load` to load the model
+            path = candidates[0]
+
         try:
             ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
         except pickle.UnpicklingError as pue:
@@ -1160,9 +1188,7 @@ class CkptMixin(object):
             ) from pue
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        kwargs = dict(
-            config=ckpt["model_config"],
-        )
+        kwargs = dict(config=ckpt["model_config"])
         if "classes" in aux_config:
             kwargs["classes"] = aux_config["classes"]
         if "n_leads" in aux_config:
@@ -1209,7 +1235,13 @@ class CkptMixin(object):
         model_path_or_dir = http_get(url, model_dir, extract="auto", filename=filename)
         return cls.from_checkpoint(model_path_or_dir, device=device, weights_only=weights_only)
 
-    def save(self, path: Union[str, bytes, os.PathLike], train_config: CFG) -> None:
+    def save(
+        self,
+        path: Union[str, bytes, os.PathLike],
+        train_config: CFG,
+        extra_items: Optional[dict] = None,
+        use_safetensors: bool = False,
+    ) -> None:
         """Save the model to disk.
 
         Parameters
@@ -1219,6 +1251,16 @@ class CkptMixin(object):
         train_config : CFG
             Config for training the model,
             used when one restores the model.
+        extra_items : dict, optional
+            Extra items to save along with the model.
+            The values should be serializable: can be saved as a json file,
+            or is a dict of torch tensors.
+
+            .. versionadded:: 0.0.32
+        use_safetensors : bool, default False
+            Whether to use `safetensors` to save the model.
+
+            .. versionadded:: 0.0.32
 
         Returns
         -------
@@ -1228,13 +1270,34 @@ class CkptMixin(object):
         path = Path(path)
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
+        extra_items = extra_items or {}
+
         _model_config = make_safe_globals(self.config)
         _train_config = make_safe_globals(train_config)
-        torch.save(
-            {
-                "model_state_dict": self.state_dict(),
-                "model_config": _model_config,
-                "train_config": _train_config,
-            },
-            path,
-        )
+
+        if use_safetensors:
+            # save the model with safetensors into a folder with the same name as `path`
+            # `model_config` and `train_config` are saved as json files
+            path = path.with_suffix("")
+            _model_config = make_serializable(_model_config)
+            _train_config = make_serializable(_train_config)
+            (path / "model_config.json").write_text(json.dumps(_model_config, ensure_ascii=False))
+            (path / "train_config.json").write_text(json.dumps(_train_config, ensure_ascii=False))
+            save_file(self.state_dict(), path / "model.safetensors")
+            # save extra items
+            for key, val in extra_items.items():
+                # if val is a dict of torch tensors, save them as safetensors
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    save_file(val, path / f"{key}.safetensors")
+                else:
+                    (path / f"{key}.json").write_text(json.dumps(make_serializable(val), ensure_ascii=False))
+        else:
+            torch.save(
+                {
+                    "model_state_dict": self.state_dict(),
+                    "model_config": _model_config,
+                    "train_config": _train_config,
+                    **extra_items,
+                },
+                path,
+            )
