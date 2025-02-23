@@ -17,6 +17,9 @@ Added
 Changed
 ~~~~~~~
 
+- Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
+  support 2D and 3D input signals.
+
 Deprecated
 ~~~~~~~~~~
 
@@ -25,6 +28,15 @@ Removed
 
 Fixed
 ~~~~~
+
+- Correctly update the `_df_metadata` attribute of the `PTBXL` database reader
+  classes after filtering records.
+- Enhance the `save` method of the `torch_ecg.utils.utils_nn.CkptMixin` class:
+  non-safe items in the configs are removed before saving the model.
+- Fix errors when monitor is specified while the validation dataloader is not
+  provided in the `torch_ecg.components.BaseTrainer` class.
+- Enhance the `save_checkpoint` method of the `torch_ecg.components.BaseTrainer` class:
+  non-safe items in the configs are removed before saving the model.
 
 Security
 ~~~~~~~~
@@ -112,7 +124,7 @@ Deprecated
 ~~~~~~~~~~
 
 - Script ``setup.py`` is deprecated. The package building system is
-  switched to ``hatchling``.
+  switched to ``hatch``.
 
 Removed
 ~~~~~~~

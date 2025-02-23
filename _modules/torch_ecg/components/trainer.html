@@ -15,19 +15,17 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -35,11 +33,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -53,7 +50,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
   </head>
   
   
@@ -69,8 +65,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -78,6 +85,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -85,8 +93,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -120,7 +128,7 @@
     
     
     <img src="../../../_static/deep-psp-logo.png" class="logo__image only-light" alt=""/>
-    <img src="../../../_static/deep-psp-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+    <script>document.write(`<img src="../../../_static/deep-psp-logo.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
     <p class="title logo__title">torch-ecg</p>
@@ -182,11 +190,15 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -223,8 +235,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -285,11 +296,15 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -314,23 +329,22 @@
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
     </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -348,6 +362,8 @@
       
         <div class="header-article-item">
 
+
+
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -359,7 +375,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torch_ecg.components.trainer</span></li>
+    <li class="breadcrumb-item active" aria-current="page">torch_ecg.co...</li>
   </ul>
 </nav>
 </div>
@@ -401,7 +417,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..models.loss</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_criterion</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">dict_to_str</span><span class="p">,</span> <span class="n">dicts_equal</span><span class="p">,</span> <span class="n">get_date_str</span><span class="p">,</span> <span class="n">get_kwargs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_collate_fn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_collate_fn</span><span class="p">,</span> <span class="n">make_safe_globals</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggerManager</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -533,6 +549,20 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_criterion</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if monitor is set but val_loader is None, use train_loader for validation</span>
+            <span class="c1"># and choose the best model based on the metrics on the train set</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_loader</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;No separate validation set is provided, while monitor is set. &quot;</span>
+                        <span class="s2">&quot;The training set will be used for validation, &quot;</span>
+                        <span class="s2">&quot;and the best model will be selected based on the metrics on the training set&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+                <span class="p">)</span>
+
         <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">            Starting training:</span>
@@ -567,7 +597,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_one_epoch</span><span class="p">(</span><span class="n">pbar</span><span class="p">)</span>
 
                 <span class="c1"># evaluate on train set, if debug is True</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">eval_train_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span>
                         <span class="n">metrics</span><span class="o">=</span><span class="n">eval_train_res</span><span class="p">,</span>
@@ -575,6 +605,8 @@
                         <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
                         <span class="n">part</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">eval_train_res</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="c1"># evaluate on val set</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">eval_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_loader</span><span class="p">)</span>
@@ -587,6 +619,8 @@
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># if no separate val set, use the metrics on the train set</span>
                     <span class="n">eval_res</span> <span class="o">=</span> <span class="n">eval_train_res</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">eval_res</span> <span class="o">=</span> <span class="p">{}</span>
 
                 <span class="c1"># update best model and best metric if monitor is set</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -645,14 +679,16 @@
                 <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;metric_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="n">save_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">.pth.tar&quot;</span>
             <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">save_filename</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
+            <span class="c1"># self.save_checkpoint(path=str(save_path))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best model is saved at </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;no monitor is set, the last model is selected and saved as the best model&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">best_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
             <span class="n">save_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">.pth.tar&quot;</span>
             <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">save_filename</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
+            <span class="c1"># self.save_checkpoint(path=str(save_path))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No best model found!&quot;</span><span class="p">)</span>
 
@@ -1095,9 +1131,7 @@
 <div class="viewcode-block" id="BaseTrainer.resume_from_checkpoint">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.resume_from_checkpoint">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">resume_from_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;NOT finished, NOT checked,</span>
-
-<span class="sd">        Resume a training process from a checkpoint.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume a training process from a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1108,6 +1142,10 @@
 <span class="sd">            &quot;model_state_dict&quot;, &quot;optimizer_state_dict&quot;,</span>
 <span class="sd">            &quot;model_config&quot;, &quot;train_config&quot;, &quot;epoch&quot;</span>
 <span class="sd">            to resume a training process.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            NOT finished, NOT tested.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1148,8 +1186,8 @@
             <span class="p">{</span>
                 <span class="s2">&quot;model_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
                 <span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
-                <span class="s2">&quot;model_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">,</span>
-                <span class="s2">&quot;train_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">,</span>
+                <span class="s2">&quot;model_config&quot;</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">),</span>
+                <span class="s2">&quot;train_config&quot;</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">),</span>
                 <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">path</span><span class="p">,</span>
@@ -1193,8 +1231,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1227,8 +1265,7 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>
