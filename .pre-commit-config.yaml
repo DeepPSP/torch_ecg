@@ -23,3 +23,14 @@ repos:
     hooks:
       - id: isort
         args: [--profile=black, --line-length=128]
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+    - id: nbqa-black
+      args: [--line-length=128, --verbose]
+    - id: nbqa-isort
+      args: [--profile=black, --line-length=128]
