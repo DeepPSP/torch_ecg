@@ -259,13 +259,14 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
         ----------
         input : torch.Tensor
             The predicted value tensor (before sigmoid),
-            of shape ``(batch_size, sig_len, n_classes)``.
+            of shape ``(batch_size, ..., n_classes)``.
         target : torch.Tensor
             The target tensor,
-            of shape ``(batch_size, sig_len, n_classes)``.
+            of shape ``(batch_size, ..., n_classes)``.
         weight_mask: torch.Tensor
             The weight mask tensor,
-            of shape ``(batch_size, sig_len, n_classes)``.
+            of shape ``(batch_size, ..., n_classes)``,
+            or ``(batch_size, ..., 1)``, or ``(batch_size, ...)``.
 
         Returns
         -------
@@ -274,11 +275,17 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 
         NOTE
         ----
-        `input`, `target`, and `weight_mask` should be
-        3-D tensors of the same shape.
+        `input` and `target` should be N-D tensors of the same shape, with N >=3;
+        `weight_mask` should have the same shape, or the last dimension can be 1,
+        or the last dimension can be omitted.
+
+        A typical example is when `input` and `target` have shape
+        ``(batch_size, sig_len, n_classes)``.
 
         """
         loss = super().forward(input, target)
+        if target.ndim - weight_mask.ndim == 1:
+            weight_mask = weight_mask.unsqueeze(-1)
         loss = torch.mean(loss * weight_mask)
         return loss
 
