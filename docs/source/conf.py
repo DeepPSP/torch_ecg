@@ -242,4 +242,5 @@ numfig = False
 
 linkcheck_ignore = [
     r"https://doi.org/*",  # 418 Client Error
+    r"https://stackoverflow.com/questions/",  # 403 Client Error: Forbidden (anti-bot ?)
 ]
