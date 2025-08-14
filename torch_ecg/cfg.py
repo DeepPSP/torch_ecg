@@ -59,9 +59,13 @@ class CFG(dict):
         if kwargs:
             d.update(**kwargs)
         for k, v in d.items():
-            try:
+            # try:
+            #     setattr(self, k, v)
+            # except Exception:
+            #     dict.__setitem__(self, k, v)
+            if isinstance(k, str) and k.isidentifier():
                 setattr(self, k, v)
-            except Exception:
+            else:
                 dict.__setitem__(self, k, v)
         # Class attributes
         exclude_fields = ["update", "pop"]
@@ -74,7 +78,9 @@ class CFG(dict):
             value = [self.__class__(x) if isinstance(x, dict) else x for x in value]
         elif isinstance(value, dict) and not isinstance(value, self.__class__):
             value = self.__class__(value)
-        super().__setattr__(name, value)
+
+        if isinstance(name, str) and name.isidentifier():
+            super().__setattr__(name, value)
         super().__setitem__(name, value)
 
     __setitem__ = __setattr__
