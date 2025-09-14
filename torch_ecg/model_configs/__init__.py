@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .ati_cnn import ATI_CNN_CONFIG
 from .attn import global_context, non_local, squeeze_excitation, transformer

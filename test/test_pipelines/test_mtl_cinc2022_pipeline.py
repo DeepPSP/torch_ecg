@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import json
 import os
@@ -3458,7 +3457,7 @@ class CINC2022Trainer(BaseTrainer):
 
 
 def collate_fn(
-    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]]
+    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]],
 ) -> Union[Tuple[torch.Tensor, ...], Dict[str, torch.Tensor]]:
     """ """
     if isinstance(batch[0], dict):

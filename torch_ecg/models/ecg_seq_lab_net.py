@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import warnings
 from copy import deepcopy

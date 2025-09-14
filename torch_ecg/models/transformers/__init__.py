@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .transformer import Transformer
 

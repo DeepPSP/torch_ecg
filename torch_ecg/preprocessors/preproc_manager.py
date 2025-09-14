@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import warnings
 from random import sample

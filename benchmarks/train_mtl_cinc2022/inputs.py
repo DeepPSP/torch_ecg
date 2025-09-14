@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import inspect
 import math

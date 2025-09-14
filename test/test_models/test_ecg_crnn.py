@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import itertools
 from copy import deepcopy

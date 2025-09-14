@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from transformers import Wav2Vec2ForPreTraining as HFWav2Vec2ForPreTraining
 

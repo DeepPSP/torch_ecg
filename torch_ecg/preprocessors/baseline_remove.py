@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import warnings
 from numbers import Real

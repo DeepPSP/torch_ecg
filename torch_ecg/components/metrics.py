@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import warnings
 from abc import ABC, abstractmethod
