@@ -35,6 +35,48 @@ __all__ = [
 PHYSIONET_DB_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+"
 
 
+def _requests_retry_session(
+    retries=5,
+    backoff_factor=0.5,
+    status_forcelist=(500, 502, 503, 504),
+    session=None,
+) -> requests.Session:
+    """Get a requests session with retry strategy.
+
+    Parameters
+    ----------
+    retries : int, default 5
+        Number of total retries to allow.
+    backoff_factor : float, default 0.5
+        A backoff factor to apply between attempts.
+        A backoff factor of 0.5 will sleep for [0.5s, 1s, 2s, ...] between retries.
+    status_forcelist : tuple, default (500, 502, 503, 504)
+        A set of HTTP status codes that we should force a retry on.
+    session : requests.Session, optional
+        An existing requests session.
+        If None, a new session will be created.
+
+    Returns
+    -------
+    requests.Session
+        A requests session with retry strategy.
+
+    """
+    session = session or requests.Session()
+    retry = requests.packages.urllib3.util.retry.Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+        allowed_methods=["HEAD", "GET", "OPTIONS"],
+    )
+    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+
 def http_get(
     url: str,
     dst_dir: Union[str, bytes, os.PathLike],
@@ -151,7 +193,8 @@ def http_get(
             suffix=df_suffix,
             delete=False,
         )
-        req = requests.get(url, stream=True, proxies=proxies)
+        # req = requests.get(url, stream=True, proxies=proxies)
+        req = _requests_retry_session().get(url, stream=True, proxies=proxies)
         content_length = req.headers.get("Content-Length")
         total = int(content_length) if content_length is not None else None
         if req.status_code in [403, 404]:
