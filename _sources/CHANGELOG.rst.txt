@@ -19,6 +19,8 @@ Changed
 
 - Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
   support 2D and 3D input signals.
+- Add retry mechanism to the `http_get` function in
+  `torch_ecg.utils.download` module.
 
 Deprecated
 ~~~~~~~~~~
@@ -37,6 +39,9 @@ Fixed
   provided in the `torch_ecg.components.BaseTrainer` class.
 - Enhance the `save_checkpoint` method of the `torch_ecg.components.BaseTrainer` class:
   non-safe items in the configs are removed before saving the model.
+- Fix potential errors when deepcopying a `torch_ecg.cfg.CFG` object:
+  previously, deepcopying such an object like `CFG({"a": {1: 0.1, 2: 0.2}})`
+  would result in an error.
 
 Security
 ~~~~~~~~

@@ -416,6 +416,8 @@ Versioning</a>.</p>
 <ul class="simple">
 <li><p>Make the function <cite>remove_spikes_naive</cite> in <cite>torch_ecg.utils.utils_signal</cite>
 support 2D and 3D input signals.</p></li>
+<li><p>Add retry mechanism to the <cite>http_get</cite> function in
+<cite>torch_ecg.utils.download</cite> module.</p></li>
 </ul>
 </section>
 <section id="deprecated">
@@ -435,6 +437,9 @@ non-safe items in the configs are removed before saving the model.</p></li>
 provided in the <cite>torch_ecg.components.BaseTrainer</cite> class.</p></li>
 <li><p>Enhance the <cite>save_checkpoint</cite> method of the <cite>torch_ecg.components.BaseTrainer</cite> class:
 non-safe items in the configs are removed before saving the model.</p></li>
+<li><p>Fix potential errors when deepcopying a <cite>torch_ecg.cfg.CFG</cite> object:
+previously, deepcopying such an object like <cite>CFG({“a”: {1: 0.1, 2: 0.2}})</cite>
+would result in an error.</p></li>
 </ul>
 </section>
 <section id="security">

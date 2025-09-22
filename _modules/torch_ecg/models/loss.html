@@ -670,13 +670,14 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        input : torch.Tensor</span>
 <span class="sd">            The predicted value tensor (before sigmoid),</span>
-<span class="sd">            of shape ``(batch_size, sig_len, n_classes)``.</span>
+<span class="sd">            of shape ``(batch_size, ..., n_classes)``.</span>
 <span class="sd">        target : torch.Tensor</span>
 <span class="sd">            The target tensor,</span>
-<span class="sd">            of shape ``(batch_size, sig_len, n_classes)``.</span>
+<span class="sd">            of shape ``(batch_size, ..., n_classes)``.</span>
 <span class="sd">        weight_mask: torch.Tensor</span>
 <span class="sd">            The weight mask tensor,</span>
-<span class="sd">            of shape ``(batch_size, sig_len, n_classes)``.</span>
+<span class="sd">            of shape ``(batch_size, ..., n_classes)``,</span>
+<span class="sd">            or ``(batch_size, ..., 1)``, or ``(batch_size, ...)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -685,11 +686,17 @@ document.write(`
 
 <span class="sd">        NOTE</span>
 <span class="sd">        ----</span>
-<span class="sd">        `input`, `target`, and `weight_mask` should be</span>
-<span class="sd">        3-D tensors of the same shape.</span>
+<span class="sd">        `input` and `target` should be N-D tensors of the same shape, with N &gt;=3;</span>
+<span class="sd">        `weight_mask` should have the same shape, or the last dimension can be 1,</span>
+<span class="sd">        or the last dimension can be omitted.</span>
+
+<span class="sd">        A typical example is when `input` and `target` have shape</span>
+<span class="sd">        ``(batch_size, sig_len, n_classes)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="n">weight_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">weight_mask</span> <span class="o">=</span> <span class="n">weight_mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">loss</span> <span class="o">*</span> <span class="n">weight_mask</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span></div>
 </div>
