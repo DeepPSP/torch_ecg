@@ -754,7 +754,7 @@ class PhysioNetDataBase(_DataBase):
 
         References
         ----------
-        .. [#ann_man] https://archive.physionet.org/physiobank/annotations.shtml
+        .. [#ann_man] https://github.com/bemoody/lightwave/blob/master/client/doc/annotations.html
 
         """
         attrs = vars(self)
