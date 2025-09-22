@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .ecg_denoise import ecg_denoise
 from .ecg_features import compute_ecg_features, compute_morph_descriptor, compute_rr_descriptor, compute_wavelet_descriptor

@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from decimal import ROUND_HALF_UP, Decimal, localcontext
 from typing import Optional, Sequence

@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from numbers import Real
 from typing import Any, Iterable, List, Optional, Sequence, Tuple

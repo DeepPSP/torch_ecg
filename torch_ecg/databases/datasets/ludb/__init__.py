@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .ludb_cfg import LUDBTrainCfg
 from .ludb_dataset import LUDBDataset

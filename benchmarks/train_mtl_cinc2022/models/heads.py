@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import warnings
 from typing import Dict, Optional

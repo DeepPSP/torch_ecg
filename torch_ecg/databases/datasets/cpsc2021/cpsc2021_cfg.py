@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from ....cfg import CFG, DEFAULTS
 

@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from numbers import Real
 from random import randint
