@@ -2212,31 +2212,31 @@ class CRNN_CINC2022(ECG_CRNN):
         prob = self.softmax(forward_output["murmur"])
         pred = torch.argmax(prob, dim=-1)
         bin_pred = (prob == prob.max(dim=-1, keepdim=True).values).to(int)
-        prob = prob.cpu().detach().numpy()
-        pred = pred.cpu().detach().numpy()
-        bin_pred = bin_pred.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
+        bin_pred = bin_pred.detach().cpu().numpy()
 
         murmur_output = ClassificationOutput(
             classes=self.classes,
             prob=prob,
             pred=pred,
             bin_pred=bin_pred,
-            forward_output=forward_output["murmur"].cpu().detach().numpy(),
+            forward_output=forward_output["murmur"].detach().cpu().numpy(),
         )
 
         if forward_output.get("outcome", None) is not None:
             prob = self.softmax(forward_output["outcome"])
             pred = torch.argmax(prob, dim=-1)
             bin_pred = (prob == prob.max(dim=-1, keepdim=True).values).to(int)
-            prob = prob.cpu().detach().numpy()
-            pred = pred.cpu().detach().numpy()
-            bin_pred = bin_pred.cpu().detach().numpy()
+            prob = prob.detach().cpu().numpy()
+            pred = pred.detach().cpu().numpy()
+            bin_pred = bin_pred.detach().cpu().numpy()
             outcome_output = ClassificationOutput(
                 classes=self.outcomes,
                 prob=prob,
                 pred=pred,
                 bin_pred=bin_pred,
-                forward_output=forward_output["outcome"].cpu().detach().numpy(),
+                forward_output=forward_output["outcome"].detach().cpu().numpy(),
             )
         else:
             outcome_output = None
@@ -2250,13 +2250,13 @@ class CRNN_CINC2022(ECG_CRNN):
             else:
                 prob = self.sigmoid(forward_output["segmentation"])
                 pred = (prob > seg_thr).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
-            prob = prob.cpu().detach().numpy()
-            pred = pred.cpu().detach().numpy()
+            prob = prob.detach().cpu().numpy()
+            pred = pred.detach().cpu().numpy()
             segmentation_output = SequenceLabellingOutput(
                 classes=self.states,
                 prob=prob,
                 pred=pred,
-                forward_output=forward_output["segmentation"].cpu().detach().numpy(),
+                forward_output=forward_output["segmentation"].detach().cpu().numpy(),
             )
         else:
             segmentation_output = None

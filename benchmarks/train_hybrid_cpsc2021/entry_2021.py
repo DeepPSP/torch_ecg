@@ -379,12 +379,12 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
     for idx in range(batch_size // _BATCH_SIZE):
         pred = model.forward(sig[_BATCH_SIZE * idx : _BATCH_SIZE * (idx + 1), ...])
         pred = model.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        pred = pred.detach().cpu().numpy().squeeze(-1)
         l_pred.append(pred)
     if batch_size % _BATCH_SIZE != 0:
         pred = model.forward(sig[batch_size // _BATCH_SIZE * _BATCH_SIZE :, ...])
         pred = model.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        pred = pred.detach().cpu().numpy().squeeze(-1)
         l_pred.append(pred)
     pred = np.concatenate(l_pred)
 
@@ -473,12 +473,12 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
     for idx in range(batch_size // _BATCH_SIZE):
         pred = model.forward(sig[_BATCH_SIZE * idx : _BATCH_SIZE * (idx + 1), ...])
         pred = model.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        pred = pred.detach().cpu().numpy().squeeze(-1)
         l_pred.append(pred)
     if batch_size % _BATCH_SIZE != 0:
         pred = model.forward(sig[batch_size // _BATCH_SIZE * _BATCH_SIZE :, ...])
         pred = model.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        pred = pred.detach().cpu().numpy().squeeze(-1)
         l_pred.append(pred)
     pred = np.concatenate(l_pred)
 
