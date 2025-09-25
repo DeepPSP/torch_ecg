@@ -1228,11 +1228,11 @@ class CkptMixin(object):
                         model.to(_device)  # type: ignore
                         return model, aux_config  # type: ignore
             except Exception as e:
-                # when failed to load metadata, fallback to torch.load
+                # failed to load the safetensors file
                 raise RuntimeError(
                     "Failed to load the safetensors file. "
-                    "Maybe the file is corrupted, or the version of safetensors is too old. "
-                    "Try updating safetensors to the latest version, or use a different way to load the model."
+                    "The file may be corrupted, or the version of safetensors is incompatible. "
+                    "Try updating safetensors to the latest version, or check the file integrity."
                 ) from e
 
         try:
