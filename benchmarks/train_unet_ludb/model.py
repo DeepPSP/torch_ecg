@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from copy import deepcopy
 from typing import Any, Optional, Sequence, Union
@@ -90,7 +89,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             prob = self.softmax(prob)
         else:
             prob = torch.sigmoid(prob)
-        prob = prob.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
 
         if "i" in self.classes:
             mask = np.argmax(prob, axis=-1)

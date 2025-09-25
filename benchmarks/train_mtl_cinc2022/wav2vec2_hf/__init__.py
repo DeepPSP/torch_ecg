@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .pretraining_cfg import PreTrainCfg, PreTrainModelCfg
 from .pretraining_data import DataCollatorForWav2Vec2Pretraining, Wav2Vec2PretrainingDataset, get_pretraining_datacollator

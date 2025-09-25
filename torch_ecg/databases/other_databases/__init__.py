@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .cachet_cadb import CACHET_CADB
 from .sph import SPH

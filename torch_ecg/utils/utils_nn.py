@@ -861,7 +861,7 @@ def compute_receptive_field(
 
 
 def default_collate_fn(
-    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]]
+    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]],
 ) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
     """Default collate functions for model training.
 

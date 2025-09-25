@@ -134,7 +134,7 @@ class GradCam(object):
         n_classes = output.shape[-1]
 
         if index is None:
-            index = np.argmax(output.cpu().detach().numpy()[0])
+            index = np.argmax(output.detach().cpu().numpy()[0])
 
         one_hot = np.zeros((1, n_classes), dtype=np.float32)
         one_hot[0][index] = 1
@@ -145,12 +145,12 @@ class GradCam(object):
         self.model.zero_grad()
         one_hot.backward(retain_graph=True)
 
-        grads_val = self.extractor.get_gradients()[-1].cpu().detach().numpy()
+        grads_val = self.extractor.get_gradients()[-1].detach().cpu().numpy()
 
         # of shape (batch_size (=1), channels, seq_len) or (batch_size (=1), seq_len, channels)
         target = features[-1]
         # of shape (channels, seq_len) or (seq_len, channels)
-        target = target.cpu().detach().numpy()[0, :]
+        target = target.detach().cpu().numpy()[0, :]
 
         if self.target_channel_last:
             weights = np.mean(grads_val, axis=-2)[0, :]

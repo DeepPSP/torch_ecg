@@ -169,7 +169,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
@@ -226,7 +226,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         af_episodes, af_mask = _main_task_post_process(
             prob=prob,
@@ -368,7 +368,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
@@ -425,7 +425,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         af_episodes, af_mask = _main_task_post_process(
             prob=prob,
@@ -567,7 +567,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
@@ -624,7 +624,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         af_episodes, af_mask = _main_task_post_process(
             prob=prob,
@@ -721,7 +721,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         prob = self.forward(_input)
         if self.config.clf.name != "crf":
             prob = self.sigmoid(prob)
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         af_episodes, af_mask = _main_task_post_process(
             prob=prob,

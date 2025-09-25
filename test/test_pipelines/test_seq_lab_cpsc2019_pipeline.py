@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from copy import deepcopy
 from pathlib import Path
@@ -143,8 +142,14 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
         if prob.shape[1] != _input.shape[-1]:
-            prob = self._recover_length(prob, _input.shape[-1])
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+            # prob = self._recover_length(prob, _input.shape[-1])
+            prob = torch.nn.functional.interpolate(
+                prob.permute(0, 2, 1),
+                size=_input.shape[-1],
+                mode="linear",
+                align_corners=True,
+            ).permute(0, 2, 1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
@@ -164,7 +169,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                     sampling_rate=self.config.fs,
                     tol=0.05,
                 )[0]
-                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                for b_input, b_rpeaks in zip(_input.detach().cpu().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(

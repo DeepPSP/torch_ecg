@@ -22,6 +22,8 @@ Changed
 - Use `save_file` and `load_file` from the `safetensors` package for saving
   and loading files in place of `torch.save` and `torch.load` in the `CkptMixin`
   class in `torch_ecg.utils.utils_nn`.
+- Add retry mechanism to the `http_get` function in
+  `torch_ecg.utils.download` module.
 
 Deprecated
 ~~~~~~~~~~
@@ -40,6 +42,9 @@ Fixed
   provided in the `torch_ecg.components.BaseTrainer` class.
 - Enhance the `save_checkpoint` method of the `torch_ecg.components.BaseTrainer` class:
   non-safe items in the configs are removed before saving the model.
+- Fix potential errors when deepcopying a `torch_ecg.cfg.CFG` object:
+  previously, deepcopying such an object like `CFG({"a": {1: 0.1, 2: 0.2}})`
+  would result in an error.
 
 Security
 ~~~~~~~~

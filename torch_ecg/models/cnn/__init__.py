@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .densenet import DenseNet
 from .mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
