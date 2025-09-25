@@ -170,9 +170,10 @@ class OutComeClassifier_CINC2022(object):
 
         """
         model_cls = self.model_map[model_name]
+        params = params or {}
         if model_cls in [GradientBoostingClassifier, SVC]:
             params.pop("n_jobs", None)
-        return model_cls(**(params or {}))
+        return model_cls(**params)
 
     def save_model(
         self,
@@ -198,9 +199,13 @@ class OutComeClassifier_CINC2022(object):
             path to save the model.
 
         """
+        if isinstance(model_path, bytes):
+            model_path = model_path.decode()
+        model_path = Path(model_path).expanduser().resolve()
+        model_path.parent.mkdir(parents=True, exist_ok=True)
         _config = deepcopy(config)
         _config.pop("db_dir", None)
-        Path(model_path).write_bytes(
+        model_path.write_bytes(
             pickle.dumps(
                 {
                     "config": _config,

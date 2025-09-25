@@ -1492,7 +1492,7 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     return wrapper
 
 
-def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Union[list, dict, Number]:
+def make_serializable(x: Union[Number, np.ndarray, np.generic, dict, list, tuple]) -> Union[list, dict, Number]:
     """Make an object serializable.
 
     This function is used to convert all numpy arrays to list in an object,
@@ -1501,7 +1501,7 @@ def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Un
 
     Parameters
     ----------
-    x : Union[numpy.ndarray, numpy.generic, dict, list, tuple]
+    x : Union[Number, numpy.ndarray, numpy.generic, dict, list, tuple]
         Input data, which can be numpy array (or numpy data type),
         or dict, list, tuple containing numpy arrays (or numpy data type).
 

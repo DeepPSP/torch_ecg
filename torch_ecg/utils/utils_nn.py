@@ -18,6 +18,8 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 from easydict import EasyDict
+from numpy.typing import NDArray
+from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 from torch import Tensor, nn
 
@@ -54,17 +56,23 @@ with warnings.catch_warnings():
     _safe_globals = [
         CFG, DTYPE, EasyDict,
         Path, PosixPath, WindowsPath,
-        np.core.multiarray._reconstruct,
+        # np.core.multiarray._reconstruct,
         np.ndarray, np.dtype,
         np.float32, np.float64, np.int32, np.int64, np.uint8, np.int8,
     ] + _get_np_dtypes()
+    if hasattr(np, "core"):
+        _safe_globals.append(np.core.multiarray._reconstruct)  # type: ignore
+    else:
+        _safe_globals.append(np._core.multiarray._reconstruct)  # type: ignore
     # fmt: on
 
 if hasattr(torch.serialization, "add_safe_globals"):
     torch.serialization.add_safe_globals(_safe_globals)
 
 
-def extend_predictions(preds: Sequence, classes: List[str], extended_classes: List[str]) -> np.ndarray:
+def extend_predictions(
+    preds: Union[Sequence, NDArray, torch.Tensor], classes: List[str], extended_classes: List[str]
+) -> np.ndarray:
     """Extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
@@ -142,8 +150,8 @@ def compute_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.
 
     This function is based on the discussion [#disc]_.
@@ -276,6 +284,8 @@ def compute_output_shape(
         "transposeconvolution",
     ]:
         out_channels = num_filters
+    else:
+        raise ValueError(f"Unknown layer type `{layer_type}`")
 
     def check_output_validity(shape):
         assert all(p is None or p > 0 for p in shape), f"output shape `{shape}` is illegal, please check input arguments"
@@ -351,12 +361,12 @@ def compute_output_shape(
             _asymmetric_padding = list(repeat(asymmetric_padding, dim))
         else:
             assert len(asymmetric_padding) == dim and all(
-                len(ap) == 2 and all(isinstance(p, int) for p in ap) for ap in asymmetric_padding
+                len(ap) == 2 and all(isinstance(p, int) for p in ap) for ap in asymmetric_padding  # type: ignore
             ), "Invalid `asymmetric_padding`"
             _asymmetric_padding = asymmetric_padding
         for idx in range(dim):
-            _padding[idx][0] += _asymmetric_padding[idx][0]
-            _padding[idx][1] += _asymmetric_padding[idx][1]
+            _padding[idx][0] += _asymmetric_padding[idx][0]  # type: ignore
+            _padding[idx][1] += _asymmetric_padding[idx][1]  # type: ignore
 
     if isinstance(output_padding, int):
         _output_padding = list(repeat(output_padding, dim))
@@ -402,7 +412,7 @@ def compute_output_shape(
         ]
     else:
         output_shape = [
-            floor(((i + sum(p) - minus_term(d, k)) / s) + 1)
+            floor(((i + sum(p) - minus_term(d, k)) / s) + 1)  # type: ignore
             for i, p, d, k, s in zip(_input_shape, _padding, _dilation, _kernel_size, _stride)
         ]
     if channel_last:
@@ -421,8 +431,8 @@ def compute_conv_output_shape(
     padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a convolution layer.
 
     Parameters
@@ -479,7 +489,7 @@ def compute_maxpool_output_shape(
     padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-) -> Tuple[Union[int, None]]:
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a maxpool layer.
 
     Parameters
@@ -529,7 +539,7 @@ def compute_avgpool_output_shape(
     stride: Union[Sequence[int], int] = 1,
     padding: Union[Sequence[int], int] = 0,
     channel_last: bool = False,
-) -> Tuple[Union[int, None]]:
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a avgpool layer.
 
     Parameters
@@ -580,8 +590,8 @@ def compute_deconv_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a transpose convolution layer
 
     Parameters
@@ -659,9 +669,11 @@ def compute_sequential_output_shape(
     """Compute the output shape of a sequential model."""
     assert issubclass(type(model), nn.Sequential), f"model should be nn.Sequential, but got {type(model)}"
     _seq_len = seq_len
+    output_shape = None
     for module in model:
         output_shape = module.compute_output_shape(_seq_len, batch_size)
         _, _, _seq_len = output_shape
+    assert output_shape is not None, "model has no modules"
     return output_shape
 
 
@@ -762,7 +774,7 @@ def compute_receptive_field(
     strides: Union[Sequence[int], int] = 1,
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
-    fs: Optional[Real] = None,
+    fs: Optional[Union[int, float]] = None,
 ) -> Union[int, float]:
     """Compute the receptive field of several types of
     :class:`~torch.nn.Module`.
@@ -857,7 +869,7 @@ def compute_receptive_field(
         receptive_field = min(receptive_field, input_len)
     if fs is not None:
         receptive_field /= fs
-    return make_serializable(receptive_field)
+    return make_serializable(receptive_field)  # type: ignore
 
 
 def default_collate_fn(
@@ -885,10 +897,10 @@ def default_collate_fn(
     """
     if isinstance(batch[0], dict):
         keys = batch[0].keys()
-        collated = _default_collate_fn([tuple(b[k] for k in keys) for b in batch])
+        collated = _default_collate_fn([tuple(b[k] for k in keys) for b in batch])  # type: ignore
         return {k: collated[i] for i, k in enumerate(keys)}
     else:
-        return _default_collate_fn(batch)
+        return _default_collate_fn(batch)  # type: ignore
 
 
 def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
@@ -972,7 +984,7 @@ def _adjust_cnn_filter_lengths(
                 ]
             elif isinstance(v, Real):
                 # DO NOT use `int`, which might not work for numpy array elements
-                if v > 1:
+                if v > 1:  # type: ignore
                     config[k] = int(round(v * fs / config["fs"]))
                     if ensure_odd:
                         config[k] = config[k] - config[k] % 2 + 1
@@ -1020,27 +1032,27 @@ class SizeMixin(object):
     @property
     def module_size(self) -> int:
         """Size of trainable parameters in the model in terms of number of parameters."""
-        return compute_module_size(self)
+        return compute_module_size(self)  # type: ignore
 
     @property
     def module_size_(self) -> str:
         """Size of trainable parameters in the model in terms of memory capacity."""
-        return compute_module_size(self, human=True)
+        return compute_module_size(self, human=True)  # type: ignore
 
     @property
     def sizeof(self) -> int:
         """Size of the model in terms of number of parameters, including non-trainable parameters and buffers."""
-        return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)  # type: ignore
 
     @property
     def sizeof_(self) -> str:
         """Size of the model in terms of memory capacity, including non-trainable parameters and buffers."""
-        return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)  # type: ignore
 
     @property
     def dtype(self) -> torch.dtype:
         try:
-            return next(self.parameters()).dtype
+            return next(self.parameters()).dtype  # type: ignore
         except StopIteration:
             return torch.float32
         except Exception as err:
@@ -1049,7 +1061,7 @@ class SizeMixin(object):
     @property
     def device(self) -> torch.device:
         try:
-            return next(self.parameters()).device
+            return next(self.parameters()).device  # type: ignore
         except StopIteration:
             return torch.device("cpu")
         except Exception as err:
@@ -1105,7 +1117,16 @@ def make_safe_globals(obj: CFG, remove_paths: bool = True) -> CFG:
             sg = None
         elif isinstance(sg, (str, bytes)) and os.path.exists(sg):
             sg = None
-    return sg
+    return sg  # type: ignore
+
+
+_SFT_META_MODEL_CFG = "model_config"
+_SFT_META_TRAIN_CFG = "train_config"
+_SFT_META_FORMAT = "__format__"
+_SFT_META_VERSION = "torch_ecg.ckpt.v1"
+_SFT_META_EXTRA_JSON_PREFIX = "__extra_json__/"  # JSON-serialized extras
+_SFT_EXTRA_TENSOR_PREFIX = "__extra__/"  # Tensor extras grouped under this prefix
+_SFT_META_EXTRA_TENSOR_GROUPS = "__extra_tensor_groups__"  # JSON list of groups
 
 
 class CkptMixin(object):
@@ -1143,22 +1164,26 @@ class CkptMixin(object):
             Auxiliary configs that are needed for data preprocessing, etc.
 
         """
-        _device = device or DEFAULTS.device
+        _device = device or DEFAULTS.device  # type: ignore
         if weights_only == "auto":
             if hasattr(torch.serialization, "add_safe_globals"):
                 weights_only = True
             else:
                 weights_only = False
 
-        if Path(path).is_dir():
-            candidates = list(Path(path).glob("*.pth")) + list(Path(path).glob("*.pt"))
+        if isinstance(path, bytes):
+            path = path.decode()
+        path = Path(path).expanduser().resolve()  # type: ignore
+
+        if path.is_dir():
+            candidates = list(path.glob("*.pth")) + list(path.glob("*.pt"))
             assert len(candidates) in [0, 1], "The directory should contain only one checkpoint file"
             if len(candidates) == 0:
                 # the directory should contain a `model.safetensors` file, a `model_config.json` file,
                 # and a `train_config.json` file
-                model_path = Path(path) / "model.safetensors"
-                train_config_path = Path(path) / "train_config.json"
-                model_config_path = Path(path) / "model_config.json"
+                model_path = path / "model.safetensors"
+                train_config_path = path / "train_config.json"
+                model_config_path = path / "model_config.json"
                 assert model_path.exists(), "model.safetensors file not found"
                 assert train_config_path.exists(), "train_config.json file not found"
                 assert model_config_path.exists(), "model_config.json file not found"
@@ -1171,12 +1196,44 @@ class CkptMixin(object):
                 if "n_leads" in aux_config:
                     kwargs["n_leads"] = aux_config["n_leads"]
                 model = cls(**kwargs)
-                model.load_state_dict(load_file(model_path, device=_device))
-                return model, aux_config
+                model.load_state_dict(load_file(model_path, device="cpu"))  # type: ignore
+                model.to(_device)  # type: ignore
+                return model, aux_config  # type: ignore
 
             # we have only one checkpoint file in the directory
             # and we will use `torch.load` to load the model
             path = candidates[0]
+
+        if path.suffix == ".safetensors":  # load safetensors format file
+            try:
+                with safe_open(str(path), framework="pt", device="cpu") as f:  # type: ignore
+                    meta = f.metadata() or {}
+                    if _SFT_META_MODEL_CFG in meta and _SFT_META_TRAIN_CFG in meta:
+                        model_config = json.loads(meta[_SFT_META_MODEL_CFG])
+                        train_config = json.loads(meta[_SFT_META_TRAIN_CFG])
+                        aux_config = train_config
+                        kwargs = dict(config=model_config)
+                        if "classes" in aux_config:
+                            kwargs["classes"] = aux_config["classes"]
+                        if "n_leads" in aux_config:
+                            kwargs["n_leads"] = aux_config["n_leads"]
+                        model = cls(**kwargs)
+
+                        # load only model weights, and ignores extra tensors
+                        state_dict = {}
+                        for key in f.keys():
+                            if not key.startswith(_SFT_EXTRA_TENSOR_PREFIX):
+                                state_dict[key] = f.get_tensor(key)
+                        model.load_state_dict(state_dict, strict=False)  # type: ignore
+                        model.to(_device)  # type: ignore
+                        return model, aux_config  # type: ignore
+            except Exception as e:
+                # when failed to load metadata, fallback to torch.load
+                raise RuntimeError(
+                    "Failed to load the safetensors file. "
+                    "Maybe the file is corrupted, or the version of safetensors is too old. "
+                    "Try updating safetensors to the latest version, or use a different way to load the model."
+                ) from e
 
         try:
             ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
@@ -1194,8 +1251,8 @@ class CkptMixin(object):
         if "n_leads" in aux_config:
             kwargs["n_leads"] = aux_config["n_leads"]
         model = cls(**kwargs)
-        model.load_state_dict(ckpt["model_state_dict"])
-        return model, aux_config
+        model.load_state_dict(ckpt["model_state_dict"])  # type: ignore
+        return model, aux_config  # type: ignore
 
     @classmethod
     def from_remote(
@@ -1240,9 +1297,16 @@ class CkptMixin(object):
         path: Union[str, bytes, os.PathLike],
         train_config: CFG,
         extra_items: Optional[dict] = None,
-        use_safetensors: bool = False,
+        use_safetensors: bool = True,
+        safetensors_single_file: bool = True,
     ) -> None:
         """Save the model to disk.
+
+        .. note::
+
+            `safetensors` is used by default to save the model.
+            If one wants to save the models in `.pth` or `.pt` format,
+            he/she must explicitly set ``use_safetensors=False``.
 
         Parameters
         ----------
@@ -1257,8 +1321,16 @@ class CkptMixin(object):
             or is a dict of torch tensors.
 
             .. versionadded:: 0.0.32
-        use_safetensors : bool, default False
+        use_safetensors : bool, default True
             Whether to use `safetensors` to save the model.
+            This will be overridden by the suffix of `path`:
+            if it is `.safetensors`, then `use_safetensors` is set to True;
+            if it is `.pth` or `.pt`, then if `use_safetensors` is True,
+            the suffix is changed to `.safetensors`, otherwise it is unchanged.
+
+            .. versionadded:: 0.0.32
+        safetensors_single_file : bool, default True
+            Whether to save the metadata along with the state dict into one file.
 
             .. versionadded:: 0.0.32
 
@@ -1267,23 +1339,59 @@ class CkptMixin(object):
         None
 
         """
-        path = Path(path)
+        if isinstance(path, bytes):
+            path = path.decode()
+        path = Path(path).expanduser().resolve()  # type: ignore
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
         extra_items = extra_items or {}
 
-        _model_config = make_safe_globals(self.config)
+        _model_config = make_safe_globals(self.config)  # type: ignore
         _train_config = make_safe_globals(train_config)
 
-        if use_safetensors:
-            # save the model with safetensors into a folder with the same name as `path`
+        if path.suffix in [".pth", ".pt"]:
+            if use_safetensors:
+                path = path.with_suffix(".safetensors")
+                warnings.warn(
+                    f"`safetensors` is used by default. The saved file name is changed to {path.name}", RuntimeWarning
+                )
+        elif path.suffix == ".safetensors":
+            use_safetensors = True
+
+        if use_safetensors and safetensors_single_file:
+            tensors = dict(self.state_dict())  # type: ignore
+
+            tensor_groups = []
+            for key, val in extra_items.items():
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    tensor_groups.append(key)
+                    for tname, ten in val.items():
+                        tensors[f"{_SFT_EXTRA_TENSOR_PREFIX}{key}/{tname}"] = ten
+
+            meta = {
+                _SFT_META_FORMAT: _SFT_META_VERSION,
+                _SFT_META_MODEL_CFG: json.dumps(make_serializable(_model_config), ensure_ascii=False),
+                _SFT_META_TRAIN_CFG: json.dumps(make_serializable(_train_config), ensure_ascii=False),
+                _SFT_META_EXTRA_TENSOR_GROUPS: json.dumps(sorted(tensor_groups)),
+            }
+            for key, val in extra_items.items():
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    continue
+                meta[f"{_SFT_META_EXTRA_JSON_PREFIX}{key}"] = json.dumps(make_serializable(val), ensure_ascii=False)
+
+            save_file(tensors, path.with_suffix(".safetensors"), metadata=meta)
+            return
+
+        if use_safetensors:  # not single file
+            # save the model with safetensors into a zip file with the same name as `path`
             # `model_config` and `train_config` are saved as json files
             path = path.with_suffix("")
+            path.mkdir(exist_ok=True)
             _model_config = make_serializable(_model_config)
             _train_config = make_serializable(_train_config)
             (path / "model_config.json").write_text(json.dumps(_model_config, ensure_ascii=False))
             (path / "train_config.json").write_text(json.dumps(_train_config, ensure_ascii=False))
-            save_file(self.state_dict(), path / "model.safetensors")
+            save_file(self.state_dict(), path / "model.safetensors")  # type: ignore
             # save extra items
             for key, val in extra_items.items():
                 # if val is a dict of torch tensors, save them as safetensors
@@ -1291,13 +1399,14 @@ class CkptMixin(object):
                     save_file(val, path / f"{key}.safetensors")
                 else:
                     (path / f"{key}.json").write_text(json.dumps(make_serializable(val), ensure_ascii=False))
-        else:
-            torch.save(
-                {
-                    "model_state_dict": self.state_dict(),
-                    "model_config": _model_config,
-                    "train_config": _train_config,
-                    **extra_items,
-                },
-                path,
-            )
+            return
+
+        torch.save(
+            {
+                "model_state_dict": self.state_dict(),  # type: ignore
+                "model_config": _model_config,
+                "train_config": _train_config,
+                **extra_items,
+            },
+            path,
+        )

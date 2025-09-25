@@ -258,6 +258,8 @@ def _stem(path: Union[str, bytes, os.PathLike]) -> str:
         Filename without extension.
 
     """
+    if isinstance(path, bytes):
+        path = path.decode()
     ret = Path(path).stem
     if Path(ret).suffix in [".tar", ".gz", ".tz", ".lz", ".bz2", ".xz", ".zip", ".7z"]:
         return _stem(ret)
