@@ -22,9 +22,9 @@ def test_rr_lstm():
     inp_bf = torch.randn(2, in_channels, 100).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.clf.name = "crf"
+    config.clf.name = "crf"  # type: ignore
     for attn_name in ["none"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
@@ -35,22 +35,22 @@ def test_rr_lstm():
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model.lstm.load_state_dict(model_v1.lstm.state_dict())
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
-    config.clf.name = "crf"
+    config.clf.name = "crf"  # type: ignore
     config.batch_first = True
     for attn_name in ["none"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.clf.name = "linear"
+    config.clf.name = "linear"  # type: ignore
     for attn_name in ["none", "gc", "nl", "se"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
@@ -61,13 +61,13 @@ def test_rr_lstm():
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model.lstm.load_state_dict(model_v1.lstm.state_dict())
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
-    config.clf.name = "linear"
+    config.clf.name = "linear"  # type: ignore
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
@@ -75,7 +75,7 @@ def test_rr_lstm():
 
     config = deepcopy(RR_AF_VANILLA_CONFIG)
     for attn_name in ["none", "gc", "nl", "se"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
@@ -86,12 +86,12 @@ def test_rr_lstm():
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model.lstm.load_state_dict(model_v1.lstm.state_dict())
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_AF_VANILLA_CONFIG)
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
@@ -99,7 +99,7 @@ def test_rr_lstm():
 
     config = deepcopy(RR_AF_CRF_CONFIG)
     for attn_name in ["none"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
@@ -110,21 +110,21 @@ def test_rr_lstm():
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
         model.lstm.load_state_dict(model_v1.lstm.state_dict())
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_AF_CRF_CONFIG)
     config.batch_first = True
     for attn_name in ["none"]:
-        config.attn.name = attn_name
+        config.attn.name = attn_name  # type: ignore
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0])
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.lstm.retseq = False
-    config.clf.name = "linear"
-    config.attn.name = "none"
+    config.lstm.retseq = False  # type: ignore
+    config.clf.name = "linear"  # type: ignore
+    config.attn.name = "none"  # type: ignore
     model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp)
@@ -135,13 +135,13 @@ def test_rr_lstm():
     model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
     model.lstm.load_state_dict(model_v1.lstm.state_dict())
     if model.attn.__class__.__name__ != "Identity":
-        model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
     model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
-    config.lstm.retseq = False
-    config.clf.name = "linear"
+    config.lstm.retseq = False  # type: ignore
+    config.clf.name = "linear"  # type: ignore
     config.batch_first = True
-    config.attn.name = "none"
+    config.attn.name = "none"  # type: ignore
     model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp_bf)
@@ -167,9 +167,9 @@ def test_warns_errors():
         model_v1 = RR_LSTM_v1(classes=classes).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.lstm.retseq = False
-    config.attn.name = "gc"
-    config.clf.name = "linear"
+    config.lstm.retseq = False  # type: ignore
+    config.attn.name = "gc"  # type: ignore
+    config.clf.name = "linear"  # type: ignore
     with pytest.warns(
         RuntimeWarning,
         match="Attention is not supported when lstm is not returning sequences",
@@ -182,9 +182,9 @@ def test_warns_errors():
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.lstm.retseq = False
-    config.attn.name = "none"
-    config.clf.name = "crf"
+    config.lstm.retseq = False  # type: ignore
+    config.attn.name = "none"  # type: ignore
+    config.clf.name = "crf"  # type: ignore
     with pytest.warns(
         RuntimeWarning,
         match="CRF layer is not supported in non-sequence mode, using linear instead",
@@ -215,15 +215,15 @@ def test_warns_errors():
         model_v1.inference(inp)
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.attn.name = "not_implemented"
-    config.attn.not_implemented = {}
+    config.attn.name = "not_implemented"  # type: ignore
+    config.attn.not_implemented = {}  # type: ignore
     with pytest.raises(NotImplementedError, match="Attn module \042.+\042 not implemented yet"):
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.raises(NotImplementedError, match="Attn module \042.+\042 not implemented yet"):
         model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
-    config.clf.name = "linear"
+    config.clf.name = "linear"  # type: ignore
     config.global_pool = "not_supported"
     with pytest.raises(NotImplementedError, match="Pooling type \042.+\042 not supported"):
         model = RR_LSTM(classes=classes, config=config).to(DEVICE)
@@ -235,9 +235,9 @@ def test_from_v1():
     config = deepcopy(RR_LSTM_CONFIG)
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
     model_v1 = RR_LSTM_v1(classes=classes, config=config)
-    model_v1.save(_TMP_DIR / "rr_lstm_v1.pth", {"classes": classes})
-    model = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth")
+    model_v1.save(_TMP_DIR / "rr_lstm_v1.pth", {"classes": classes}, use_safetensors=False)  # type: ignore
+    model = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth")  # type: ignore
     del model
-    model, _ = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth", return_config=True)
+    model, _ = RR_LSTM.from_v1(_TMP_DIR / "rr_lstm_v1.pth", return_config=True)  # type: ignore
     (_TMP_DIR / "rr_lstm_v1.pth").unlink()
     del model_v1, model

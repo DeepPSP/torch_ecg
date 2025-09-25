@@ -8,7 +8,7 @@ from inspect import isclass
 from itertools import repeat
 from math import sqrt
 from numbers import Real
-from typing import Any, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -105,7 +105,7 @@ Activations.relu = nn.ReLU
 Activations.relu6 = nn.ReLU6
 Activations.rrelu = nn.RReLU
 Activations.leaky = nn.LeakyReLU
-Activations.leaky_relu = Activations.leaky
+Activations.leaky_relu = Activations.leaky  # type: ignore
 Activations.gelu = nn.GELU
 Activations.silu = nn.SiLU
 Activations.elu = nn.ELU
@@ -121,7 +121,7 @@ Activations.softmax = nn.Softmax
 # Activations.linear = None
 
 
-def get_activation(act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None) -> Optional[nn.Module]:
+def get_activation(act: Union[str, nn.Module, None], kw_act: Optional[dict] = None) -> Optional[nn.Module]:
     """Get the class or instance of the activation.
 
     Parameters
@@ -159,7 +159,7 @@ def get_activation(act: Union[str, nn.Module, type(None)], kw_act: Optional[dict
     else:
         raise ValueError(f"activation `{act}` not supported")
     if kw_act is None:
-        return _act
+        return _act  # type: ignore
     return _act(**kw_act)
 
 
@@ -167,15 +167,15 @@ def get_activation(act: Union[str, nn.Module, type(None)], kw_act: Optional[dict
 # normalizations
 Normalizations = CFG()
 Normalizations.batch_norm = nn.BatchNorm1d
-Normalizations.batch_normalization = Normalizations.batch_norm
+Normalizations.batch_normalization = Normalizations.batch_norm  # type: ignore
 Normalizations.group_norm = nn.GroupNorm
-Normalizations.group_normalization = Normalizations.group_norm
+Normalizations.group_normalization = Normalizations.group_norm  # type: ignore
 Normalizations.layer_norm = nn.LayerNorm
-Normalizations.layer_normalization = Normalizations.layer_norm
+Normalizations.layer_normalization = Normalizations.layer_norm  # type: ignore
 Normalizations.instance_norm = nn.InstanceNorm1d
-Normalizations.instance_normalization = Normalizations.instance_norm
+Normalizations.instance_normalization = Normalizations.instance_norm  # type: ignore
 Normalizations.local_response_norm = nn.LocalResponseNorm
-Normalizations.local_response_normalization = Normalizations.local_response_norm
+Normalizations.local_response_normalization = Normalizations.local_response_norm  # type: ignore
 # other normalizations:
 # weight normalization
 # batch re-normalization
@@ -189,7 +189,7 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 # problem: parameters of different normalizations are different
 
 
-def get_normalization(norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None) -> Optional[nn.Module]:
+def get_normalization(norm: Union[str, nn.Module, None], kw_norm: Optional[dict] = None) -> Optional[nn.Module]:
     """Get the class or instance of the normalization.
 
     Parameters
@@ -224,12 +224,12 @@ def get_normalization(norm: Union[str, nn.Module, type(None)], kw_norm: Optional
     else:
         raise ValueError(f"normalization `{norm}` not supported")
     if kw_norm is None:
-        return _norm
+        return _norm  # type: ignore
     if "num_channels" in get_required_args(_norm) and "num_features" in kw_norm:
         # for some normalizations, the argument name is `num_channels`
         # instead of `num_features`, e.g., `torch.nn.GroupNorm`
         kw_norm["num_channels"] = kw_norm.pop("num_features")
-    return _norm(**kw_norm)
+    return _norm(**kw_norm)  # type: ignore
 
 
 # ---------------------------------------------
@@ -440,7 +440,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         groups: int = 1,
         batch_norm: Union[bool, str, nn.Module] = True,
         activation: Optional[Union[str, nn.Module]] = None,
-        kernel_initializer: Optional[Union[str, callable]] = None,
+        kernel_initializer: Optional[Union[str, Callable]] = None,
         bias: bool = True,
         ordering: Optional[str] = None,
         **kwargs: Any,
@@ -602,28 +602,28 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
-                self.add_module(act_name, act_layer)
+                self.add_module(act_name, act_layer)  # type: ignore
         elif self.__ordering in ["cab"]:
             self.add_module("conv1d", conv_layer)
             if self.__stride == 1 and self.__kernel_size % 2 == 0:
                 self.__asymmetric_padding = (1, 0)
                 self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if act_layer:
-                self.add_module(act_name, act_layer)
+                self.add_module(act_name, act_layer)  # type: ignore
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
         elif self.__ordering in ["bac", "bc"]:
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
-                self.add_module(act_name, act_layer)
+                self.add_module(act_name, act_layer)  # type: ignore
             self.add_module("conv1d", conv_layer)
             if self.__stride == 1 and self.__kernel_size % 2 == 0:
                 self.__asymmetric_padding = (1, 0)
                 self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
         elif self.__ordering in ["acb", "ac"]:
             if act_layer:
-                self.add_module(act_name, act_layer)
+                self.add_module(act_name, act_layer)  # type: ignore
             self.add_module("conv1d", conv_layer)
             if self.__stride == 1 and self.__kernel_size % 2 == 0:
                 self.__asymmetric_padding = (1, 0)
@@ -638,7 +638,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 self.__asymmetric_padding = (1, 0)
                 self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if act_layer:
-                self.add_module(act_name, act_layer)
+                self.add_module(act_name, act_layer)  # type: ignore
         elif self.__ordering in ["c"]:
             # only convolution
             self.add_module("conv1d", conv_layer)
@@ -745,6 +745,8 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                     *output_shape[:-1],
                     output_shape[-1] + sum(self.__asymmetric_padding),
                 )
+        else:
+            output_shape = [None]
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
@@ -754,7 +756,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             strides=self.__stride,
             dilations=self.__dilation,
             input_len=input_len,
-            fs=fs,
+            fs=fs,  # type: ignore
         )
 
     @property
@@ -883,7 +885,7 @@ class MultiConv(nn.Sequential, SizeMixin):
         if isinstance(dropouts, (Real, dict)):
             _dropouts = list(repeat(dropouts, self.__num_convs))
         else:
-            _dropouts = list(dropouts)
+            _dropouts = list(dropouts)  # type: ignore
         assert (
             len(_dropouts) == self.__num_convs
         ), f"`dropouts` must be a real number or dict or sequence of real numbers of length {self.__num_convs}"
@@ -896,7 +898,7 @@ class MultiConv(nn.Sequential, SizeMixin):
             len(_dilations) == self.__num_convs
         ), f"`dilations` must be of type int or sequence of int of length {self.__num_convs}"
 
-        __ordering = self.config.ordering.lower()
+        __ordering = self.config.ordering.lower()  # type: ignore
         if "a" in __ordering and __ordering.index("a") < __ordering.index("c"):
             in_activation = out_activation
             out_activation = True
@@ -905,7 +907,7 @@ class MultiConv(nn.Sequential, SizeMixin):
 
         conv_in_channels = self.__in_channels
         for idx, (oc, ks, sd, dl, dp) in enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
-            activation = self.config.activation
+            activation = self.config.activation  # type: ignore
             if idx == 0 and not in_activation:
                 activation = None
             if idx == self.__num_convs - 1 and not out_activation:
@@ -921,15 +923,15 @@ class MultiConv(nn.Sequential, SizeMixin):
                     groups=groups,
                     norm=self.config.get("norm", self.config.get("batch_norm")),
                     activation=activation,
-                    kw_activation=self.config.kw_activation,
-                    kernel_initializer=self.config.kernel_initializer,
-                    kw_initializer=self.config.kw_initializer,
-                    ordering=self.config.ordering,
-                    conv_type=self.config.conv_type,
-                    width_multiplier=self.config.width_multiplier,
+                    kw_activation=self.config.kw_activation,  # type: ignore
+                    kernel_initializer=self.config.kernel_initializer,  # type: ignore
+                    kw_initializer=self.config.kw_initializer,  # type: ignore
+                    ordering=self.config.ordering,  # type: ignore
+                    conv_type=self.config.conv_type,  # type: ignore
+                    width_multiplier=self.config.width_multiplier,  # type: ignore
                 ),
             )
-            conv_in_channels = int(oc * self.config.width_multiplier)
+            conv_in_channels = int(oc * self.config.width_multiplier)  # type: ignore
             if isinstance(dp, dict):
                 if dp["type"] == "1d" and dp["p"] > 0:
                     self.add_module(
@@ -956,7 +958,7 @@ class MultiConv(nn.Sequential, SizeMixin):
             if hasattr(module, "__name__") and module.__name__ == Conv_Bn_Activation.__name__:
                 output_shape = module.compute_output_shape(_seq_len, batch_size)
                 _, _, _seq_len = output_shape
-        return output_shape
+        return output_shape  # type: ignore
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
     def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
@@ -971,7 +973,7 @@ class MultiConv(nn.Sequential, SizeMixin):
             strides=strides,
             dilations=dilations,
             input_len=input_len,
-            fs=fs,
+            fs=fs,  # type: ignore
         )
 
     @property
@@ -1052,7 +1054,7 @@ class BranchedConv(nn.Module, SizeMixin):
         if isinstance(dropouts, (Real, dict)):
             _dropouts = list(repeat(dropouts, self.__num_branches))
         else:
-            _dropouts = list(dropouts)
+            _dropouts = list(dropouts)  # type: ignore
         assert (
             len(_dropouts) == self.__num_branches
         ), f"`dropouts` must be a real number or dict or sequence of real numbers of length {self.__num_branches}"
@@ -1203,7 +1205,7 @@ class SeparableConv(nn.Sequential, SizeMixin):
         padding: Optional[int] = None,
         dilation: int = 1,
         groups: int = 1,
-        kernel_initializer: Optional[Union[str, callable]] = None,
+        kernel_initializer: Optional[Union[str, Callable]] = None,
         bias: bool = True,
         **kwargs: Any,
     ) -> None:
@@ -1320,7 +1322,7 @@ class SeparableConv(nn.Sequential, SizeMixin):
             strides=[self.__stride, 1],
             dilations=[self.__dilation, 1],
             input_len=input_len,
-            fs=fs,
+            fs=fs,  # type: ignore
         )
 
     @property
@@ -1658,7 +1660,7 @@ class DownSample(nn.Sequential, SizeMixin):
                 stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
-        output_shape = (batch_size, self.__out_channels, out_seq_len)
+        output_shape = (batch_size, self.__out_channels, out_seq_len)  # type: ignore
         return output_shape
 
     @property
@@ -1691,7 +1693,7 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
             and all([i >= 0 for i in padding])
         ), "`padding` must be non-negative int or a 2-sequence of non-negative int"
         padding = list(repeat(padding, 2)) if isinstance(padding, int) else padding
-        super().__init__(padding, 0.0)
+        super().__init__(padding, 0.0)  # type: ignore
 
     def compute_output_shape(
         self,
@@ -1854,7 +1856,7 @@ class BlurPool(nn.Module, SizeMixin):
             PadLayer = ZeroPad1d
         else:
             raise NotImplementedError(f"Padding type of `{self.__pad_type}` is not implemented")
-        return PadLayer(self.__pad_sizes)
+        return PadLayer(self.__pad_sizes)  # type: ignore
 
     @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
@@ -2196,10 +2198,11 @@ class StackedLSTM(nn.Sequential, SizeMixin):
                 module.flatten_parameters()
                 output, _hx = module(output, _hx)
         if self.return_sequences:
-            final_output = output  # seq_len, batch_size, n_direction*hidden_size
+            final_output = output  # seq_len, batch_size, n_direction * hidden_size
         else:
-            final_output = output[-1, ...]  # batch_size, n_direction*hidden_size
-        return final_output
+            # batch_size, n_direction * hidden_size
+            final_output = output[-1, ...]  # type: ignore
+        return final_output  # type: ignore
 
     @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
@@ -2244,12 +2247,12 @@ class AttentionWithContext(nn.Module, SizeMixin):
         self.init(self.W)
 
         self.u = Parameter(torch.Tensor(in_channels))
-        Initializers.constant(self.u, 1 / in_channels)
+        Initializers.constant(self.u, 1 / in_channels)  # type: ignore
         # self.init(self.u)
 
         if self.bias:
             self.b = Parameter(torch.Tensor(in_channels))
-            Initializers.zeros(self.b)
+            Initializers.zeros(self.b)  # type: ignore
             # Initializers["zeros"](self.b)
         else:
             self.register_parameter("b", None)
@@ -2346,7 +2349,7 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
         return output
 
 
-@add_docstring(nn.MultiheadAttention.__doc__, "append")
+@add_docstring(nn.MultiheadAttention.__doc__, "append")  # type: ignore
 class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
     """Multi-head attention.
 
@@ -2617,7 +2620,7 @@ class AttentivePooling(nn.Module, SizeMixin):
         input = input.permute(0, 2, 1)  # -> (batch_size, seq_len, n_channels
         scores = self.dropout(input)
         scores = self.mid_linear(scores)  # -> (batch_size, seq_len, n_channels)
-        scores = self.activation(scores)  # -> (batch_size, seq_len, n_channels)
+        scores = self.activation(scores)  # -> (batch_size, seq_len, n_channels)  # type: ignore
         scores = self.contraction(scores)  # -> (batch_size, seq_len, 1)
         scores = scores.squeeze(-1)  # -> (batch_size, seq_len)
         scores = self.softmax(scores)  # -> (batch_size, seq_len)
@@ -2779,9 +2782,9 @@ class SeqLin(nn.Sequential, SizeMixin):
                 self.__dropouts = [dropouts]
         else:
             self.__dropouts = dropouts
-            assert len(self.__dropouts) == self.__num_layers, (
+            assert len(self.__dropouts) == self.__num_layers, (  # type: ignore
                 f"`out_channels` indicates `{self.__num_layers}` linear layers, "
-                f"while `dropouts` indicates `{len(self.__dropouts)}`"
+                f"while `dropouts` indicates `{len(self.__dropouts)}`"  # type: ignore
             )
         self.__skip_last_activation = kwargs.get("skip_last_activation", False)
 
@@ -2803,10 +2806,10 @@ class SeqLin(nn.Sequential, SizeMixin):
                     f"act_{idx}",
                     act_layer(**kw_activation),
                 )
-            if self.__dropouts[idx] > 0:
+            if self.__dropouts[idx] > 0:  # type: ignore
                 self.add_module(
                     f"dropout_{idx}",
-                    nn.Dropout(self.__dropouts[idx]),
+                    nn.Dropout(self.__dropouts[idx]),  # type: ignore
                 )
             lin_in_channels = self.__out_channels[idx]
 
@@ -3091,10 +3094,10 @@ class SEBlock(nn.Module, SizeMixin):
             SeqLin(
                 in_channels=self.__in_channels,
                 out_channels=[self.__mid_channels, self.__out_channels],
-                activation=self.config.activation,
-                kw_activation=self.config.kw_activation,
-                bias=self.config.bias,
-                dropouts=self.config.dropouts,
+                activation=self.config.activation,  # type: ignore
+                kw_activation=self.config.kw_activation,  # type: ignore
+                bias=self.config.bias,  # type: ignore
+                dropouts=self.config.dropouts,  # type: ignore
                 skip_last_activation=True,
             ),
             nn.Sigmoid(),
@@ -3287,7 +3290,7 @@ class GlobalContextBlock(nn.Module, SizeMixin):
             context = context.squeeze(1)  # --> (batch_size, n_channels, 1)
         elif self.__pooling_type == "avg":
             context = self.avg_pool(x)  # --> (batch_size, n_channels, 1)
-        return context
+        return context  # type: ignore
 
     def forward(self, input: Tensor) -> Tensor:
         """
@@ -3416,7 +3419,7 @@ class CBAMBlock(nn.Module, SizeMixin):
                 self.__gate_channels // reduction,
                 self.__gate_channels,
             ],
-            activation=activation,
+            activation=activation,  # type: ignore
             skip_last_activation=True,
         )
         # self.channel_gate_act = nn.Sigmoid()
@@ -3466,7 +3469,7 @@ class CBAMBlock(nn.Module, SizeMixin):
             else:
                 channel_att_sum = channel_att_sum + channel_att_raw
         # scale = torch.sigmoid(channel_att_sum)
-        scale = self.channel_gate_act(channel_att_sum)
+        scale = self.channel_gate_act(channel_att_sum)  # type: ignore
         output = scale.unsqueeze(-1) * input
         return output
 
@@ -3656,8 +3659,8 @@ class CRF(nn.Module, SizeMixin):
     def neg_log_likelihood(
         self,
         emissions: Tensor,
-        tags: torch.LongTensor,
-        mask: Optional[torch.ByteTensor] = None,
+        tags: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
         reduction: str = "sum",
     ) -> Tensor:
         """
@@ -3668,9 +3671,9 @@ class CRF(nn.Module, SizeMixin):
         ----------
         emissions: Tensor,
             emission score tensor of shape (seq_len, batch_size, num_tags)
-        tags: torch.LongTensor,
+        tags: torch.Tensor,
             sequence of tags tensor of shape (seq_len, batch_size)
-        mask: torch.ByteTensor,
+        mask: torch.Tensor,
             mask tensor of shape (seq_len, batch_size)
         reduction: str, default "sum",
             specifies the reduction to apply to the output:
@@ -3720,7 +3723,7 @@ class CRF(nn.Module, SizeMixin):
             nll = nll.sum() / mask.float().sum()
         return nll
 
-    def forward(self, emissions: Tensor, mask: Optional[torch.ByteTensor] = None) -> Tensor:
+    def forward(self, emissions: Tensor, mask: Optional[torch.Tensor] = None) -> Tensor:
         """
         Find the most likely tag sequence using Viterbi algorithm.
 
@@ -3730,7 +3733,7 @@ class CRF(nn.Module, SizeMixin):
             emission score tensor,
             of shape (seq_len, batch_size, num_tags) if batch_first is False,
             of shape (batch_size, seq_len, num_tags) if batch_first is True.
-        mask: torch.ByteTensor
+        mask: torch.Tensor
             mask tensor of shape (seq_len, batch_size) if batch_first is False,
             of shape (batch_size, seq_len) if batch_first is True.
 
@@ -3756,8 +3759,8 @@ class CRF(nn.Module, SizeMixin):
     def _validate(
         self,
         emissions: Tensor,
-        tags: Optional[torch.LongTensor] = None,
-        mask: Optional[torch.ByteTensor] = None,
+        tags: Optional[torch.Tensor] = None,
+        mask: Optional[torch.Tensor] = None,
     ) -> None:
         """Check validity of input :class:`~torch.Tensor`."""
         if emissions.dim() != 3:
@@ -3783,7 +3786,7 @@ class CRF(nn.Module, SizeMixin):
             if not no_empty_seq and not no_empty_seq_bf:
                 raise ValueError("mask of the first timestep must all be on")
 
-    def _compute_score(self, emissions: Tensor, tags: torch.LongTensor, mask: torch.ByteTensor) -> Tensor:
+    def _compute_score(self, emissions: Tensor, tags: torch.Tensor, mask: torch.Tensor) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # tags: (seq_len, batch_size)
@@ -3827,7 +3830,7 @@ class CRF(nn.Module, SizeMixin):
 
         return score
 
-    def _compute_normalizer(self, emissions: torch.Tensor, mask: torch.ByteTensor) -> Tensor:
+    def _compute_normalizer(self, emissions: torch.Tensor, mask: torch.Tensor) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -3884,7 +3887,7 @@ class CRF(nn.Module, SizeMixin):
         # shape: (batch_size,)
         return torch.logsumexp(score, dim=1)
 
-    def _viterbi_decode(self, emissions: torch.FloatTensor, mask: torch.ByteTensor) -> List[List[int]]:
+    def _viterbi_decode(self, emissions: torch.Tensor, mask: torch.Tensor) -> List[List[int]]:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -4251,18 +4254,18 @@ class MLDecoder(nn.Module, SizeMixin):
                 self.wordvec_proj = nn.Identity()
             self.decoder.duplicate_pooling = Parameter(Tensor(decoder_embedding, 1))
             self.decoder.duplicate_pooling_bias = Parameter(Tensor(1))
-            self.decoder.duplicate_factor = 1
+            self.decoder.duplicate_factor = 1  # type: ignore
         else:
             # group fully-connected
-            self.decoder.out_channels = out_channels
-            self.decoder.duplicate_factor = int(out_channels / embed_len_decoder + 0.999)
+            self.decoder.out_channels = out_channels  # type: ignore
+            self.decoder.duplicate_factor = int(out_channels / embed_len_decoder + 0.999)  # type: ignore
             self.decoder.duplicate_pooling = Parameter(
                 Tensor(embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor)
             )
             self.decoder.duplicate_pooling_bias = Parameter(Tensor(out_channels))
         nn.init.xavier_normal_(self.decoder.duplicate_pooling)
         nn.init.constant_(self.decoder.duplicate_pooling_bias, 0)
-        self.decoder.group_fc = _GroupFC(embed_len_decoder)
+        self.decoder.group_fc = _GroupFC(embed_len_decoder)  # type: ignore
         self.train_wordvecs = None
         self.test_wordvecs = None
 
@@ -4427,16 +4430,16 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
     """
     key = "name" if "name" in config else "type"
     assert key in config, "config must contain key 'name' or 'type'"
-    name = config[key].lower()
+    name = config[key].lower()  # type: ignore
     config.pop(key)
     if name in ["se"]:
-        return SEBlock(in_channels, **config)
+        return SEBlock(in_channels, **config)  # type: ignore
     elif name in ["gc"]:
-        return GlobalContextBlock(in_channels, **config)
+        return GlobalContextBlock(in_channels, **config)  # type: ignore
     elif name in ["nl", "non-local", "nonlocal", "non_local"]:
-        return NonLocalBlock(in_channels, **config)
+        return NonLocalBlock(in_channels, **config)  # type: ignore
     elif name in ["cbam"]:
-        return CBAMBlock(in_channels, **config)
+        return CBAMBlock(in_channels, **config)  # type: ignore
     elif name in ["ca"]:
         # NOT IMPLEMENTED
         return CoordAttention(in_channels, **config)
