@@ -669,11 +669,11 @@ def compute_sequential_output_shape(
     """Compute the output shape of a sequential model."""
     assert issubclass(type(model), nn.Sequential), f"model should be nn.Sequential, but got {type(model)}"
     _seq_len = seq_len
-    output_shape = None
+    if len(model) == 0:
+        raise AssertionError("model has no modules")
     for module in model:
         output_shape = module.compute_output_shape(_seq_len, batch_size)
         _, _, _seq_len = output_shape
-    assert output_shape is not None, "model has no modules"
     return output_shape
 
 
@@ -1228,11 +1228,11 @@ class CkptMixin(object):
                         model.to(_device)  # type: ignore
                         return model, aux_config  # type: ignore
             except Exception as e:
-                # when failed to load metadata, fallback to torch.load
+                # failed to load the safetensors file
                 raise RuntimeError(
                     "Failed to load the safetensors file. "
-                    "Maybe the file is corrupted, or the version of safetensors is too old. "
-                    "Try updating safetensors to the latest version, or use a different way to load the model."
+                    "The file may be corrupted, or the version of safetensors is incompatible. "
+                    "Try updating safetensors to the latest version, or check the file integrity."
                 ) from e
 
         try:
