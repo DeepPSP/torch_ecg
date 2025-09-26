@@ -5,7 +5,6 @@ including spatial, temporal, spatio-temporal domains.
 
 import warnings
 from copy import deepcopy
-from numbers import Real
 from typing import Iterable, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -119,7 +118,7 @@ def smooth(
     else:
         w = eval("np." + window + "(radius)")
 
-    y = np.convolve(w / w.sum(), s, mode=mode)
+    y = np.convolve(w / w.sum(), s, mode=mode)  # type: ignore
     y = y[(radius // 2 - 1) : -(radius // 2) - 1]
     assert len(x) == len(y)
 
@@ -131,7 +130,7 @@ def smooth(
 
 def resample_irregular_timeseries(
     sig: np.ndarray,
-    output_fs: Optional[Real] = None,
+    output_fs: Optional[Union[float, int]] = None,
     method: Literal["spline", "interp1d"] = "interp1d",
     return_with_time: bool = False,
     tnew: Optional[np.ndarray] = None,
@@ -149,7 +148,7 @@ def resample_irregular_timeseries(
     sig : numpy.ndarray
         The 2d irregular timeseries.
         Each row is ``[time, value]``.
-    output_fs : numbers.Real, optional
+    output_fs : float or int, optional
         the frequency of the output 1d regular timeseries,
         one and only one of `output_fs` and `tnew` should be specified
     method : {"spline", "interp1d"}, default "interp1d"
@@ -203,7 +202,7 @@ def resample_irregular_timeseries(
     dtype = sig.dtype
     time_series = np.atleast_2d(sig).astype(dtype)
     if tnew is None:
-        step_ts = 1000 / output_fs
+        step_ts = 1000 / output_fs  # type: ignore
         tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1
         xnew = time_series[0][0] + np.arange(0, tot_len * step_ts, step_ts)
     else:
@@ -234,19 +233,19 @@ def resample_irregular_timeseries(
         regular_timeseries = f(xnew)
 
     if return_with_time:
-        return np.column_stack((xnew, regular_timeseries)).astype(dtype)
+        return np.column_stack((xnew, regular_timeseries)).astype(dtype)  # type: ignore
     else:
-        return regular_timeseries.astype(dtype)
+        return regular_timeseries.astype(dtype)  # type: ignore
 
 
 def detect_peaks(
     x: Sequence,
-    mph: Optional[Real] = None,
+    mph: Optional[Union[float, int]] = None,
     mpd: int = 1,
-    threshold: Real = 0,
-    left_threshold: Real = 0,
-    right_threshold: Real = 0,
-    prominence: Optional[Real] = None,
+    threshold: Union[float, int] = 0,
+    left_threshold: Union[float, int] = 0,
+    right_threshold: Union[float, int] = 0,
+    prominence: Optional[Union[float, int]] = None,
     prominence_wlen: Optional[int] = None,
     edge: Union[str, None] = "rising",
     kpsh: bool = False,
@@ -384,7 +383,7 @@ def detect_peaks(
     # handle NaN's
     if ind.size and indnan.size:
         # NaN's and values close to NaN's cannot be peaks
-        ind = ind[np.in1d(ind, np.unique(np.hstack((indnan, indnan - 1, indnan + 1))), invert=True)]
+        ind = ind[np.isin(ind, np.unique(np.hstack((indnan, indnan - 1, indnan + 1))), invert=True)]
 
     if verbose >= 1:
         print(f"after handling nan values, ind = {ind.tolist()}")
@@ -455,7 +454,7 @@ def detect_peaks(
     return ind
 
 
-def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = True) -> np.ndarray:
+def remove_spikes_naive(sig: np.ndarray, threshold: Union[float, int] = 20, inplace: bool = True) -> np.ndarray:
     """Remove signal spikes using a naive method.
 
     This is a method proposed in entry 0416 of CPSC2019.
@@ -470,7 +469,7 @@ def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = T
         1D, 2D or 3D signal with potential spikes.
         The last dimension is the time dimension.
         The signal can be single-lead, multi-lead, or batched signals.
-    threshold : numbers.Real, optional
+    threshold : float or int, optional
         Values of `sig` that are larger than `threshold` will be removed.
     inplace : bool, optional
         Whether to modify `sig` in place or not.
@@ -512,16 +511,18 @@ def remove_spikes_naive(sig: np.ndarray, threshold: Real = 20, inplace: bool = T
     return sig.astype(dtype)
 
 
-def butter_bandpass(lowcut: Real, highcut: Real, fs: Real, order: int, verbose: int = 0) -> Tuple[np.ndarray, np.ndarray]:
+def butter_bandpass(
+    lowcut: Union[float, int], highcut: Union[float, int], fs: Union[float, int], order: int, verbose: int = 0
+) -> Tuple[np.ndarray, np.ndarray]:
     """Butterworth Bandpass Filter Design.
 
     Parameters
     ----------
-    lowcut : numbers.Real
+    lowcut : float or int
         Low cutoff frequency.
-    highcut : numbers.Real
+    highcut : float or int
         High cutoff frequency.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of `data`.
     order : int,
         Order of the filter.
@@ -569,15 +570,15 @@ def butter_bandpass(lowcut: Real, highcut: Real, fs: Real, order: int, verbose: 
     if verbose >= 1:
         print(f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}")
 
-    b, a = butter(order, Wn, btype=btype)
+    b, a = butter(order, Wn, btype=btype)  # type: ignore
     return b, a
 
 
 def butter_bandpass_filter(
     data: np.ndarray,
-    lowcut: Real,
-    highcut: Real,
-    fs: Real,
+    lowcut: Union[float, int],
+    highcut: Union[float, int],
+    fs: Union[float, int],
     order: int,
     btype: Optional[Literal["lohi", "hilo"]] = None,
     verbose: int = 0,
@@ -640,9 +641,9 @@ def butter_bandpass_filter(
 
 def get_ampl(
     sig: np.ndarray,
-    fs: Real,
+    fs: Union[float, int],
     fmt: str = "lead_first",
-    window: Real = 0.2,
+    window: Union[float, int] = 0.2,
     critical_points: Optional[Sequence] = None,
 ) -> Union[float, np.ndarray]:
     """Get amplitude of a signal (near critical points if given).
@@ -651,7 +652,7 @@ def get_ampl(
     ----------
     sig : numpy.ndarray
         (ECG) signal.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal
     fmt : str, default "lead_first"
         Format of the signal, can be
@@ -715,8 +716,8 @@ def get_ampl(
 def normalize(
     sig: np.ndarray,
     method: Literal["naive", "min-max", "z-score"],
-    mean: Union[Real, Iterable[Real]] = 0.0,
-    std: Union[Real, Iterable[Real]] = 1.0,
+    mean: Union[Union[float, int], Iterable[Union[float, int]]] = 0.0,
+    std: Union[Union[float, int], Iterable[Union[float, int]]] = 1.0,
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
 ) -> np.ndarray:
@@ -742,11 +743,11 @@ def normalize(
         The signal to be normalized.
     method : {"naive", "min-max", "z-score"}
         Normalization method, case insensitive.
-    mean : numbers.Real or array_like, default 0.0
+    mean : float or int or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal.
         Useless if `method` is "min-max".
-    std : numbers.Real or array_like, default 1.0
+    std : float or int or array_like, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal.
         Useless if `method` is "min-max".
@@ -786,17 +787,17 @@ def normalize(
     ], f"unknown normalization method `{method}`"
     if not per_channel:
         if sig.ndim == 2:
-            assert isinstance(mean, Real) and isinstance(
-                std, Real
+            assert isinstance(mean, (float, int)) and isinstance(
+                std, (float, int)
             ), "`mean` and `std` should be real numbers in the non per-channel setting for 2d signal"
         else:  # sig.ndim == 3
-            assert (isinstance(mean, Real) or np.shape(mean) == (sig.shape[0],)) and (
-                isinstance(std, Real) or np.shape(std) == (sig.shape[0],)
+            assert (isinstance(mean, (float, int)) or np.shape(mean) == (sig.shape[0],)) and (  # type: ignore
+                isinstance(std, (float, int)) or np.shape(std) == (sig.shape[0],)  # type: ignore
             ), (
                 f"`mean` and `std` should be real numbers or have shape ({sig.shape[0]},) "
                 "in the non per-channel setting for 3d signal"
             )
-    if isinstance(std, Real):
+    if isinstance(std, (float, int)):
         assert std > 0, "standard deviation should be positive"
     else:
         assert (np.array(std) > 0).all(), "standard deviations should all be positive"
@@ -810,10 +811,10 @@ def normalize(
     if isinstance(mean, Iterable):
         assert sig.ndim in [2, 3], "`mean` should be a real number for 1d signal"
         if sig.ndim == 2:
-            assert np.shape(mean) in [
+            assert np.shape(mean) in [  # type: ignore
                 (sig.shape[0],),
                 (sig.shape[-1],),
-            ], f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
+            ], f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"  # type: ignore
             if sig_fmt.lower() in [
                 "channel_first",
                 "lead_first",
@@ -826,40 +827,40 @@ def normalize(
                 "channel_first",
                 "lead_first",
             ]:
-                if np.shape(mean) == (sig.shape[0],):
+                if np.shape(mean) == (sig.shape[0],):  # type: ignore
                     _mean = np.array(mean, dtype=dtype)[..., np.newaxis, np.newaxis]
-                elif np.shape(mean) == (sig.shape[1],):
+                elif np.shape(mean) == (sig.shape[1],):  # type: ignore
                     _mean = np.repeat(
                         np.array(mean, dtype=dtype)[np.newaxis, ..., np.newaxis],
                         sig.shape[0],
                         axis=0,
                     )
-                elif np.shape(mean) == sig.shape[:2]:
+                elif np.shape(mean) == sig.shape[:2]:  # type: ignore
                     _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
                 else:
-                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")
+                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")  # type: ignore
             else:  # "channel_last" or "lead_last"
-                if np.shape(mean) == (sig.shape[0],):
+                if np.shape(mean) == (sig.shape[0],):  # type: ignore
                     _mean = np.array(mean, dtype=dtype)[..., np.newaxis, np.newaxis]
-                elif np.shape(mean) == (sig.shape[-1],):
+                elif np.shape(mean) == (sig.shape[-1],):  # type: ignore
                     _mean = np.repeat(
                         np.array(mean, dtype=dtype)[np.newaxis, np.newaxis, ...],
                         sig.shape[0],
                         axis=0,
                     )
-                elif np.shape(mean) == (sig.shape[0], sig.shape[-1]):
+                elif np.shape(mean) == (sig.shape[0], sig.shape[-1]):  # type: ignore
                     _mean = np.expand_dims(np.array(mean, dtype=dtype), axis=1)
                 else:
-                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")
+                    raise AssertionError(f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}")  # type: ignore
     else:
         _mean = mean
     if isinstance(std, Iterable):
         assert sig.ndim in [2, 3], "`std` should be a real number for 1d signal"
         if sig.ndim == 2:
-            assert np.shape(std) in [
+            assert np.shape(std) in [  # type: ignore
                 (sig.shape[0],),
                 (sig.shape[-1],),
-            ], f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
+            ], f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"  # type: ignore
             if sig_fmt.lower() in [
                 "channel_first",
                 "lead_first",
@@ -872,31 +873,31 @@ def normalize(
                 "channel_first",
                 "lead_first",
             ]:
-                if np.shape(std) == (sig.shape[0],):
+                if np.shape(std) == (sig.shape[0],):  # type: ignore
                     _std = np.array(std, dtype=dtype)[..., np.newaxis, np.newaxis]
-                elif np.shape(std) == (sig.shape[1],):
+                elif np.shape(std) == (sig.shape[1],):  # type: ignore
                     _std = np.repeat(
                         np.array(std, dtype=dtype)[np.newaxis, ..., np.newaxis],
                         sig.shape[0],
                         axis=0,
                     )
-                elif np.shape(std) == sig.shape[:2]:
+                elif np.shape(std) == sig.shape[:2]:  # type: ignore
                     _std = np.array(std, dtype=dtype)[..., np.newaxis]
                 else:
-                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")
+                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")  # type: ignore
             else:  # "channel_last" or "lead_last"
-                if np.shape(std) == (sig.shape[0],):
+                if np.shape(std) == (sig.shape[0],):  # type: ignore
                     _std = np.array(std, dtype=dtype)[..., np.newaxis, np.newaxis]
-                elif np.shape(std) == (sig.shape[-1],):
+                elif np.shape(std) == (sig.shape[-1],):  # type: ignore
                     _std = np.repeat(
                         np.array(std, dtype=dtype)[np.newaxis, np.newaxis, ...],
                         sig.shape[0],
                         axis=0,
                     )
-                elif np.shape(std) == (sig.shape[0], sig.shape[-1]):
+                elif np.shape(std) == (sig.shape[0], sig.shape[-1]):  # type: ignore
                     _std = np.expand_dims(np.array(std, dtype=dtype), axis=1)
                 else:
-                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")
+                    raise AssertionError(f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}")  # type: ignore
     else:
         _std = std
 
@@ -927,7 +928,7 @@ def normalize(
             options = dict(axis=0, keepdims=True)
 
     if _method == "z-score":
-        nm_sig = ((sig - np.mean(sig, dtype=dtype, **options)) / (np.std(sig, dtype=dtype, **options) + eps)) * _std + _mean
+        nm_sig = ((sig - np.mean(sig, dtype=dtype, **options)) / (np.std(sig, dtype=dtype, **options) + eps)) * _std + _mean  # type: ignore
     elif _method == "min-max":
-        nm_sig = (sig - np.amin(sig, **options)) / (np.amax(sig, **options) - np.amin(sig, **options) + eps)
-    return nm_sig.astype(dtype)
+        nm_sig = (sig - np.amin(sig, **options)) / (np.amax(sig, **options) - np.amin(sig, **options) + eps)  # type: ignore
+    return nm_sig.astype(dtype)  # type: ignore

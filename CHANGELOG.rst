@@ -24,6 +24,8 @@ Changed
   class in `torch_ecg.utils.utils_nn`.
 - Add retry mechanism to the `http_get` function in
   `torch_ecg.utils.download` module.
+- Add length verification in the `http_get` function in
+  `torch_ecg.utils.download` module.
 
 Deprecated
 ~~~~~~~~~~
@@ -45,6 +47,11 @@ Fixed
 - Fix potential errors when deepcopying a `torch_ecg.cfg.CFG` object:
   previously, deepcopying such an object like `CFG({"a": {1: 0.1, 2: 0.2}})`
   would result in an error.
+- Fix potential bugs in contextmanager `torch_ecg.utils.timeout`: restore the previously
+  installed SIGALRM handler after use, cancel any pending alarm reliably in a finally block,
+  avoid installing a handler when duration <= 0 (preventing unintended global side-effects),
+  and thereby eliminate spurious `TimeoutError` exceptions that could be triggered later by
+  unrelated signal.alarm calls due to the old implementation not reinstating the original handler.
 
 Security
 ~~~~~~~~

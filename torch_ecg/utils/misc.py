@@ -14,7 +14,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
 from glob import glob
-from numbers import Number, Real
+from numbers import Number
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -85,10 +85,10 @@ def get_record_list_recursive(db_dir: Union[str, bytes, os.PathLike], rec_ext: s
 
     """
     if not rec_ext.startswith("."):
-        res = Path(db_dir).rglob(f"*.{rec_ext}")
+        res = Path(db_dir).rglob(f"*.{rec_ext}")  # type: ignore
     else:
-        res = Path(db_dir).rglob(f"*{rec_ext}")
-    res = [str((item.relative_to(db_dir) if relative else item).with_suffix("")) for item in res if str(item).endswith(rec_ext)]
+        res = Path(db_dir).rglob(f"*{rec_ext}")  # type: ignore
+    res = [str((item.relative_to(db_dir) if relative else item).with_suffix("")) for item in res if str(item).endswith(rec_ext)]  # type: ignore
     res = sorted(res)
 
     return res
@@ -173,32 +173,32 @@ def get_record_list_recursive3(
         res = []
     elif isinstance(rec_patterns, dict):
         res = {k: [] for k in rec_patterns.keys()}
-    _db_dir = Path(db_dir).resolve()  # make absolute
+    _db_dir = Path(db_dir).resolve()  # type: ignore
     roots = [_db_dir]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
             tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
-                res += [r / item for item in filter(re.compile(rec_patterns).search, tmp)]
+                res += [r / item for item in filter(re.compile(rec_patterns).search, tmp)]  # type: ignore
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
-                    res[k] += [r / item for item in filter(re.compile(rec_patterns[k]).search, tmp)]
+                    res[k] += [r / item for item in filter(re.compile(rec_patterns[k]).search, tmp)]  # type: ignore
             new_roots += [r / item for item in tmp if (r / item).is_dir()]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
         if with_suffix:
-            res = [str((item.relative_to(_db_dir) if relative else item)) for item in res]
+            res = [str((item.relative_to(_db_dir) if relative else item)) for item in res]  # type: ignore
         else:
-            res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]
+            res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]  # type: ignore
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
             if with_suffix:
-                res[k] = [str((item.relative_to(_db_dir) if relative else item)) for item in res[k]]
+                res[k] = [str((item.relative_to(_db_dir) if relative else item)) for item in res[k]]  # type: ignore
             else:
-                res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]
-            res[k] = sorted(res[k])
+                res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]  # type: ignore
+            res[k] = sorted(res[k])  # type: ignore
     return res
 
 
@@ -337,14 +337,14 @@ def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
     return d
 
 
-def ms2samples(t: Real, fs: Real) -> int:
+def ms2samples(t: Union[float, int], fs: Union[float, int]) -> int:
     """Convert time duration in ms to number of samples.
 
     Parameters
     ----------
-    t : numbers.Real
+    t : float or int
         Time duration in ms.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency.
 
     Returns
@@ -354,23 +354,23 @@ def ms2samples(t: Real, fs: Real) -> int:
         with sampling frequency `fs`.
 
     """
-    n_samples = t * fs // 1000
+    n_samples = int(t * fs / 1000)
     return n_samples
 
 
-def samples2ms(n_samples: int, fs: Real) -> Real:
+def samples2ms(n_samples: int, fs: int) -> float:
     """Convert number of samples to time duration in ms.
 
     Parameters
     ----------
     n_samples : int
         Number of sample points.
-    fs : numbers.Real
+    fs : int
         Sampling frequency.
 
     Returns
     -------
-    t : numbers.Real
+    t : float
         Time duration in ms converted from `n_samples`,
         with sampling frequency `fs`.
 
@@ -405,8 +405,9 @@ def plot_single_lead(
     None
 
     """
-    if "plt" not in dir():
-        import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import MultipleLocator
+
     palette = {
         "p_waves": "cyan",
         "qrs": "green",
@@ -426,12 +427,12 @@ def plot_single_lead(
     ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
     # NOTE that `Locator` has default `MAXTICKS` equal to 1000
     if ticks_granularity >= 1:
-        ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
-        ax.yaxis.set_major_locator(plt.MultipleLocator(500))
+        ax.xaxis.set_major_locator(MultipleLocator(0.2))
+        ax.yaxis.set_major_locator(MultipleLocator(500))
         ax.grid(which="major", linestyle="-", linewidth="0.5", color="red")
     if ticks_granularity >= 2:
-        ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
-        ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
+        ax.xaxis.set_minor_locator(MultipleLocator(0.04))
+        ax.yaxis.set_minor_locator(MultipleLocator(100))
         ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
 
     waves = kwargs.get("waves", {"p_waves": [], "qrs": [], "t_waves": []})
@@ -485,13 +486,13 @@ def init_logger(
         log_file = None
     else:
         if log_file is None:
-            log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"
-        log_dir = Path(log_dir).expanduser().resolve() if log_dir is not None else DEFAULTS.log_dir
+            log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"  # type: ignore
+        log_dir = Path(log_dir).expanduser().resolve() if log_dir is not None else DEFAULTS.log_dir  # type: ignore
         log_dir.mkdir(parents=True, exist_ok=True)
-        log_file = log_dir / log_file
+        log_file = log_dir / log_file  # type: ignore
         print(f"log file path: {str(log_file)}")
 
-    log_name = (log_name or DEFAULTS.prefix) + (f"-{suffix}" if suffix else "")
+    log_name = (log_name or DEFAULTS.prefix) + (f"-{suffix}" if suffix else "")  # type: ignore
     # if a logger with the same name already exists, remove it
     if log_name in logging.root.manager.loggerDict:
         logging.getLogger(log_name).handlers = []
@@ -506,21 +507,21 @@ def init_logger(
         c_handler.setLevel(logging.DEBUG)
         if log_file is not None:
             # print("level of `f_handler` is set DEBUG")
-            f_handler.setLevel(logging.DEBUG)
+            f_handler.setLevel(logging.DEBUG)  # type: ignore
         logger.setLevel(logging.DEBUG)
     elif verbose >= 1:
         # print("level of `c_handler` is set INFO")
         c_handler.setLevel(logging.INFO)
         if log_file is not None:
             # print("level of `f_handler` is set DEBUG")
-            f_handler.setLevel(logging.DEBUG)
+            f_handler.setLevel(logging.DEBUG)  # type: ignore
         logger.setLevel(logging.DEBUG)
     else:
         # print("level of `c_handler` is set WARNING")
         c_handler.setLevel(logging.WARNING)
         if log_file is not None:
             # print("level of `f_handler` is set INFO")
-            f_handler.setLevel(logging.INFO)
+            f_handler.setLevel(logging.INFO)  # type: ignore
         logger.setLevel(logging.INFO)
 
     c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
@@ -529,8 +530,8 @@ def init_logger(
 
     if log_file is not None:
         f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        f_handler.setFormatter(f_format)
-        logger.addHandler(f_handler)
+        f_handler.setFormatter(f_format)  # type: ignore
+        logger.addHandler(f_handler)  # type: ignore
 
     return logger
 
@@ -598,7 +599,7 @@ def read_log_txt(
         Scalars summary, in the format of a :class:`~pandas.DataFrame`.
 
     """
-    content = Path(fp).read_text().splitlines()
+    content = Path(fp).read_text().splitlines()  # type: ignore
     if isinstance(scalar_startswith, str):
         field_pattern = f"({scalar_startswith})"
     else:
@@ -615,7 +616,8 @@ def read_log_txt(
             field, val = line.split(":")[-2:]
             field = field.strip()
             val = float(val.strip())
-            new_line[field] = val
+            if new_line:
+                new_line[field] = val
     summary.append(new_line)
     summary = pd.DataFrame(summary)
     return summary
@@ -641,7 +643,7 @@ def read_event_scalars(
 
     """
     try:
-        from tensorflow.python.summary.event_accumulator import EventAccumulator
+        from tensorflow.python.summary.event_accumulator import EventAccumulator  # type: ignore
     except Exception:
         try:
             from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
@@ -662,7 +664,7 @@ def read_event_scalars(
         df.columns = ["wall_time", "step", "value"]
         summary[k] = df
     if isinstance(keys, str):
-        summary = summary[k]
+        summary = summary[k]  # type: ignore
     return summary
 
 
@@ -809,15 +811,15 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     closing_indent = 4 * (depth - 1) * " "
     if not hasattr(c, "extra_repr_keys"):
         return repr(c)
-    elif len(c.extra_repr_keys()) > 0:
-        max_len = max([len(k) for k in c.extra_repr_keys()])
+    elif len(c.extra_repr_keys()) > 0:  # type: ignore
+        max_len = max([len(k) for k in c.extra_repr_keys()])  # type: ignore
         extra_str = (
             "(\n"
             + ",\n".join(
                 [
                     f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}"""
                     for k in c.__dir__()
-                    if k in c.extra_repr_keys()
+                    if k in c.extra_repr_keys()  # type: ignore
                 ]
             )
             + f"{closing_indent}\n)"
@@ -874,7 +876,7 @@ class CitationMixin(_CitationMixin):
         style: Optional[str] = None,
         timeout: Optional[float] = None,
         print_result: bool = True,
-    ) -> Union[str, type(None)]:
+    ) -> Union[str, None]:
         """Get bib citation from DOIs.
 
         Overrides the default method to make the `print_result` argument
@@ -1020,10 +1022,10 @@ class MovingAverage(object):
             smoothed.append(s)
         smoothed = np.array(smoothed)
         if center:
-            smoothed[hw:-hw] = smoothed[window - 1 :]
-            for n in range(hw):
-                smoothed[n] = np.mean(self.data[: n + hw + 1])
-                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])
+            smoothed[hw:-hw] = smoothed[window - 1 :]  # type: ignore
+            for n in range(hw):  # type: ignore
+                smoothed[n] = np.mean(self.data[: n + hw + 1])  # type: ignore
+                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])  # type: ignore
         return smoothed
 
     def _ema(self, weight: float = 0.6, **kwargs: Any) -> np.ndarray:
@@ -1199,7 +1201,7 @@ def remove_parameters_returns_from_docstring(
         if start_idx is not None and len(line.strip()) == 0:
             indices2remove.extend(list(range(start_idx, idx)))
             start_idx = None
-        if parameters_starts and len(line.lstrip()) == len(line) - len(parameters_indent):
+        if parameters_starts and len(line.lstrip()) == len(line) - len(parameters_indent):  # type: ignore
             if any([line.lstrip().startswith(p) for p in parameters]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1210,7 +1212,7 @@ def remove_parameters_returns_from_docstring(
                 else:
                     indices2remove.extend(list(range(start_idx, idx)))
                 start_idx = None
-        if returns_starts and len(line.lstrip()) == len(line) - len(returns_indent):
+        if returns_starts and len(line.lstrip()) == len(line) - len(returns_indent):  # type: ignore
             if any([line.lstrip().startswith(p) for p in returns]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1226,7 +1228,7 @@ def remove_parameters_returns_from_docstring(
 
 
 @contextmanager
-def timeout(duration: float):
+def timeout(duration: Union[float, int]):
     """A context manager that raises a
     :class:`TimeoutError` after a specified time (in seconds).
 
@@ -1247,16 +1249,25 @@ def timeout(duration: float):
         duration = 0
     elif duration < 0:
         raise ValueError("`duration` must be non-negative")
-    elif duration > 0:  # granularity is 1 second, so round up
+    elif duration > 0:
         duration = max(1, int(duration))
+
+    if duration == 0:
+        yield
+        return
+
+    old_handler = signal.getsignal(signal.SIGALRM)
 
     def timeout_handler(signum, frame):
         raise TimeoutError(f"block timedout after `{duration}` seconds")
 
     signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(duration)
-    yield
-    signal.alarm(0)
+    signal.alarm(duration)  # type: ignore
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old_handler)
 
 
 class Timer(ReprMixin):
@@ -1365,7 +1376,7 @@ class Timer(ReprMixin):
         return ["name", "verbose"]
 
 
-def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
+def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     """Get the kwargs of a function or class.
 
     Parameters
@@ -1403,7 +1414,7 @@ def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
     return kwargs
 
 
-def get_required_args(func_or_cls: callable) -> List[str]:
+def get_required_args(func_or_cls: Callable) -> List[str]:
     """Get the required positional arguments of a function or class.
 
     Parameters
@@ -1427,7 +1438,7 @@ def get_required_args(func_or_cls: callable) -> List[str]:
     return required_args
 
 
-def add_kwargs(func: callable, **kwargs: Any) -> callable:
+def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
     """Add keyword arguments to a function.
 
     This function is used to add keyword arguments to a function
@@ -1466,18 +1477,18 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     # move the VAR_POSITIONAL and VAR_KEYWORD in `func_parameters` to the end
     for k, v in func_parameters.items():
         if v.kind == inspect.Parameter.VAR_POSITIONAL:
-            func_parameters.move_to_end(k)
+            func_parameters.move_to_end(k)  # type: ignore
             break
     for k, v in func_parameters.items():
         if v.kind == inspect.Parameter.VAR_KEYWORD:
-            func_parameters.move_to_end(k)
+            func_parameters.move_to_end(k)  # type: ignore
             break
 
     if isinstance(func, types.MethodType):
         # can not assign `__signature__` to a bound method directly
-        func.__func__.__signature__ = func_signature.replace(parameters=func_parameters.values())
+        func.__func__.__signature__ = func_signature.replace(parameters=func_parameters.values())  # type: ignore
     else:
-        func.__signature__ = func_signature.replace(parameters=func_parameters.values())
+        func.__signature__ = func_signature.replace(parameters=func_parameters.values())  # type: ignore
 
     # docstring is automatically copied by `functools.wraps`
 

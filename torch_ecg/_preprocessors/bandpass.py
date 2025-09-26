@@ -1,7 +1,6 @@
 """BandPass filter preprocessor."""
 
-from numbers import Real
-from typing import Any, List, Literal, Optional, Tuple
+from typing import Any, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
@@ -17,9 +16,9 @@ class BandPass(PreProcessor):
 
     Parameters
     ----------
-    lowcut : numbers.Real, optional
+    lowcut : int or float, optional
         Low cutoff frequency
-    highcut : numbers.Real, optional
+    highcut : int or float, optional
         High cutoff frequency.
     filter_type : {"butter", "fir"}, , default "butter"
         Type of the bandpass filter.
@@ -43,8 +42,8 @@ class BandPass(PreProcessor):
 
     def __init__(
         self,
-        lowcut: Optional[Real] = 0.5,
-        highcut: Optional[Real] = 45,
+        lowcut: Optional[Union[int, float]] = 0.5,
+        highcut: Optional[Union[int, float]] = 45,
         filter_type: Literal["butter", "fir"] = "butter",
         filter_order: Optional[int] = None,
         **kwargs: Any,
@@ -59,7 +58,7 @@ class BandPass(PreProcessor):
         self.filter_type = filter_type
         self.filter_order = filter_order
 
-    def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
@@ -69,7 +68,7 @@ class BandPass(PreProcessor):
                 - 1d array, which is a single-lead ECG;
                 - 2d array, which is a multi-lead ECG of "lead_first" format;
                 - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
-        fs : int
+        fs : int or float
             Sampling frequency of the ECG signal.
 
         Returns
@@ -84,8 +83,8 @@ class BandPass(PreProcessor):
         filtered_sig = preprocess_multi_lead_signal(
             raw_sig=sig,
             fs=fs,
-            band_fs=[self.lowcut, self.highcut],
-            filter_type=self.filter_type,
+            band_fs=[self.lowcut, self.highcut],  # type: ignore
+            filter_type=self.filter_type,  # type: ignore
             filter_order=self.filter_order,
         )
         return filtered_sig, fs

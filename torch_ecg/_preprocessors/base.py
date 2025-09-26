@@ -2,8 +2,7 @@
 
 from abc import ABC, abstractmethod
 from itertools import repeat
-from numbers import Real
-from typing import List, Literal, Optional, Tuple
+from typing import List, Literal, Optional, Tuple, Union
 
 import numpy as np
 from biosppy.signals.tools import filter_signal
@@ -30,7 +29,7 @@ class PreProcessor(ReprMixin, ABC):
     __name__ = "PreProcessor"
 
     @abstractmethod
-    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
@@ -40,14 +39,14 @@ class PreProcessor(ReprMixin, ABC):
                 - 1d array, which is a single-lead ECG;
                 - 2d array, which is a multi-lead ECG of "lead_first" format;
                 - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
-        fs : numbers.Real
+        fs : int or float
             Sampling frequency of the ECG signal.
 
         """
         raise NotImplementedError
 
-    @add_docstring(apply)
-    def __call__(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+    @add_docstring(apply.__doc__)  # type: ignore
+    def __call__(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
         """alias of :meth:`self.apply`."""
         return self.apply(sig, fs)
 
@@ -74,10 +73,10 @@ class PreProcessor(ReprMixin, ABC):
 
 def preprocess_multi_lead_signal(
     raw_sig: np.ndarray,
-    fs: Real,
+    fs: Union[int, float],
     sig_fmt: Literal["channel_first", "lead_first", "channel_last", "lead_last"] = "channel_first",
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
@@ -90,19 +89,19 @@ def preprocess_multi_lead_signal(
     ----------
     raw_sig : numpy.ndarray
         The raw ECG signal, with units in mV.
-    fs : numbers.Real
+    fs : int or float
         Sampling frequency of `raw_sig`.
     sig_fmt : str, default "channel_first"
         Format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first").
-    bl_win : List[numbers.Real], optional
+    bl_win : List[Union[int, float]], optional
         Window (units in second) of baseline removal
         using :meth:`~scipy.ndimage.median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is ``[0.2, 0.6]``.
         If is None or empty, baseline removal will not be performed.
-    band_fs : List[numbers.Real], optional
+    band_fs : List[Union[int, float]], optional
         Frequency band of the bandpass filter,
         a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
@@ -130,9 +129,9 @@ def preprocess_multi_lead_signal(
     ], f"multi-lead signal format `{sig_fmt}` not supported"
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         # might have a batch dimension at the first axis
-        filtered_ecg = np.moveaxis(raw_sig, -2, -1).astype(DEFAULTS.np_dtype)
+        filtered_ecg = np.moveaxis(raw_sig, -2, -1).astype(DEFAULTS.np_dtype)  # type: ignore
     else:
-        filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)
+        filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)  # type: ignore
 
     # remove baseline
     if bl_win:
@@ -187,9 +186,9 @@ def preprocess_multi_lead_signal(
 
 def preprocess_single_lead_signal(
     raw_sig: np.ndarray,
-    fs: Real,
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    fs: Union[int, float],
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
@@ -201,15 +200,15 @@ def preprocess_single_lead_signal(
     ----------
     raw_sig : numpy.ndarray
         Raw ECG signal, with units in mV.
-    fs : numbers.Real
+    fs : int or float
         Sampling frequency of `raw_sig`.
-    bl_win : list (of 2 numbers.Real), optional
+    bl_win : list (of 2 int or float), optional
         Window (units in second) of baseline removal
         using :meth:`~scipy.ndimage.median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is ``[0.2, 0.6]``.
         If is None or empty, baseline removal will not be performed.
-    band_fs : list of numbers.Real, optional
+    band_fs : list of int or float, optional
         Frequency band of the bandpass filter,
         a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
@@ -230,7 +229,7 @@ def preprocess_single_lead_signal(
     e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.
 
     """
-    filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)
+    filtered_ecg = np.asarray(raw_sig, dtype=DEFAULTS.np_dtype)  # type: ignore
     assert filtered_ecg.ndim == 1, "single-lead signal should be 1d array"
 
     # remove baseline
