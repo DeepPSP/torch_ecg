@@ -14,6 +14,7 @@ on:
 
 env:
   PYTHON_PRIMARY_VERSION: '3.10'
+  SHHS_DATA_AVAILABLE: 'false'
 
 jobs:
   build:
@@ -69,6 +70,7 @@ jobs:
     - name: Install nsrr and download a samll part of SHHS to do test
     # ref. https://github.com/DeepPSP/nsrr-automate
       uses: gacts/run-and-post-run@v1
+      continue-on-error: true
       with:
         # if ~/tmp/nsrr-data/shhs is empty (no files downloaded),
         # fail and terminate the workflow
@@ -80,22 +82,36 @@ jobs:
           nsrr download shhs/polysomnography/annotations-rpoints/shhs1/ --file="^shhs1\-20010.*\-rpoint\.csv" --token=${{ secrets.NSRR_TOKEN }}
           nsrr download shhs/datasets/ --shallow --token=${{ secrets.NSRR_TOKEN }}
           nsrr download shhs/datasets/hrv-analysis/ --token=${{ secrets.NSRR_TOKEN }}
+
           mkdir -p ~/tmp/nsrr-data/
           mv shhs/ ~/tmp/nsrr-data/
           du -sh ~/tmp/nsrr-data/*
-          if [ "$(find ~/tmp/nsrr-data/shhs -type f | wc -l)" -eq 0 ]; \
-          then (echo "No files downloaded. Exiting..." && exit 1); \
-          else echo "Found $(find ~/tmp/nsrr-data/shhs -type f | wc -l) files"; fi
+
+          EDF_COUNT=$(find ~/tmp/nsrr-data/shhs -type f -name "*.edf" 2>/dev/null | wc -l | tr -d ' ')
+          echo "Detected SHHS EDF file count: $EDF_COUNT"
+
+          if [ "$EDF_COUNT" -eq 0 ]; then
+            echo "::error title=No SHHS EDF files downloaded::No .edf files were downloaded (token may be invalid or pattern mismatch). SHHS tests will be skipped."
+            echo "No SHHS EDF files downloaded; setting SHHS_DATA_AVAILABLE=false"
+            echo "SHHS_DATA_AVAILABLE=false" >> $GITHUB_ENV
+            exit 1
+          else
+            echo "Found $EDF_COUNT SHHS EDF files; setting SHHS_DATA_AVAILABLE=true"
+            echo "SHHS_DATA_AVAILABLE=true" >> $GITHUB_ENV
+          fi
         post: |
           cd ~/tmp/ && du -sh $(ls -A)
           rm -rf ~/tmp/nsrr-data/
           cd ~/tmp/ && du -sh $(ls -A)
     - name: Run test with pytest and collect coverage
       run: |
+        echo "SHHS_DATA_AVAILABLE at test step: $SHHS_DATA_AVAILABLE"
         pytest -vv -s \
         --cov=torch_ecg \
         --ignore=test/test_pipelines \
         test
+      env:
+        SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
       if: matrix.python-version == ${{ env.PYTHON_PRIMARY_VERSION }}
       uses: codecov/codecov-action@v4

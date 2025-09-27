@@ -5,7 +5,6 @@ import os
 import re
 import warnings
 from datetime import datetime
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
@@ -387,7 +386,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         """Find all records in the database directory
         and store them (path, metadata, etc.) in some private attributes.
         """
-        self.logger.info("Finding `edf` records....")
+        self.logger.info("Finding `edf` records....")  # type: ignore
         self._df_records = pd.DataFrame()
         self._df_records["path"] = sorted(self.db_dir.rglob("*.edf"))
 
@@ -396,7 +395,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 len(self._df_records),
                 max(1, int(round(self._subsample * len(self._df_records)))),
             )
-            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
+            self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)  # type: ignore
 
         # if self._df_records is non-empty, call `form_paths` again if necessary
         # typically path for a record is like:
@@ -423,15 +422,15 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self._all_records = self._df_records.index.tolist()
 
         # update `current_version`
-        if self.ann_path.is_dir():
-            for file in self.ann_path.iterdir():
+        if self.ann_path.is_dir():  # type: ignore
+            for file in self.ann_path.iterdir():  # type: ignore
                 if file.is_file() and len(re.findall(self.version_pattern, file.name)) > 0:
                     self.current_version = re.findall(self.version_pattern, file.name)[0]
                     break
 
-            self.logger.info("Loading tables....")
+            self.logger.info("Loading tables....")  # type: ignore
             # gather tables in self.ann_path and in self.hrv_ann_path
-            for file in itertools.chain(self.ann_path.glob("*.csv"), self.hrv_ann_path.glob("*.csv")):
+            for file in itertools.chain(self.ann_path.glob("*.csv"), self.hrv_ann_path.glob("*.csv")):  # type: ignore
                 if not file.suffix == ".csv":
                     continue
                 table_name = file.stem.replace(f"-{self.current_version}", "")
@@ -440,7 +439,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 except UnicodeDecodeError:
                     self._tables[table_name] = pd.read_csv(file, low_memory=False, encoding="latin-1")
 
-        self.logger.info("Finding records with HRV annotations....")
+        self.logger.info("Finding records with HRV annotations....")  # type: ignore
         # find records with hrv annotations
         self.rec_with_hrv_summary_ann = []
         for table_name in ["shhs1-hrv-summary", "shhs2-hrv-summary"]:
@@ -457,17 +456,17 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 )
         self.rec_with_hrv_detailed_ann = sorted(list(set(self.rec_with_hrv_detailed_ann)))
 
-        self.logger.info("Finding records with rpeaks annotations....")
+        self.logger.info("Finding records with rpeaks annotations....")  # type: ignore
         # find available rpeak annotation files
         self.rec_with_rpeaks_ann = sorted(
-            [f.stem.replace("-rpoint", "") for f in self.wave_deli_path.rglob("shhs*-rpoint.csv")]
+            [f.stem.replace("-rpoint", "") for f in self.wave_deli_path.rglob("shhs*-rpoint.csv")]  # type: ignore
         )
 
-        self.logger.info("Finding records with event annotations....")
+        self.logger.info("Finding records with event annotations....")  # type: ignore
         # find available event annotation files
-        self.rec_with_event_ann = sorted([f.stem.replace("-nsrr", "") for f in self.event_ann_path.rglob("shhs*-nsrr.xml")])
+        self.rec_with_event_ann = sorted([f.stem.replace("-nsrr", "") for f in self.event_ann_path.rglob("shhs*-nsrr.xml")])  # type: ignore
         self.rec_with_event_profusion_ann = sorted(
-            [f.stem.replace("-profusion", "") for f in self.event_profusion_ann_path.rglob("shhs*-profusion.xml")]
+            [f.stem.replace("-profusion", "") for f in self.event_profusion_ann_path.rglob("shhs*-profusion.xml")]  # type: ignore
         )
 
         self._df_records["available_signals"] = None
@@ -568,11 +567,11 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 mininterval=1.0,
                 disable=(self.verbose < 1),
             ):
-                rec = row.name
-                if self._df_records.loc[rec, "available_signals"] is not None:
+                rec = row.name  # type: ignore
+                if self._df_records.loc[rec, "available_signals"] is not None:  # type: ignore
                     continue
                 available_signals = self.get_available_signals(rec)
-                self._df_records.at[rec, "available_signals"] = available_signals
+                self._df_records.at[rec, "available_signals"] = available_signals  # type: ignore
             return
 
         if isinstance(rec, int):
@@ -580,8 +579,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         if rec in self._df_records.index:
             available_signals = self._df_records.loc[rec, "available_signals"]
-            if available_signals is not None and len(available_signals) > 0:
-                return available_signals
+            if available_signals is not None and len(available_signals) > 0:  # type: ignore
+                return available_signals  # type: ignore
 
             frp = self.get_absolute_path(rec)
             try:
@@ -590,10 +589,10 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 self.safe_edf_file_operation("open", frp)
             except OSError:
                 return None
-            available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
+            available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]  # type: ignore
             self.safe_edf_file_operation("close")
             self._df_records.at[rec, "available_signals"] = available_signals
-            self.all_signals = self.all_signals.union(set(available_signals))
+            self.all_signals = self.all_signals.union(set(available_signals))  # type: ignore
         else:
             available_signals = []
         return available_signals
@@ -639,7 +638,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Visit number extracted from `rec`.
 
         """
-        return self.split_rec_name(rec)["visitnumber"]
+        return self.split_rec_name(rec)["visitnumber"]  # type: ignore
 
     def get_tranche(self, rec: Union[str, int]) -> str:
         """Get ``tranche`` ("shhs1" or "shhs2") from `rec`.
@@ -656,7 +655,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Tranche extracted from `rec`.
 
         """
-        return self.split_rec_name(rec)["tranche"]
+        return self.split_rec_name(rec)["tranche"]  # type: ignore
 
     def get_nsrrid(self, rec: Union[str, int]) -> int:
         """Get ``nsrrid`` from `rec`.
@@ -673,14 +672,14 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             ``nsrrid`` extracted from `rec`.
 
         """
-        return self.split_rec_name(rec)["nsrrid"]
+        return self.split_rec_name(rec)["nsrrid"]  # type: ignore
 
     def get_fs(
         self,
         rec: Union[str, int],
         sig: str = "ECG",
         rec_path: Optional[Union[str, bytes, os.PathLike]] = None,
-    ) -> Real:
+    ) -> Union[float, int]:
         """Get the sampling frequency of a signal of a record.
 
         Parameters
@@ -698,7 +697,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         Returns
         -------
-        fs : numbers.Real
+        fs : float or int
             Sampling frequency of the signal `sig` of the record `rec`.
             If corresponding signal (.edf) file is not available,
             or the signal file does not contain the signal `sig`,
@@ -708,26 +707,26 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         if isinstance(rec, int):
             rec = self[rec]
         sig = self.match_channel(sig, raise_error=False)
-        assert sig in self.all_signals.union({"rpeak"}), f"Invalid signal name: `{sig}`"
+        assert sig in self.all_signals.union({"rpeak"}), f"Invalid signal name: `{sig}`"  # type: ignore
         if sig.lower() == "rpeak":
             df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec)
             if df_rpeaks_with_type_info.empty:
-                self.logger.info(f"Rpeak annotation file corresponding to `{rec}` is not available.")
+                self.logger.info(f"Rpeak annotation file corresponding to `{rec}` is not available.")  # type: ignore
                 return -1
             return df_rpeaks_with_type_info.iloc[0]["samplingrate"]
 
         frp = self.get_absolute_path(rec, rec_path)
         if not frp.exists():
-            self.logger.info(f"Signal (.edf) file corresponding to `{rec}` is not available.")
+            self.logger.info(f"Signal (.edf) file corresponding to `{rec}` is not available.")  # type: ignore
             return -1
         self.safe_edf_file_operation("open", frp)
         sig = self.match_channel(sig)
-        available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
+        available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]  # type: ignore
         if sig not in available_signals:
-            self.logger.info(f"Signal `{sig}` is not available in signal file corresponding to `{rec}`.")
+            self.logger.info(f"Signal `{sig}` is not available in signal file corresponding to `{rec}`.")  # type: ignore
             return -1
         chn_num = available_signals.index(sig)
-        fs = self.file_opened.getSampleFrequency(chn_num)
+        fs = self.file_opened.getSampleFrequency(chn_num)  # type: ignore
         self.safe_edf_file_operation("close")
         return fs
 
@@ -761,15 +760,15 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         """
         sig = self.match_channel(sig)
         available_signals = self.get_available_signals(rec)
-        if sig not in available_signals:
+        if sig not in available_signals:  # type: ignore
             if isinstance(rec, int):
                 rec = self[rec]
-            self.logger.info(
+            self.logger.info(  # type: ignore
                 f"Signal (.edf) file corresponding to `{rec}` is not available, or"
                 f"signal `{sig}` is not available in signal file corresponding to `{rec}`."
             )
             return -1
-        chn_num = available_signals.index(self.match_channel(sig))
+        chn_num = available_signals.index(self.match_channel(sig))  # type: ignore
         return chn_num
 
     def match_channel(self, channel: str, raise_error: bool = True) -> str:
@@ -797,7 +796,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             raise ValueError(f"No channel named `{channel}`")
         return channel
 
-    def get_absolute_path(
+    def get_absolute_path(  # type: ignore
         self,
         rec: Union[str, int],
         rec_path: Optional[Union[str, bytes, os.PathLike]] = None,
@@ -823,7 +822,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         """
         if rec_path is not None:
-            rp = Path(rec_path)
+            rp = Path(rec_path)  # type: ignore
             return rp
 
         assert rec_type in self.folder_or_file, (
@@ -835,7 +834,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
         # rp = self._df_records.loc[rec, rec_type]
-        rp = self.folder_or_file[rec_type] / tranche / f"{rec}{self.extension[rec_type]}"
+        rp = self.folder_or_file[rec_type] / tranche / f"{rec}{self.extension[rec_type]}"  # type: ignore
         return rp
 
     def database_stats(self) -> None:
@@ -856,12 +855,12 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         """
         frp = self.get_absolute_path(rec, rec_path, rec_type="psg")
         self.safe_edf_file_operation("open", frp)
-        for chn, lb in enumerate(self.file_opened.getSignalLabels()):
+        for chn, lb in enumerate(self.file_opened.getSignalLabels()):  # type: ignore
             print("SignalLabel:", lb)
-            print("Prefilter:", self.file_opened.getPrefilter(chn))
-            print("Transducer:", self.file_opened.getTransducer(chn))
-            print("PhysicalDimension:", self.file_opened.getPhysicalDimension(chn))
-            print("SampleFrequency:", self.file_opened.getSampleFrequency(chn))
+            print("Prefilter:", self.file_opened.getPrefilter(chn))  # type: ignore
+            print("Transducer:", self.file_opened.getTransducer(chn))  # type: ignore
+            print("PhysicalDimension:", self.file_opened.getPhysicalDimension(chn))  # type: ignore
+            print("SampleFrequency:", self.file_opened.getSampleFrequency(chn))  # type: ignore
             print("*" * 40)
         self.safe_edf_file_operation("close")
 
@@ -870,11 +869,11 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         channel: str = "all",
         rec_path: Optional[Union[str, bytes, os.PathLike]] = None,
-        sampfrom: Optional[Real] = None,
-        sampto: Optional[Real] = None,
-        fs: Optional[int] = None,
+        sampfrom: Optional[Union[float, int]] = None,
+        sampto: Optional[Union[float, int]] = None,
+        fs: Optional[Union[float, int]] = None,
         physical: bool = True,
-    ) -> Union[Dict[str, Tuple[np.ndarray, Real]], Tuple[np.ndarray, Real]]:
+    ) -> Union[Dict[str, Tuple[np.ndarray, Union[float, int]]], Tuple[np.ndarray, Union[float, int]]]:
         """Load PSG data of the record.
 
         Parameters
@@ -888,13 +887,13 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec_path : `path-like`, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
-        sampfrom : numbers.Real, optional
+        sampfrom : float or int, optional
             Start time (units in seconds) of the data to be loaded,
             valid only when `channel` is some specific channel.
-        sampto : numbers.Real, optional
+        sampto : float or int, optional
             End time (units in seconds) of the data to be loaded,
             valid only when `channel` is some specific channel
-        fs : numbers.Real, optional
+        fs : float or int, optional
             Sampling frequency of the loaded data.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -912,7 +911,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 - values: PSG data and sampling frequency
 
             Otherwise, a 2-tuple will be returned:
-            (:class:`numpy.ndarray`, :class:`numbers.Real`), which is the
+            (:class:`numpy.ndarray`, :class:`int` or :class:`float`), which is the
             PSG data of the channel `channel` and its sampling frequency.
 
         """
@@ -923,17 +922,17 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         if chn == "all":
             ret_data = {
                 k: (
-                    self.file_opened.readSignal(idx, digital=not physical),
-                    self.file_opened.getSampleFrequency(idx),
+                    self.file_opened.readSignal(idx, digital=not physical),  # type: ignore
+                    self.file_opened.getSampleFrequency(idx),  # type: ignore
                 )
-                for idx, k in enumerate(self.file_opened.getSignalLabels())
+                for idx, k in enumerate(self.file_opened.getSignalLabels())  # type: ignore
             }
         else:
-            all_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
-            assert chn in all_signals, f"`channel` should be one of `{self.file_opened.getSignalLabels()}`, but got `{chn}`"
+            all_signals = [s.lower() for s in self.file_opened.getSignalLabels()]  # type: ignore
+            assert chn in all_signals, f"`channel` should be one of `{self.file_opened.getSignalLabels()}`, but got `{chn}`"  # type: ignore
             idx = all_signals.index(chn)
-            data_fs = self.file_opened.getSampleFrequency(idx)
-            data = self.file_opened.readSignal(idx, digital=not physical)
+            data_fs = self.file_opened.getSampleFrequency(idx)  # type: ignore
+            data = self.file_opened.readSignal(idx, digital=not physical)  # type: ignore
             # the `readSignal` method of `EdfReader` does NOT treat
             # the parameters `start` and `n` correctly
             # so we have to do it manually
@@ -962,10 +961,10 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[int] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[Union[float, int]] = None,
         return_fs: bool = True,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Union[float, int]]]:
         """Load ECG data of the record.
 
         Parameters
@@ -988,7 +987,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : float or int, optional
             Sampling frequency of the loaded data.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -999,7 +998,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real
+        data_fs : float or int
             Sampling frequency of the loaded ECG data.
             Returned if `return_fs` is True.
 
@@ -1029,7 +1028,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             fs=fs,
             physical=units is not None,
         )
-        data = data.astype(DEFAULTS.DTYPE.NP)
+        data = data.astype(DEFAULTS.DTYPE.NP)  # type: ignore
 
         if units is not None and units.lower() in ["μv", "uv", "muv"]:
             data *= 1e3
@@ -1039,25 +1038,25 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             data = data[:, np.newaxis]
 
         if return_fs:
-            return data, data_fs
+            return data, data_fs  # type: ignore
         return data
 
     @add_docstring(
         " " * 8 + "NOTE: one should call `load_psg_data` to load other channels.",
         mode="append",
     )
-    @add_docstring(load_ecg_data.__doc__)
-    def load_data(
+    @add_docstring(load_ecg_data.__doc__)  # type: ignore
+    def load_data(  # type: ignore
         self,
         rec: Union[str, int],
         rec_path: Optional[Union[str, bytes, os.PathLike]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
+        units: Union[str, None] = "mV",
         fs: Optional[int] = None,
         return_fs: bool = True,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Union[float, int]]]:
         """alias of `load_ecg_data`"""
         return self.load_ecg_data(
             rec=rec,
@@ -1070,13 +1069,13 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             return_fs=return_fs,
         )
 
-    def load_ann(
+    def load_ann(  # type: ignore
         self,
         rec: Union[str, int],
         ann_type: str,
         ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
-    ) -> Union[np.ndarray, pd.DataFrame, dict]:
+    ) -> Union[np.ndarray, pd.DataFrame, dict, None]:
         """Load annotations of specific type of the record.
 
         Parameters
@@ -1160,7 +1159,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             df_events["EventType"] = df_events["EventType"].apply(lambda s: s.split("|")[1])
             df_events["EventConcept"] = df_events["EventConcept"].apply(lambda s: s.split("|")[1])
         for c in ["Start", "Duration", "SpO2Nadir", "SpO2Baseline"]:
-            df_events[c] = df_events[c].apply(self.str_to_real_number)
+            df_events[c] = df_events[c].apply(self.str_to_real_number)  # type: ignore
 
         return df_events
 
@@ -1200,7 +1199,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sleep_stage_list = [int(ss) for ss in doc["CMPStudyConfig"]["SleepStages"]["SleepStage"]]
         df_events = pd.DataFrame(doc["CMPStudyConfig"]["ScoredEvents"]["ScoredEvent"])
         for c in ["Start", "Duration", "LowestSpO2", "Desaturation"]:
-            df_events[c] = df_events[c].apply(self.str_to_real_number)
+            df_events[c] = df_events[c].apply(self.str_to_real_number)  # type: ignore
         ret = {"sleep_stage_list": sleep_stage_list, "df_events": df_events}
 
         return ret
@@ -1320,7 +1319,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 df_sleep_ann = df_hrv_ann[self.sleep_ann_keys_from_hrv].reset_index(drop=True)
             else:
                 df_sleep_ann = pd.DataFrame(columns=self.sleep_ann_keys_from_hrv)
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
                 f"hrv-5min (detailed) annotation file, with `{len(self.sleep_ann_keys_from_hrv)}` column(s)"
             )
@@ -1331,7 +1330,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 df_sleep_ann = df_event_ann[_cols]
             else:
                 df_sleep_ann = pd.DataFrame(columns=_cols)
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
                 f"event-nsrr annotation file, with `{len(_cols)}` column(s)"
             )
@@ -1340,7 +1339,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             # temporarily finished
             # latter to make imporvements
             df_sleep_ann = dict_event_ann
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"record `{rec}` has `{len(df_sleep_ann['df_events'])}` sleep event annotations "
                 "from corresponding event-profusion annotation file, "
                 f"with `{len(df_sleep_ann['df_events'].columns)}` column(s)"
@@ -1449,11 +1448,11 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             )
 
         if source.lower() != "event_profusion":
-            self.logger.debug(
-                f"record `{rec}` has `{len(df_tmp)}` raw (epoch_len = 5min) sleep stage annotations, "
+            self.logger.debug(  # type: ignore
+                f"record `{rec}` has `{len(df_tmp)}` raw (epoch_len = 5min) sleep stage annotations, "  # type: ignore
                 f"with `{len(self.sleep_stage_ann_keys_from_hrv)}` column(s)"
             )
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"after being transformed (epoch_len = 30sec), record `{rec}` has {len(df_sleep_stage_ann)} "
                 f"sleep stage annotations, with `{len(self.sleep_stage_keys)}` column(s)"
             )
@@ -1509,7 +1508,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             for _, row in df_sleep_ann.iterrows():
                 if row["hasrespevent"] == 0:
                     continue
-                l_events = row[self.sleep_event_ann_keys_from_hrv[1:-1]].values.reshape(
+                l_events = row[self.sleep_event_ann_keys_from_hrv[1:-1]].values.reshape(  # type: ignore
                     (len(self.sleep_event_ann_keys_from_hrv) // 2 - 1, 2)
                 )
                 l_events = l_events[~np.isnan(l_events[:, 0])]
@@ -1521,11 +1520,11 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             )
             df_sleep_event_ann = df_sleep_event_ann[self.sleep_event_keys]
 
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"record `{rec}` has `{len(df_sleep_ann)}` raw (epoch_len = 5min) sleep event "
                 f"annotations from hrv, with `{len(self.sleep_event_ann_keys_from_hrv)}` column(s)"
             )
-            self.logger.debug(f"after being transformed, record `{rec}` has `{len(df_sleep_event_ann)}` sleep event(s)")
+            self.logger.debug(f"after being transformed, record `{rec}` has `{len(df_sleep_event_ann)}` sleep event(s)")  # type: ignore
         elif source.lower() == "event":
             if event_types is None:
                 event_types = ["respiratory", "arousal"]
@@ -1570,7 +1569,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 _cols = _cols | set(self.long_event_names_from_event[3:4])
             _cols = list(_cols)
 
-            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")
+            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")  # type: ignore
 
             df_sleep_event_ann = df_sleep_ann[df_sleep_ann["EventConcept"].isin(_cols)].reset_index(drop=True)
             df_sleep_event_ann = df_sleep_event_ann.rename(
@@ -1631,7 +1630,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 _cols = _cols | set(self.event_names_from_event_profusion[3:4])
             _cols = list(_cols)
 
-            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")
+            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")  # type: ignore
 
             df_sleep_event_ann = df_sleep_ann[df_sleep_ann["Name"].isin(_cols)].reset_index(drop=True)
             df_sleep_event_ann = df_sleep_event_ann.rename(
@@ -1649,7 +1648,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         else:
             raise ValueError(f"Source `{source}` not supported, " "only `hrv`, `event`, `event_profusion` are supported")
 
-        return df_sleep_event_ann
+        return df_sleep_event_ann  # type: ignore
 
     def load_apnea_ann(
         self,
@@ -1727,7 +1726,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         file_path = self.get_absolute_path(rec, wave_deli_path, rec_type="wave_delineation")
 
         if not file_path.is_file():
-            self.logger.debug(
+            self.logger.debug(  # type: ignore
                 f"The annotation file of wave delineation of record `{rec}` has not been downloaded yet. "
                 f"Or the path `{str(file_path)}` is not correct. "
                 f"Or `{rec}` does not have `rpeak.csv` annotation file. Please check!"
@@ -1788,7 +1787,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rpeaks = df_rpeaks_with_type_info[~df_rpeaks_with_type_info["Type"].isin(exclude_beat_types)]["rpointadj"].values
 
         if units is None:
-            rpeaks = (np.round(rpeaks)).astype(int)
+            rpeaks = (np.round(rpeaks)).astype(int)  # type: ignore
         elif units.lower() == "s":
             fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
             rpeaks = rpeaks / fs
@@ -1941,7 +1940,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             return np.array([], dtype=dtype)
         # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
 
-        artifacts = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 0]["rpointadj"].values)).astype(int)
+        artifacts = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 0]["rpointadj"].values)).astype(int)  # type: ignore
 
         if units is not None:
             fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
@@ -1965,7 +1964,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         wave_deli_path: Optional[Union[str, bytes, os.PathLike]] = None,
         abnormal_type: Optional[Literal["VE", "SVE"]] = None,
         units: Optional[Literal["s", "ms"]] = None,
-    ) -> Union[Dict[str, np.ndarray], np.ndarray]:
+    ) -> Union[Dict[str, np.ndarray], np.ndarray, None]:
         """Locate "abnormal beats" in the record.
 
         Parameters
@@ -2005,8 +2004,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         if not df_rpeaks_with_type_info.empty:
             # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
             # 2 = VE, 3 = SVE
-            ve = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 2]["rpointadj"].values)).astype(int)
-            sve = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 3]["rpointadj"].values)).astype(int)
+            ve = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 2]["rpointadj"].values)).astype(int)  # type: ignore
+            sve = (np.round(df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 3]["rpointadj"].values)).astype(int)  # type: ignore
             abnormal_rpeaks = {"VE": ve, "SVE": sve}
         else:
             dtype = int if units is None or units.lower() != "s" else float
@@ -2043,7 +2042,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         eeg_band_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
-    ) -> pd.DataFrame:
+    ) -> pd.DataFrame:  # type: ignore
         """Load annotations on EEG bands of the record.
 
         Parameters
@@ -2062,7 +2061,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         """
         if self.current_version >= "0.15.0":
-            self.logger.info(f"EEG spectral summary variables are removed in version {self.current_version}")
+            self.logger.info(f"EEG spectral summary variables are removed in version {self.current_version}")  # type: ignore
         else:
             raise NotImplementedError
 
@@ -2071,7 +2070,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         eeg_spectral_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
-    ) -> pd.DataFrame:
+    ) -> pd.DataFrame:  # type: ignore
         """Load annotations on EEG spectral summary of the record.
 
         Parameters
@@ -2090,7 +2089,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
         """
         if self.current_version >= "0.15.0":
-            self.logger.info(f"EEG spectral summary variables are removed in version {self.current_version}")
+            self.logger.info(f"EEG spectral summary variables are removed in version {self.current_version}")  # type: ignore
         else:
             raise NotImplementedError
 
@@ -2215,8 +2214,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                 raise NotImplementedError("Plotting of some type of events in `df_sleep_event` has not been implemented yet!")
 
         if plot_format.lower() == "hypnogram":
-            stage_mask = df_sleep_stage["sleep_stage"].values
-            stage_mask = len(self.sleep_stage_names) - 1 - stage_mask
+            stage_mask = df_sleep_stage["sleep_stage"].values  # type: ignore
+            stage_mask = len(self.sleep_stage_names) - 1 - stage_mask  # type: ignore
             fig, ax = self.plot_hypnogram(stage_mask, granularity=30)
             return
 
@@ -2238,42 +2237,42 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             ax_events.set_xlabel("Time", fontsize=16)
             # ax_events.set_ylabel("Events", fontsize=16)
         else:
-            ax_stages, ax_events = axes
+            ax_stages, ax_events = axes  # type: ignore
             ax_stages.set_title("Sleep Stages and Events", fontsize=24)
             ax_events.set_xlabel("Time", fontsize=16)
 
         if ax_stages is not None:
-            for k, v in sleep_stages.items():
+            for k, v in sleep_stages.items():  # type: ignore
                 for itv in v:
                     ax_stages.axvspan(
-                        datetime.fromtimestamp(itv[0]),
-                        datetime.fromtimestamp(itv[1]),
+                        datetime.fromtimestamp(itv[0]),  # type: ignore
+                        datetime.fromtimestamp(itv[1]),  # type: ignore
                         color=self.palette[k],
                         alpha=plot_alpha,
                     )
             ax_stages.legend(
-                handles=[patches[k] for k in self.all_sleep_stage_names if k in sleep_stages.keys()],
+                handles=[patches[k] for k in self.all_sleep_stage_names if k in sleep_stages.keys()],  # type: ignore
                 loc="best",
             )  # keep ordering
             plt.setp(ax_stages.get_yticklabels(), visible=False)
             ax_stages.tick_params(axis="y", which="both", length=0)
 
         if ax_events is not None:
-            for _, row in df_sleep_event.iterrows():
+            for _, row in df_sleep_event.iterrows():  # type: ignore
                 ax_events.axvspan(
-                    datetime.fromtimestamp(row["event_start"]),
-                    datetime.fromtimestamp(row["event_end"]),
+                    datetime.fromtimestamp(row["event_start"]),  # type: ignore
+                    datetime.fromtimestamp(row["event_end"]),  # type: ignore
                     color=self.palette[row["event_name"]],
                     alpha=plot_alpha,
                 )
             ax_events.legend(
-                handles=[patches[k] for k in current_legal_events if k in set(df_sleep_event["event_name"])],
+                handles=[patches[k] for k in current_legal_events if k in set(df_sleep_event["event_name"])],  # type: ignore
                 loc="best",
             )  # keep ordering
             plt.setp(ax_events.get_yticklabels(), visible=False)
             ax_events.tick_params(axis="y", which="both", length=0)
 
-    def str_to_real_number(self, s: Union[str, Real]) -> Real:
+    def str_to_real_number(self, s: Union[str, float, int]) -> Union[float, int]:
         """Convert a string to a real number.
 
         Some columns in the annotations might incorrectly
@@ -2560,7 +2559,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             "wave_delineation": self.wave_deli_path,
             "event": self.event_ann_path,
             "event_profusion": self.event_profusion_ann_path,
-        }
+        }  # type: ignore
 
     @property
     def url(self) -> str:
