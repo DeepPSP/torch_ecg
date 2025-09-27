@@ -52,6 +52,9 @@ Fixed
   avoid installing a handler when duration <= 0 (preventing unintended global side-effects),
   and thereby eliminate spurious `TimeoutError` exceptions that could be triggered later by
   unrelated signal.alarm calls due to the old implementation not reinstating the original handler.
+- Fix bugs in utility function `torch_ecg.utils.make_serializable`: the previous implementation
+  does not drop some types of unserializable items correctly. Two additional parameters
+  `drop_unserializable` and `drop_paths` are added.
 
 Security
 ~~~~~~~~

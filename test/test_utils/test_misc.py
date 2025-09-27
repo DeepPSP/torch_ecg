@@ -1,6 +1,7 @@
 """ """
 
 import datetime
+import json
 import textwrap
 import time
 from itertools import product
@@ -128,7 +129,7 @@ def test_get_record_list_recursive3():
     record_list = get_record_list_recursive3(path, rec_patterns_with_ext, with_suffix=True)
     for tranche in list("EFG"):
         # assert the records come with file extension
-        assert all([p.endswith(".mat") for p in record_list[tranche]]), record_list[tranche]
+        assert all([p.endswith(".mat") for p in record_list[tranche]]), record_list[tranche]  # type: ignore
 
 
 def test_dict_to_str():
@@ -192,7 +193,7 @@ def test_plot_single_lead():
     n_samples = 5000
     plot_single_lead(
         t=np.arange(n_samples) / fs,
-        sig=500 * DEFAULTS.RNG.normal(size=(n_samples,)),
+        sig=500 * DEFAULTS.RNG.normal(size=(n_samples,)),  # type: ignore
         ticks_granularity=2,
     )
 
@@ -225,6 +226,7 @@ def test_read_log_txt():
             dst_dir=str(_TMP_DIR),
             extract=True,
             filename="log.txt",
+            verify_length=False,
         )
     log_txt_file = str(_TMP_DIR / "log.txt")
     log_txt = read_log_txt(log_txt_file)
@@ -260,15 +262,15 @@ def test_dicts_equal():
     d2 = {"a": pd.DataFrame([{"hehe": 2, "haha": 2}])[["hehe", "haha"]]}
     assert dicts_equal(d1, d2) is False
     assert dicts_equal(d2, d1) is False
-    d1["a"] = d1["a"]["hehe"]
-    d2["a"] = d2["a"]["haha"]
+    d1["a"] = d1["a"]["hehe"]  # type: ignore
+    d2["a"] = d2["a"]["haha"]  # type: ignore
     assert dicts_equal(d1, d2) is False
     assert dicts_equal(d2, d1) is False
 
     d1 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["haha", "hehe"]]}
     d2 = {"a": pd.DataFrame([{"hehe": 2, "haha": 2}])[["hehe", "haha"]]}
-    d1["a"] = d1["a"]["hehe"]
-    d2["a"] = d2["a"]["hehe"]
+    d1["a"] = d1["a"]["hehe"]  # type: ignore
+    d2["a"] = d2["a"]["hehe"]  # type: ignore
     assert dicts_equal(d1, d2) is False
     assert dicts_equal(d2, d1) is False
 
@@ -361,7 +363,7 @@ def test_CitationMixin():
 
 def test_MovingAverage():
     ma = MovingAverage(verbose=2)
-    data = DEFAULTS.RNG.normal(size=(100,))
+    data = DEFAULTS.RNG.normal(size=(100,))  # type: ignore
     new_data = ma(data, method="sma", window=7, center=True)
     assert new_data.shape == data.shape
     new_data = ma(data, method="ema", weight=0.7)
@@ -435,7 +437,7 @@ def test_add_docstring():
 
     with pytest.raises(ValueError, match="mode `.+` is not supported"):
 
-        @add_docstring("This is a new docstring.", mode="xxx")
+        @add_docstring("This is a new docstring.", mode="xxx")  # type: ignore
         def func(a, b):
             """This is a docstring."""
             return a + b
@@ -443,7 +445,7 @@ def test_add_docstring():
 
 def test_remove_parameters_returns_from_docstring():
     new_docstring = remove_parameters_returns_from_docstring(
-        remove_parameters_returns_from_docstring.__doc__,
+        remove_parameters_returns_from_docstring.__doc__,  # type: ignore
         parameters=["returns_indicator", "parameters_indicator"],
         returns="str",
     )
@@ -602,7 +604,17 @@ def test_make_serializable():
     x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())
     obj = make_serializable(x)
     assert obj == [[1, 2, 3], 5.0]
-    assert isinstance(obj[1], float) and isinstance(x[1], np.float64)
+    assert isinstance(obj[1], float) and isinstance(x[1], np.float64)  # type: ignore
+
+    obj = make_serializable(DEFAULTS, drop_unserializable=False, drop_paths=False)
+    assert isinstance(obj, dict) and set(["RNG", "DTYPE", "log_dir"]).issubset(set(obj))
+    json.dumps(obj)  # should raise no error
+    obj = make_serializable(DEFAULTS, drop_unserializable=False, drop_paths=True)
+    assert isinstance(obj, dict) and set(["RNG", "DTYPE"]).issubset(set(obj)) and "log_dir" not in obj
+    json.dumps(obj)  # should raise no error
+    obj = make_serializable(DEFAULTS, drop_unserializable=True, drop_paths=True)
+    assert isinstance(obj, dict) and set(["RNG", "DTYPE", "log_dir"]).intersection(set(obj)) == set()
+    json.dumps(obj)  # should raise no error
 
 
 def test_select_k():

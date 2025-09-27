@@ -15,7 +15,7 @@ from copy import deepcopy
 from functools import reduce, wraps
 from glob import glob
 from numbers import Number
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import Any, Callable, Dict, Iterable, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -1503,57 +1503,105 @@ def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
     return wrapper
 
 
-def make_serializable(x: Union[Number, np.ndarray, np.generic, dict, list, tuple]) -> Union[list, dict, Number]:
-    """Make an object serializable.
+def _is_pathlike_string(s: str) -> bool:
+    """Heuristically check if a string looks like a filesystem path."""
+    try:
+        p = PurePath(s)
+        if os.sep in s or (os.altsep and os.altsep in s):
+            return True
+        if s.startswith(".") or p.is_absolute():
+            return True
+    except Exception:
+        return False
+    return False
 
-    This function is used to convert all numpy arrays to list in an object,
-    and also convert numpy data types to python data types in the object,
-    so that it can be serialized by :mod:`json`.
+
+def make_serializable(
+    x: Any, drop_unserializable: bool = True, drop_paths: bool = False
+) -> Optional[Union[list, dict, str, int, float, bool]]:
+    """Recursively convert object into JSON-serializable form.
+
+    Rules
+    -----
+    - np.ndarray → list
+    - np.generic → Python scalar
+    - dict → new dict with only serializable values
+    - list/tuple → list with only serializable values
+    - str/int/float/bool/None → kept
+    - if drop_unserializable:
+          anything else (like Path, custom classes) → dropped (return None)
+      else:
+          fallback to str(x)
 
     Parameters
     ----------
-    x : Union[Number, numpy.ndarray, numpy.generic, dict, list, tuple]
-        Input data, which can be numpy array (or numpy data type),
-        or dict, list, tuple containing numpy arrays (or numpy data type).
+    x : Any
+        Input object to be converted.
+    drop_unserializable : bool, default=True
+        Whether to drop unserializable objects (return None),
+        or convert them to string with str(x).
+
+        .. versionadded:: 0.0.32
+    drop_paths : bool, default=False
+        If True, drop all filesystem paths (Path objects and strings
+        that look like paths).
+
+        .. versionadded:: 0.0.32
 
     Returns
     -------
-    Union[list, dict, numbers.Number]
-        Converted data.
+    Optional[Union[list, dict, str, int, float, bool]]
+        A JSON-serializable object, or None if dropped.
 
     Examples
     --------
     >>> import numpy as np
-    >>> from fl_sim.utils.misc import make_serializable
-    >>> x = np.array([1, 2, 3])
-    >>> make_serializable(x)
+    >>> make_serializable(np.array([1, 2, 3]))
     [1, 2, 3]
-    >>> x = {"a": np.array([1, 2, 3]), "b": np.array([4, 5, 6])}
-    >>> make_serializable(x)
-    {'a': [1, 2, 3], 'b': [4, 5, 6]}
-    >>> x = [np.array([1, 2, 3]), np.array([4, 5, 6])]
-    >>> make_serializable(x)
-    [[1, 2, 3], [4, 5, 6]]
-    >>> x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())
-    >>> obj = make_serializable(x)
-    >>> obj
-    [[1, 2, 3], 5.0]
-    >>> type(obj[1]), type(x[1])
-    (float, numpy.float64)
+    >>> make_serializable({"a": np.float64(3.14), "b": Path("file.txt")})
+    {'a': 3.14, 'b': 'file.txt'}
+    >>> make_serializable({"a": np.float64(3.14), "b": Path("file.txt")}, drop_paths=True)
+    {'a': 3.14}
 
     """
+
     if isinstance(x, np.ndarray):
-        return x.tolist()
-    elif isinstance(x, (list, tuple)):
-        # to avoid cases where the list contains numpy data types
-        return [make_serializable(v) for v in x]
-    elif isinstance(x, dict):
-        for k, v in x.items():
-            x[k] = make_serializable(v)
+        return make_serializable(x.tolist(), drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+
     elif isinstance(x, np.generic):
         return x.item()
-    # the other types will be returned directly
-    return x
+
+    elif isinstance(x, dict):
+        result = {}
+        for k, v in x.items():
+            v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+            if v_serial is not None:
+                result[k] = v_serial
+        return result if result else None
+
+    elif isinstance(x, (list, tuple)):
+        result = []
+        for v in x:
+            v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+            if v_serial is not None:
+                result.append(v_serial)
+        return result if result else None
+
+    elif isinstance(x, (str, int, float, bool, type(None))):
+        if isinstance(x, str) and drop_paths and _is_pathlike_string(x):
+            return None
+        return x
+
+    elif isinstance(x, Path):
+        if drop_paths:
+            return None
+        return str(x)
+
+    else:
+        if drop_unserializable:
+            return None
+        else:
+            return str(x)
 
 
 def select_k(
