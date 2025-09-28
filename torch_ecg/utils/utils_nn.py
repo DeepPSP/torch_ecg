@@ -57,7 +57,7 @@ with warnings.catch_warnings():
         CFG, DTYPE, EasyDict,
         Path, PosixPath, WindowsPath,
         # np.core.multiarray._reconstruct,
-        NDArray, np.dtype,
+        np.ndarray, np.dtype,
         np.float32, np.float64, np.int32, np.int64, np.uint8, np.int8,
     ] + _get_np_dtypes()
     if hasattr(np, "core"):
