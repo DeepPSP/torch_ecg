@@ -977,7 +977,7 @@ def _adjust_cnn_filter_lengths(
             else:
                 config[k]["fs"] = fs
         elif re.findall(pattern, k):
-            if isinstance(v, (Sequence, NDArray)):  # DO NOT use `Iterable`
+            if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
                 config[k] = [
                     _adjust_cnn_filter_lengths({"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd)["filter_length"]
                     for fl in v

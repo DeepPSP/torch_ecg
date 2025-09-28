@@ -761,12 +761,12 @@ def one_hot_encode(
     if isinstance(cls_array, Tensor):
         cls_array = cls_array.cpu().numpy()
     if num_classes is None:
-        if isinstance(cls_array, NDArray):
+        if isinstance(cls_array, np.ndarray):
             assert cls_array.ndim == 1, "`cls_array` should be 1D if num_classes is not specified"
             num_classes = cls_array.max() + 1
         else:  # sequence of sequences of class indices
             num_classes = max([max(c) for c in cls_array]) + 1
-    if isinstance(cls_array, NDArray) and cls_array.ndim == 1:
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 1:
         assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
             "num_classes must be greater than 0 and greater than or equal to "
             "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
@@ -775,7 +775,7 @@ def one_hot_encode(
         assert all(
             [max(c) < num_classes for c in cls_array]
         ), "all values in the multi-class `cls_array` should be less than `num_classes`"
-    if isinstance(cls_array, NDArray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:
         shape = (len(cls_array), num_classes)

@@ -423,7 +423,7 @@ def metrics_from_confusion_matrix(
             fillna = 0.0
         assert 0 <= fillna <= 1, "fillna must be in [0, 1]"
         for m in metrics:
-            if isinstance(metrics[m], NDArray):
+            if isinstance(metrics[m], np.ndarray):
                 metrics[m][np.isnan(metrics[m])] = fillna
             elif np.isnan(metrics[m]):
                 metrics[m] = fillna
@@ -717,9 +717,9 @@ def one_hot_pair(
         outputs = outputs.cpu().numpy()
 
     if num_classes is None:  # determine `num_classes`
-        if isinstance(labels, NDArray) and labels.ndim == 2:
+        if isinstance(labels, np.ndarray) and labels.ndim == 2:
             num_classes = labels.shape[1]
-        elif isinstance(outputs, NDArray) and outputs.ndim == 2:
+        elif isinstance(outputs, np.ndarray) and outputs.ndim == 2:
             num_classes = outputs.shape[1]
     assert num_classes is not None, "num_classes is required if both labels and outputs are categorical"
 
@@ -748,7 +748,7 @@ def _one_hot_pair(cls_array: Union[NDArray, Sequence[Sequence[int]]], shape: Tup
         Binarized array of `cls_array` of shape ``(n_samples, n_classes)``.
 
     """
-    if isinstance(cls_array, NDArray) and cls_array.ndim == 2:
+    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2:
         return cls_array
     bin_array = np.zeros(shape)
     for i in range(shape[0]):

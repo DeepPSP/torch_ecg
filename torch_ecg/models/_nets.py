@@ -14,7 +14,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from deprecate_kwargs import deprecate_kwargs
-from numpy.typing import NDArray
 from torch import Tensor, nn
 from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
@@ -1030,7 +1029,7 @@ class BranchedConv(nn.Module, SizeMixin):
         self.__in_channels = in_channels
         self.__out_channels = list(out_channels)
         assert all(
-            [isinstance(item, (Sequence, NDArray)) for item in self.__out_channels]
+            [isinstance(item, (Sequence, np.ndarray)) for item in self.__out_channels]
         ), f"`out_channels` must be a sequence of sequence of int, but got `{self.__out_channels}`"
         self.__num_branches = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)

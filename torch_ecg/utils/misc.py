@@ -717,18 +717,18 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
             return False
         if not allow_array_diff_types and not isinstance(d2[k], type(v)):
             return False
-        if allow_array_diff_types and isinstance(v, (list, tuple, NDArray, torch.Tensor)):
-            if not isinstance(d2[k], (list, tuple, NDArray, torch.Tensor)):
+        if allow_array_diff_types and isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
+            if not isinstance(d2[k], (list, tuple, np.ndarray, torch.Tensor)):
                 return False
             if not np.array_equal(v, d2[k]):
                 return False
-        elif allow_array_diff_types and not isinstance(v, (list, tuple, NDArray, torch.Tensor)):
+        elif allow_array_diff_types and not isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
             if not isinstance(d2[k], type(v)):
                 return False
         if isinstance(v, dict):
             if not dicts_equal(v, d2[k]):
                 return False
-        elif isinstance(v, (list, tuple, NDArray, torch.Tensor)):
+        elif isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
             return np.array_equal(v, d2[k])
         elif isinstance(v, pd.DataFrame):
             if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
@@ -1564,7 +1564,7 @@ def make_serializable(
 
     """
 
-    if isinstance(x, NDArray):
+    if isinstance(x, np.ndarray):
         return make_serializable(x.tolist(), drop_unserializable=drop_unserializable, drop_paths=drop_paths)
 
     elif isinstance(x, np.generic):
@@ -1635,7 +1635,7 @@ def select_k(
 
     """
     arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
-    if isinstance(k, (list, NDArray)):
+    if isinstance(k, (list, np.ndarray)):
         k = np.asarray(k)
     else:
         k = np.arange(k)
