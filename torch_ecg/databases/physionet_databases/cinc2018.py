@@ -6,10 +6,10 @@ from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
-import numpy as np
 import pandas as pd
 import scipy.signal as SS
 import wfdb
+from numpy.typing import NDArray
 from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
@@ -96,9 +96,8 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         Level of logging verbosity.
     kwargs : dict, optional
         Auxilliary key word arguments, including:
-
-        - `subset` : {"training", "test"}, default "training"
-            The subset of the database to use.
+        - `subset` : {"training", "test"}, default "training".
+          The subset of the database to use.
 
     """
 
@@ -308,7 +307,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         physical: bool = True,
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load PSG data of the record.
 
         Parameters
@@ -407,7 +406,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load ECG data of the record.
 
         Parameters
@@ -479,7 +478,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """alias of `load_data`"""
         return self.load_data(
             rec=rec,

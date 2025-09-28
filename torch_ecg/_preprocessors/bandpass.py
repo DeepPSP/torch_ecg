@@ -2,7 +2,7 @@
 
 from typing import Any, List, Literal, Optional, Tuple, Union
 
-import numpy as np
+from numpy.typing import NDArray
 
 from .base import PreProcessor, preprocess_multi_lead_signal
 
@@ -58,16 +58,16 @@ class BandPass(PreProcessor):
         self.filter_type = filter_type
         self.filter_order = filter_order
 
-    def apply(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
+    def apply(self, sig: NDArray, fs: Union[int, float]) -> Tuple[NDArray, Union[int, float]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
         fs : int or float
             Sampling frequency of the ECG signal.
 

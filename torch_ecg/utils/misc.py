@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 from bib_lookup import CitationMixin as _CitationMixin
 from deprecated import deprecated
+from numpy.typing import NDArray
 
 from ..cfg import _DATA_CACHE, DEFAULTS
 
@@ -315,7 +316,7 @@ def str2bool(v: Union[str, bool]) -> bool:
 
 
 @deprecated("Use `np.diff` instead.")
-def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
+def diff_with_step(a: NDArray, step: int = 1) -> NDArray:
     """Compute ``a[n+step] - a[n]`` for all valid `n`.
 
     Parameters
@@ -380,8 +381,8 @@ def samples2ms(n_samples: int, fs: int) -> float:
 
 
 def plot_single_lead(
-    t: np.ndarray,
-    sig: np.ndarray,
+    t: NDArray,
+    sig: NDArray,
     ax: Optional[Any] = None,
     ticks_granularity: int = 0,
     **kwargs,
@@ -716,18 +717,18 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
             return False
         if not allow_array_diff_types and not isinstance(d2[k], type(v)):
             return False
-        if allow_array_diff_types and isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
-            if not isinstance(d2[k], (list, tuple, np.ndarray, torch.Tensor)):
+        if allow_array_diff_types and isinstance(v, (list, tuple, NDArray, torch.Tensor)):
+            if not isinstance(d2[k], (list, tuple, NDArray, torch.Tensor)):
                 return False
             if not np.array_equal(v, d2[k]):
                 return False
-        elif allow_array_diff_types and not isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
+        elif allow_array_diff_types and not isinstance(v, (list, tuple, NDArray, torch.Tensor)):
             if not isinstance(d2[k], type(v)):
                 return False
         if isinstance(v, dict):
             if not dicts_equal(v, d2[k]):
                 return False
-        elif isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
+        elif isinstance(v, (list, tuple, NDArray, torch.Tensor)):
             return np.array_equal(v, d2[k])
         elif isinstance(v, pd.DataFrame):
             if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
@@ -939,7 +940,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
 
-    def __call__(self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any) -> np.ndarray:
+    def __call__(self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any) -> NDArray:
         """Compute moving average.
 
         Parameters
@@ -948,13 +949,11 @@ class MovingAverage(object):
             The series data to compute its moving average.
         method : str
             method for computing moving average, can be one of
-
-                - "sma", "simple", "simple moving average";
-                - "ema", "ewma", "exponential", "exponential weighted",
-                  "exponential moving average", "exponential weighted moving average";
-                - "cma", "cumulative", "cumulative moving average";
-                - "wma", "weighted", "weighted moving average".
-
+            - "sma", "simple", "simple moving average";
+            - "ema", "ewma", "exponential", "exponential weighted",
+              "exponential moving average", "exponential weighted moving average";
+            - "cma", "cumulative", "cumulative moving average";
+            - "wma", "weighted", "weighted moving average".
         kwargs : dict, optional
             Keyword arguments for the specific moving average method.
 
@@ -986,7 +985,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         return func(**kwargs)
 
-    def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> np.ndarray:
+    def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> NDArray:
         """Simple moving average.
 
         Parameters
@@ -1028,7 +1027,7 @@ class MovingAverage(object):
                 smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])  # type: ignore
         return smoothed
 
-    def _ema(self, weight: float = 0.6, **kwargs: Any) -> np.ndarray:
+    def _ema(self, weight: float = 0.6, **kwargs: Any) -> NDArray:
         """Exponential moving average
 
         This is also the function used in Tensorboard Scalar panel,
@@ -1059,7 +1058,7 @@ class MovingAverage(object):
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _cma(self, **kwargs) -> np.ndarray:
+    def _cma(self, **kwargs) -> NDArray:
         """Cumulative moving average.
 
         Parameters
@@ -1086,7 +1085,7 @@ class MovingAverage(object):
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _wma(self, window: int = 5, **kwargs: Any) -> np.ndarray:
+    def _wma(self, window: int = 5, **kwargs: Any) -> NDArray:
         """Weighted moving average.
 
         Parameters
@@ -1523,7 +1522,7 @@ def make_serializable(
 
     Rules
     -----
-    - np.ndarray → list
+    - NDArray → list
     - np.generic → Python scalar
     - dict → new dict with only serializable values
     - list/tuple → list with only serializable values
@@ -1565,7 +1564,7 @@ def make_serializable(
 
     """
 
-    if isinstance(x, np.ndarray):
+    if isinstance(x, NDArray):
         return make_serializable(x.tolist(), drop_unserializable=drop_unserializable, drop_paths=drop_paths)
 
     elif isinstance(x, np.generic):
@@ -1605,8 +1604,8 @@ def make_serializable(
 
 
 def select_k(
-    arr: np.ndarray, k: Union[int, List[int], np.ndarray], dim: int = -1, largest: bool = True, sorted: bool = True
-) -> Tuple[np.ndarray, np.ndarray]:
+    arr: NDArray, k: Union[int, List[int], NDArray], dim: int = -1, largest: bool = True, sorted: bool = True
+) -> Tuple[NDArray, NDArray]:
     """Select elements from an array along a specified axis of specific rankings.
 
     Parameters
@@ -1636,7 +1635,7 @@ def select_k(
 
     """
     arr = np.asarray(arr).copy()  # copy to avoid modifying the input array
-    if isinstance(k, (list, np.ndarray)):
+    if isinstance(k, (list, NDArray)):
         k = np.asarray(k)
     else:
         k = np.arange(k)
@@ -1661,7 +1660,7 @@ def select_k(
     return values, indices
 
 
-def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+def np_topk(arr: NDArray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[NDArray, NDArray]:
     """Find the k largest elements of an array along a specified axis.
 
     Parameters

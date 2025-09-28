@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
 from torch.utils.data.dataset import Dataset
@@ -359,7 +360,7 @@ class MITDBDataset(ReprMixin, Dataset):
             return len(self._all_data)
         return len(self.fdr)
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, ...]:
         if self.task in ["beat_classification"]:
             return self._all_data[index], self._all_labels[index]
         if self.lazy:
@@ -401,7 +402,7 @@ class MITDBDataset(ReprMixin, Dataset):
         fp = self.segments_dirs.ann[rec] / f"{seg}.{self.segment_ext}"
         return fp
 
-    def _load_seg_data(self, seg: str) -> np.ndarray:
+    def _load_seg_data(self, seg: str) -> NDArray:
         """Load data of the segment.
 
         Parameters
@@ -432,18 +433,18 @@ class MITDBDataset(ReprMixin, Dataset):
         dict
             A dictionay of annotations of the segment, including
 
-                - rpeaks: indices of rpeaks of the segment
-                - qrs_mask: mask of qrs complexes of the segment
-                - rhythm_mask: mask of rhythms of the segment
-                - interval: interval ([start_idx, end_idx]) in the
-                  original ECG record of the segment
+            - rpeaks: indices of rpeaks of the segment
+            - qrs_mask: mask of qrs complexes of the segment
+            - rhythm_mask: mask of rhythms of the segment
+            - interval: interval ([start_idx, end_idx]) in the
+              original ECG record of the segment
 
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_ann = {k: v.flatten() for k, v in loadmat(str(seg_ann_fp)).items() if not k.startswith("__")}
         return seg_ann
 
-    def _load_seg_mask(self, seg: str, task: Optional[str] = None) -> Union[np.ndarray, Dict[str, np.ndarray]]:
+    def _load_seg_mask(self, seg: str, task: Optional[str] = None) -> Union[NDArray, Dict[str, NDArray]]:
         """Load mask(s) of the segment.
 
         Parameters
@@ -483,7 +484,7 @@ class MITDBDataset(ReprMixin, Dataset):
             seg_mask = seg_mask["rhythm_mask"]
         return seg_mask
 
-    def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
+    def _load_seg_seq_lab(self, seg: str, reduction: int) -> NDArray:
         """Load sequence label of the segment.
 
         Parameters
@@ -534,7 +535,7 @@ class MITDBDataset(ReprMixin, Dataset):
         fp = self.rr_seq_dirs[rec] / f"{seq_name}.{self.rr_seq_ext}"
         return fp
 
-    def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
+    def _load_rr_seq(self, seq_name: str) -> Dict[str, NDArray]:
         """Load metadata of sequence of rr intervals.
 
         Parameters
@@ -547,12 +548,12 @@ class MITDBDataset(ReprMixin, Dataset):
         dict
             Metadata of sequence of rr intervals, including
 
-                - rr: the sequence of rr intervals, with units in seconds,
-                  of shape ``(self.seglen, 1)``
-                - label: label of the rr intervals,
-                  of shape ``(self.seglen, self.n_classes)``
-                - interval: interval of the current rr sequence
-                  in the whole rr sequence in the original record
+            - rr: the sequence of rr intervals, with units in seconds,
+              of shape ``(self.seglen, 1)``.
+            - label: label of the rr intervals,
+              of shape ``(self.seglen, self.n_classes)``.
+            - interval: interval of the current rr sequence
+              in the whole rr sequence in the original record.
 
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
@@ -772,7 +773,7 @@ class MITDBDataset(ReprMixin, Dataset):
     def __generate_segment(
         self,
         rec: str,
-        data: np.ndarray,
+        data: NDArray,
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
@@ -1311,7 +1312,7 @@ class _FastDataReader(ReprMixin, Dataset):
             "af_event": "rhythm_mask",  # segmentation of AF events
         }
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, ...]:
         if isinstance(index, slice):
             return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.task in [

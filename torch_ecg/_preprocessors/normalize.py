@@ -3,7 +3,7 @@
 from numbers import Real
 from typing import Any, List, Literal, Tuple, Union
 
-import numpy as np
+from numpy.typing import NDArray
 
 from ..cfg import DEFAULTS
 from ..utils.utils_signal import normalize
@@ -39,11 +39,11 @@ class Normalize(PreProcessor):
     ----------
     method : {"naive", "min-max", "z-score"}, default "z-score"
         Normalization method, case insensitive.
-    mean : numbers.Real or numpy.ndarray, default 0.0
+    mean : float or int or numpy.ndarray, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal.
         Useless if `method` is "min-max".
-    std : numbers.Real or numpy.ndarray, default 1.0
+    std : float or int or numpy.ndarray, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal.
         Useless if `method` is "min-max".
@@ -66,8 +66,8 @@ class Normalize(PreProcessor):
     def __init__(
         self,
         method: Literal["naive", "min-max", "z-score"] = "z-score",
-        mean: Union[Real, np.ndarray] = 0.0,
-        std: Union[Real, np.ndarray] = 1.0,
+        mean: Union[float, int, NDArray] = 0.0,
+        std: Union[float, int, NDArray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -89,17 +89,17 @@ class Normalize(PreProcessor):
                 std, Real
             ), "mean and std should be real numbers in the non per-channel setting"
 
-    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: NDArray, fs: Union[float, int]) -> Tuple[NDArray, Union[float, int]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
-        fs : numbers.Real
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+        fs : float or int
             Sampling frequency of the ECG signal.
             **NOT** used currently.
 
@@ -114,7 +114,7 @@ class Normalize(PreProcessor):
         self._check_sig(sig)
         normalized_sig = normalize(
             sig=sig.astype(DEFAULTS.np_dtype),
-            method=self.method,
+            method=self.method,  # type: ignore
             mean=self.mean,
             std=self.std,
             sig_fmt="channel_first",
@@ -181,9 +181,9 @@ class NaiveNormalize(Normalize):
 
     Parameters
     ----------
-    mean : numbers.Real or numpy.ndarray, default 0.0
+    mean : float or int or numpy.ndarray, default 0.0
         Value(s) to be subtracted.
-    std : numbers.Real or numpy.ndarray, default 1.0
+    std : float or int or numpy.ndarray, default 1.0
         Value(s) to be divided.
     per_channel : bool, default False
         If True, normalization will be done per channel.
@@ -203,8 +203,8 @@ class NaiveNormalize(Normalize):
 
     def __init__(
         self,
-        mean: Union[Real, np.ndarray] = 0.0,
-        std: Union[Real, np.ndarray] = 1.0,
+        mean: Union[float, int, NDArray] = 0.0,
+        std: Union[float, int, NDArray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -234,10 +234,10 @@ class ZScoreNormalize(Normalize):
 
     Parameters
     ----------
-    mean : numbers.Real or numpy.ndarray, default 0.0
+    mean : float or int or numpy.ndarray, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal.
-    std : numbers.Real or numpy.ndarray, default 1.0
+    std : float or int or numpy.ndarray, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal.
     per_channel : bool, default False
@@ -258,8 +258,8 @@ class ZScoreNormalize(Normalize):
 
     def __init__(
         self,
-        mean: Union[Real, np.ndarray] = 0.0,
-        std: Union[Real, np.ndarray] = 1.0,
+        mean: Union[float, int, NDArray] = 0.0,
+        std: Union[float, int, NDArray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:

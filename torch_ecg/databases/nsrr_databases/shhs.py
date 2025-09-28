@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import scipy.signal as SS
 import xmltodict as xtd
+from numpy.typing import NDArray
 from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
@@ -77,12 +78,14 @@ _SHHS_INFO = DataBaseInfo(
 
     2. Obstructive Apnea Index (OAI):
 
-        - There is one OAI index in the data set. It reflects obstructive events associated with a 4% desaturation or arousal. Nearly 30% of the cohort has a zero value for this variable
+        - There is one OAI index in the data set. It reflects obstructive events associated with a 4% desaturation or arousal.
+          Nearly 30% of the cohort has a zero value for this variable
         - Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
 
     3. Central Apnea Index (CAI):
 
-        - Several variables describe central breathing events, with different thresholds for desaturation and requirement/non-requirement of arousals. ~58% of the cohort have zero values
+        - Several variables describe central breathing events, with different thresholds for desaturation and
+          requirement/non-requirement of arousals. ~58% of the cohort have zero values
         - Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
 
     4. Sleep Stages:
@@ -873,7 +876,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sampto: Optional[Union[float, int]] = None,
         fs: Optional[Union[float, int]] = None,
         physical: bool = True,
-    ) -> Union[Dict[str, Tuple[np.ndarray, Union[float, int]]], Tuple[np.ndarray, Union[float, int]]]:
+    ) -> Union[Dict[str, Tuple[NDArray, Union[float, int]]], Tuple[NDArray, Union[float, int]]]:
         """Load PSG data of the record.
 
         Parameters
@@ -907,8 +910,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         dict or tuple
             If `channel` is "all", then a dictionary will be returned:
 
-                - keys: PSG channel names;
-                - values: PSG data and sampling frequency
+            - keys: PSG channel names;
+            - values: PSG data and sampling frequency
 
             Otherwise, a 2-tuple will be returned:
             (:class:`numpy.ndarray`, :class:`int` or :class:`float`), which is the
@@ -964,7 +967,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Union[str, None] = "mV",
         fs: Optional[Union[float, int]] = None,
         return_fs: bool = True,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Union[float, int]]]:
+    ) -> Union[NDArray, Tuple[NDArray, Union[float, int]]]:
         """Load ECG data of the record.
 
         Parameters
@@ -1056,7 +1059,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Union[str, None] = "mV",
         fs: Optional[int] = None,
         return_fs: bool = True,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Union[float, int]]]:
+    ) -> Union[NDArray, Tuple[NDArray, Union[float, int]]]:
         """alias of `load_ecg_data`"""
         return self.load_ecg_data(
             rec=rec,
@@ -1075,7 +1078,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         ann_type: str,
         ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         **kwargs: Any,
-    ) -> Union[np.ndarray, pd.DataFrame, dict, None]:
+    ) -> Union[NDArray, pd.DataFrame, dict, None]:
         """Load annotations of specific type of the record.
 
         Parameters
@@ -1745,7 +1748,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         exclude_abnormal_beats: bool = True,
         units: Optional[Literal["s", "ms"]] = None,
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load annotations on R peaks of the record.
 
         Parameters
@@ -1810,7 +1813,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rpeak_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         units: Literal["s", "ms", None] = "s",
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load annotations on RR intervals of the record.
 
         Parameters
@@ -1851,7 +1854,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rpeak_ann_path: Optional[Union[str, bytes, os.PathLike]] = None,
         units: Union[str, None] = "s",
         **kwargs: Any,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load annotations on NN intervals of the record.
 
         Parameters
@@ -1911,7 +1914,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec: Union[str, int],
         wave_deli_path: Optional[Union[str, bytes, os.PathLike]] = None,
         units: Optional[Literal["s", "ms"]] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Locate "artifacts" in the record.
 
         Parameters
@@ -1964,7 +1967,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         wave_deli_path: Optional[Union[str, bytes, os.PathLike]] = None,
         abnormal_type: Optional[Literal["VE", "SVE"]] = None,
         units: Optional[Literal["s", "ms"]] = None,
-    ) -> Union[Dict[str, np.ndarray], np.ndarray, None]:
+    ) -> Union[Dict[str, NDArray], NDArray, None]:
         """Locate "abnormal beats" in the record.
 
         Parameters

@@ -42,49 +42,50 @@ class AnyStage(nn.Sequential, SizeMixin):
         Index of the stage in the whole :class:`RegNet`.
     block_config: dict,
         (optional) configs for the blocks, including
-            - block: str or torch.nn.Module,
-              the block class, can be one of
-              "bottleneck", "bottle_neck", :class:`ResNetBottleNeck`, etc.
-            - expansion: int,
-              the expansion factor for the bottleneck block.
-            - increase_channels_method: str,
-              the method to increase the number of channels,
-              can be one of {"conv", "zero_padding"}.
-            - subsample_mode: str,
-              the mode of subsampling, can be one of
-              {:class:`DownSample`.__MODES__},
-            - activation: str or torch.nn.Module,
-              the activation function, can be one of
-              {:class:`Activations`}.
-            - kw_activation: dict,
-              keyword arguments for the activation function.
-            - kernel_initializer: str,
-              the kernel initializer, can be one of
-              {:class:`Initializers`}.
-            - kw_initializer: dict,
-              keyword arguments for the kernel initializer.
-            - bias: bool,
-              whether to use bias in the convolution.
-            - dilation: int,
-              the dilation factor for the convolution.
-            - base_width: int,
-              number of filters per group for the neck conv layer
-              usually number of filters of the initial conv layer
-              of the whole :class:`RegNet`.
-            - base_groups: int,
-              pattern of connections between inputs and outputs of
-              conv layers at the two ends, which should divide `groups`.
-            - base_filter_length: int,
-              lengths (sizes) of the filter kernels for conv layers at the two ends.
-            - attn: dict,
-              attention mechanism for the neck conv layer.
-              If is None, no attention mechanism is used.
-              If is not None, it should be a dict with the following items:
 
-                - name: str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-                - pos: int, position of the attention mechanism.
+        - block: str or torch.nn.Module,
+          the block class, can be one of
+          "bottleneck", "bottle_neck", :class:`ResNetBottleNeck`, etc.
+        - expansion: int,
+          the expansion factor for the bottleneck block.
+        - increase_channels_method: str,
+          the method to increase the number of channels,
+          can be one of {"conv", "zero_padding"}.
+        - subsample_mode: str,
+          the mode of subsampling, can be one of
+          {:class:`DownSample`.__MODES__},
+        - activation: str or torch.nn.Module,
+          the activation function, can be one of
+          {:class:`Activations`}.
+        - kw_activation: dict,
+          keyword arguments for the activation function.
+        - kernel_initializer: str,
+          the kernel initializer, can be one of
+          {:class:`Initializers`}.
+        - kw_initializer: dict,
+          keyword arguments for the kernel initializer.
+        - bias: bool,
+          whether to use bias in the convolution.
+        - dilation: int,
+          the dilation factor for the convolution.
+        - base_width: int,
+          number of filters per group for the neck conv layer
+          usually number of filters of the initial conv layer
+          of the whole :class:`RegNet`.
+        - base_groups: int,
+          pattern of connections between inputs and outputs of
+          conv layers at the two ends, which should divide `groups`.
+        - base_filter_length: int,
+          lengths (sizes) of the filter kernels for conv layers at the two ends.
+        - attn: dict,
+          attention mechanism for the neck conv layer.
+          If is None, no attention mechanism is used.
+          If is not None, it should be a dict with the following items:
 
-              Other keys are specific to the attention mechanism.
+          - name: str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+          - pos: int, position of the attention mechanism.
+
+        Other keys are specific to the attention mechanism.
 
     """
 
@@ -283,31 +284,31 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
         Hyper-parameters of the Module, ref. corr. config file.
         Keyword arguments that must be set:
 
-            - filter_lengths: int or sequence of int,
-              filter length(s) (kernel size(s)) of the convolutions,
-              with granularity to the whole network, to each stage.
-            - subsample_lengths: int or sequence of int,
-              subsampling length(s) (ratio(s)) of all blocks,
-              with granularity to the whole network, to each stage.
-            - tot_blocks: int,
-              the total number of building blocks.
-            - w_a, w_0, w_m: float,
-              the parameters for the widths generating function.
-            - group_widths: int or sequence of int,
-              the number of channels in each group,
-              with granularity to the whole network, to each stage.
-            - num_blocks: sequence of int, optional,
-              the number of blocks in each stage,
-              if not given, will be computed from tot_blocks
-              and `w_a`, `w_0`, `w_m`.
-            - num_filters: int or sequence of int, optional,
-              the number of filters in each stage.
-              If not given, will be computed from tot_blocks
-              and `w_a`, `w_0`, `w_m`.
-            - stem: dict,
-              the config of the input stem.
-            - block: dict,
-              other parameters that can be set for the building blocks.
+        - filter_lengths: int or sequence of int,
+          filter length(s) (kernel size(s)) of the convolutions,
+          with granularity to the whole network, to each stage.
+        - subsample_lengths: int or sequence of int,
+          subsampling length(s) (ratio(s)) of all blocks,
+          with granularity to the whole network, to each stage.
+        - tot_blocks: int,
+          the total number of building blocks.
+        - w_a, w_0, w_m: float,
+          the parameters for the widths generating function.
+        - group_widths: int or sequence of int,
+          the number of channels in each group,
+          with granularity to the whole network, to each stage.
+        - num_blocks: sequence of int, optional,
+          the number of blocks in each stage,
+          if not given, will be computed from tot_blocks
+          and `w_a`, `w_0`, `w_m`.
+        - num_filters: int or sequence of int, optional,
+          the number of filters in each stage.
+          If not given, will be computed from tot_blocks
+          and `w_a`, `w_0`, `w_m`.
+        - stem: dict,
+          the config of the input stem.
+        - block: dict,
+          other parameters that can be set for the building blocks.
 
     """
 

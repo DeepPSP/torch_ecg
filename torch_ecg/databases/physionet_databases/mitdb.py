@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 import wfdb
+from numpy.typing import NDArray
 from tqdm.auto import tqdm
 
 from ...cfg import CFG, DEFAULTS
@@ -325,7 +326,7 @@ class MITDB(PhysioNetDataBase):
         rhythm_format: Literal["intervals", "mask"] = "intervals",
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
-    ) -> Union[Dict[str, list], np.ndarray]:
+    ) -> Union[Dict[str, list], NDArray]:
         """Load rhythm annotations of the record.
 
         Rhythm annotations are stored in the `aux_note` attribute
@@ -374,7 +375,7 @@ class MITDB(PhysioNetDataBase):
         beat_format: Literal["beat", "dict"] = "beat",
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
-    ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
+    ) -> Union[Dict[str, NDArray], List[BeatAnn]]:
         """Load beat annotations of the record.
 
         Beat annotations are stored in the `symbol` attribute
@@ -420,7 +421,7 @@ class MITDB(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load rpeak indices of the record.
 
         Rpeak indices, or equivalently qrs complex locations,
@@ -560,10 +561,10 @@ class MITDB(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
-        beat_ann: Optional[Dict[str, np.ndarray]] = None,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
+        beat_ann: Optional[Dict[str, NDArray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[int, List[int]]] = None,
         sampfrom: Optional[int] = None,

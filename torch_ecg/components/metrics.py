@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
+from numpy.typing import NDArray
 from torch import Tensor
 
 from ..utils.misc import ReprMixin, add_docstring
@@ -55,10 +56,10 @@ class ClassificationMetrics(Metrics):
         .. code-block:: python
 
             def extra_metrics(
-                labels : np.ndarray
-                outputs : np.ndarray
+                labels : NDArray
+                outputs : NDArray
                 num_classes : Optional[int]=None
-                weights : Optional[np.ndarray]=None
+                weights : Optional[NDArray]=None
             ) -> dict
 
     """
@@ -140,10 +141,10 @@ class ClassificationMetrics(Metrics):
     )
     def compute(
         self,
-        labels: Union[np.ndarray, Tensor],
-        outputs: Union[np.ndarray, Tensor],
+        labels: Union[NDArray, Tensor],
+        outputs: Union[NDArray, Tensor],
         num_classes: Optional[int] = None,
-        weights: Optional[np.ndarray] = None,
+        weights: Optional[NDArray] = None,
         thr: float = 0.5,
     ) -> "ClassificationMetrics":
         labels, outputs = one_hot_pair(labels, outputs, num_classes)
@@ -164,154 +165,154 @@ class ClassificationMetrics(Metrics):
     @add_docstring(compute.__doc__)
     def __call__(
         self,
-        labels: Union[np.ndarray, Tensor],
-        outputs: Union[np.ndarray, Tensor],
+        labels: Union[NDArray, Tensor],
+        outputs: Union[NDArray, Tensor],
         num_classes: Optional[int] = None,
-        weights: Optional[np.ndarray] = None,
+        weights: Optional[NDArray] = None,
         thr: float = 0.5,
     ) -> "ClassificationMetrics":
         return self.compute(labels, outputs, num_classes, weights)
 
     @property
-    def sensitivity(self) -> Union[float, np.ndarray]:
+    def sensitivity(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}sens"]
 
     @property
-    def recall(self) -> Union[float, np.ndarray]:
+    def recall(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}sens"]
 
     @property
-    def hit_rate(self) -> Union[float, np.ndarray]:
+    def hit_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}sens"]
 
     @property
-    def true_positive_rate(self) -> Union[float, np.ndarray]:
+    def true_positive_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}sens"]
 
     @property
-    def specificity(self) -> Union[float, np.ndarray]:
+    def specificity(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}spec"]
 
     @property
-    def selectivity(self) -> Union[float, np.ndarray]:
+    def selectivity(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}spec"]
 
     @property
-    def true_negative_rate(self) -> Union[float, np.ndarray]:
+    def true_negative_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}spec"]
 
     @property
-    def precision(self) -> Union[float, np.ndarray]:
+    def precision(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}prec"]
 
     @property
-    def positive_predictive_value(self) -> Union[float, np.ndarray]:
+    def positive_predictive_value(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}prec"]
 
     @property
-    def negative_predictive_value(self) -> Union[float, np.ndarray]:
+    def negative_predictive_value(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}npv"]
 
     @property
-    def jaccard_index(self) -> Union[float, np.ndarray]:
+    def jaccard_index(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}jac"]
 
     @property
-    def threat_score(self) -> Union[float, np.ndarray]:
+    def threat_score(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}jac"]
 
     @property
-    def critical_success_index(self) -> Union[float, np.ndarray]:
+    def critical_success_index(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}jac"]
 
     @property
-    def accuracy(self) -> Union[float, np.ndarray]:
+    def accuracy(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}acc"]
 
     @property
-    def phi_coefficient(self) -> Union[float, np.ndarray]:
+    def phi_coefficient(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}phi"]
 
     @property
-    def matthews_correlation_coefficient(self) -> Union[float, np.ndarray]:
+    def matthews_correlation_coefficient(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}phi"]
 
     @property
-    def false_negative_rate(self) -> Union[float, np.ndarray]:
+    def false_negative_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fnr"]
 
     @property
-    def miss_rate(self) -> Union[float, np.ndarray]:
+    def miss_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fnr"]
 
     @property
-    def false_positive_rate(self) -> Union[float, np.ndarray]:
+    def false_positive_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fpr"]
 
     @property
-    def fall_out(self) -> Union[float, np.ndarray]:
+    def fall_out(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fpr"]
 
     @property
-    def false_discovery_rate(self) -> Union[float, np.ndarray]:
+    def false_discovery_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fdr"]
 
     @property
-    def false_omission_rate(self) -> Union[float, np.ndarray]:
+    def false_omission_rate(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}for"]
 
     @property
-    def positive_likelihood_ratio(self) -> Union[float, np.ndarray]:
+    def positive_likelihood_ratio(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}plr"]
 
     @property
-    def negative_likelihood_ratio(self) -> Union[float, np.ndarray]:
+    def negative_likelihood_ratio(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}nlr"]
 
     @property
-    def prevalence_threshold(self) -> Union[float, np.ndarray]:
+    def prevalence_threshold(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}pt"]
 
     @property
-    def balanced_accuracy(self) -> Union[float, np.ndarray]:
+    def balanced_accuracy(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}ba"]
 
     @property
-    def f1_measure(self) -> Union[float, np.ndarray]:
+    def f1_measure(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}f1"]
 
     @property
-    def fowlkes_mallows_index(self) -> Union[float, np.ndarray]:
+    def fowlkes_mallows_index(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}fm"]
 
     @property
-    def bookmaker_informedness(self) -> Union[float, np.ndarray]:
+    def bookmaker_informedness(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}bm"]
 
     @property
-    def markedness(self) -> Union[float, np.ndarray]:
+    def markedness(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}mk"]
 
     @property
-    def diagnostic_odds_ratio(self) -> Union[float, np.ndarray]:
+    def diagnostic_odds_ratio(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}dor"]
 
     @property
     def area_under_the_receiver_operater_characteristic_curve(
         self,
-    ) -> Union[float, np.ndarray]:
+    ) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}auroc"]
 
     @property
-    def auroc(self) -> Union[float, np.ndarray]:
+    def auroc(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}auroc"]
 
     @property
-    def area_under_the_precision_recall_curve(self) -> Union[float, np.ndarray]:
+    def area_under_the_precision_recall_curve(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}auprc"]
 
     @property
-    def auprc(self) -> Union[float, np.ndarray]:
+    def auprc(self) -> Union[float, NDArray]:
         return self._metrics[f"{self.__prefix}auprc"]
 
     @property
@@ -348,8 +349,8 @@ class RPeaksDetectionMetrics(Metrics):
         .. code-block:: python
 
             def extra_metrics(
-                labels : Sequence[Union[Sequence[int], np.ndarray]],
-                outputs : Sequence[Union[Sequence[int], np.ndarray]],
+                labels : Sequence[Union[Sequence[int], NDArray]],
+                outputs : Sequence[Union[Sequence[int], NDArray]],
                 fs : int
             ) -> dict
 
@@ -395,8 +396,8 @@ class RPeaksDetectionMetrics(Metrics):
     )
     def compute(
         self,
-        labels: Sequence[Union[Sequence[int], np.ndarray]],
-        outputs: Sequence[Union[Sequence[int], np.ndarray]],
+        labels: Sequence[Union[Sequence[int], NDArray]],
+        outputs: Sequence[Union[Sequence[int], NDArray]],
         fs: int,
         thr: Optional[float] = None,
     ) -> "RPeaksDetectionMetrics":
@@ -410,8 +411,8 @@ class RPeaksDetectionMetrics(Metrics):
     @add_docstring(compute.__doc__)
     def __call__(
         self,
-        labels: Sequence[Union[Sequence[int], np.ndarray]],
-        outputs: Sequence[Union[Sequence[int], np.ndarray]],
+        labels: Sequence[Union[Sequence[int], NDArray]],
+        outputs: Sequence[Union[Sequence[int], NDArray]],
         fs: int,
         thr: Optional[float] = None,
     ) -> "RPeaksDetectionMetrics":
@@ -446,8 +447,8 @@ class WaveDelineationMetrics(Metrics):
         .. code-block:: python
 
             def extra_metrics(
-                labels: Sequence[Union[Sequence[int], np.ndarray]],
-                outputs: Sequence[Union[Sequence[int], np.ndarray]],
+                labels: Sequence[Union[Sequence[int], NDArray]],
+                outputs: Sequence[Union[Sequence[int], NDArray]],
                 fs: int
             ) -> dict
 
@@ -531,8 +532,8 @@ class WaveDelineationMetrics(Metrics):
     )
     def compute(
         self,
-        labels: Union[np.ndarray, Tensor],
-        outputs: Union[np.ndarray, Tensor],
+        labels: Union[NDArray, Tensor],
+        outputs: Union[NDArray, Tensor],
         class_map: Dict[str, int],
         fs: int,
         mask_format: str = "channel_first",
@@ -592,8 +593,8 @@ class WaveDelineationMetrics(Metrics):
     @add_docstring(compute.__doc__)
     def __call__(
         self,
-        labels: Union[np.ndarray, Tensor],
-        outputs: Union[np.ndarray, Tensor],
+        labels: Union[NDArray, Tensor],
+        outputs: Union[NDArray, Tensor],
         class_map: Dict[str, int],
         fs: int,
         mask_format: str = "channel_first",

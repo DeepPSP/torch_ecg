@@ -42,6 +42,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
+from numpy.typing import NDArray
 
 __all__ = ["ecg_plot"]
 
@@ -99,7 +100,7 @@ def inches_to_dots(value: float, resolution: int) -> float:
     return value * resolution
 
 
-def create_signal_dictionary(signal: np.ndarray, full_leads: List[str]) -> Dict[str, np.ndarray]:
+def create_signal_dictionary(signal: NDArray, full_leads: List[str]) -> Dict[str, NDArray]:
     record_dict = {}
     for k in range(len(full_leads)):
         record_dict[full_leads[k]] = signal[k]
@@ -107,7 +108,7 @@ def create_signal_dictionary(signal: np.ndarray, full_leads: List[str]) -> Dict[
 
 
 def ecg_plot(
-    ecg: Dict[str, np.ndarray],
+    ecg: Dict[str, NDArray],
     sample_rate: int,
     columns: int,
     rec_file_name: Union[str, bytes, os.PathLike],
@@ -140,7 +141,7 @@ def ecg_plot(
 
     Parameters
     ----------
-    ecg : Dict[str, np.ndarray]
+    ecg : Dict[str, NDArray]
         Dictionary of ECG signals with lead names as keys,
         values as 1D numpy arrays.
     sample_rate : int

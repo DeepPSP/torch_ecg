@@ -20,6 +20,7 @@ from numbers import Real
 from typing import Any, List, Literal, Sequence, Tuple, Union
 
 import numpy as np
+from numpy.typing import NDArray
 
 __all__ = [
     "overlaps",
@@ -51,9 +52,9 @@ def overlaps(interval: Interval, another: Interval) -> int:
 
     The amount of overlap, in bp between interval and anohter, is returned.
 
-        - If > 0, the number of bp of overlap
-        - If 0,  they are book-ended
-        - If < 0, the distance in bp between them
+    - If > 0, the number of bp of overlap
+    - If 0,  they are book-ended
+    - If < 0, the distance in bp between them
 
     Parameters
     ----------
@@ -104,8 +105,8 @@ def validate_interval(
     tuple
         2-tuple consisting of
 
-            - bool: indicating whether `interval` is a valid interval
-            - an interval (can be empty)
+        - bool: indicating whether `interval` is a valid interval
+        - an interval (can be empty)
 
     Examples
     --------
@@ -770,9 +771,9 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
     dict
         A dictionary containing the following keys:
 
-            - "max_cont_len"
-            - "max_cont_sublist_start"
-            - "max_cont_sublist"
+        - "max_cont_len"
+        - "max_cont_sublist_start"
+        - "max_cont_sublist"
 
     Examples
     --------
@@ -857,7 +858,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     return gi_len
 
 
-def find_extrema(signal: Union[np.ndarray, Sequence], mode: Literal["max", "min", "both"] = "both") -> np.ndarray:
+def find_extrema(signal: Union[NDArray, Sequence], mode: Literal["max", "min", "both"] = "both") -> NDArray:
     """Locate local extrema points in a 1D signal.
 
     This function is based on Fermat's Theorem.

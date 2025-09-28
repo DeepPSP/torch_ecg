@@ -8,6 +8,7 @@ from numbers import Real
 from typing import Sequence
 
 import numpy as np
+from numpy.typing import NDArray
 
 __all__ = [
     "phs_edr",
@@ -23,7 +24,7 @@ def phs_edr(
     return_with_time: bool = True,
     mode: str = "complex",
     verbose: int = 0,
-) -> np.ndarray:
+) -> NDArray:
     """
     computes the respiratory rate from single-lead ECG signals.
 
@@ -53,7 +54,7 @@ def phs_edr(
 
     Returns
     -------
-    np.ndarray,
+    NDArray,
         1d, if `return_with_time` is set False,
         2d in the form of [ts, val] (ts in milliseconds), if `return_with_time` is set True
 

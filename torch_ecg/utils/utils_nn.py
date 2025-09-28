@@ -57,7 +57,7 @@ with warnings.catch_warnings():
         CFG, DTYPE, EasyDict,
         Path, PosixPath, WindowsPath,
         # np.core.multiarray._reconstruct,
-        np.ndarray, np.dtype,
+        NDArray, np.dtype,
         np.float32, np.float64, np.int32, np.int64, np.uint8, np.int8,
     ] + _get_np_dtypes()
     if hasattr(np, "core"):
@@ -72,7 +72,7 @@ if hasattr(torch.serialization, "add_safe_globals"):
 
 def extend_predictions(
     preds: Union[Sequence, NDArray, torch.Tensor], classes: List[str], extended_classes: List[str]
-) -> np.ndarray:
+) -> NDArray:
     """Extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
@@ -674,7 +674,7 @@ def compute_sequential_output_shape(
     for module in model:
         output_shape = module.compute_output_shape(_seq_len, batch_size)
         _, _, _seq_len = output_shape
-    return output_shape
+    return output_shape  # type: ignore
 
 
 def compute_module_size(
@@ -873,7 +873,7 @@ def compute_receptive_field(
 
 
 def default_collate_fn(
-    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]],
+    batch: Sequence[Union[Tuple[NDArray, ...], Dict[str, NDArray]]],
 ) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
     """Default collate functions for model training.
 
@@ -903,7 +903,7 @@ def default_collate_fn(
         return _default_collate_fn(batch)  # type: ignore
 
 
-def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
+def _default_collate_fn(batch: Sequence[Tuple[NDArray, ...]]) -> Tuple[Tensor, ...]:
     """Collate functions for tuples of tensors.
 
     The data generator (:class:`~torch.utils.data.Dataset`) should
@@ -977,7 +977,7 @@ def _adjust_cnn_filter_lengths(
             else:
                 config[k]["fs"] = fs
         elif re.findall(pattern, k):
-            if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
+            if isinstance(v, (Sequence, NDArray)):  # DO NOT use `Iterable`
                 config[k] = [
                     _adjust_cnn_filter_lengths({"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd)["filter_length"]
                     for fl in v
@@ -1146,8 +1146,8 @@ class CkptMixin(object):
         path : `path-like`
             Path to the checkpoint.
             If it is a directory, then this directory should be one of the following cases:
-                - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.
-                - contain only one checkpoint file (with the extension `.pth` or `.pt`).
+            - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.
+            - contain only one checkpoint file (with the extension `.pth` or `.pt`).
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".

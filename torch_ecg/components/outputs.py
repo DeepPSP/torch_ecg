@@ -5,6 +5,7 @@ from typing import Any, Dict, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from ..cfg import CFG
 from ..utils.misc import add_docstring
@@ -151,7 +152,7 @@ class BaseOutput(CFG, ABC):
                 if k in ["classes"]:
                     assert v_ == self[k], f"the field of ordered sequence `{k}` must be the identical"
                     continue
-                if isinstance(v_, np.ndarray):
+                if isinstance(v_, NDArray):
                     self[k] = np.concatenate((self[k], v_))
                 elif isinstance(v_, pd.DataFrame):
                     self[k] = pd.concat([self[k], v_], axis=0, ignore_index=True)

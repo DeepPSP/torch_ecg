@@ -302,7 +302,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
     Where:
 
-       - :math:`p_t` is the model's estimated probability for each class.
+    - :math:`p_t` is the model's estimated probability for each class.
 
     Parameters
     ----------

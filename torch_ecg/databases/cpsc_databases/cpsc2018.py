@@ -9,6 +9,7 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from scipy.io import loadmat
 
 from ...cfg import DEFAULTS
@@ -264,7 +265,7 @@ class CPSC2018(CPSCDataBase):
         data_format="channel_first",
         units: str = "mV",
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load the ECG data of a record.
 
         Parameters
@@ -332,10 +333,9 @@ class CPSC2018(CPSCDataBase):
             Record name or index of the record in :attr:`all_records`.
         ann_format : str, default "n"
             Format of labels, one of the following (case insensitive):
-
-                - "a", abbreviations
-                - "f", full names
-                - "n", numeric codes
+            - "a", abbreviations
+            - "f", full names
+            - "n", numeric codes
 
         Returns
         -------

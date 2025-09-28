@@ -13,6 +13,7 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from sklearn.utils import compute_class_weight
 from torch import Tensor, from_numpy
 from torch.nn.functional import interpolate
@@ -41,11 +42,11 @@ __all__ = [
 
 def get_mask(
     shape: Union[int, Sequence[int]],
-    critical_points: np.ndarray,
+    critical_points: NDArray,
     left_bias: int,
     right_bias: int,
     return_fmt: Literal["mask", "intervals"] = "mask",
-) -> Union[np.ndarray, list]:
+) -> Union[NDArray, list]:
     """Get the mask around the given critical points.
 
     Parameters
@@ -96,9 +97,7 @@ def get_mask(
     return mask
 
 
-def class_weight_to_sample_weight(
-    y: np.ndarray, class_weight: Union[str, dict, List[float], np.ndarray] = "balanced"
-) -> np.ndarray:
+def class_weight_to_sample_weight(y: NDArray, class_weight: Union[str, dict, List[float], NDArray] = "balanced") -> NDArray:
     """Transform class weight to sample weight.
 
     Parameters
@@ -249,7 +248,7 @@ def rdheader(header_data: Union[Path, str, Sequence[str]]) -> Union[Record, Mult
     return record
 
 
-def ensure_lead_fmt(values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first") -> np.ndarray:
+def ensure_lead_fmt(values: NDArray, n_leads: int = 12, fmt: str = "lead_first") -> NDArray:
     """Ensure the multi-lead (ECG) signal to be of specified format.
 
     Parameters
@@ -299,11 +298,11 @@ def ensure_lead_fmt(values: np.ndarray, n_leads: int = 12, fmt: str = "lead_firs
 
 
 def ensure_siglen(
-    values: np.ndarray,
+    values: NDArray,
     siglen: int,
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Ensure the (ECG) signal to be of specified length.
 
     Strategy:
@@ -445,7 +444,7 @@ ECGWaveFormNames = [
 
 
 def masks_to_waveforms(
-    masks: np.ndarray,
+    masks: NDArray,
     class_map: Dict[str, int],
     fs: Real,
     mask_format: str = "channel_first",
@@ -542,7 +541,7 @@ def masks_to_waveforms(
 
 
 def mask_to_intervals(
-    mask: np.ndarray,
+    mask: NDArray,
     vals: Optional[Union[int, Sequence[int]]] = None,
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
@@ -723,8 +722,8 @@ def stratified_train_test_split(
 
 
 def one_hot_encode(
-    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
-) -> np.ndarray:
+    cls_array: Union[NDArray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> NDArray:
     """Convert a categorical array to a one-hot array.
 
     Convert a categorical (class indices) array of shape ``(num_samples,)``
@@ -762,12 +761,12 @@ def one_hot_encode(
     if isinstance(cls_array, Tensor):
         cls_array = cls_array.cpu().numpy()
     if num_classes is None:
-        if isinstance(cls_array, np.ndarray):
+        if isinstance(cls_array, NDArray):
             assert cls_array.ndim == 1, "`cls_array` should be 1D if num_classes is not specified"
             num_classes = cls_array.max() + 1
         else:  # sequence of sequences of class indices
             num_classes = max([max(c) for c in cls_array]) + 1
-    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 1:
+    if isinstance(cls_array, NDArray) and cls_array.ndim == 1:
         assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
             "num_classes must be greater than 0 and greater than or equal to "
             "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
@@ -776,7 +775,7 @@ def one_hot_encode(
         assert all(
             [max(c) < num_classes for c in cls_array]
         ), "all values in the multi-class `cls_array` should be less than `num_classes`"
-    if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
+    if isinstance(cls_array, NDArray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:
         shape = (len(cls_array), num_classes)
@@ -788,22 +787,22 @@ def one_hot_encode(
 
 @add_docstring(one_hot_encode.__doc__.replace("one_hot_encode", "cls_to_bin"))
 def cls_to_bin(
-    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
-) -> np.ndarray:
+    cls_array: Union[NDArray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> NDArray:
     """Alias of `one_hot_encode`."""
     warnings.warn("`cls_to_bin` is deprecated, use `one_hot_encode` instead", DeprecationWarning)
     return one_hot_encode(cls_array, num_classes, dtype)
 
 
 def generate_weight_mask(
-    target_mask: np.ndarray,
+    target_mask: NDArray,
     fg_weight: Real,
     fs: Real,
     reduction: Real,
     radius: Real,
     boundary_weight: Real,
     plot: bool = False,
-) -> np.ndarray:
+) -> NDArray:
     """Generate weight mask for a binary target mask,
     accounting the foreground weight and boundary weight.
 

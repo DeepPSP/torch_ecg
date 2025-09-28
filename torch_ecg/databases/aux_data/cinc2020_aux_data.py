@@ -8,8 +8,8 @@ from io import StringIO
 from numbers import Real
 from typing import Dict, Literal, Optional, Sequence, Union
 
-import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from ...cfg import CFG
 
@@ -248,7 +248,7 @@ equiv_class_dict = CFG(
 
 def load_weights(
     classes: Sequence[Union[int, str]] = None, return_fmt: Literal["np", "pd"] = "np"
-) -> Union[np.ndarray, pd.DataFrame]:
+) -> Union[NDArray, pd.DataFrame]:
     """Load the weight matrix of the `classes`.
 
     Parameters
@@ -342,7 +342,7 @@ def get_class_count(
     exclude_classes: Optional[Sequence[str]] = None,
     scored_only: bool = False,
     normalize: bool = True,
-    threshold: Optional[Real] = 0,
+    threshold: Union[float, int] = 0,
     fmt: str = "a",
 ) -> Dict[str, int]:
     """Get the number of classes in the `tranches`.
@@ -359,14 +359,15 @@ def get_class_count(
     normalize : bool, default True
         whether collapse equivalent classes into one or not,
         used only when `scored_only` is True.
-    threshold : numbers.Real, default 0
+    threshold : float or int, default 0
         Minimum ratio (0-1) or absolute number (>1) of a class to be counted.
     fmt : str, default "a"
         Format of the names of the classes in the returned dict,
         can be one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "s", SNOMED CT Code
+
+        - "a", abbreviations
+        - "f", full names
+        - "s", SNOMED CT Code
 
     Returns
     -------
@@ -464,8 +465,8 @@ def get_class_weight(
     Returns:
     --------
     class_weight : dict
-        - key: class in the format of `fmt`
-        - value: weight of a class in `tranches`
+        key: class in the format of `fmt`,
+        value: weight of a class in `tranches`.
 
     """
     class_count = get_class_count(

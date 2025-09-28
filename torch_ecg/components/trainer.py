@@ -53,18 +53,18 @@ class BaseTrainer(ReprMixin, ABC):
         Will also be recorded in the checkpoints.
         `train_config` should at least contain the following keys:
 
-            - "monitor": str
-            - "loss": str
-            - "n_epochs": int
-            - "batch_size": int
-            - "learning_rate": float
-            - "lr_scheduler": str
-                - "lr_step_size": int, optional, depending on the scheduler
-                - "lr_gamma": float, optional, depending on the scheduler
-                - "max_lr": float, optional, depending on the scheduler
-            - "optimizer": str
-                - "decay": float, optional, depending on the optimizer
-                - "momentum": float, optional, depending on the optimizer
+        - "monitor": str
+        - "loss": str
+        - "n_epochs": int
+        - "batch_size": int
+        - "learning_rate": float
+        - "lr_scheduler": str
+          - "lr_step_size": int, optional, depending on the scheduler
+          - "lr_gamma": float, optional, depending on the scheduler
+          - "max_lr": float, optional, depending on the scheduler
+        - "optimizer": str
+          - "decay": float, optional, depending on the optimizer
+          - "momentum": float, optional, depending on the optimizer
     collate_fn : callable, optional
         The collate function for the data loader,
         defaults to :meth:`default_collate_fn`.

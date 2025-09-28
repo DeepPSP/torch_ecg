@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import scipy.signal as SS
 import wfdb
+from numpy.typing import NDArray
 from scipy.io import loadmat
 
 from ...cfg import CFG, DEFAULTS
@@ -501,7 +502,7 @@ class CINC2020(PhysioNetDataBase):
         units: Literal["mV", "μV", "uV", None] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
@@ -858,10 +859,9 @@ class CINC2020(PhysioNetDataBase):
             in the CINC2020 official phase.
         fmt : str, default "s"
             Format of labels, one of the following (case insensitive):
-
-                - "a", abbreviations
-                - "f", full names
-                - "s", SNOMED CT Code
+            - "a", abbreviations
+            - "f", full names
+            - "s", SNOMED CT Code
 
         normalize : bool, default True
             If True, the labels will be transformed into their equavalents,
@@ -945,8 +945,8 @@ class CINC2020(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, List[str]]] = None,
         same_range: bool = False,
@@ -1193,7 +1193,7 @@ class CINC2020(PhysioNetDataBase):
         rec: Union[str, int],
         data_format: str = "channel_first",
         siglen: Optional[int] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """
         Resample the data of `rec` to 500Hz,
         or load the resampled data in 500Hz, if the corr. data file already exists
@@ -1248,7 +1248,7 @@ class CINC2020(PhysioNetDataBase):
             data = np.moveaxis(data, -1, -2)
         return data
 
-    def load_raw_data(self, rec: Union[str, int], backend: Literal["scipy", "wfdb"] = "scipy") -> np.ndarray:
+    def load_raw_data(self, rec: Union[str, int], backend: Literal["scipy", "wfdb"] = "scipy") -> NDArray:
         """Load raw data from corresponding files with no further processing,
         in order to facilitate feeding data into the `run_12ECG_classifier` function.
 
@@ -1406,7 +1406,7 @@ def compute_all_metrics(classes: List[str], truth: Sequence, binary_pred: Sequen
     )
 
 
-def _compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
+def _compute_accuracy(labels: NDArray, outputs: NDArray) -> float:
     """Compute recording-wise accuracy.
 
     Parameters
@@ -1434,7 +1434,7 @@ def _compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
     return float(num_correct_recordings) / float(num_recordings)
 
 
-def _compute_confusion_matrices(labels: np.ndarray, outputs: np.ndarray, normalize: bool = False) -> np.ndarray:
+def _compute_confusion_matrices(labels: NDArray, outputs: NDArray, normalize: bool = False) -> NDArray:
     """Compute confusion matrices.
 
     Compute a binary confusion matrix for each class k:
@@ -1498,7 +1498,7 @@ def _compute_confusion_matrices(labels: np.ndarray, outputs: np.ndarray, normali
     return A
 
 
-def _compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
+def _compute_f_measure(labels: NDArray, outputs: NDArray) -> float:
     """Compute macro-averaged F1 score.
 
     Parameters
@@ -1533,7 +1533,7 @@ def _compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
     return macro_f_measure
 
 
-def _compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) -> Tuple[float, float]:
+def _compute_beta_measures(labels: NDArray, outputs: NDArray, beta: Real) -> Tuple[float, float]:
     """Compute F-beta and G-beta measures.
 
     Parameters
@@ -1578,7 +1578,7 @@ def _compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) 
     return macro_f_beta_measure, macro_g_beta_measure
 
 
-def _compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float]:
+def _compute_auc(labels: NDArray, outputs: NDArray) -> Tuple[float, float]:
     """Compute macro-averaged AUROC and macro-averaged AUPRC.
 
     Parameters
@@ -1674,7 +1674,7 @@ def _compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float]
     return macro_auroc, macro_auprc
 
 
-def _compute_modified_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) -> np.ndarray:
+def _compute_modified_confusion_matrix(labels: NDArray, outputs: NDArray) -> NDArray:
     """
     Compute a binary multi-class, multi-label confusion matrix,
     where the rows are the labels and the columns are the outputs.
@@ -1712,9 +1712,9 @@ def _compute_modified_confusion_matrix(labels: np.ndarray, outputs: np.ndarray) 
 
 
 def compute_challenge_metric(
-    weights: np.ndarray,
-    labels: np.ndarray,
-    outputs: np.ndarray,
+    weights: NDArray,
+    labels: NDArray,
+    outputs: NDArray,
     classes: List[str],
     normal_class: str,
 ) -> float:

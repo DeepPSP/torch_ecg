@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import CFG, DEFAULTS
 from ...utils import EAK
@@ -501,7 +502,7 @@ class LUDB(PhysioNetDataBase):
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         mask_format: str = "channel_first",
         class_map: Optional[Dict[str, int]] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load the wave delineation in the form of masks.
 
         Parameters
@@ -543,7 +544,7 @@ class LUDB(PhysioNetDataBase):
 
     def from_masks(
         self,
-        masks: np.ndarray,
+        masks: NDArray,
         mask_format: str = "channel_first",
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         class_map: Optional[Dict[str, int]] = None,
@@ -704,7 +705,7 @@ class LUDB(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
+        data: Optional[NDArray] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         same_range: bool = False,
@@ -868,8 +869,8 @@ __WaveNames = ["pwave", "qrs", "twave"]
 
 
 def compute_metrics(
-    truth_masks: Sequence[np.ndarray],
-    pred_masks: Sequence[np.ndarray],
+    truth_masks: Sequence[NDArray],
+    pred_masks: Sequence[NDArray],
     class_map: Dict[str, int],
     fs: Real,
     mask_format: str = "channel_first",

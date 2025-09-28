@@ -8,6 +8,7 @@ from copy import deepcopy
 from typing import Iterable, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy import interpolate
 from scipy.signal import butter, filtfilt, peak_prominences
 
@@ -25,12 +26,12 @@ __all__ = [
 
 
 def smooth(
-    x: np.ndarray,
+    x: NDArray,
     window_len: int = 11,
     window: Literal["flat", "hanning", "hamming", "bartlett", "blackman"] = "hanning",
     mode: str = "valid",
     keep_dtype: bool = True,
-) -> np.ndarray:
+) -> NDArray:
     """Smooth the 1d data using a window with requested size.
 
     This method is originally from [#smooth]_,
@@ -129,14 +130,14 @@ def smooth(
 
 
 def resample_irregular_timeseries(
-    sig: np.ndarray,
+    sig: NDArray,
     output_fs: Optional[Union[float, int]] = None,
     method: Literal["spline", "interp1d"] = "interp1d",
     return_with_time: bool = False,
-    tnew: Optional[np.ndarray] = None,
+    tnew: Optional[NDArray] = None,
     interp_kw: dict = {},
     verbose: int = 0,
-) -> np.ndarray:
+) -> NDArray:
     """
     Resample the 2d irregular timeseries `sig` into a 1d or 2d
     regular time series with frequency `output_fs`,
@@ -253,7 +254,7 @@ def detect_peaks(
     show: bool = False,
     ax=None,
     verbose: int = 0,
-) -> np.ndarray:
+) -> NDArray:
     """Detect peaks in data based on their amplitude and other features.
 
     Parameters
@@ -454,7 +455,7 @@ def detect_peaks(
     return ind
 
 
-def remove_spikes_naive(sig: np.ndarray, threshold: Union[float, int] = 20, inplace: bool = True) -> np.ndarray:
+def remove_spikes_naive(sig: NDArray, threshold: Union[float, int] = 20, inplace: bool = True) -> NDArray:
     """Remove signal spikes using a naive method.
 
     This is a method proposed in entry 0416 of CPSC2019.
@@ -513,7 +514,7 @@ def remove_spikes_naive(sig: np.ndarray, threshold: Union[float, int] = 20, inpl
 
 def butter_bandpass(
     lowcut: Union[float, int], highcut: Union[float, int], fs: Union[float, int], order: int, verbose: int = 0
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[NDArray, NDArray]:
     """Butterworth Bandpass Filter Design.
 
     Parameters
@@ -575,14 +576,14 @@ def butter_bandpass(
 
 
 def butter_bandpass_filter(
-    data: np.ndarray,
+    data: NDArray,
     lowcut: Union[float, int],
     highcut: Union[float, int],
     fs: Union[float, int],
     order: int,
     btype: Optional[Literal["lohi", "hilo"]] = None,
     verbose: int = 0,
-) -> np.ndarray:
+) -> NDArray:
     """Butterworth bandpass filtering the signals.
 
     Apply a Butterworth bandpass filter to the signal.
@@ -640,12 +641,12 @@ def butter_bandpass_filter(
 
 
 def get_ampl(
-    sig: np.ndarray,
+    sig: NDArray,
     fs: Union[float, int],
     fmt: str = "lead_first",
     window: Union[float, int] = 0.2,
     critical_points: Optional[Sequence] = None,
-) -> Union[float, np.ndarray]:
+) -> Union[float, NDArray]:
     """Get amplitude of a signal (near critical points if given).
 
     Parameters
@@ -714,13 +715,13 @@ def get_ampl(
 
 
 def normalize(
-    sig: np.ndarray,
+    sig: NDArray,
     method: Literal["naive", "min-max", "z-score"],
     mean: Union[Union[float, int], Iterable[Union[float, int]]] = 0.0,
     std: Union[Union[float, int], Iterable[Union[float, int]]] = 1.0,
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
-) -> np.ndarray:
+) -> NDArray:
     """Normalize a signal.
 
     Perform z-score normalization on `sig`,

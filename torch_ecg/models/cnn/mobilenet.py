@@ -214,19 +214,18 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
         Other hyper-parameters of the Module, ref. corresponding config file.
         key word arguments that have to be set in 3 sub-dict,
         namely in "entry_flow", "middle_flow", and "exit_flow", including
-
-            - out_channels: int,
-              number of channels of the output.
-            - kernel_size: int,
-              kernel size of down sampling.
-              If not specified, defaults to `down_scale`.
-            - groups: int,
-              connection pattern (of channels) of the inputs and outputs.
-            - padding: int,
-              zero-padding added to both sides of the input.
-            - batch_norm: bool or Module,
-              batch normalization, the Module itself
-              or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
+        - out_channels: int,
+          number of channels of the output.
+        - kernel_size: int,
+          kernel size of down sampling.
+          If not specified, defaults to `down_scale`.
+        - groups: int,
+          connection pattern (of channels) of the inputs and outputs.
+        - padding: int,
+          zero-padding added to both sides of the input.
+        - batch_norm: bool or Module,
+          batch normalization, the Module itself
+          or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
 
     References
     ----------
@@ -457,9 +456,9 @@ class InvertedResidual(nn.Module, SizeMixin):
         If is None, no attention mechanism is used.
         Keys:
 
-            - "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            - "pos": int, position of the attention mechanism,
-              other keys are specific to the attention mechanism.
+        - "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+        - "pos": int, position of the attention mechanism,
+            other keys are specific to the attention mechanism.
 
     """
 
@@ -669,36 +668,36 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
         - stem: CFG,
           config of the stem block, with the following keys:
 
-            - num_filters: int or Sequence[int],
-              number of filters in the first convolutional layer(s).
-            - filter_lengths: int or Sequence[int],
-              filter lengths (kernel sizes) in the first convolutional layer(s).
-            - subsample_lengths: int or Sequence[int],
-              subsample lengths (strides) in the first convolutional layer(s).
+          - num_filters: int or Sequence[int],
+            number of filters in the first convolutional layer(s).
+          - filter_lengths: int or Sequence[int],
+            filter lengths (kernel sizes) in the first convolutional layer(s).
+          - subsample_lengths: int or Sequence[int],
+            subsample lengths (strides) in the first convolutional layer(s).
 
         - inv_res: CFG,
           Config of the inverted residual blocks, with the following keys:
 
-            - expansions: Sequence[int],
-              expansion ratios of the inverted residual blocks.
-            - out_channels: Sequence[int],
-              number of output channels in each block.
-            - n_blocks: Sequence[int],
-              number of inverted residual blocks.
-            - strides: Sequence[int],
-              strides of the inverted residual blocks.
-            - filter_lengths: Sequence[int],
-              filter lengths (kernel sizes) in each block.
+          - expansions: Sequence[int],
+            expansion ratios of the inverted residual blocks.
+          - out_channels: Sequence[int],
+            number of output channels in each block.
+          - n_blocks: Sequence[int],
+            number of inverted residual blocks.
+          - strides: Sequence[int],
+            strides of the inverted residual blocks.
+          - filter_lengths: Sequence[int],
+            filter lengths (kernel sizes) in each block.
 
         - exit_flow: CFG,
           Config of the exit flow blocks, with the following keys:
 
-            - num_filters: int or Sequence[int],
-              number of filters in the final convolutional layer(s).
-            - filter_lengths: int or Sequence[int],
-              filter lengths (kernel sizes) in the final convolutional layer(s).
-            - subsample_lengths: int or Sequence[int],
-              subsample lengths (strides) in the final convolutional layer(s).
+          - num_filters: int or Sequence[int],
+            number of filters in the final convolutional layer(s).
+          - filter_lengths: int or Sequence[int],
+            filter lengths (kernel sizes) in the final convolutional layer(s).
+          - subsample_lengths: int or Sequence[int],
+            subsample lengths (strides) in the final convolutional layer(s).
 
     References
     ----------
@@ -1000,12 +999,12 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
     config : CFG, optional
         Config of the stem block, with the following items:
 
-            - num_filters: int or Sequence[int],
-              number of filters in the first convolutional layer(s).
-            - filter_lengths: int or Sequence[int],
-              filter lengths (kernel sizes) in the first convolutional layer(s).
-            - subsample_lengths: int or Sequence[int],
-              subsample lengths (strides) in the first convolutional layer(s).
+        - num_filters: int or Sequence[int],
+          number of filters in the first convolutional layer(s).
+        - filter_lengths: int or Sequence[int],
+          filter lengths (kernel sizes) in the first convolutional layer(s).
+        - subsample_lengths: int or Sequence[int],
+          subsample lengths (strides) in the first convolutional layer(s).
 
     """
 
@@ -1088,64 +1087,64 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
         Other hyper-parameters of the Module, ref. corresponding config file.
         Keyword arguments that must be set:
 
-            - groups: int,
-              number of groups in the convolutional layer(s) other than depthwise convolutions.
-            - norm: bool or str or Module,
-              normalization layer.
-            - bias: bool,
-              whether to use bias in the convolutional layer(s).
-            - width_multiplier: float,
-              multiplier of the number of output channels of the pointwise convolution.
-            - stem: CFG,
-              config of the stem block, with the following keys:
+        - groups: int,
+          number of groups in the convolutional layer(s) other than depthwise convolutions.
+        - norm: bool or str or Module,
+          normalization layer.
+        - bias: bool,
+          whether to use bias in the convolutional layer(s).
+        - width_multiplier: float,
+          multiplier of the number of output channels of the pointwise convolution.
+        - stem: CFG,
+          config of the stem block, with the following keys:
 
-                - num_filters: int or Sequence[int],
-                  number of filters in the first convolutional layer(s).
-                - filter_lengths: int or Sequence[int],
-                  filter lengths (kernel sizes) in the first convolutional layer(s).
-                - subsample_lengths: int or Sequence[int],
-                  subsample lengths (strides) in the first convolutional layer(s).
+          - num_filters: int or Sequence[int],
+            number of filters in the first convolutional layer(s).
+          - filter_lengths: int or Sequence[int],
+            filter lengths (kernel sizes) in the first convolutional layer(s).
+          - subsample_lengths: int or Sequence[int],
+            subsample lengths (strides) in the first convolutional layer(s).
 
-            - inv_res: CFG,
-              config of the inverted residual blocks, with the following keys:
+        - inv_res: CFG,
+          config of the inverted residual blocks, with the following keys:
 
-                - in_channels: Sequence[int],
-                  number of input channels.
-                - n_blocks: Sequence[int],
-                  number of inverted residual blocks.
-                - expansions: sequence of floats or sequence of sequence of floats,
-                  expansion ratios of the inverted residual blocks.
-                - filter_lengths: sequence of ints or sequence of sequence of ints,
-                  filter length of the depthwise convolution in the inverted residual blocks.
-                - stride: sequence of ints or sequence of sequence of ints, optional,
-                  stride of the depthwise convolution in the inverted residual blocks,
-                  defaults to ``[2] + [1] * (n_blocks - 1)``.
-                - groups: int, default 1,
-                  number of groups in the expansion and pointwise convolution
-                  in the inverted residual blocks.
-                - dilation: sequence of ints or sequence of sequence of ints, optional,
-                  dilation of the depthwise convolution in the inverted residual blocks.
-                - batch_norm: bool or str or nn.Module, default True,
-                  normalization layer to use, defaults to batch normalization.
-                - activation: str or nn.Module or sequence of str or torch.nn.Module,
-                  activation function to use.
-                - width_multiplier: float or sequence of floats, default 1.0,
-                  width multiplier of the inverted residual blocks.
-                - out_channels: sequence of ints or sequence of Sequence[int], optional,
-                  number of output channels of the inverted residual blocks,
-                  defaults to ``2 * in_channels``.
-                - attn: sequence of CFG or sequence of sequence of CFG, optional,
-                  config of attention layer to use, defaults to None.
+          - in_channels: Sequence[int],
+            number of input channels.
+          - n_blocks: Sequence[int],
+            number of inverted residual blocks.
+          - expansions: sequence of floats or sequence of sequence of floats,
+            expansion ratios of the inverted residual blocks.
+          - filter_lengths: sequence of ints or sequence of sequence of ints,
+            filter length of the depthwise convolution in the inverted residual blocks.
+          - stride: sequence of ints or sequence of sequence of ints, optional,
+            stride of the depthwise convolution in the inverted residual blocks,
+            defaults to ``[2] + [1] * (n_blocks - 1)``.
+          - groups: int, default 1,
+            number of groups in the expansion and pointwise convolution
+            in the inverted residual blocks.
+          - dilation: sequence of ints or sequence of sequence of ints, optional,
+            dilation of the depthwise convolution in the inverted residual blocks.
+          - batch_norm: bool or str or nn.Module, default True,
+            normalization layer to use, defaults to batch normalization.
+          - activation: str or nn.Module or sequence of str or torch.nn.Module,
+            activation function to use.
+          - width_multiplier: float or sequence of floats, default 1.0,
+            width multiplier of the inverted residual blocks.
+          - out_channels: sequence of ints or sequence of Sequence[int], optional,
+            number of output channels of the inverted residual blocks,
+            defaults to ``2 * in_channels``.
+          - attn: sequence of CFG or sequence of sequence of CFG, optional,
+            config of attention layer to use, defaults to None.
 
-            - exit_flow: CFG,
-                config of the exit flow blocks, with the following keys:
+        - exit_flow: CFG,
+          config of the exit flow blocks, with the following keys:
 
-                - num_filters: int or Sequence[int],
-                  number of filters in the final convolutional layer(s).
-                - filter_lengths: int or Sequence[int],
-                  filter lengths (kernel sizes) in the final convolutional layer(s).
-                - subsample_lengths: int or Sequence[int],
-                  subsample lengths (strides) in the final convolutional layer(s).
+          - num_filters: int or Sequence[int],
+            number of filters in the final convolutional layer(s).
+          - filter_lengths: int or Sequence[int],
+            filter lengths (kernel sizes) in the final convolutional layer(s).
+          - subsample_lengths: int or Sequence[int],
+            subsample lengths (strides) in the final convolutional layer(s).
 
     References
     ----------

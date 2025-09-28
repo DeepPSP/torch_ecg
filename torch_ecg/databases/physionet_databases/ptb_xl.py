@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import numpy as np
 import pandas as pd
 import wfdb
+from numpy.typing import NDArray
 from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
@@ -396,7 +397,7 @@ class PTBXLPlus(PhysioNetDataBase):
         # Fix potential bugs in the database
         self._fix_bugs()
 
-    def load_data(self, rec: Union[str, int], source: Literal["12sl", "unig"] = "12sl") -> np.ndarray:
+    def load_data(self, rec: Union[str, int], source: Literal["12sl", "unig"] = "12sl") -> NDArray:
         """Load the data of a record.
 
         Parameters
@@ -426,7 +427,7 @@ class PTBXLPlus(PhysioNetDataBase):
         return wfdb.rdrecord(path).p_signal
 
     @add_docstring(load_data.__doc__)
-    def load_median_beats(self, rec: Union[str, int], source: str = "12sl") -> np.ndarray:
+    def load_median_beats(self, rec: Union[str, int], source: str = "12sl") -> NDArray:
         """alias of `load_data`."""
         return self.load_data(rec, source)
 

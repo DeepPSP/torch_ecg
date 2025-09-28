@@ -2,10 +2,10 @@
 """
 Base classes for datasets from different sources:
 
-    - PhysioNet
-    - NSRR
-    - CPSC
-    - Other databases
+- PhysioNet
+- NSRR
+- CPSC
+- Other databases
 
 Remarks
 -------
@@ -36,6 +36,7 @@ import pandas as pd
 import requests
 import scipy.signal as SS
 import wfdb
+from numpy.typing import NDArray
 from pyedflib import EdfReader
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
@@ -135,11 +136,13 @@ class _DataBase(ReprMixin, ABC):
     """Universal abstract base class for all databases.
 
     Abstract methods that should be implemented by the subclass:
+
     - `_ls_rec`: Find all records in the database.
     - `load_data`: Load data from a record.
     - `load_ann`: Load annotations of a record.
 
     Abstract properties that should be implemented by the subclass:
+
     - `database_info`: The :class:`DataBaseInfo` object of the database.
     - `url`: URL(s) for downloading the database.
 
@@ -256,7 +259,7 @@ class _DataBase(ReprMixin, ABC):
         """
         self.database_info.get_citation(lookup=True, format=format, style=style, timeout=10.0, print_result=True)
 
-    def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
+    def _auto_infer_units(self, sig: NDArray, sig_type: str = "ECG") -> str:
         """Automatically infer the units of the signal.
 
         It is assumed that `sig` is not raw signal, but with baseline removed.
@@ -621,7 +624,7 @@ class PhysioNetDataBase(_DataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
@@ -1359,7 +1362,7 @@ class PSGDataBaseMixin:
         fs: Optional[int] = None,
         granularity: int = 30,
         class_map: Optional[Dict[str, int]] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Convert sleep stage intervals to sleep stage mask.
 
         Parameters
@@ -1406,7 +1409,7 @@ class PSGDataBaseMixin:
 
     def plot_hypnogram(
         self,
-        mask: np.ndarray,
+        mask: NDArray,
         granularity: int = 30,
         class_map: Optional[Dict[str, int]] = None,
         **kwargs,

@@ -15,8 +15,8 @@ from copy import deepcopy
 from itertools import repeat
 from typing import List, Optional, Sequence, Union
 
-import numpy as np
 import torch
+from numpy.typing import NDArray
 from torch import Tensor, nn
 
 from ...cfg import CFG
@@ -642,7 +642,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         return output
 
     @torch.no_grad()
-    def inference(self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5) -> Tensor:
+    def inference(self, input: Union[NDArray, Tensor], bin_pred_thr: float = 0.5) -> Tensor:
         """Method for making inference on a single input."""
         raise NotImplementedError("Implement a task-specific inference method.")
 

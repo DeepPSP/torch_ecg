@@ -7,10 +7,10 @@ import warnings
 from copy import deepcopy
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from numpy.typing import NDArray
 from torch import Tensor, nn
 
 from ..cfg import CFG
@@ -340,7 +340,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     @torch.no_grad()
     def inference(
         self,
-        input: Union[np.ndarray, Tensor],
+        input: Union[NDArray, Tensor],
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
@@ -361,11 +361,10 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         -------
         output : BaseOutput
             The output of the inference method, including the following items:
-
-                - prob: numpy.ndarray or torch.Tensor,
-                  scalar predictions, (and binary predictions if `class_names` is True).
-                - pred: numpy.ndarray or torch.Tensor,
-                  the array (with values 0, 1 for each class) of binary prediction.
+            - prob: numpy.ndarray or torch.Tensor,
+              scalar predictions, (and binary predictions if `class_names` is True).
+            - pred: numpy.ndarray or torch.Tensor,
+              the array (with values 0, 1 for each class) of binary prediction.
 
         """
         raise NotImplementedError("Implement a task-specific inference method.")
@@ -766,7 +765,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     @torch.no_grad()
     def inference(
         self,
-        input: Union[np.ndarray, Tensor],
+        input: Union[NDArray, Tensor],
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
@@ -787,11 +786,10 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         -------
         output : BaseOutput
             The output of the inference method, including the following items:
-
-                - prob: numpy.ndarray or torch.Tensor,
-                  scalar predictions, (and binary predictions if `class_names` is True).
-                - pred: numpy.ndarray or torch.Tensor,
-                  the array (with values 0, 1 for each class) of binary prediction.
+            - prob: numpy.ndarray or torch.Tensor,
+              scalar predictions, (and binary predictions if `class_names` is True).
+            - pred: numpy.ndarray or torch.Tensor,
+              the array (with values 0, 1 for each class) of binary prediction.
 
         """
         raise NotImplementedError("Implement a task-specific inference method.")

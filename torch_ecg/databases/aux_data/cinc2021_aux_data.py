@@ -8,8 +8,8 @@ from io import StringIO
 from numbers import Real
 from typing import Dict, List, Literal, Optional, Sequence, Union
 
-import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from ...cfg import _DATA_CACHE, CFG
 
@@ -336,7 +336,7 @@ def load_weights(
     classes: Sequence[Union[int, str]] = None,
     equivalent_classes: Optional[Union[Dict[str, str], List[List[str]]]] = None,
     return_fmt: Literal["np", "pd"] = "np",
-) -> Union[np.ndarray, pd.DataFrame]:
+) -> Union[NDArray, pd.DataFrame]:
     """Load the weight matrix of the `classes`.
 
     Parameters
@@ -430,7 +430,7 @@ def get_class_count(
     exclude_classes: Optional[Sequence[str]] = None,
     scored_only: bool = False,
     normalize: bool = True,
-    threshold: Optional[Real] = 0,
+    threshold: Union[float, int] = 0,
     fmt: str = "a",
 ) -> Dict[str, int]:
     """Get the number of classes in the `tranches`.
@@ -447,20 +447,21 @@ def get_class_count(
     normalize : bool, default True
         Whether collapse equivalent classes into one or not,
         used only when `scored_only` is True.
-    threshold : numbers.Real
+    threshold : int or float, default 0
         Minimum ratio (0-1) or absolute number (>1) of a class to be counted.
     fmt : str, default "a"
         Format of the names of the classes in the returned dict,
         can be one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "s", SNOMEDCTCode
+
+        - "a", abbreviations
+        - "f", full names
+        - "s", SNOMEDCTCode
 
     Returns
     -------
     class_count : dict
-        - key: class in the format of `fmt`
-        - value: count of a class in `tranches`
+        key: class in the format of `fmt`,
+        value: count of a class in `tranches`.
 
     """
     assert threshold >= 0
@@ -543,9 +544,9 @@ def get_class_weight(
     fmt : str, default "a"
         Format of the names of the classes in the returned dict,
         can be one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "s", SNOMED CT Code
+        - "a", abbreviations
+        - "f", full names
+        - "s", SNOMED CT Code
     min_weight : numbers.Real, default 0.5
         Minimum value of the weight of all classes,
         or equivalently the weight of the largest class.
@@ -553,8 +554,8 @@ def get_class_weight(
     Returns:
     --------
     class_weight : dict
-        - key: class in the format of `fmt`
-        - value: weight of a class in `tranches`
+        key: class in the format of `fmt`,
+        value: weight of a class in `tranches`.
 
     """
     class_count = get_class_count(

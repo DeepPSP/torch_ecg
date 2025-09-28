@@ -4,10 +4,9 @@ Note that highpass filters also have the effect of baseline removal
 """
 
 import warnings
-from numbers import Real
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Union
 
-import numpy as np
+from numpy.typing import NDArray
 
 from .base import PreProcessor, preprocess_multi_lead_signal
 
@@ -46,24 +45,24 @@ class BaselineRemove(PreProcessor):
             self.window1, self.window2 = self.window2, self.window1
             warnings.warn("values of `window1` and `window2` are switched", RuntimeWarning)
 
-    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: NDArray, fs: Union[float, int]) -> Tuple[NDArray, Union[float, int]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
-        fs : numbers.Real
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+        fs : float or int
             Sampling frequency of the ECG signal.
 
         Returns
         -------
         filtered_sig : :class:`numpy.ndarray`
             The median filtered (hence baseline removed) ECG signal.
-        fs : :class:`int`
+        fs : float or int
             Sampling frequency of the filtered ECG signal.
 
         """

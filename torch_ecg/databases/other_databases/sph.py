@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import h5py
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from ...cfg import DEFAULTS
 from ...utils import EAK
@@ -172,7 +173,7 @@ class SPH(_DataBase):
         data_format: str = "channel_first",
         units: str = "mV",
         return_fs: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load ECG data from h5 file of the record.
 
         Parameters
@@ -233,10 +234,9 @@ class SPH(_DataBase):
             Record name or index of the record in :attr:`all_records`.
         ann_format : str, default "a"
             Format of labels, one of the following (case insensitive):
-
-                - "a": abbreviations
-                - "f": full names
-                - "c": AHACode
+            - "a": abbreviations
+            - "f": full names
+            - "c": AHACode
         ignore_modifier : bool, default True
             Whether to ignore the modifiers of the annotations or not.
             For example, "60+310" will be converted to "60".
@@ -390,7 +390,7 @@ class SPH(_DataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
+        data: Optional[NDArray] = None,
         ann: Optional[Sequence[str]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, int, List[Union[str, int]]]] = None,

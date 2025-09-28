@@ -8,6 +8,7 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import DEFAULTS
 from ...utils import add_docstring
@@ -200,7 +201,7 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     @add_docstring(PhysioNetDataBase.load_data.__doc__)
@@ -213,7 +214,7 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.ecg_records:
@@ -244,7 +245,7 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         if rec not in self.rsp_records:
             raise ValueError(f"`{rec}` is not a record of RSP signals")
         data = self.load_data(

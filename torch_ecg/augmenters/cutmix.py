@@ -1,12 +1,12 @@
 """ """
 
 from copy import deepcopy
-from numbers import Real
 from random import shuffle
 from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
+from numpy.typing import NDArray
 from torch import Tensor
 
 from ..cfg import DEFAULTS
@@ -67,8 +67,8 @@ class CutMix(Augmenter):
         self,
         fs: Optional[int] = None,
         num_mix: int = 1,
-        alpha: Real = 0.5,
-        beta: Optional[Real] = None,
+        alpha: float = 0.5,
+        beta: Optional[float] = None,
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any,
@@ -174,7 +174,7 @@ class CutMix(Augmenter):
         ] + super().extra_repr_keys()
 
 
-def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
+def _make_intervals(lam: Tensor, siglen: int) -> NDArray:
     """Make intervals for cutmix.
 
     Parameters

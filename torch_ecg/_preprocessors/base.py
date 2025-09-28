@@ -6,6 +6,7 @@ from typing import List, Literal, Optional, Tuple, Union
 
 import numpy as np
 from biosppy.signals.tools import filter_signal
+from numpy.typing import NDArray
 from scipy.ndimage import median_filter
 
 from ..cfg import DEFAULTS
@@ -29,16 +30,16 @@ class PreProcessor(ReprMixin, ABC):
     __name__ = "PreProcessor"
 
     @abstractmethod
-    def apply(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
+    def apply(self, sig: NDArray, fs: Union[int, float]) -> Tuple[NDArray, Union[int, float]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
         fs : int or float
             Sampling frequency of the ECG signal.
 
@@ -46,20 +47,20 @@ class PreProcessor(ReprMixin, ABC):
         raise NotImplementedError
 
     @add_docstring(apply.__doc__)  # type: ignore
-    def __call__(self, sig: np.ndarray, fs: Union[int, float]) -> Tuple[np.ndarray, Union[int, float]]:
+    def __call__(self, sig: NDArray, fs: Union[int, float]) -> Tuple[NDArray, Union[int, float]]:
         """alias of :meth:`self.apply`."""
         return self.apply(sig, fs)
 
-    def _check_sig(self, sig: np.ndarray) -> None:
+    def _check_sig(self, sig: NDArray) -> None:
         """Check validity of the signal.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
 
         """
         if sig.ndim not in [1, 2, 3]:
@@ -72,14 +73,14 @@ class PreProcessor(ReprMixin, ABC):
 
 
 def preprocess_multi_lead_signal(
-    raw_sig: np.ndarray,
+    raw_sig: NDArray,
     fs: Union[int, float],
     sig_fmt: Literal["channel_first", "lead_first", "channel_last", "lead_last"] = "channel_first",
     bl_win: Optional[List[Union[int, float]]] = None,
     band_fs: Optional[List[Union[int, float]]] = None,
     filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Perform preprocessing for multi-lead ECG signal (with units in mV).
 
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -185,13 +186,13 @@ def preprocess_multi_lead_signal(
 
 
 def preprocess_single_lead_signal(
-    raw_sig: np.ndarray,
+    raw_sig: NDArray,
     fs: Union[int, float],
     bl_win: Optional[List[Union[int, float]]] = None,
     band_fs: Optional[List[Union[int, float]]] = None,
     filter_type: Literal["butter", "fir"] = "butter",
     filter_order: Optional[int] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Perform preprocessing for single lead ECG signal (with units in mV).
 
     Preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.

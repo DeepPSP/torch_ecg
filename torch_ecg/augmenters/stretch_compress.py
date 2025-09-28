@@ -8,6 +8,7 @@ import numpy as np
 import scipy.signal as SS
 import torch
 import torch.nn.functional as F
+from numpy.typing import NDArray
 from torch import Tensor
 
 from ..cfg import DEFAULTS
@@ -383,10 +384,10 @@ class StretchCompressOffline(ReprMixin):
     def generate(
         self,
         seglen: int,
-        sig: np.ndarray,
-        *labels: Sequence[np.ndarray],
+        sig: NDArray,
+        *labels: Sequence[NDArray],
         critical_points: Optional[Sequence[int]] = None,
-    ) -> List[Tuple[Union[np.ndarray, int], ...]]:
+    ) -> List[Tuple[Union[NDArray, int], ...]]:
         """Generate stretched or compressed segments from the ECGs.
 
         Parameters
@@ -465,11 +466,11 @@ class StretchCompressOffline(ReprMixin):
     def __generate_segment(
         self,
         seglen: int,
-        sig: np.ndarray,
-        *labels: Sequence[np.ndarray],
+        sig: NDArray,
+        *labels: Sequence[NDArray],
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
-    ) -> Tuple[Union[np.ndarray, int], ...]:
+    ) -> Tuple[Union[NDArray, int], ...]:
         """Internal function to generate a stretched or compressed segment.
 
         Parameters
@@ -564,10 +565,10 @@ class StretchCompressOffline(ReprMixin):
     def __call__(
         self,
         seglen: int,
-        sig: np.ndarray,
-        *labels: Sequence[np.ndarray],
+        sig: NDArray,
+        *labels: Sequence[NDArray],
         critical_points: Optional[Sequence[int]] = None,
-    ) -> List[Tuple[np.ndarray, ...]]:
+    ) -> List[Tuple[NDArray, ...]]:
         return self.generate(seglen, sig, *labels, critical_points=critical_points)
 
     def extra_repr_keys(self) -> List[str]:
