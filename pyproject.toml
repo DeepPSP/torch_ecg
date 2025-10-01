@@ -55,7 +55,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black==24.10.0",
+    "black",
     "flake8",
     "gdown",
     "librosa",
@@ -105,7 +105,7 @@ docs = [
     "sphinxcontrib-tikz",
 ]
 test = [
-    "black==24.10.0",
+    "black",
     "flake8",
     "gdown",
     "librosa",
@@ -131,3 +131,22 @@ path = "torch_ecg/version.py"
 include = [
     "/torch_ecg",
 ]
+
+# configuration for pytest and coverage
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-vv -s --cov=torch_ecg --ignore=test/test_pipelines"
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["torch_ecg"]
+omit = [
+  "torch_ecg/databases/nsrr_databases/shhs.py",
+]
+
+[tool.coverage.report]
+omit = [
+  "torch_ecg/databases/nsrr_databases/shhs.py",
+]
+# show_missing = true
+# skip_covered = true
