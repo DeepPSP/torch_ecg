@@ -2,7 +2,6 @@
 
 import os
 from copy import deepcopy
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -295,7 +294,7 @@ class LUDB(PhysioNetDataBase):
             **kwargs,
         )
         if self.version == "1.0.0":
-            self.logger.info("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")
+            self.logger.info("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")  # type: ignore
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"
@@ -321,7 +320,7 @@ class LUDB(PhysioNetDataBase):
         self._df_subject_info = None
         self._ls_rec()
 
-    def _ls_rec(self) -> None:
+    def _ls_rec(self) -> None:  # type: ignore
         """Find all records in the database directory
         and store them (path, metadata, etc.) in some private attributes.
         """
@@ -390,7 +389,7 @@ class LUDB(PhysioNetDataBase):
             extension = f".{extension}"
         return self.db_dir / "data" / f"{rec}{extension or ''}"
 
-    def load_ann(
+    def load_ann(  # type: ignore
         self,
         rec: Union[str, int],
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
@@ -431,28 +430,28 @@ class LUDB(PhysioNetDataBase):
             df_lead_ann["onset"] = np.nan
             df_lead_ann["offset"] = np.nan
             for i, row in df_lead_ann.iterrows():
-                peak_idx = peak_inds[i]
+                peak_idx = peak_inds[i]  # type: ignore
                 if peak_idx == 0:
-                    df_lead_ann.loc[i, "onset"] = row["peak"]
+                    df_lead_ann.loc[i, "onset"] = row["peak"]  # type: ignore
                     if symbols[peak_idx + 1] == ")":
-                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]
+                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]  # type: ignore
                     else:
-                        df_lead_ann.loc[i, "offset"] = row["peak"]
+                        df_lead_ann.loc[i, "offset"] = row["peak"]  # type: ignore
                 elif peak_idx == len(symbols) - 1:
-                    df_lead_ann.loc[i, "offset"] = row["peak"]
+                    df_lead_ann.loc[i, "offset"] = row["peak"]  # type: ignore
                     if symbols[peak_idx - 1] == "(":
-                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]
+                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]  # type: ignore
                     else:
-                        df_lead_ann.loc[i, "onset"] = row["peak"]
+                        df_lead_ann.loc[i, "onset"] = row["peak"]  # type: ignore
                 else:
                     if symbols[peak_idx - 1] == "(":
-                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]
+                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]  # type: ignore
                     else:
-                        df_lead_ann.loc[i, "onset"] = row["peak"]
+                        df_lead_ann.loc[i, "onset"] = row["peak"]  # type: ignore
                     if symbols[peak_idx + 1] == ")":
-                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]
+                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]  # type: ignore
                     else:
-                        df_lead_ann.loc[i, "offset"] = row["peak"]
+                        df_lead_ann.loc[i, "offset"] = row["peak"]  # type: ignore
             # df_lead_ann["onset"] = ann.sample[np.where(symbols=="(")[0]]
             # df_lead_ann["offset"] = ann.sample[np.where(symbols==")")[0]]
 
@@ -548,7 +547,7 @@ class LUDB(PhysioNetDataBase):
         mask_format: str = "channel_first",
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         class_map: Optional[Dict[str, int]] = None,
-        fs: Optional[Real] = None,
+        fs: Optional[Union[float, int]] = None,
     ) -> Dict[str, List[ECGWaveForm]]:
         """Convert masks into lists of waveforms.
 
@@ -566,7 +565,7 @@ class LUDB(PhysioNetDataBase):
         class_map : dict, optional
             Custom class map.
             If not set, `self.class_map` will be used.
-        fs : numbers.Real, optional
+        fs : float or int, optional
             Sampling frequency of the signal corresponding to the `masks`,
             If is None, `self.fs` will be used,
             to compute `duration` of the ECG waveforms.
@@ -656,15 +655,15 @@ class LUDB(PhysioNetDataBase):
         header_dict["adc_gain"] = header_reader.adc_gain
         header_dict["record_fmt"] = header_reader.fmt
         try:
-            header_dict["age"] = int([line for line in header_reader.comments if "<age>" in line][0].split(": ")[-1])
+            header_dict["age"] = int([line for line in header_reader.comments if "<age>" in line][0].split(": ")[-1])  # type: ignore
         except Exception:
             header_dict["age"] = np.nan
         try:
-            header_dict["sex"] = [line for line in header_reader.comments if "<sex>" in line][0].split(": ")[-1]
+            header_dict["sex"] = [line for line in header_reader.comments if "<sex>" in line][0].split(": ")[-1]  # type: ignore
         except Exception:
             header_dict["sex"] = ""
-        d_start = [idx for idx, line in enumerate(header_reader.comments) if "<diagnoses>" in line][0] + 1
-        header_dict["diagnoses"] = header_reader.comments[d_start:]
+        d_start = [idx for idx, line in enumerate(header_reader.comments) if "<diagnoses>" in line][0] + 1  # type: ignore
+        header_dict["diagnoses"] = header_reader.comments[d_start:]  # type: ignore
         return header_dict
 
     def load_subject_info(self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None) -> Union[dict, str]:
@@ -686,19 +685,19 @@ class LUDB(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        row = self._df_subject_info[self._df_subject_info.ID == rec]
+        row = self._df_subject_info[self._df_subject_info.ID == rec]  # type: ignore
         if row.empty:
             return {}
         row = row.iloc[0]
         info = row.to_dict()
         if fields is not None:
             if isinstance(fields, str):
-                assert fields in self._df_subject_info.columns, f"No field `{fields}`"
+                assert fields in self._df_subject_info.columns, f"No field `{fields}`"  # type: ignore
                 info = info[fields]
             else:
                 assert set(fields).issubset(
-                    set(self._df_subject_info.columns)
-                ), f"No field(s) {set(fields).difference(set(self._df_subject_info.columns))}"
+                    set(self._df_subject_info.columns)  # type: ignore
+                ), f"No field(s) {set(fields).difference(set(self._df_subject_info.columns))}"  # type: ignore
                 info = {k: v for k, v in info.items() if k in fields}
         return info
 
@@ -750,29 +749,30 @@ class LUDB(PhysioNetDataBase):
         Contributors: Jeethan, and WEN Hao
 
         """
+        import matplotlib.pyplot as plt
+        from matplotlib.ticker import MultipleLocator
+
+        MultipleLocator.MAXTICKS = 3000
+
         if isinstance(rec, int):
             rec = self[rec]
-        if "plt" not in dir():
-            import matplotlib.pyplot as plt
-
-            plt.MultipleLocator.MAXTICKS = 3000
 
         if data is not None:
             assert leads is not None, "`leads` must be specified when `data` is given"
             data = np.atleast_2d(data)
             _leads = self._normalize_leads(leads)
-            _lead_indices = [self.all_leads.index(ld) for ld in _leads]
+            _lead_indices = [self.all_leads.index(ld) for ld in _leads]  # type: ignore
             assert len(_leads) == data.shape[0], "number of leads must match data"
             units = self._auto_infer_units(data)
-            self.logger.info(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in {units}")  # type: ignore
             if units.lower() == "mv":
                 _data = 1000 * data
             else:
                 _data = data
         else:
             _leads = self._normalize_leads(leads)
-            _lead_indices = [self.all_leads.index(ld) for ld in _leads]
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[_lead_indices]
+            _lead_indices = [self.all_leads.index(ld) for ld in _leads]  # type: ignore
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[_lead_indices]  # type: ignore
 
         if same_range:
             y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100
@@ -829,12 +829,12 @@ class LUDB(PhysioNetDataBase):
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             # NOTE that `Locator` has default `MAXTICKS` equal to 1000
             if ticks_granularity >= 1:
-                axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
-                axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
+                axes[idx].xaxis.set_major_locator(MultipleLocator(0.2))
+                axes[idx].yaxis.set_major_locator(MultipleLocator(500))
                 axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
             if ticks_granularity >= 2:
-                axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
-                axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
+                axes[idx].xaxis.set_minor_locator(MultipleLocator(0.04))
+                axes[idx].yaxis.set_minor_locator(MultipleLocator(100))
                 axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
@@ -872,7 +872,7 @@ def compute_metrics(
     truth_masks: Sequence[NDArray],
     pred_masks: Sequence[NDArray],
     class_map: Dict[str, int],
-    fs: Real,
+    fs: Union[float, int],
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
     """Compute metrics for the wave delineation task.
@@ -893,7 +893,7 @@ def compute_metrics(
     class_map : Dict[str, int]
         Class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain "pwave", "qrs", "twave".
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors.
@@ -933,7 +933,7 @@ def compute_metrics(
 def compute_metrics_waveform(
     truth_waveforms: Sequence[Sequence[ECGWaveForm]],
     pred_waveforms: Sequence[Sequence[ECGWaveForm]],
-    fs: Real,
+    fs: Union[float, int],
 ) -> Dict[str, Dict[str, float]]:
     """
     Compute the sensitivity, precision, f1_score, mean error
@@ -949,7 +949,7 @@ def compute_metrics_waveform(
         The predictions corresponding to `truth_waveforms`.
         Each element is a sequence of :class:`ECGWaveForm`
         from the same sample.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors.
@@ -1048,7 +1048,7 @@ def compute_metrics_waveform(
 
 
 def _compute_metrics_waveform(
-    truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Real
+    truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Union[float, int]
 ) -> Dict[str, Dict[str, float]]:
     """
     compute the sensitivity, precision, f1_score, mean error
@@ -1061,7 +1061,7 @@ def _compute_metrics_waveform(
         The ground truth.
     preds : Sequence[ECGWaveForm]
         The predictions corresponding to `truths`,
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors.
@@ -1133,17 +1133,17 @@ def _compute_metrics_waveform(
 
 
 def _compute_metrics_base(
-    truths: Sequence[Real], preds: Sequence[Real], fs: Real
+    truths: Sequence[Union[float, int]], preds: Sequence[Union[float, int]], fs: Union[float, int]
 ) -> Tuple[int, int, int, List[float], float, float, float, float, float]:
     """The base function for computing the metrics.
 
     Parameters
     ----------
-    truths : Sequence[Real]
+    truths : Sequence[Union[float, int]]
         Ground truth of indices of corresponding critical points.
-    preds : Sequence[Real]
+    preds : Sequence[Union[float, int]]
         Predicted indices of corresponding critical points.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors.
@@ -1190,7 +1190,7 @@ def _compute_metrics_base(
     mean_error = np.mean(errors) * 1000 / fs
     standard_deviation = np.std(errors) * 1000 / fs
 
-    return (
+    return (  # type: ignore
         truth_positive,
         false_negative,
         false_positive,

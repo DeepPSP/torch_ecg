@@ -1504,11 +1504,18 @@ def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
 
 def _is_pathlike_string(s: str) -> bool:
     """Heuristically check if a string looks like a filesystem path."""
+    if not isinstance(s, str):
+        return False
+
     try:
         p = PurePath(s)
         if os.sep in s or (os.altsep and os.altsep in s):
             return True
-        if s.startswith(".") or p.is_absolute():
+        if s.startswith((".", "~")) or p.is_absolute():
+            return True
+        if p.suffix != "":
+            return True
+        if len(s) > 2 and s[1] == ":" and s[0].isalpha() and s[2] in ("/", "\\"):
             return True
     except Exception:
         return False

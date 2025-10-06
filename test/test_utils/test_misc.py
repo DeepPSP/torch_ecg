@@ -19,6 +19,7 @@ from torch_ecg.utils.misc import (
     MovingAverage,
     ReprMixin,
     Timer,
+    _is_pathlike_string,
     add_docstring,
     add_kwargs,
     dict_to_str,
@@ -686,3 +687,19 @@ def test_np_topk():
 
     with pytest.raises(AssertionError, match="dim out of bounds"):
         np_topk(arr1d, k=1, dim=1)
+
+
+def test_is_pathlike_string():
+    assert _is_pathlike_string("abc") is False
+    assert _is_pathlike_string("abc.txt") is True
+    assert _is_pathlike_string("/home/abc") is True
+    assert _is_pathlike_string("C:\\abc") is True
+    assert _is_pathlike_string("C:/abc") is True
+    assert _is_pathlike_string("./abc") is True
+    assert _is_pathlike_string("") is False
+    assert _is_pathlike_string("~/abc") is True
+    assert _is_pathlike_string("A:project") is False
+    assert _is_pathlike_string("README") is False
+    assert _is_pathlike_string("my.folder") is True
+    assert _is_pathlike_string(["abc", "def"]) is False  # type: ignore
+    assert _is_pathlike_string(123) is False  # type: ignore

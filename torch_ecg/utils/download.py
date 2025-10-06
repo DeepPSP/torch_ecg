@@ -680,30 +680,6 @@ def _download_from_aws_s3_using_awscli(
         env=env if env is not None else os.environ.copy(),
     )
     debug_stdout = collections.deque(maxlen=50)
-    # while 1:
-    #     line = process.stdout.readline().decode("utf-8", errors="replace")
-    #     if line.rstrip():
-    #         debug_stdout.append(line)
-    #         if "download: s3:" in line:
-    #             download_count += 1
-    #             pbar.update(1)
-    #     exitcode = process.poll()
-    #     if exitcode is not None:
-    #         for line in process.stdout:
-    #             debug_stdout.append(line.decode("utf-8", errors="replace"))
-    #         if exitcode is not None and exitcode != 0:
-    #             error_msg = "\n".join(debug_stdout)
-    #             process.communicate()
-    #             process.stdout.close()
-    #             raise subprocess.CalledProcessError(exitcode, error_msg)
-    #         else:
-    #             break
-    # process.communicate()
-    # process.stdout.close()
-    # # object_count - download_count files skipped for they already exist
-    # pbar.update(object_count - download_count)
-    # pbar.close()
-
     try:
         assert process.stdout is not None  # for type checker
         for line in process.stdout:

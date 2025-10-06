@@ -159,6 +159,10 @@ exclude_also = [
     "^class NSRRDataBase\\(.*\\):",
     # temporarily ignore torch_ecg/components/nas.py since it's not implemented completely
     "torch_ecg/components/nas.py",
+    # temporarily ignore torch_ecg/models/grad_cam.py since it's not implemented completely
+    "torch_ecg/models/grad_cam.py",
+    # temporarily ignore torch_ecg/ssl since it's not implemented
+    "torch_ecg/ssl/*",
 ]
 # show_missing = true
 # skip_covered = true
