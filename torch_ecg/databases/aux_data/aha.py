@@ -11,10 +11,7 @@ import io
 
 import pandas as pd
 
-try:
-    pd.set_option("future.no_silent_downcasting", True)
-except Exception:  # pandas._config.config.OptionError: "No such keys(s): 'future.no_silent_downcasting'"
-    pass
+pd.set_option("future.no_silent_downcasting", True)
 
 __all__ = [
     "df_primary_statements",

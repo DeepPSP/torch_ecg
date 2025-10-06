@@ -148,5 +148,17 @@ omit = [
 omit = [
   "torch_ecg/databases/nsrr_databases/shhs.py",
 ]
+exclude_also = [
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    # NSRR databases are ignored temporarily, since data access is denied by the US government
+    "torch_ecg/databases/nsrr_databases/*",
+    "^class NSRRDataBase\\(.*\\):",
+    # temporarily ignore torch_ecg/components/nas.py since it's not implemented completely
+    "torch_ecg/components/nas.py",
+]
 # show_missing = true
 # skip_covered = true

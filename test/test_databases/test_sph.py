@@ -66,6 +66,7 @@ class TestSPH:
             data_1, data_1_fs = reader.load_data(rec, return_fs=True)
             assert data_1_fs == reader.fs
 
+        rec = 0
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
             reader.load_data(rec, data_format="flat")
         with pytest.raises(AssertionError, match="Invalid units: `kV`"):
@@ -82,6 +83,7 @@ class TestSPH:
             ann_1 = reader.load_ann(rec, ann_format="f", ignore_modifier=False)
             assert len(ann) == len(ann_1)
 
+        rec = 0
         with pytest.raises(ValueError, match="Unknown annotation format: `flat`"):
             reader.load_ann(rec, ann_format="flat")
         with pytest.raises(NotImplementedError, match="Abbreviations are not supported yet"):
@@ -92,23 +94,34 @@ class TestSPH:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
             assert info.keys() == {"age", "sex"}
+        info = reader.get_subject_info(0, items=["age"])
+        assert isinstance(info, dict)
+        assert info.keys() == {"age"}
 
     def test_get_subject_id(self):
         for rec in reader:
             sid = reader.get_subject_id(rec)
             assert isinstance(sid, str)
+        sid = reader.get_subject_id(0)
+        assert isinstance(sid, str)
 
     def test_get_age(self):
         for rec in reader:
             age = reader.get_age(rec)
             assert isinstance(age, int)
             assert age > 0
+        age = reader.get_age(0)
+        assert isinstance(age, int)
+        assert age > 0
 
     def test_get_sex(self):
         for rec in reader:
             sex = reader.get_sex(rec)
             assert isinstance(sex, str)
             assert sex in ["M", "F"]
+        sex = reader.get_sex(0)
+        assert isinstance(sex, str)
+        assert sex in ["M", "F"]
 
     def test_get_siglen(self):
         for rec in reader:
@@ -116,6 +129,10 @@ class TestSPH:
             data = reader.load_data(rec)
             assert isinstance(siglen, int)
             assert siglen == data.shape[1]
+        siglen = reader.get_siglen(0)
+        data = reader.load_data(0)
+        assert isinstance(siglen, int)
+        assert siglen == data.shape[1]
 
     def test_meta_data(self):
         assert isinstance(reader.url, dict)
@@ -131,18 +148,18 @@ class TestSPH:
             "t_onsets": [150, 1150],
             "t_offsets": [190, 1190],
         }
-        reader.plot(0, leads="II", ticks_granularity=2, waves=waves)
+        reader.plot(0, leads="II", ticks_granularity=2, waves=waves)  # type: ignore
         waves = {
             "p_peaks": [105, 1105],
             "q_peaks": [120, 1120],
             "s_peaks": [125, 1125],
             "t_peaks": [170, 1170],
         }
-        reader.plot(0, leads=["II", 7], ticks_granularity=1, waves=waves)
+        reader.plot(0, leads=["II", 7], ticks_granularity=1, waves=waves)  # type: ignore
         waves = {
             "p_peaks": [105, 1105],
             "r_peaks": [122, 1122],
             "t_peaks": [170, 1170],
         }
         data = reader.load_data(0)
-        reader.plot(0, data=data, ticks_granularity=0, waves=waves)
+        reader.plot(0, data=data, ticks_granularity=0, waves=waves)  # type: ignore

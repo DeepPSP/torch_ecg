@@ -104,7 +104,7 @@ jobs:
     - name: Run test with pytest and collect coverage
       run: |
         echo "SHHS_DATA_AVAILABLE at test step: $SHHS_DATA_AVAILABLE"
-        pytest
+        pytest --cov --junitxml=junit.xml -o junit_family=legacy
       env:
         SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
@@ -114,6 +114,11 @@ jobs:
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
         token: ${{ secrets.CODECOV_TOKEN }} # required
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: Cleanup SHHS temp data
       if: always() && true
       run: |

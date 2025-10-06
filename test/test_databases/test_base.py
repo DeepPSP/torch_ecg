@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from torch_ecg.databases import AFDB, list_databases
@@ -24,25 +25,25 @@ def test_base_database():
         TypeError,
         match=f"Can't instantiate abstract class {_DataBase.__name__}",
     ):
-        db = _DataBase()
+        db = _DataBase()  # type: ignore[abstract]
 
     with pytest.raises(
         TypeError,
         match=f"Can't instantiate abstract class {PhysioNetDataBase.__name__}",
     ):
-        db = PhysioNetDataBase()
+        db = PhysioNetDataBase()  # type: ignore[abstract]
 
     with pytest.raises(
         TypeError,
         match=f"Can't instantiate abstract class {NSRRDataBase.__name__}",
     ):
-        db = NSRRDataBase()
+        db = NSRRDataBase()  # type: ignore[abstract]
 
     with pytest.raises(
         TypeError,
         match=f"Can't instantiate abstract class {CPSCDataBase.__name__}",
     ):
-        db = CPSCDataBase()
+        db = CPSCDataBase()  # type: ignore[abstract]
 
 
 def test_beat_ann():
@@ -87,6 +88,9 @@ def test_database_meta():
         assert reader.helper(k) is None  # printed: `{k}` stands for `{WFDB_Non_Beat_Annotations[k]}`
     for k in WFDB_Rhythm_Annotations:
         assert reader.helper(k) is None  # printed: `{k}` stands for `{WFDB_Rhythm_Annotations[k]}`
+
+    with pytest.raises(NotImplementedError, match="not implemented for"):
+        reader._auto_infer_units(np.ones((10, 2)), sig_type="EEG")
 
 
 def test_database_info():
