@@ -27,6 +27,8 @@ from botocore import UNSIGNED
 from botocore.client import Config
 from tqdm.auto import tqdm
 
+from .misc import str2bool
+
 __all__ = [
     "http_get",
 ]
@@ -227,7 +229,7 @@ def http_get(
         total = int(content_length) if content_length is not None else None
         if req.status_code in [403, 404]:
             raise Exception(f"Could not reach {url}.")
-        if bool(os.environ.get("CI")):
+        if str2bool(os.environ.get("CI")):
             mininterval = 10.0
             disable = True
         else:
@@ -662,7 +664,7 @@ def _download_from_aws_s3_using_awscli(
     dst_dir = Path(dst_dir).expanduser().resolve()  # type: ignore
     dst_dir.mkdir(parents=True, exist_ok=True)
 
-    if bool(os.environ.get("CI")):
+    if str2bool(os.environ.get("CI")):
         mininterval = 10.0
         disable = True
     else:

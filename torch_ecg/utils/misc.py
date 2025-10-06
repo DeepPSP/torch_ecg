@@ -283,7 +283,7 @@ def dict_to_str(d: Union[dict, list, tuple], current_depth: int = 1, indent_spac
     return s
 
 
-def str2bool(v: Union[str, bool]) -> bool:
+def str2bool(v: Union[str, bool, None]) -> bool:
     """Converts a "boolean" value possibly
     in the format of :class:`str` to :class:`bool`.
 
@@ -291,7 +291,7 @@ def str2bool(v: Union[str, bool]) -> bool:
 
     Parameters
     ----------
-    v : str or bool
+    v : str or bool or None
         The "boolean" value.
 
     Returns
@@ -304,6 +304,8 @@ def str2bool(v: Union[str, bool]) -> bool:
     .. [#str2bool] https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
 
     """
+    if v is None:
+        return False
     if isinstance(v, bool):
         b = v
     elif v.lower() in ("yes", "true", "t", "y", "1"):
@@ -1507,18 +1509,15 @@ def _is_pathlike_string(s: str) -> bool:
     if not isinstance(s, str):
         return False
 
-    try:
-        p = PurePath(s)
-        if os.sep in s or (os.altsep and os.altsep in s):
-            return True
-        if s.startswith((".", "~")) or p.is_absolute():
-            return True
-        if p.suffix != "":
-            return True
-        if len(s) > 2 and s[1] == ":" and s[0].isalpha() and s[2] in ("/", "\\"):
-            return True
-    except Exception:
-        return False
+    p = PurePath(s)
+    if os.sep in s or (os.altsep and os.altsep in s):
+        return True
+    if s.startswith((".", "~")) or p.is_absolute():
+        return True
+    if p.suffix != "":
+        return True
+    if len(s) > 2 and s[1] == ":" and s[0].isalpha() and s[2] in ("/", "\\"):
+        return True
     return False
 
 

@@ -152,6 +152,7 @@ def test_str2bool():
     assert str2bool("no") is False
     assert str2bool("y") is True
     assert str2bool("n") is False
+    assert str2bool(None) is False
     with pytest.raises(ValueError, match="Boolean value expected"):
         str2bool("abc")
     with pytest.raises(ValueError, match="Boolean value expected"):
@@ -701,5 +702,6 @@ def test_is_pathlike_string():
     assert _is_pathlike_string("A:project") is False
     assert _is_pathlike_string("README") is False
     assert _is_pathlike_string("my.folder") is True
+    assert _is_pathlike_string(".") is True
     assert _is_pathlike_string(["abc", "def"]) is False  # type: ignore
     assert _is_pathlike_string(123) is False  # type: ignore

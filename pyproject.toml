@@ -141,12 +141,20 @@ testpaths = ["test"]
 [tool.coverage.run]
 source = ["torch_ecg"]
 omit = [
-  "torch_ecg/databases/nsrr_databases/shhs.py",
+    "torch_ecg/databases/nsrr_databases/shhs.py",
 ]
 
 [tool.coverage.report]
 omit = [
-  "torch_ecg/databases/nsrr_databases/shhs.py",
+    # "torch_ecg/databases/nsrr_databases/shhs.py",
+    # NSRR databases are ignored temporarily, since data access is denied by the US government
+    "torch_ecg/databases/nsrr_databases/*",
+    # temporarily ignore torch_ecg/components/nas.py since it's not implemented completely
+    "torch_ecg/components/nas.py",
+    # temporarily ignore torch_ecg/models/grad_cam.py since it's not implemented completely
+    "torch_ecg/models/grad_cam.py",
+    # temporarily ignore torch_ecg/ssl since it's not implemented
+    "torch_ecg/ssl/*",
 ]
 exclude_also = [
     "raise NotImplementedError",
@@ -154,15 +162,8 @@ exclude_also = [
     "if __name__ == .__main__.:",
     # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
-    # NSRR databases are ignored temporarily, since data access is denied by the US government
-    "torch_ecg/databases/nsrr_databases/*",
+    # base class of the NSRR databases are also ignored temporarily
     "^class NSRRDataBase\\(.*\\):",
-    # temporarily ignore torch_ecg/components/nas.py since it's not implemented completely
-    "torch_ecg/components/nas.py",
-    # temporarily ignore torch_ecg/models/grad_cam.py since it's not implemented completely
-    "torch_ecg/models/grad_cam.py",
-    # temporarily ignore torch_ecg/ssl since it's not implemented
-    "torch_ecg/ssl/*",
 ]
 # show_missing = true
 # skip_covered = true

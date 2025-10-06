@@ -284,8 +284,6 @@ def compute_output_shape(
         "transposeconvolution",
     ]:
         out_channels = num_filters
-    else:
-        raise ValueError(f"Unknown layer type `{layer_type}`")
 
     def check_output_validity(shape):
         assert all(p is None or p > 0 for p in shape), f"output shape `{shape}` is illegal, please check input arguments"
@@ -299,17 +297,17 @@ def compute_output_shape(
     none_dim_msg = "spatial dimensions should be all `None`, or all not `None`"
     if channel_last:
         if all([n is None for n in input_shape[1:-1]]):
-            if out_channels is None:
+            if out_channels is None:  # type: ignore
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple(list(input_shape[:-1]) + [out_channels])
+            output_shape = tuple(list(input_shape[:-1]) + [out_channels])  # type: ignore
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[1:-1]]):
             raise ValueError(none_dim_msg)
     else:
         if all([n is None for n in input_shape[2:]]):
-            if out_channels is None:
+            if out_channels is None:  # type: ignore
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
+            output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))  # type: ignore
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[2:]]):
             raise ValueError(none_dim_msg)
@@ -416,9 +414,9 @@ def compute_output_shape(
             for i, p, d, k, s in zip(_input_shape, _padding, _dilation, _kernel_size, _stride)
         ]
     if channel_last:
-        output_shape = tuple([input_shape[0]] + output_shape + [out_channels])
+        output_shape = tuple([input_shape[0]] + output_shape + [out_channels])  # type: ignore
     else:
-        output_shape = tuple([input_shape[0], out_channels] + output_shape)
+        output_shape = tuple([input_shape[0], out_channels] + output_shape)  # type: ignore
 
     return check_output_validity(output_shape)
 

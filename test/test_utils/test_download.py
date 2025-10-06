@@ -84,6 +84,8 @@ def test_http_get():
     with pytest.raises(ValueError, match="Invalid S3 URL"):
         dl.http_get("s3://xxx", _TMP_DIR / "ludb")
 
+    assert dl._stem(b"https://example.com/path/to/file.tar.gz") == "file"
+
 
 def test_url_is_reachable():
     assert dl.url_is_reachable("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1")
@@ -281,3 +283,25 @@ def test_url_is_reachable_exception(monkeypatch):
 
     monkeypatch.setattr(dl.requests, "head", boom)
     assert dl.url_is_reachable("https://whatever") is False
+
+
+def test_download_from_aws_awscli_missing(monkeypatch, tmp_path):
+    monkeypatch.setattr(dl.shutil, "which", lambda name: None)
+
+    with pytest.raises(RuntimeError, match="AWS cli is required to download from S3"):
+        dl._download_from_aws_s3_using_awscli("s3://bucket/prefix/", tmp_path)
+
+
+def test_download_from_aws_awscli_present_fast_path(monkeypatch, tmp_path):
+    monkeypatch.setattr(dl.shutil, "which", lambda name: "/usr/bin/aws")
+    monkeypatch.setattr(dl, "count_aws_s3_bucket", lambda bucket, prefix: 0)
+    dl._download_from_aws_s3_using_awscli("s3://bucket/prefix/", tmp_path, show_progress=False)
+
+
+def test_awscli_non_ci_branch(monkeypatch, tmp_path):
+    monkeypatch.delenv("CI", raising=False)
+
+    monkeypatch.setattr(dl.shutil, "which", lambda name: "/usr/bin/aws")
+    monkeypatch.setattr(dl, "count_aws_s3_bucket", lambda bucket, prefix: 0)
+
+    dl._download_from_aws_s3_using_awscli("s3://bucket/prefix/", tmp_path, show_progress=False)

@@ -518,10 +518,13 @@ def test_mixin_classes():
 
     # test pth/pt file
     save_path = Path(__file__).resolve().parents[1] / "tmp" / "test_mixin.pth"
+    # convert save_path to bytes to cover bytes path handling code
+    save_path = str(save_path).encode()
     model_1d.save(save_path, CFG(dict(n_leads=12)), extra_items={"xxx": {"ones": torch.ones((2, 2))}}, use_safetensors=False)
     assert save_path.is_file()
     loaded_model, _ = Model1D.from_checkpoint(save_path)
     assert repr(model_1d) == repr(loaded_model)
+    save_path = Path(save_path.decode())
     save_path.unlink()
 
     with pytest.warns(RuntimeWarning, match="`safetensors` is used by default."):
