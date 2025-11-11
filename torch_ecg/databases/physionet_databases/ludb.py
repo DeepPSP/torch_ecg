@@ -293,8 +293,6 @@ class LUDB(PhysioNetDataBase):
             verbose=verbose,
             **kwargs,
         )
-        if self.version == "1.0.0":
-            self.logger.info("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")  # type: ignore
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"

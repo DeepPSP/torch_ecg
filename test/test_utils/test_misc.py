@@ -142,8 +142,8 @@ def test_dict_to_str():
 def test_str2bool():
     assert str2bool(True) is True
     assert str2bool(False) is False
-    assert str2bool("True") is True
-    assert str2bool("False") is False
+    assert str2bool("True ") is True
+    assert str2bool(" False") is False
     assert str2bool("true") is True
     assert str2bool("false") is False
     assert str2bool("1") is True
@@ -153,10 +153,15 @@ def test_str2bool():
     assert str2bool("y") is True
     assert str2bool("n") is False
     assert str2bool(None) is False
+    assert str2bool(None, default=True) is True
+    assert str2bool("", strict=False) is False
     with pytest.raises(ValueError, match="Boolean value expected"):
         str2bool("abc")
     with pytest.raises(ValueError, match="Boolean value expected"):
         str2bool("2")
+    with pytest.raises(TypeError, match="Expected str|bool|None"):
+        str2bool(1)  # type: ignore
+    assert str2bool(1, strict=False) is False  # type: ignore
 
 
 def test_diff_with_step():

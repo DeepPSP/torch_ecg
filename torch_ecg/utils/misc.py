@@ -283,7 +283,11 @@ def dict_to_str(d: Union[dict, list, tuple], current_depth: int = 1, indent_spac
     return s
 
 
-def str2bool(v: Union[str, bool, None]) -> bool:
+_TRUE_SET = {"yes", "true", "t", "y", "1"}
+_FALSE_SET = {"no", "false", "f", "n", "0"}
+
+
+def str2bool(v: Union[str, bool, None], *, default: bool = False, strict: bool = True) -> bool:
     """Converts a "boolean" value possibly
     in the format of :class:`str` to :class:`bool`.
 
@@ -293,6 +297,15 @@ def str2bool(v: Union[str, bool, None]) -> bool:
     ----------
     v : str or bool or None
         The "boolean" value.
+    default : bool, default False
+        The default value to return if `v` is ``None``,
+        or if `strict` is ``False`` and `v` could not be converted.
+
+        .. versionadded:: 0.0.32
+    strict : bool, default True
+        Whether to raise error if `v` could not be converted.
+
+        .. versionadded:: 0.0.32
 
     Returns
     -------
@@ -304,17 +317,22 @@ def str2bool(v: Union[str, bool, None]) -> bool:
     .. [#str2bool] https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
 
     """
-    if v is None:
-        return False
     if isinstance(v, bool):
-        b = v
-    elif v.lower() in ("yes", "true", "t", "y", "1"):
-        b = True
-    elif v.lower() in ("no", "false", "f", "n", "0"):
-        b = False
-    else:
-        raise ValueError("Boolean value expected.")
-    return b
+        return v
+    if v is None:
+        return default
+    if not isinstance(v, str):
+        if strict:
+            raise TypeError(f"Expected str|bool|None, got {type(v)}")
+        return default
+    v_norm = v.strip().lower()
+    if v_norm in _TRUE_SET:
+        return True
+    if v_norm in _FALSE_SET:
+        return False
+    if strict:
+        raise ValueError(f"Boolean value expected, got {v!r}")
+    return default
 
 
 @deprecated("Use `np.diff` instead.")

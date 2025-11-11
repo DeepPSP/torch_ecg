@@ -84,7 +84,7 @@ class CFG(dict):
 
     __setitem__ = __setattr__
 
-    def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:
+    def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:  # type: ignore
         """The new hierarchical update method.
 
         Parameters
@@ -157,9 +157,9 @@ class DTYPE:
     """
 
     STR: str
-    NP: np.dtype = None
-    TORCH: torch.dtype = None
-    INT: int = None  # int representation of the dtype, mainly used for `wfdb.rdrecord`
+    NP: np.dtype = None  # type: ignore
+    TORCH: torch.dtype = None  # type: ignore
+    INT: int = None  # int representation of the dtype, mainly used for `wfdb.rdrecord`  # type: ignore
 
     def __post_init__(self) -> None:
         """check consistency"""
@@ -168,12 +168,12 @@ class DTYPE:
         if self.TORCH is None:
             self.TORCH = eval(f"torch.{self.STR}")
         if self.INT is None:
-            self.INT = int(re.search("\\d+", self.STR).group(0))
+            self.INT = int(re.search("\\d+", self.STR).group(0))  # type: ignore
         assert all(
             [
                 self.NP == getattr(np, self.STR),
                 self.TORCH == getattr(torch, self.STR),
-                self.INT == int(re.search("\\d+", self.STR).group(0)),
+                self.INT == int(re.search("\\d+", self.STR).group(0)),  # type: ignore
             ]
         ), "inconsistent dtype"
 

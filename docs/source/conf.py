@@ -203,6 +203,8 @@ def setup(app):
     # )
     # app.add_transform(AutoStructify)
     app.add_css_file("css/custom.css")
+    app.add_css_file("css/codeblock.css")
+    app.add_js_file("js/codeblock.js")
 
 
 latex_documents = [
