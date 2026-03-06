@@ -442,7 +442,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             The config dict. (if `return_config` is `True`)
 
         """
-        v1_model, train_config = ECG_CRNN_v1.from_checkpoint(v1_ckpt, device=device, weight_only=False)
+        v1_model, train_config = ECG_CRNN_v1.from_checkpoint(v1_ckpt, device=device, weights_only=False)
         model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config)
         model = model.to(v1_model.device)
         model.cnn.load_state_dict(v1_model.cnn.state_dict())

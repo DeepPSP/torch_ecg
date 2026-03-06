@@ -151,7 +151,11 @@ def test_http_get_iter_exception_triggers_runtime(monkeypatch, tmp_path, raise_t
     def fake_retry_session():
         return FakeSession(resp)
 
-    monkeypatch.setattr(dl, "_requests_retry_session", lambda: types.SimpleNamespace(get=fake_retry_session().get))
+    monkeypatch.setattr(
+        dl,
+        "_requests_retry_session",
+        lambda: types.SimpleNamespace(get=fake_retry_session().get, close=lambda: None),
+    )
 
     target_dir = tmp_path / "download"
     with pytest.raises(RuntimeError) as exc:
@@ -177,7 +181,7 @@ def test_http_get_status_403(monkeypatch, tmp_path):
             yield b""
 
     def fake_session():
-        return types.SimpleNamespace(get=lambda *a, **k: Resp403())
+        return types.SimpleNamespace(get=lambda *a, **k: Resp403(), close=lambda: None)
 
     monkeypatch.setattr(dl, "_requests_retry_session", lambda: fake_session())
 

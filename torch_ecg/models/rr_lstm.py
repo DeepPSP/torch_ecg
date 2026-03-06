@@ -302,7 +302,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             The model instance restored from the v1 checkpoint.
 
         """
-        v1_model, train_config = RR_LSTM_v1.from_checkpoint(v1_ckpt, device=device, weight_only=False)
+        v1_model, train_config = RR_LSTM_v1.from_checkpoint(v1_ckpt, device=device, weights_only=False)
         model = cls(classes=v1_model.classes, config=v1_model.config)
         model = model.to(v1_model.device)
         model.lstm.load_state_dict(v1_model.lstm.state_dict())
