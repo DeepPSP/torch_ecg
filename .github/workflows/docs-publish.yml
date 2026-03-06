@@ -105,10 +105,14 @@ jobs:
         sudo dpkg -i pandoc-$PANDOC_RELEASE-1-amd64.deb
         sudo rm pandoc-$PANDOC_RELEASE-1-amd64.deb
         sudo apt install texlive-pictures texlive-latex-extra pdf2svg -y
-    - name: Build docs with Sphinx and check for errors
+    - name: Build docs with Sphinx
       run: |
         cd docs
         make html
+    - name: Check for broken links
+      continue-on-error: true
+      run: |
+        cd docs
         make linkcheck
     # Publish to GitHub Pages
     - name: Publish to GitHub Pages

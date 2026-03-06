@@ -246,3 +246,10 @@ linkcheck_ignore = [
     r"https://doi.org/*",  # 418 Client Error
     r"https://stackoverflow.com/questions/",  # 403 Client Error: Forbidden (anti-bot ?)
 ]
+
+linkcheck_request_headers = {
+    "*": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    }
+}
