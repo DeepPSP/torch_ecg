@@ -5,7 +5,6 @@ import inspect
 import logging
 import os
 import re
-import signal
 import sys
 import time
 import types
@@ -1251,17 +1250,11 @@ def timeout(duration: Union[float, int]):
     """A context manager that raises a
     :class:`TimeoutError` after a specified time (in seconds).
 
-    Modified from [#timeout]_.
-
     Parameters
     ----------
     duration : float
         The time duration in seconds,
         should be non-negative, 0 for no timeout.
-
-    References
-    ----------
-    .. [#timeout] https://stackoverflow.com/questions/492519/timeout-on-a-function-call
 
     """
     if np.isinf(duration):
@@ -1275,18 +1268,45 @@ def timeout(duration: Union[float, int]):
         yield
         return
 
-    old_handler = signal.getsignal(signal.SIGALRM)
+    # signal.alarm is not available on Windows
+    # so we use threading.Timer to raise TimeoutError
+    import ctypes
+    import threading
 
-    def timeout_handler(signum, frame):
-        raise TimeoutError(f"block timedout after `{duration}` seconds")
+    def _raise_timeout_exception(tid):
+        """Raise TimeoutError in the target thread."""
+        # ctypes.pythonapi.PyThreadState_SetAsyncExc returns the number of threads affected
+        # we need to cast the thread id to c_long
+        if not isinstance(tid, int):
+            tid = int(tid)
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(duration)  # type: ignore
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(TimeoutError))
+        if res == 0:
+            # thread id not found
+            # this may happen if the thread has already finished
+            pass
+        elif res > 1:
+            # multiple threads affected, should not happen
+            # undo the effect
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), 0)
+
+    # get the current thread id
+    # threading.get_ident() returns the thread identifier of the current thread
+    # which is an integer
+    tid = threading.get_ident()
+
+    timer = threading.Timer(duration, _raise_timeout_exception, args=(tid,))
+    timer.start()
     try:
         yield
+    except TimeoutError:
+        # Re-raise with custom message
+        raise TimeoutError(f"block timedout after `{duration}` seconds")
     finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, old_handler)
+        timer.cancel()
+        # Clear any pending async exception in case the timer fired
+        # just as the block was finishing
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), None)
 
 
 class Timer(ReprMixin):
