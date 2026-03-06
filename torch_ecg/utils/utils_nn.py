@@ -1145,7 +1145,7 @@ class CkptMixin(object):
             Path to the checkpoint.
             If it is a directory, then this directory should be one of the following cases:
             - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.
-            - contain only one checkpoint file (with the extension `.pth` or `.pt`).
+            - contain only one checkpoint file (with the extension `.pth`, `.pt`, `.safetensors`).
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
@@ -1222,9 +1222,17 @@ class CkptMixin(object):
                         for key in f.keys():
                             if not key.startswith(_SFT_EXTRA_TENSOR_PREFIX):
                                 state_dict[key] = f.get_tensor(key)
-                        model.load_state_dict(state_dict, strict=False)  # type: ignore
+                        model.load_state_dict(state_dict, strict=True)  # type: ignore
                         model.to(_device)  # type: ignore
                         return model, aux_config  # type: ignore
+            except RuntimeError as e:
+                if "Error(s) in loading state_dict" in str(e):
+                    raise e
+                raise RuntimeError(
+                    "Failed to load the safetensors file. "
+                    "The file may be corrupted, or the version of safetensors is incompatible. "
+                    "Try updating safetensors to the latest version, or check the file integrity."
+                ) from e
             except Exception as e:
                 # failed to load the safetensors file
                 raise RuntimeError(
@@ -1250,6 +1258,7 @@ class CkptMixin(object):
             kwargs["n_leads"] = aux_config["n_leads"]
         model = cls(**kwargs)
         model.load_state_dict(ckpt["model_state_dict"])  # type: ignore
+        model.to(_device)  # type: ignore
         return model, aux_config  # type: ignore
 
     @classmethod
@@ -1295,16 +1304,15 @@ class CkptMixin(object):
         path: Union[str, bytes, os.PathLike],
         train_config: CFG,
         extra_items: Optional[dict] = None,
-        use_safetensors: bool = True,
+        use_safetensors: Optional[bool] = None,
         safetensors_single_file: bool = True,
     ) -> None:
         """Save the model to disk.
 
         .. note::
 
-            `safetensors` is used by default to save the model.
-            If one wants to save the models in `.pth` or `.pt` format,
-            he/she must explicitly set ``use_safetensors=False``.
+            If `path` has a suffix of `.pth` or `.pt`, `safetensors` will NOT be used unless `use_safetensors=True` is explicitly set.
+            Otherwise, `safetensors` is used by default.
 
         Parameters
         ----------
@@ -1319,12 +1327,13 @@ class CkptMixin(object):
             or is a dict of torch tensors.
 
             .. versionadded:: 0.0.32
-        use_safetensors : bool, default True
+        use_safetensors : bool, optional
             Whether to use `safetensors` to save the model.
-            This will be overridden by the suffix of `path`:
-            if it is `.safetensors`, then `use_safetensors` is set to True;
-            if it is `.pth` or `.pt`, then if `use_safetensors` is True,
-            the suffix is changed to `.safetensors`, otherwise it is unchanged.
+            If `None`, it is determined by the suffix of `path`:
+            if it is `.pth` or `.pt`, then `use_safetensors` is set to False;
+            otherwise it is set to True.
+            If True, and the suffix of `path` is `.pth` or `.pt`,
+            the suffix is changed to `.safetensors`.
 
             .. versionadded:: 0.0.32
         safetensors_single_file : bool, default True
@@ -1343,6 +1352,9 @@ class CkptMixin(object):
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
         extra_items = extra_items or {}
+
+        if use_safetensors is None:
+            use_safetensors = path.suffix not in [".pth", ".pt"]
 
         _model_config = make_safe_globals(self.config)  # type: ignore
         _train_config = make_safe_globals(train_config)

@@ -52,7 +52,6 @@ class BaseTrainer(ReprMixin, ABC):
         including configurations for the data loader, for the optimization, etc.
         Will also be recorded in the checkpoints.
         `train_config` should at least contain the following keys:
-
         - "monitor": str
         - "loss": str
         - "n_epochs": int
@@ -251,7 +250,6 @@ class BaseTrainer(ReprMixin, ABC):
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"  # type: ignore
                 else:
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}"
-                # save_filename = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
                 save_folder = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}"
                 save_path = self.train_config.checkpoints / save_folder  # type: ignore
                 if self.train_config.keep_checkpoint_max != 0:  # type: ignore

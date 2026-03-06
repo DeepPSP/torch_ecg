@@ -140,6 +140,7 @@ testpaths = ["test"]
 
 [tool.coverage.run]
 source = ["torch_ecg"]
+patch = ["subprocess"]
 omit = [
     "torch_ecg/databases/nsrr_databases/shhs.py",
 ]

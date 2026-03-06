@@ -215,34 +215,41 @@ def http_get(
             delete=False,
         )
         # req = requests.get(url, stream=True, proxies=proxies)
-        req = _requests_retry_session().get(url, stream=True, proxies=proxies, timeout=timeout)
+        session = _requests_retry_session()
         try:
-            req.raise_for_status()
-        except Exception:
-            snippet = ""
+            req = session.get(url, stream=True, proxies=proxies, timeout=timeout)
             try:
-                snippet = req.text[:300]
+                req.raise_for_status()
             except Exception:
-                pass
-            raise RuntimeError(f"Failed to download {url}, status={req.status_code}, body[:300]={snippet!r}")
-        content_length = req.headers.get("Content-Length")
-        total = int(content_length) if content_length is not None else None
-        if req.status_code in [403, 404]:
-            raise Exception(f"Could not reach {url}.")
-        if str2bool(os.environ.get("CI")):
-            mininterval = 10.0
-            disable = True
-        else:
-            mininterval = 1.0
-            disable = False
-        progress = tqdm(unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=mininterval, disable=disable)
-        downloaded_size = 0
-        for chunk in req.iter_content(chunk_size=1024):
-            if chunk:  # filter out keep-alive new chunks
-                progress.update(len(chunk))
-                downloaded_file.write(chunk)
-                downloaded_size += len(chunk)
-        progress.close()
+                snippet = ""
+                try:
+                    snippet = req.text[:300]
+                except Exception:
+                    pass
+                raise RuntimeError(f"Failed to download {url}, status={req.status_code}, body[:300]={snippet!r}")
+
+            content_length = req.headers.get("Content-Length")
+            total = int(content_length) if content_length is not None else None
+            if req.status_code in [403, 404]:
+                raise Exception(f"Could not reach {url}.")
+            if str2bool(os.environ.get("CI")):
+                mininterval = 10.0
+                disable = True
+            else:
+                mininterval = 1.0
+                disable = False
+            progress = tqdm(
+                unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=mininterval, disable=disable
+            )
+            downloaded_size = 0
+            for chunk in req.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    progress.update(len(chunk))
+                    downloaded_file.write(chunk)
+                    downloaded_size += len(chunk)
+            progress.close()
+        finally:
+            session.close()
         downloaded_file.close()
 
         if verify_length and total is not None and downloaded_size != total:

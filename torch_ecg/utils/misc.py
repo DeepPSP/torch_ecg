@@ -1600,7 +1600,7 @@ def make_serializable(
             v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
             if v_serial is not None:
                 result[k] = v_serial
-        return result if result else None
+        return result
 
     elif isinstance(x, (list, tuple)):
         result = []
@@ -1608,7 +1608,7 @@ def make_serializable(
             v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
             if v_serial is not None:
                 result.append(v_serial)
-        return result if result else None
+        return result
 
     elif isinstance(x, (str, int, float, bool, type(None))):
         if isinstance(x, str) and drop_paths and _is_pathlike_string(x):
