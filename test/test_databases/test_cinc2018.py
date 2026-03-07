@@ -28,26 +28,22 @@ _CWD.mkdir(parents=True, exist_ok=True)
 reader = CINC2018(_CWD)
 
 
-@pytest.fixture(scope="module", autouse=True)
-def prepare_data():
-    for file in [
-        "training/tr03-0005/tr03-0005-arousal.mat",
-        "training/tr03-0005/tr03-0005.arousal",
-        "training/tr03-0005/tr03-0005.mat",
-        "training/tr03-0005/tr03-0005.hea",
-        "training/tr12-0685/tr12-0685-arousal.mat",
-        "training/tr12-0685/tr12-0685.arousal",
-        "training/tr12-0685/tr12-0685.hea",
-        "training/tr12-0685/tr12-0685.mat",
-        "test/te06-0293/te06-0293.hea",
-        "test/te06-0293/te06-0293.mat",
-    ]:
-        url = reader.get_file_download_url(file)
-        try:
-            http_get(url, _CWD, extract=False)
-        except Exception as e:
-            print(f"Failed to download {url}: {e}")
-    reader._ls_rec()
+for file in [
+    "training/tr03-0005/tr03-0005-arousal.mat",
+    "training/tr03-0005/tr03-0005.arousal",
+    "training/tr03-0005/tr03-0005.mat",
+    "training/tr03-0005/tr03-0005.hea",
+    "training/tr12-0685/tr12-0685-arousal.mat",
+    "training/tr12-0685/tr12-0685.arousal",
+    "training/tr12-0685/tr12-0685.hea",
+    "training/tr12-0685/tr12-0685.mat",
+    "test/te06-0293/te06-0293.hea",
+    "test/te06-0293/te06-0293.mat",
+]:
+    url = reader.get_file_download_url(file)
+    http_get(url, _CWD, extract=False)
+
+reader._ls_rec()
 
 
 class TestCINC2018:

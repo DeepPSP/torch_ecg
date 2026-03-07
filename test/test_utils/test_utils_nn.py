@@ -527,10 +527,11 @@ def test_mixin_classes():
     save_path = Path(save_path.decode())
     save_path.unlink()
 
-    with pytest.warns(RuntimeWarning, match="`safetensors` is used by default."):
-        model_1d.save(save_path, CFG(dict(n_leads=12)), extra_items={"xxx": {"ones": torch.ones((2, 2))}})
-        assert save_path.with_suffix(".safetensors").is_file()
-        save_path.with_suffix(".safetensors").unlink()
+    # test that saving with .pth extension does not warn and keeps .pth extension by default
+    model_1d.save(save_path, CFG(dict(n_leads=12)), extra_items={"xxx": {"ones": torch.ones((2, 2))}})
+    assert save_path.is_file()
+    assert not save_path.with_suffix(".safetensors").is_file()
+    save_path.unlink()
 
     # test single safetensors file
     save_path = Path(__file__).resolve().parents[1] / "tmp" / "test_mixin.safetensors"

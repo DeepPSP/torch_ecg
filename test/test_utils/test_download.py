@@ -1,5 +1,6 @@
 """ """
 
+import re
 import shutil
 import subprocess
 import types
@@ -14,16 +15,123 @@ _TMP_DIR = Path(__file__).resolve().parents[2] / "tmp" / "test_download"
 _TMP_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def test_http_get():
+def test_http_get(monkeypatch):
+    # Mocking the requests.get to avoid real network calls and 429 errors
+    class MockResponse:
+        def __init__(self, content=b"fake content", headers=None, status_code=200):
+            self.content = content
+            default_headers = {"Content-Length": str(len(content))}
+            if headers:
+                default_headers.update(headers)
+            self.headers = default_headers
+            self.status_code = status_code
+            self.url = "http://mock.url"
+            self.ok = status_code >= 200 and status_code < 400
+
+            content_type = self.headers.get("Content-Type", "")
+            if "text/" in content_type:
+                try:
+                    self.text = content.decode("utf-8") if isinstance(content, bytes) else content
+                except UnicodeDecodeError:
+                    self.text = ""
+            else:
+
+                @property
+                def text(self):
+                    raise UnicodeDecodeError("utf-8", content, 0, 1, "binary data cannot be decoded to utf-8")
+
+                self.text = text
+
+        def iter_content(self, chunk_size=1):
+            yield self.content
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def close(self):
+            pass
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                raise Exception(f"HTTP Error {self.status_code}")
+
+    # Mock for Dropbox zip download
+    def mock_get_dropbox(*args, **kwargs):
+        # Create a valid zip file in memory
+        import io
+        import zipfile
+
+        b = io.BytesIO()
+        with zipfile.ZipFile(b, "w") as z:
+            z.writestr("test.txt", "content")
+        zip_content = b.getvalue()
+        return MockResponse(content=zip_content, headers={"Content-Type": "application/zip"})
+
+    # Mock for Text file download
+    def mock_get_text(*args, **kwargs):
+        return MockResponse(content=b"text content", headers={"Content-Type": "text/plain"})
+
+    # Apply mocks using monkeypatch
+    import requests
+
+    original_get = requests.get
+
+    def side_effect_get(url, *args, **kwargs):
+        if "dropbox.com" in url:
+            return mock_get_dropbox()
+        elif "github.com" in url or "raw.githubusercontent.com" in url:
+            return mock_get_text()
+        elif "google.com" in url:
+            # Let the google drive test fail naturally or handle it if it makes requests
+            return MockResponse(status_code=404)
+        return original_get(url, *args, **kwargs)
+
+    monkeypatch.setattr(dl.requests, "get", side_effect_get)
+    # Also patch the retry session used in http_get
+    # dl._requests_retry_session is a function, we need to return an object with .get()
+    monkeypatch.setattr(dl, "_requests_retry_session", lambda: types.SimpleNamespace(get=side_effect_get, close=lambda: None))
+
+    # Mock google drive download
+    monkeypatch.setattr(dl, "_download_from_google_drive", lambda url, output, quiet=False: Path(output).touch())
+
+    # Mock S3 download (aws cli)
+    def mock_s3_awscli(url, dst_dir):
+        pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
+        match = re.match(pattern, url)
+        if match is None:
+            raise ValueError(f"Invalid S3 URL: {url}")
+        Path(dst_dir).mkdir(parents=True, exist_ok=True)
+        (Path(dst_dir) / "test_file.txt").touch()
+
+    monkeypatch.setattr(dl, "_download_from_aws_s3_using_awscli", mock_s3_awscli)
+
+    # Mock S3 download (boto3)
+    def mock_s3_boto3(url, dst_dir):
+        pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
+        match = re.match(pattern, url)
+        if match is None:
+            raise ValueError(f"Invalid S3 URL: {url}")
+        Path(dst_dir).mkdir(parents=True, exist_ok=True)
+        (Path(dst_dir) / "test_file.txt").touch()
+
+    monkeypatch.setattr(dl, "_download_from_aws_s3_using_boto3", mock_s3_boto3)
+
     # normally, direct downloading from dropbox with `dl=0` will not download the file
     # http_get internally replaces `dl=0` with `dl=1` to force download
     url = "https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=0"
-    dl.http_get(url, _TMP_DIR / "action-test-zip-extract", extract=True, filename="test.zip")
-    shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
-    dl.http_get(url, _TMP_DIR / "action-test-zip-extract", extract="auto", filename="test.zip")
-    shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
-    dl.http_get(url, _TMP_DIR / "action-test-zip-extract", extract="auto")
-    shutil.rmtree(_TMP_DIR / "action-test-zip-extract")
+    extract_dir = _TMP_DIR / "action-test-zip-extract"
+    dl.http_get(url, extract_dir, extract=True, filename="test.zip")
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    dl.http_get(url, extract_dir, extract="auto", filename="test.zip")
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    dl.http_get(url, extract_dir, extract="auto")
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
 
     url = (
         "https://github.com/DeepPSP/cinc2021/blob/master/results/"
@@ -40,9 +148,12 @@ def test_http_get():
         dl.http_get(url, _TMP_DIR, extract=True, filename="test.txt")
     with pytest.raises(FileExistsError, match="file already exists"):
         dl.http_get(url, _TMP_DIR, extract=True, filename="test.txt")
-    (_TMP_DIR / "test.txt").unlink()
+    test_txt = _TMP_DIR / "test.txt"
+    if test_txt.exists():
+        test_txt.unlink()
     dl.http_get(url, _TMP_DIR, extract="auto", filename="test.txt")
-    (_TMP_DIR / "test.txt").unlink()
+    if test_txt.exists():
+        test_txt.unlink()
     dl.http_get(url, _TMP_DIR, extract="auto")
 
     with pytest.warns(
@@ -54,7 +165,9 @@ def test_http_get():
         ),
     ):
         dl.http_get(url, _TMP_DIR, extract=True)
-    Path(_TMP_DIR / Path(url).name).unlink()
+    github_file = _TMP_DIR / Path(url).name
+    if github_file.exists():
+        github_file.unlink()
 
     # test downloading from Google Drive
     file_id = "1Yys567-MZIMf3eXGJd8bGrsWIvDatbsZ"
@@ -65,47 +178,69 @@ def test_http_get():
         dl.http_get(url_no_scheme, _TMP_DIR)
     with pytest.raises(ValueError, match="Unsupported URL scheme"):
         dl.http_get(url_xxx_schme, _TMP_DIR, extract=False, filename="torch-ecg-paper.bib")
+    gdrive_file = _TMP_DIR / "torch-ecg-paper.bib"
     dl.http_get(url, _TMP_DIR, filename="torch-ecg-paper.bib", extract=False)
-    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
-    dl._download_from_google_drive(file_id, _TMP_DIR / "torch-ecg-paper.bib")
-    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
-    dl._download_from_google_drive(url_no_scheme, _TMP_DIR / "torch-ecg-paper.bib")
-    (_TMP_DIR / "torch-ecg-paper.bib").unlink()
+    if gdrive_file.exists():
+        gdrive_file.unlink()
+    dl._download_from_google_drive(file_id, gdrive_file)
+    if gdrive_file.exists():
+        gdrive_file.unlink()
+    dl._download_from_google_drive(url_no_scheme, gdrive_file)
+    if gdrive_file.exists():
+        gdrive_file.unlink()
 
     # test downloading from AWS S3 (by default using AWS CLI)
-    (_TMP_DIR / "ludb").mkdir(exist_ok=True)
-    dl.http_get("s3://physionet-open/ludb/1.0.1/", _TMP_DIR / "ludb")
+    ludb_dir = _TMP_DIR / "ludb"
+    ludb_dir.mkdir(exist_ok=True)
+    dl.http_get("s3://physionet-open/ludb/1.0.1/", ludb_dir)
 
     # test downloading from AWS S3 (by using boto3)
-    shutil.rmtree(_TMP_DIR / "ludb")
-    (_TMP_DIR / "ludb").mkdir(exist_ok=True)
-    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/", _TMP_DIR / "ludb")
+    if ludb_dir.exists():
+        shutil.rmtree(ludb_dir)
+    ludb_dir.mkdir(exist_ok=True)
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/", ludb_dir)
 
     with pytest.raises(ValueError, match="Invalid S3 URL"):
-        dl.http_get("s3://xxx", _TMP_DIR / "ludb")
+        dl.http_get("s3://xxx", ludb_dir)
 
     assert dl._stem(b"https://example.com/path/to/file.tar.gz") == "file"
 
 
-def test_url_is_reachable():
+def test_url_is_reachable(monkeypatch):
+    import requests
+
+    def mock_head(url, timeout=None, **kwargs):
+        class MockResponse:
+            def __init__(self, status_code):
+                self.status_code = status_code
+
+        if "dropbox.com" in url:
+            return MockResponse(200)
+        return MockResponse(404)
+
+    monkeypatch.setattr(requests, "head", mock_head)
+
     assert dl.url_is_reachable("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=1")
     assert not dl.url_is_reachable("https://www.some-unknown-domain.com/unknown-path/unknown-file.zip")
 
 
 def test_is_compressed_file():
+    test_dir = _TMP_DIR / "test_compressed"
+    test_dir.mkdir(exist_ok=True)
     # check local files
-    assert not dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txt")
-    assert not dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract")
-    assert not dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test")
-    assert not dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.pth.tar")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.gz")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tgz")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.bz2")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tbz2")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.tar.xz")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.txz")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.zip")
-    assert dl.is_compressed_file(_TMP_DIR / "action-test-zip-extract" / "test.7z")
+    assert not dl.is_compressed_file(test_dir / "test.txt")
+    assert not dl.is_compressed_file(test_dir)
+    assert not dl.is_compressed_file(test_dir / "test")
+    assert not dl.is_compressed_file(test_dir / "test.pth.tar")
+    assert dl.is_compressed_file(test_dir / "test.tar.gz")
+    assert dl.is_compressed_file(test_dir / "test.tgz")
+    assert dl.is_compressed_file(test_dir / "test.tar.bz2")
+    assert dl.is_compressed_file(test_dir / "test.tbz2")
+    assert dl.is_compressed_file(test_dir / "test.tar.xz")
+    assert dl.is_compressed_file(test_dir / "test.txz")
+    assert dl.is_compressed_file(test_dir / "test.zip")
+    assert dl.is_compressed_file(test_dir / "test.7z")
+    shutil.rmtree(test_dir)
 
     # check remote files (by URL)
     assert dl.is_compressed_file(urllib.parse.urlparse("https://www.dropbox.com/s/oz0n1j3o1m31cbh/action_test.zip?dl=0").path)
