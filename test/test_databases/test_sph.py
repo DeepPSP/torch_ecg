@@ -22,11 +22,16 @@ except FileNotFoundError:
     pass
 _CWD.mkdir(parents=True, exist_ok=True)
 
-http_get(
-    url="https://www.dropbox.com/s/og877l6d4bh4vew/SPH-Mini.tar.gz?dl=1",
-    dst_dir=_CWD,
-    extract=True,
-)
+
+@pytest.fixture(scope="module", autouse=True)
+def prepare_data():
+    http_get(
+        url="https://www.dropbox.com/s/og877l6d4bh4vew/SPH-Mini.tar.gz?dl=1",
+        dst_dir=_CWD,
+        extract=True,
+    )
+
+
 ###############################################################################
 
 
