@@ -62,7 +62,7 @@ def test_ecg_seq_lab_net():
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi]), doi
 
-    with pytest.raises(RuntimeError, match="Maybe you are trying to load a model trained with numpy 1"):
+    with pytest.raises(RuntimeError, match="Failed to load the checkpoint"):
         ECG_SEQ_LAB_NET.from_remote(
             url="https://drive.google.com/uc?id=18Jta73DjqXVarEYjN_CWeYqM8rH7I3An",
             model_dir=_TMP_DIR,

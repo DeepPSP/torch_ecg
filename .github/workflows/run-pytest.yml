@@ -72,6 +72,7 @@ jobs:
     # ref. https://github.com/DeepPSP/nsrr-automate
       # uses: gacts/run-and-post-run@v1
       continue-on-error: true
+      if: ${{ env.SHHS_DATA_AVAILABLE == 'true' }}
       run: |
         set -u -o pipefail
         gem install nsrr --no-document
@@ -109,7 +110,7 @@ jobs:
       env:
         SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
-      if: matrix.python-version == ${{ env.PYTHON_PRIMARY_VERSION }}
+      if: ${{ matrix.python-version == env.PYTHON_PRIMARY_VERSION }}
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true # optional (default = false)
