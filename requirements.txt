@@ -1,7 +1,7 @@
 numpy
 scipy
 Cython
-pandas
+pandas < 3.0.0
 pyarrow
 scikit-learn
 boto3
