@@ -9,7 +9,7 @@ import pytest
 import torch
 from tqdm.auto import tqdm
 
-from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS, FLOAT32
 from torch_ecg.models._nets import Conv_Bn_Activation
 from torch_ecg.utils.utils_nn import (
     CkptMixin,
@@ -22,6 +22,7 @@ from torch_ecg.utils.utils_nn import (
     compute_sequential_output_shape,
     default_collate_fn,
     extend_predictions,
+    make_safe_globals,
 )
 
 
@@ -579,3 +580,59 @@ def test_mixin_classes():
     inp = torch.randn(1, 12, 1000)
     out = model_dummy(inp)
     assert inp is out
+
+
+def test_make_safe_globals():
+    # CFG and dict
+    cfg = CFG(a=1, b=None, c={"d": 2})
+    safe_cfg = make_safe_globals(cfg)
+    assert isinstance(safe_cfg, dict)
+    assert not isinstance(safe_cfg, CFG)
+    assert safe_cfg == {"a": 1, "c": {"d": 2}}
+
+    # list and tuple
+    lst = [1, None, 2, (3, None, 4)]
+    safe_lst = make_safe_globals(lst)
+    assert safe_lst == [1, 2, (3, 4)]
+    assert isinstance(safe_lst[2], tuple)
+
+    # set and frozenset
+    s = {1, None, 2}
+    safe_s = make_safe_globals(s)
+    assert safe_s == {1, 2}
+
+    fs = frozenset({1, None, 2})
+    safe_fs = make_safe_globals(fs)
+    assert safe_fs == frozenset({1, 2})
+
+    # torch objects
+    t = torch.randn(2, 2)
+    assert make_safe_globals(t) is t
+
+    # standard types
+    assert make_safe_globals(1) == 1
+    assert make_safe_globals("abc") == "abc"
+    assert make_safe_globals(True) is True
+    assert make_safe_globals(None) is None
+
+    # numpy objects (if in _safe_globals)
+    arr = np.array([1, 2])
+    assert make_safe_globals(arr) is arr
+
+    # DTYPE (instance should be kept as is if it's in _safe_globals)
+    assert make_safe_globals(FLOAT32) is FLOAT32
+
+    # path removal
+    path = Path(__file__).resolve()
+    assert make_safe_globals(path, remove_paths=True) is None
+    assert make_safe_globals(path, remove_paths=False) is path
+
+    path_str = str(path)
+    assert make_safe_globals(path_str, remove_paths=True) is None
+    assert make_safe_globals(path_str, remove_paths=False) == path_str
+
+    # unsafe objects
+    class Unsafe:
+        pass
+
+    assert make_safe_globals(Unsafe()) is None

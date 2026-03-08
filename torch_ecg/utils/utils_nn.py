@@ -13,7 +13,7 @@ from itertools import chain, repeat
 from math import floor
 from numbers import Real
 from pathlib import Path, PosixPath, WindowsPath
-from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -1074,28 +1074,30 @@ class SizeMixin(object):
         return str(self.device)
 
 
-def make_safe_globals(obj: CFG, remove_paths: bool = True) -> CFG:
+def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
     """Make a dictionary or a dictionary-like object safe for serialization.
 
     Parameters
     ----------
-    obj : dict
+    obj : Any
         The dictionary or dictionary-like object.
     remove_paths : bool, default True
         Whether to remove paths in the dictionary.
 
     Returns
     -------
-    CFG
-        The safe dictionary.
+    Any
+        The safe dictionary, which will be a plain `dict` for `CFG` or `dict` objects.
 
     """
     if isinstance(obj, (CFG, dict)):
         sg = {k: make_safe_globals(v) for k, v in obj.items()}
-        sg = CFG({k: v for k, v in sg.items() if v is not None})
+        sg = {k: v for k, v in sg.items() if v is not None}
     elif isinstance(obj, (list, tuple)):
         sg = [make_safe_globals(item) for item in obj]
         sg = [item for item in sg if item is not None]
+        if isinstance(obj, tuple):
+            sg = tuple(sg)
     elif isinstance(obj, set):
         sg = {make_safe_globals(item) for item in obj}
         sg = {item for item in sg if item is not None}
@@ -1187,8 +1189,8 @@ class CkptMixin(object):
                 assert model_config_path.exists(), "model_config.json file not found"
                 train_config = json.loads(train_config_path.read_text())
                 model_config = json.loads(model_config_path.read_text())
-                aux_config = train_config
-                kwargs = dict(config=model_config)
+                aux_config = CFG(train_config)
+                kwargs = dict(config=CFG(model_config))
                 if "classes" in aux_config:
                     kwargs["classes"] = aux_config["classes"]
                 if "n_leads" in aux_config:
@@ -1209,8 +1211,8 @@ class CkptMixin(object):
                     if _SFT_META_MODEL_CFG in meta and _SFT_META_TRAIN_CFG in meta:
                         model_config = json.loads(meta[_SFT_META_MODEL_CFG])
                         train_config = json.loads(meta[_SFT_META_TRAIN_CFG])
-                        aux_config = train_config
-                        kwargs = dict(config=model_config)
+                        aux_config = CFG(train_config)
+                        kwargs = dict(config=CFG(model_config))
                         if "classes" in aux_config:
                             kwargs["classes"] = aux_config["classes"]
                         if "n_leads" in aux_config:
@@ -1245,13 +1247,22 @@ class CkptMixin(object):
             ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
         except pickle.UnpicklingError as pue:
             raise RuntimeError(
-                "Maybe you are trying to load a model trained with numpy 1, "
+                "Failed to load the checkpoint. This may be due to the changes in PyTorch 2.6+ "
+                "which defaults to `weights_only=True` for security reasons. "
+                "The checkpoint may contain custom classes like `CFG` or `DTYPE` that are not "
+                "allowed by default. Try updating `torch_ecg` to the latest version, "
+                "or setting `weights_only=False` if you trust the source of the checkpoint. "
+                "Another possible reason is that you are trying to load a model trained with numpy 1, "
                 f"but the current numpy version is {np.__version__}. "
-                "Try setting `weights_only=False` and load the model again."
             ) from pue
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
+        if aux_config is not None and not isinstance(aux_config, CFG):
+            aux_config = CFG(aux_config)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        kwargs = dict(config=ckpt["model_config"])
+        model_config = ckpt["model_config"]
+        if not isinstance(model_config, CFG):
+            model_config = CFG(model_config)
+        kwargs = dict(config=model_config)
         if "classes" in aux_config:
             kwargs["classes"] = aux_config["classes"]
         if "n_leads" in aux_config:
