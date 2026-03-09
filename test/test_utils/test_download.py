@@ -80,11 +80,12 @@ def test_http_get(monkeypatch):
     original_get = requests.get
 
     def side_effect_get(url, *args, **kwargs):
-        if "dropbox.com" in url:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.netloc.endswith("dropbox.com"):
             return mock_get_dropbox()
-        elif "github.com" in url or "raw.githubusercontent.com" in url:
+        elif parsed.netloc.endswith(("github.com", "raw.githubusercontent.com")):
             return mock_get_text()
-        elif "google.com" in url:
+        elif parsed.netloc.endswith("google.com"):
             # Let the google drive test fail naturally or handle it if it makes requests
             return MockResponse(status_code=404)
         return original_get(url, *args, **kwargs)
@@ -214,7 +215,8 @@ def test_url_is_reachable(monkeypatch):
             def __init__(self, status_code):
                 self.status_code = status_code
 
-        if "dropbox.com" in url:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.netloc.endswith("dropbox.com"):
             return MockResponse(200)
         return MockResponse(404)
 

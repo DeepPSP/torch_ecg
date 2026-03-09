@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_PRIMARY_VERSION: '3.10'
+  PYTHON_PRIMARY_VERSION: '3.12'
   SHHS_DATA_AVAILABLE: 'false'
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.12", "3.13"]
       fail-fast: false
 
     steps:
