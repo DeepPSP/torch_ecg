@@ -38,6 +38,7 @@ References
 NOTE that wikipedia is NOT listed in the References
 
 """
+
 from io import StringIO
 
 import pandas as pd
@@ -624,9 +625,7 @@ STE = CFG(
 )
 
 
-_dx_mapping = pd.read_csv(
-    StringIO(
-        """Dx,SNOMEDCTCode,Abbreviation
+_dx_mapping = pd.read_csv(StringIO("""Dx,SNOMEDCTCode,Abbreviation
 atrial fibrillation,164889003,AF
 atrial flutter,164890007,AFL
 bundle branch block,6374002,BBB
@@ -759,9 +758,7 @@ paired ventricular premature complexes,251182009,VPVC
 ventricular tachycardia,164895002,VTach
 ventricular trigeminy,251180001,VTrig
 wandering atrial pacemaker,195101003,WAP
-wolff parkinson white pattern,74390002,WPW"""
-    )
-)
+wolff parkinson white pattern,74390002,WPW"""))
 
 
 for ea_str in __all__:

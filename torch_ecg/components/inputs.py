@@ -539,9 +539,7 @@ class _SpectralInput(BaseInput):
 
 
 class SpectrogramInput(_SpectralInput):
-    __doc__ = (
-        _SpectralInput.__doc__
-        + """
+    __doc__ = _SpectralInput.__doc__ + """
 
     Examples
     --------
@@ -567,7 +565,6 @@ class SpectrogramInput(_SpectralInput):
     True
 
     """
-    )
     __name__ = "SpectrogramInput"
 
     def _post_init(self) -> None:

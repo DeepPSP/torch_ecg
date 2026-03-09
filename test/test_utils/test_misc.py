@@ -328,14 +328,12 @@ def test_dicts_equal():
 
 def test_ReprMixin():
     some_class = SomeClass(1, 2, 3)
-    string = textwrap.dedent(
-        """
+    string = textwrap.dedent("""
         SomeClass(
             aaa = 1,
             bb  = 2
         )
-        """
-    ).strip("\n")
+        """).strip("\n")
     assert str(some_class) == repr(some_class)
     assert str(some_class) == string
 
@@ -447,9 +445,7 @@ def test_remove_parameters_returns_from_docstring():
         parameters=["returns_indicator", "parameters_indicator"],
         returns="str",
     )
-    assert (
-        new_docstring
-        == """Remove parameters and/or returns from docstring,
+    assert new_docstring == """Remove parameters and/or returns from docstring,
     which is of the format of `numpydoc`.
 
     Parameters
@@ -470,7 +466,6 @@ def test_remove_parameters_returns_from_docstring():
     or add a line of `None` to the section.
 
     """
-    )
 
 
 def test_timeout():

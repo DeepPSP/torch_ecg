@@ -404,9 +404,7 @@ class MFCCInput(_SpectralInput):
 
 
 class SpectralInput(_SpectralInput):
-    __doc__ = (
-        _SpectralInput.__doc__
-        + """
+    __doc__ = _SpectralInput.__doc__ + """
 
     Concatenation of 3 different types of spectrograms:
     - Spectrogram
@@ -444,7 +442,6 @@ class SpectralInput(_SpectralInput):
     (32, 3, 224, 2308)
 
     """
-    )
 
     __name__ = "SpectralInput"
 

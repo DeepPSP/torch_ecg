@@ -7,7 +7,7 @@ from torch_ecg.utils.utils_signal_t import Spectrogram, normalize, resample
 
 
 def test_normalize():
-    (b, l, s) = 2, 12, 20
+    b, l, s = 2, 12, 20
     nm_sig = normalize(torch.randn(b, l, s), method="min-max", inplace=True)
     for shape in [
         (b,),

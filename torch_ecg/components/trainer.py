@@ -164,8 +164,7 @@ class BaseTrainer(ReprMixin, ABC):
                     level=logging.WARNING,
                 )
 
-        msg = textwrap.dedent(
-            f"""
+        msg = textwrap.dedent(f"""
             Starting training:
             ------------------
             Epochs:          {self.n_epochs}
@@ -177,8 +176,7 @@ class BaseTrainer(ReprMixin, ABC):
             Optimizer:       {self.train_config.optimizer}
             Dataset classes: {self.train_config.classes}
             -----------------------------------------
-            """
-        )
+            """)
         self.log_manager.log_message(msg)
 
         start_epoch = self.epoch
@@ -239,12 +237,10 @@ class BaseTrainer(ReprMixin, ABC):
                             self.log_manager.log_message(msg)
                             break
 
-                    msg = textwrap.dedent(
-                        f"""
+                    msg = textwrap.dedent(f"""
                         best metric = {self.best_metric},
                         obtained at epoch {self.best_epoch}
-                    """
-                    )
+                    """)
                     self.log_manager.log_message(msg)
 
                     # save checkpoint

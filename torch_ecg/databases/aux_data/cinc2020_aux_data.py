@@ -69,8 +69,7 @@ df_weights.index = df_weights.index.map(str)
 
 
 dx_mapping_scored = pd.read_csv(
-    StringIO(
-        """Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total,Notes
+    StringIO("""Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total,Notes
 1st degree av block,270492004,IAVB,722,106,0,0,797,769,2394,
 atrial fibrillation,164889003,AF,1221,153,2,15,1514,570,3475,
 atrial flutter,164890007,AFL,0,54,0,1,73,186,314,
@@ -97,16 +96,14 @@ sinus tachycardia,427084000,STach,0,303,11,1,826,1261,2402,
 supraventricular premature beats,63593006,SVPB,0,53,4,0,157,1,215,We score 284470004 and 63593006 as the same diagnosis.
 t wave abnormal,164934002,TAb,0,22,0,0,2345,2306,4673,
 t wave inversion,59931005,TInv,0,5,1,0,294,812,1112,
-ventricular premature beats,17338001,VPB,0,8,0,0,0,357,365,We score 427172004 and 17338001 as the same diagnosis."""
-    )
+ventricular premature beats,17338001,VPB,0,8,0,0,0,357,365,We score 427172004 and 17338001 as the same diagnosis.""")
 )
 dx_mapping_scored = dx_mapping_scored.fillna("")
 dx_mapping_scored["SNOMED CT Code"] = dx_mapping_scored["SNOMED CT Code"].apply(str)
 
 
 dx_mapping_unscored = pd.read_csv(
-    StringIO(
-        """Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total
+    StringIO("""Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total
 2nd degree av block,195042002,IIAVB,0,21,0,0,14,23,58
 abnormal QRS,164951009,abQRS,0,0,0,0,3389,0,3389
 accelerated junctional rhythm,426664006,AJR,0,0,0,0,0,19,19
@@ -190,8 +187,7 @@ ventricular pre excitation,195060002,VPEx,0,6,0,0,0,2,8
 ventricular tachycardia,164895002,VTach,0,1,1,10,0,0,12
 ventricular trigeminy,251180001,VTrig,0,4,4,0,20,1,29
 wandering atrial pacemaker,195101003,WAP,0,0,0,0,0,7,7
-wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,88"""
-    )
+wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,88""")
 )
 dx_mapping_unscored["SNOMED CT Code"] = dx_mapping_unscored["SNOMED CT Code"].apply(str)
 

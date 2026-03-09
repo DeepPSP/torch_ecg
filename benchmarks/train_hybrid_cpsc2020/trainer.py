@@ -162,8 +162,7 @@ def train(
 
     # max_itr = n_epochs * n_train
 
-    msg = textwrap.dedent(
-        f"""
+    msg = textwrap.dedent(f"""
         Starting training:
         ------------------
         Epochs:          {n_epochs}
@@ -174,8 +173,7 @@ def train(
         Device:          {device.type}
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
-        """
-    )
+        """)
     # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
@@ -351,20 +349,17 @@ def train(
                     scheduler.step()
 
                 if debug:
-                    eval_train_msg = textwrap.dedent(
-                        f"""
+                    eval_train_msg = textwrap.dedent(f"""
                     train/auroc:             {eval_train_res[0]}
                     train/auprc:             {eval_train_res[1]}
                     train/accuracy:          {eval_train_res[2]}
                     train/f_measure:         {eval_train_res[3]}
                     train/f_beta_measure:    {eval_train_res[4]}
                     train/g_beta_measure:    {eval_train_res[5]}
-                    """
-                    )
+                    """)
                 else:
                     eval_train_msg = ""
-                msg = textwrap.dedent(
-                    f"""
+                msg = textwrap.dedent(f"""
                     Train epoch_{epoch + 1}:
                     --------------------
                     train/epoch_loss:        {epoch_loss}{eval_train_msg}
@@ -375,8 +370,7 @@ def train(
                     test/f_beta_measure:     {eval_res[4]}
                     test/g_beta_measure:     {eval_res[5]}
                     ---------------------------------
-                    """
-                )
+                    """)
             elif config.model_name == "seq_lab":
                 eval_res = evaluate_seq_lab(model, val_loader, config, device, debug)
                 model.train()
@@ -403,8 +397,7 @@ def train(
                     scheduler.step()
 
                 if debug:
-                    eval_train_msg = textwrap.dedent(
-                        f"""
+                    eval_train_msg = textwrap.dedent(f"""
                     train/total_loss:        {eval_train_res.total_loss}
                     train/spb_loss:          {eval_train_res.spb_loss}
                     train/pvc_loss:          {eval_train_res.pvc_loss}
@@ -414,12 +407,10 @@ def train(
                     train/pvc_fp:            {eval_train_res.pvc_fp}
                     train/spb_fn:            {eval_train_res.spb_fn}
                     train/pvc_fn:            {eval_train_res.pvc_fn}
-                    """
-                    )
+                    """)
                 else:
                     eval_train_msg = ""
-                msg = textwrap.dedent(
-                    f"""
+                msg = textwrap.dedent(f"""
                     Train epoch_{epoch + 1}:
                     --------------------
                     train/epoch_loss:        {epoch_loss}{eval_train_msg}
@@ -433,8 +424,7 @@ def train(
                     test/spb_fn:             {eval_res.spb_fn}
                     test/pvc_fn:             {eval_res.pvc_fn}
                     ---------------------------------
-                    """
-                )
+                    """)
 
             # print(msg)  # in case no logger
             if logger:
@@ -460,12 +450,10 @@ def train(
                         print(msg)
                     break
 
-            msg = textwrap.dedent(
-                f"""
+            msg = textwrap.dedent(f"""
                 best challenge metric = {best_challenge_metric},
                 obtained at epoch {best_epoch}
-            """
-            )
+            """)
             if logger:
                 logger.info(msg)
             else:
@@ -615,8 +603,7 @@ def evaluate_crnn(
         head_labels = all_labels[:head_num, ...]
         head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
         for n in range(head_num):
-            msg = textwrap.dedent(
-                f"""
+            msg = textwrap.dedent(f"""
             ----------------------------------------------
             scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
             binary prediction:    {head_bin_preds[n].tolist()}
@@ -624,8 +611,7 @@ def evaluate_crnn(
             predicted classes:    {head_preds_classes[n].tolist()}
             label classes:        {head_labels_classes[n].tolist()}
             ----------------------------------------------
-            """
-            )
+            """)
             if logger:
                 logger.info(msg)
             else:

@@ -391,14 +391,10 @@ class CINC2021Dataset(ReprMixin, Dataset):
                         is_valid = True
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
-            print(
-                textwrap.dedent(
-                    f"""
+            print(textwrap.dedent(f"""
                 train set saved to \n\042{str(train_file)}\042
                 test set saved to \n\042{str(test_file)}\042
-                """
-                )
-            )
+                """))
         else:
             train_set = json.loads(train_file.read_text())
             test_set = json.loads(test_file.read_text())
@@ -440,16 +436,12 @@ class CINC2021Dataset(ReprMixin, Dataset):
         test_classes = set(list_sum([self.reader.get_labels(rec, fmt="a") for rec in test_set]))
         test_classes.intersection_update(all_classes)
         is_valid = len(all_classes) == len(train_classes) == len(test_classes)
-        print(
-            textwrap.dedent(
-                f"""
+        print(textwrap.dedent(f"""
             all_classes:     {all_classes}
             train_classes:   {train_classes}
             test_classes:    {test_classes}
             is_valid:        {is_valid}
-            """
-            )
-        )
+            """))
         return is_valid
 
     def persistence(self) -> None:
