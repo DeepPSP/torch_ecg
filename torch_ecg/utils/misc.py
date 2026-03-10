@@ -870,14 +870,16 @@ class CitationMixin(_CitationMixin):
     # backwar compatibility
     if (_DATA_CACHE / "database_citation.csv").exists():
         try:
-            df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
+            df_old = pd.read_csv(
+                _DATA_CACHE / "database_citation.csv", encoding="utf-8", encoding_errors="replace", on_bad_lines="warn"
+            )
         except pd.errors.EmptyDataError:
             df_old = pd.DataFrame(columns=["doi", "citation"])
         if set(df_old.columns) != set(["doi", "citation"]):
             df_old = pd.DataFrame(columns=["doi", "citation"])
         df_old = df_old[["doi", "citation"]]
         if _CitationMixin.citation_cache.exists():
-            df = pd.read_csv(_CitationMixin.citation_cache)
+            df = pd.read_csv(_CitationMixin.citation_cache, encoding="utf-8", encoding_errors="replace", on_bad_lines="warn")
         else:
             df = pd.DataFrame(columns=["doi", "citation"])
         # merge the old and new tables and drop duplicates
@@ -1192,6 +1194,7 @@ def remove_parameters_returns_from_docstring(
     elif isinstance(returns, str):
         returns = [returns]
 
+    doc = inspect.cleandoc(doc)
     new_doc = doc.splitlines()
     parameters_indent = None
     returns_indent = None

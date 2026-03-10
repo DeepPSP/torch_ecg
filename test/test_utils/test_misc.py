@@ -1,6 +1,7 @@
 """ """
 
 import datetime
+import inspect
 import json
 import textwrap
 import time
@@ -458,9 +459,8 @@ def test_remove_parameters_returns_from_docstring():
         parameters=["returns_indicator", "parameters_indicator"],
         returns="str",
     )
-    assert (
-        new_docstring
-        == """Remove parameters and/or returns from docstring,
+    assert new_docstring == inspect.cleandoc(
+        """Remove parameters and/or returns from docstring,
     which is of the format of `numpydoc`.
 
     Parameters

@@ -8,7 +8,7 @@ from collections import Counter
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -425,6 +425,19 @@ class ECGWaveForm:
     offset: Union[float, int]
     peak: Union[float, int]
     duration: Union[float, int]
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, ECGWaveForm):
+            return False
+        if self.name != other.name:
+            return False
+        for attr in ["onset", "offset", "peak", "duration"]:
+            v1, v2 = getattr(self, attr), getattr(other, attr)
+            if np.isnan(v1) and np.isnan(v2):
+                continue
+            if not np.allclose(v1, v2):
+                return False
+        return True
 
     @property
     def duration_(self) -> Union[float, int]:
