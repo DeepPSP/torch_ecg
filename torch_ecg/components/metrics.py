@@ -493,8 +493,7 @@ class WaveDelineationMetrics(Metrics):
         if macro:
             self.__prefix = "macro_"
 
-    @add_docstring(
-        f"""
+    @add_docstring(f"""
         Compute metrics for the task of ECG wave delineation
         (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
         for multiple evaluations.
@@ -528,8 +527,7 @@ class WaveDelineationMetrics(Metrics):
         self : WaveDelineationMetrics
             The metrics object itself with the computed metrics.
 
-        """
-    )
+        """)
     def compute(
         self,
         labels: Union[NDArray, Tensor],

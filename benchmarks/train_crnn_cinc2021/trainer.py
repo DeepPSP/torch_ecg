@@ -233,8 +233,7 @@ class CINC2021Trainer(BaseTrainer):
             head_labels = all_labels[:head_num, ...]
             head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
             for n in range(head_num):
-                msg = textwrap.dedent(
-                    f"""
+                msg = textwrap.dedent(f"""
                 ----------------------------------------------
                 scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
                 binary prediction:    {head_bin_preds[n].tolist()}
@@ -242,8 +241,7 @@ class CINC2021Trainer(BaseTrainer):
                 predicted classes:    {head_preds_classes[n].tolist()}
                 label classes:        {head_labels_classes[n].tolist()}
                 ----------------------------------------------
-                """
-                )
+                """)
                 self.log_manager.log_message(msg)
 
         (

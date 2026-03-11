@@ -353,8 +353,7 @@ class CINC2022Trainer(BaseTrainer):
             ]
             log_head_num = min(log_head_num, len(head_scalar_preds))
             for n in range(log_head_num):
-                msg = textwrap.dedent(
-                    f"""
+                msg = textwrap.dedent(f"""
                 ----------------------------------------------
                 murmur scalar prediction:    {[round(item, 3) for item in head_scalar_preds[n].tolist()]}
                 murmur binary prediction:    {head_bin_preds[n].tolist()}
@@ -362,8 +361,7 @@ class CINC2022Trainer(BaseTrainer):
                 murmur predicted classes:    {head_preds_classes[n].tolist()}
                 murmur label classes:        {head_labels_classes[n].tolist()}
                 ----------------------------------------------
-                """
-                )
+                """)
                 self.log_manager.log_message(msg)
             if "outcome" in input_tensors:
                 head_scalar_preds = all_outputs[0].outcome_output.prob[:log_head_num]
@@ -382,8 +380,7 @@ class CINC2022Trainer(BaseTrainer):
                 ]
                 log_head_num = min(log_head_num, len(head_scalar_preds))
                 for n in range(log_head_num):
-                    msg = textwrap.dedent(
-                        f"""
+                    msg = textwrap.dedent(f"""
                     ----------------------------------------------
                     outcome scalar prediction:    {[round(item, 3) for item in head_scalar_preds[n].tolist()]}
                     outcome binary prediction:    {head_bin_preds[n].tolist()}
@@ -391,8 +388,7 @@ class CINC2022Trainer(BaseTrainer):
                     outcome predicted classes:    {head_preds_classes[n].tolist()}
                     outcome label classes:        {head_labels_classes[n].tolist()}
                     ----------------------------------------------
-                    """
-                    )
+                    """)
                     self.log_manager.log_message(msg)
 
         eval_res = compute_challenge_metrics(

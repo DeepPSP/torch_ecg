@@ -109,8 +109,7 @@ df_weights_expanded = expand_equiv_classes(df_weights)
 
 
 dx_mapping_scored = pd.read_csv(
-    StringIO(
-        """Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,Chapman_Shaoxing,Ningbo,Total,Notes
+    StringIO("""Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,Chapman_Shaoxing,Ningbo,Total,Notes
 atrial fibrillation,164889003,AF,1221,153,2,15,1514,570,1780,0,5255,
 atrial flutter,164890007,AFL,0,54,0,1,73,186,445,7615,8374,
 bundle branch block,6374002,BBB,0,0,1,20,0,116,0,385,522,
@@ -140,8 +139,7 @@ sinus tachycardia,427084000,STach,0,303,11,1,826,1261,1568,5687,9657,
 supraventricular premature beats,63593006,SVPB,0,53,4,0,157,1,0,9,224,We score 284470004 and 63593006 as the same diagnosis.
 t wave abnormal,164934002,TAb,0,22,0,0,2345,2306,1876,5167,11716,
 t wave inversion,59931005,TInv,0,5,1,0,294,812,157,2720,3989,
-ventricular premature beats,17338001,VPB,0,8,0,0,0,357,294,0,659,We score 427172004 and 17338001 as the same diagnosis."""
-    )
+ventricular premature beats,17338001,VPB,0,8,0,0,0,357,294,0,659,We score 427172004 and 17338001 as the same diagnosis.""")
 )
 dx_mapping_scored = dx_mapping_scored.fillna("")
 dx_mapping_scored["SNOMEDCTCode"] = dx_mapping_scored["SNOMEDCTCode"].apply(str)
@@ -154,8 +152,7 @@ dx_mapping_scored = dx_mapping_scored[
 
 
 dx_mapping_unscored = pd.read_csv(
-    StringIO(
-        """Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,Chapman_Shaoxing,Ningbo,Total
+    StringIO("""Dx,SNOMEDCTCode,Abbreviation,CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,Chapman_Shaoxing,Ningbo,Total
 accelerated atrial escape rhythm,233892002,AAR,0,0,0,0,0,0,0,16,16
 abnormal QRS,164951009,abQRS,0,0,0,0,3389,0,0,0,3389
 atrial escape beat,251187003,AED,0,0,0,0,0,0,0,17,17
@@ -258,8 +255,7 @@ paired ventricular premature complexes,251182009,VPVC,0,0,23,0,0,0,0,0,23
 ventricular tachycardia,164895002,VTach,0,1,1,10,0,0,0,0,12
 ventricular trigeminy,251180001,VTrig,0,4,4,0,20,1,8,0,37
 wandering atrial pacemaker,195101003,WAP,0,0,0,0,0,7,2,0,9
-wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,4,68,160"""
-    )
+wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,4,68,160""")
 )
 dx_mapping_unscored["SNOMEDCTCode"] = dx_mapping_unscored["SNOMEDCTCode"].apply(str)
 dx_mapping_unscored["CUSPHNFH"] = dx_mapping_unscored["Chapman_Shaoxing"].values + dx_mapping_unscored["Ningbo"].values

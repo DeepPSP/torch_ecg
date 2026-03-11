@@ -352,8 +352,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
             ]
         )
 
-    @add_docstring(
-        f"""Compute metrics from the output
+    @add_docstring(f"""Compute metrics from the output
 
         Parameters
         ----------
@@ -375,8 +374,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         metrics : WaveDelineationMetrics
             Metrics computed from the output
 
-        """
-    )
+        """)
     def compute_metrics(
         self,
         fs: int,

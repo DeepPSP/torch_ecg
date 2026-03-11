@@ -346,8 +346,7 @@ class CINC2023Trainer(BaseTrainer):
             ]
             log_head_num = min(log_head_num, len(head_scalar_preds))
             for n in range(log_head_num):
-                msg = textwrap.dedent(
-                    f"""
+                msg = textwrap.dedent(f"""
                 ----------------------------------------------
                 cpc scalar prediction:    {[round(item, 3) for item in head_scalar_preds[n].tolist()]}
                 cpc binary prediction:    {head_bin_preds[n].tolist()}
@@ -355,8 +354,7 @@ class CINC2023Trainer(BaseTrainer):
                 cpc predicted classes:    {head_preds_classes[n].tolist()}
                 cpc label classes:        {head_labels_classes[n].tolist()}
                 ----------------------------------------------
-                """
-                )
+                """)
                 self.log_manager.log_message(msg)
 
         eval_res = compute_challenge_metrics(

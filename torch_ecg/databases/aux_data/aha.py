@@ -25,8 +25,7 @@ __all__ = [
 
 
 df_primary_statements = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 CategoryCode,Category,Code,Description
 A,Overall interpretation,1,Normal ECG
 ,,2,Otherwise normal ECG
@@ -145,8 +144,7 @@ N,Pacemaker,180,Atrial-paced complex(es) or rhythm
 ,,188,"Failure to inhibit, ventricular"
 ,,189,"Failure to pace, atrial"
 ,,190,"Failure to pace, ventricular"
-"""
-    ),
+"""),
     dtype=str,
 )
 
@@ -155,8 +153,7 @@ df_primary_statements = df_primary_statements.ffill(axis=0)
 
 
 df_secondary_statements = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 Group,Code,Description
 Suggests,200,Acute pericarditis
 ,201,Acute pulmonary embolism
@@ -186,8 +183,7 @@ Consider,220,Acute ischemia
 ,229,Pulmonary disease
 ,230,Dextrocardia
 ,231,Dextroposition
-"""
-    ),
+"""),
     dtype=str,
 )
 
@@ -196,8 +192,7 @@ df_secondary_statements = df_secondary_statements.ffill(axis=0)
 
 
 df_modifiers = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 Category,Code,Description,
 General,301,Borderline,
 ,303,Increased,
@@ -246,8 +241,7 @@ Repolarization abnormalities,360,≥0.1 mV,
 ,366,Low amplitude,
 ,367,Inversion,
 ,369,Postpacing (anamnestic),
-"""
-    ),
+"""),
     dtype=str,
 )
 
@@ -256,8 +250,7 @@ df_modifiers = df_modifiers.ffill(axis=0)
 
 
 df_comparison_statements = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 Code,Statement,Criteria
 400,No significant change,"Intervals (PR, QRS, QTc) remain normal or within 10% of a previously abnormal value"
 ,,No new or deleted diagnoses with the exception of normal variant diagnoses
@@ -272,8 +265,7 @@ Code,Statement,Criteria
 ,,Change in QTc >60 ms
 405,Change in clinical status,"New or deleted diagnosis from Axis and Voltage, Chamber Hypertrophy, or Enlargement primary statement categories or “Suggests…” secondary statement category"
 406,Change in interpretation without significant change in waveform,"Used when a primary or secondary statement is added or removed despite no real change in the tracing; ie, an interpretive disagreement exists between the readers of the first and second ECGs"
-"""
-    ),
+"""),
     dtype=str,
 )
 
@@ -282,22 +274,19 @@ df_comparison_statements = df_comparison_statements.ffill(axis=0)
 
 
 df_convenience_statements = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 Code,Statement
 500,Nonspecific ST-T abnormality
 501,ST elevation
 502,ST depression
 503,LVH with ST-T changes
-"""
-    ),
+"""),
     dtype=str,
 )
 
 
 df_secondary_primary_statement_pairing_rules = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 Secondary Code,May Accompany These Primary Codes
 200,145-147
 201,"21, 105, 109, 120, 131, 141, 145-147"
@@ -327,15 +316,13 @@ Secondary Code,May Accompany These Primary Codes
 229,"109, 120, 122-123, 125, 128, 131, 141, 143"
 230,"128, 131"
 231,128
-"""
-    ),
+"""),
     dtype=str,
 )
 
 
 df_general_modifier_primary_statement_pairing_rules = pd.read_csv(
-    io.StringIO(
-        """
+    io.StringIO("""
 General Modifier Code,May (May Not) Accompany These Primary Codes or May Be Between Codes in These Categories or Groups of Categories,May/May Not,Location
 301,"1-20, 24-76, 81, 83-106, 108, 122-124",May not,b
 302,"1-3, 12-16, 80-82, 111-130, 145-152",May not,"b, i"
@@ -356,8 +343,7 @@ General Modifier Code,May (May Not) Accompany These Primary Codes or May Be Betw
 318,"C, D, E, F, G, N, H, I, J, K, L, M",May,i
 319,"C, D, E, F, G, N, 100, J, K, L, M",May,i
 321,"40, 55, 56, 145-147",May,b
-"""
-    ),
+"""),
     dtype=str,
 )
 

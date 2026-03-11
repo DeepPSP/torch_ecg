@@ -1333,14 +1333,10 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
-            print(
-                nildent(
-                    f"""
+            print(nildent(f"""
                 train set saved to \n\042{str(train_file)}\042
                 test set saved to \n\042{str(test_file)}\042
-                """
-                )
-            )
+                """))
         else:
             train_set = json.loads(train_file.read_text())
             test_set = json.loads(test_file.read_text())
