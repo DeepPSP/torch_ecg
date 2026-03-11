@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/resnet';</script>
@@ -458,10 +460,10 @@ document.write(`
 <span class="sd">        If is None, no attention mechanism is used.</span>
 <span class="sd">        keys:</span>
 
-<span class="sd">            - name: str,</span>
-<span class="sd">              can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
-<span class="sd">            - pos: int,</span>
-<span class="sd">              position of the attention mechanism.</span>
+<span class="sd">        - name: str,</span>
+<span class="sd">          can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">        - pos: int,</span>
+<span class="sd">          position of the attention mechanism.</span>
 
 <span class="sd">        Other keys are specific to the attention mechanism.</span>
 <span class="sd">    config : dict</span>
@@ -692,10 +694,10 @@ document.write(`
 <span class="sd">        If is  None, no attention mechanism is used.</span>
 <span class="sd">        Keys:</span>
 
-<span class="sd">            - name: str,</span>
-<span class="sd">              can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
-<span class="sd">            - pos: int,</span>
-<span class="sd">              position of the attention mechanism.</span>
+<span class="sd">        - name: str,</span>
+<span class="sd">          can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">        - pos: int,</span>
+<span class="sd">          position of the attention mechanism.</span>
 
 <span class="sd">        Other keys are specific to the attention mechanism.</span>
 <span class="sd">    config : dict</span>
@@ -1040,25 +1042,25 @@ document.write(`
 <span class="sd">        Hyper-parameters of the Module, ref. corr. config file.</span>
 <span class="sd">        keyword arguments that must be set:</span>
 
-<span class="sd">            - bias: bool,</span>
-<span class="sd">              if True, each convolution will have a bias term.</span>
-<span class="sd">            - num_blocks: sequence of int,</span>
-<span class="sd">              number of building blocks in each macro block.</span>
-<span class="sd">            - filter_lengths: int or sequence of int or sequence of sequences of int,</span>
-<span class="sd">              filter length(s) (kernel size(s)) of the convolutions,</span>
-<span class="sd">              with granularity to the whole network, to each macro block,</span>
-<span class="sd">              or to each building block.</span>
-<span class="sd">            - subsample_lengths: int or sequence of int or sequence of sequences of int,</span>
-<span class="sd">              subsampling length(s) (ratio(s)) of all blocks,</span>
-<span class="sd">              with granularity to the whole network, to each macro block,</span>
-<span class="sd">              or to each building block,</span>
-<span class="sd">              the former 2 subsample at the first building block.</span>
-<span class="sd">            - groups: int,</span>
-<span class="sd">              connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">            - stem: dict,</span>
-<span class="sd">              other parameters that can be set for the input stem.</span>
-<span class="sd">            - block: dict,</span>
-<span class="sd">              other parameters that can be set for the building blocks.</span>
+<span class="sd">        - bias: bool,</span>
+<span class="sd">          if True, each convolution will have a bias term.</span>
+<span class="sd">        - num_blocks: sequence of int,</span>
+<span class="sd">          number of building blocks in each macro block.</span>
+<span class="sd">        - filter_lengths: int or sequence of int or sequence of sequences of int,</span>
+<span class="sd">          filter length(s) (kernel size(s)) of the convolutions,</span>
+<span class="sd">          with granularity to the whole network, to each macro block,</span>
+<span class="sd">          or to each building block.</span>
+<span class="sd">        - subsample_lengths: int or sequence of int or sequence of sequences of int,</span>
+<span class="sd">          subsampling length(s) (ratio(s)) of all blocks,</span>
+<span class="sd">          with granularity to the whole network, to each macro block,</span>
+<span class="sd">          or to each building block,</span>
+<span class="sd">          the former 2 subsample at the first building block.</span>
+<span class="sd">        - groups: int,</span>
+<span class="sd">          connection pattern (of channels) of the inputs and outputs.</span>
+<span class="sd">        - stem: dict,</span>
+<span class="sd">          other parameters that can be set for the input stem.</span>
+<span class="sd">        - block: dict,</span>
+<span class="sd">          other parameters that can be set for the building blocks.</span>
 
 <span class="sd">        For a full list of configurable parameters, ref. corr. config file.</span>
 

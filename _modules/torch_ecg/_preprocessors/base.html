@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/_preprocessors/base';</script>
@@ -397,11 +399,11 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">biosppy.signals.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">filter_signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">median_filter</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span>
@@ -429,38 +431,38 @@ document.write(`
 <div class="viewcode-block" id="PreProcessor.apply">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor.apply">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to `sig`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sig : numpy.ndarray</span>
 <span class="sd">            The ECG signal, can be</span>
-<span class="sd">                - 1d array, which is a single-lead ECG;</span>
-<span class="sd">                - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
-<span class="sd">                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
-<span class="sd">        fs : numbers.Real</span>
+<span class="sd">            - 1d array, which is a single-lead ECG;</span>
+<span class="sd">            - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
+<span class="sd">            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
+<span class="sd">        fs : int or float</span>
 <span class="sd">            Sampling frequency of the ECG signal.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-    <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">apply</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">apply</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of :meth:`self.apply`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_sig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_sig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check validity of the signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sig : numpy.ndarray</span>
 <span class="sd">            The ECG signal, can be</span>
-<span class="sd">                - 1d array, which is a single-lead ECG;</span>
-<span class="sd">                - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
-<span class="sd">                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
+<span class="sd">            - 1d array, which is a single-lead ECG;</span>
+<span class="sd">            - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
+<span class="sd">            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
@@ -476,14 +478,14 @@ document.write(`
 <div class="viewcode-block" id="preprocess_multi_lead_signal">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html#torch_ecg._preprocessors.preprocess_multi_lead_signal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_multi_lead_signal</span><span class="p">(</span>
-    <span class="n">raw_sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">raw_sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">sig_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-    <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for multi-lead ECG signal (with units in mV).</span>
 
 <span class="sd">    preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.</span>
@@ -493,19 +495,19 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    raw_sig : numpy.ndarray</span>
 <span class="sd">        The raw ECG signal, with units in mV.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int or float</span>
 <span class="sd">        Sampling frequency of `raw_sig`.</span>
 <span class="sd">    sig_fmt : str, default &quot;channel_first&quot;</span>
 <span class="sd">        Format of the multi-lead ECG signal,</span>
 <span class="sd">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
 <span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;).</span>
-<span class="sd">    bl_win : List[numbers.Real], optional</span>
+<span class="sd">    bl_win : List[Union[int, float]], optional</span>
 <span class="sd">        Window (units in second) of baseline removal</span>
 <span class="sd">        using :meth:`~scipy.ndimage.median_filter`,</span>
 <span class="sd">        the first is the shorter one, the second the longer one,</span>
 <span class="sd">        a typical pair is ``[0.2, 0.6]``.</span>
 <span class="sd">        If is None or empty, baseline removal will not be performed.</span>
-<span class="sd">    band_fs : List[numbers.Real], optional</span>
+<span class="sd">    band_fs : List[Union[int, float]], optional</span>
 <span class="sd">        Frequency band of the bandpass filter,</span>
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
@@ -533,9 +535,9 @@ document.write(`
     <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;multi-lead signal format `</span><span class="si">{</span><span class="n">sig_fmt</span><span class="si">}</span><span class="s2">` not supported&quot;</span>
     <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
         <span class="c1"># might have a batch dimension at the first axis</span>
-        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
+        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
+        <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="c1"># remove baseline</span>
     <span class="k">if</span> <span class="n">bl_win</span><span class="p">:</span>
@@ -592,13 +594,13 @@ document.write(`
 <div class="viewcode-block" id="preprocess_single_lead_signal">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.preprocess_single_lead_signal.html#torch_ecg._preprocessors.preprocess_single_lead_signal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_single_lead_signal</span><span class="p">(</span>
-    <span class="n">raw_sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Real</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">raw_sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for single lead ECG signal (with units in mV).</span>
 
 <span class="sd">    Preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.</span>
@@ -607,15 +609,15 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    raw_sig : numpy.ndarray</span>
 <span class="sd">        Raw ECG signal, with units in mV.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int or float</span>
 <span class="sd">        Sampling frequency of `raw_sig`.</span>
-<span class="sd">    bl_win : list (of 2 numbers.Real), optional</span>
+<span class="sd">    bl_win : list (of 2 int or float), optional</span>
 <span class="sd">        Window (units in second) of baseline removal</span>
 <span class="sd">        using :meth:`~scipy.ndimage.median_filter`,</span>
 <span class="sd">        the first is the shorter one, the second the longer one,</span>
 <span class="sd">        a typical pair is ``[0.2, 0.6]``.</span>
 <span class="sd">        If is None or empty, baseline removal will not be performed.</span>
-<span class="sd">    band_fs : list of numbers.Real, optional</span>
+<span class="sd">    band_fs : list of int or float, optional</span>
 <span class="sd">        Frequency band of the bandpass filter,</span>
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
@@ -636,7 +638,7 @@ document.write(`
 <span class="sd">    e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
+    <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">assert</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;single-lead signal should be 1d array&quot;</span>
 
     <span class="c1"># remove baseline</span>

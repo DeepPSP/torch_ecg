@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/ludb';</script>
@@ -397,13 +399,13 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">wfdb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">EAK</span>
@@ -690,8 +692,6 @@ document.write(`
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>
@@ -717,7 +717,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
 <span class="sd">        and store them (path, metadata, etc.) in some private attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -794,7 +794,7 @@ document.write(`
 
 <div class="viewcode-block" id="LUDB.load_ann">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.LUDB.html#torch_ecg.databases.LUDB.load_ann">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_ann</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_ann</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -835,28 +835,28 @@ document.write(`
             <span class="n">df_lead_ann</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="n">df_lead_ann</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-                <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">peak_inds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">peak_inds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                 <span class="k">if</span> <span class="n">peak_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                    <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">if</span> <span class="n">symbols</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                 <span class="k">elif</span> <span class="n">peak_idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                    <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">if</span> <span class="n">symbols</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">symbols</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">if</span> <span class="n">symbols</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">sample</span><span class="p">[</span><span class="n">peak_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>
+                        <span class="n">df_lead_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;peak&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="c1"># df_lead_ann[&quot;onset&quot;] = ann.sample[np.where(symbols==&quot;(&quot;)[0]]</span>
             <span class="c1"># df_lead_ann[&quot;offset&quot;] = ann.sample[np.where(symbols==&quot;)&quot;)[0]]</span>
 
@@ -912,7 +912,7 @@ document.write(`
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
         <span class="n">class_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the wave delineation in the form of masks.</span>
 
 <span class="sd">        Parameters</span>
@@ -957,11 +957,11 @@ document.write(`
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.LUDB.html#torch_ecg.databases.LUDB.from_masks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_masks</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">masks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">masks</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
         <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">class_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert masks into lists of waveforms.</span>
 
@@ -979,7 +979,7 @@ document.write(`
 <span class="sd">        class_map : dict, optional</span>
 <span class="sd">            Custom class map.</span>
 <span class="sd">            If not set, `self.class_map` will be used.</span>
-<span class="sd">        fs : numbers.Real, optional</span>
+<span class="sd">        fs : float or int, optional</span>
 <span class="sd">            Sampling frequency of the signal corresponding to the `masks`,</span>
 <span class="sd">            If is None, `self.fs` will be used,</span>
 <span class="sd">            to compute `duration` of the ECG waveforms.</span>
@@ -1070,15 +1070,15 @@ document.write(`
         <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;adc_gain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">adc_gain</span>
         <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;record_fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">fmt</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span> <span class="k">if</span> <span class="s2">&quot;&lt;age&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span> <span class="k">if</span> <span class="s2">&quot;&lt;age&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span> <span class="k">if</span> <span class="s2">&quot;&lt;sex&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span> <span class="k">if</span> <span class="s2">&quot;&lt;sex&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">d_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;&lt;diagnoses&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;diagnoses&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">d_start</span><span class="p">:]</span>
+        <span class="n">d_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;&lt;diagnoses&gt;&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># type: ignore</span>
+        <span class="n">header_dict</span><span class="p">[</span><span class="s2">&quot;diagnoses&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header_reader</span><span class="o">.</span><span class="n">comments</span><span class="p">[</span><span class="n">d_start</span><span class="p">:]</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">header_dict</span>
 
 <div class="viewcode-block" id="LUDB.load_subject_info">
@@ -1102,19 +1102,19 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">ID</span> <span class="o">==</span> <span class="n">rec</span><span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">ID</span> <span class="o">==</span> <span class="n">rec</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
         <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">assert</span> <span class="n">fields</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;No field `</span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">`&quot;</span>
+                <span class="k">assert</span> <span class="n">fields</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;No field `</span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">`&quot;</span>  <span class="c1"># type: ignore</span>
                 <span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="n">fields</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span>
-                    <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-                <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;No field(s) </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;No field(s) </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_subject_info</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore</span>
                 <span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">info</span></div>
 
@@ -1124,7 +1124,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">same_range</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1169,29 +1169,30 @@ document.write(`
 <span class="sd">        Contributors: Jeethan, and WEN Hao</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipleLocator</span>
+
+        <span class="n">MultipleLocator</span><span class="o">.</span><span class="n">MAXTICKS</span> <span class="o">=</span> <span class="mi">3000</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-
-            <span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="o">.</span><span class="n">MAXTICKS</span> <span class="o">=</span> <span class="mi">3000</span>
 
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">leads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;`leads` must be specified when `data` is given&quot;</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="n">_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_leads</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span>
-            <span class="n">_lead_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">_leads</span><span class="p">]</span>
+            <span class="n">_lead_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">_leads</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_leads</span><span class="p">)</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;number of leads must match data&quot;</span>
             <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input data is auto detected to have units in </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input data is auto detected to have units in </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mv&quot;</span><span class="p">:</span>
                 <span class="n">_data</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_leads</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span>
-            <span class="n">_lead_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">_leads</span><span class="p">]</span>
-            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;μV&quot;</span><span class="p">)[</span><span class="n">_lead_indices</span><span class="p">]</span>
+            <span class="n">_lead_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">_leads</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;μV&quot;</span><span class="p">)[</span><span class="n">_lead_indices</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
 
         <span class="k">if</span> <span class="n">same_range</span><span class="p">:</span>
             <span class="n">y_ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">_data</span><span class="p">))</span> <span class="o">+</span> <span class="mi">100</span>
@@ -1248,12 +1249,12 @@ document.write(`
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
             <span class="c1"># NOTE that `Locator` has default `MAXTICKS` equal to 1000</span>
             <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
             <span class="c1"># add extra info. to legend</span>
             <span class="c1"># https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib</span>
@@ -1290,10 +1291,10 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_metrics</span><span class="p">(</span>
-    <span class="n">truth_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-    <span class="n">pred_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">truth_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span>
+    <span class="n">pred_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span>
     <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute metrics for the wave delineation task.</span>
@@ -1314,7 +1315,7 @@ document.write(`
 <span class="sd">    class_map : Dict[str, int]</span>
 <span class="sd">        Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
 <span class="sd">        the keys should contain &quot;pwave&quot;, &quot;qrs&quot;, &quot;twave&quot;.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the masks,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        hence the error and standard deviations of errors.</span>
@@ -1354,7 +1355,7 @@ document.write(`
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_metrics_waveform</span><span class="p">(</span>
     <span class="n">truth_waveforms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]],</span>
     <span class="n">pred_waveforms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the sensitivity, precision, f1_score, mean error</span>
@@ -1370,7 +1371,7 @@ document.write(`
 <span class="sd">        The predictions corresponding to `truth_waveforms`.</span>
 <span class="sd">        Each element is a sequence of :class:`ECGWaveForm`</span>
 <span class="sd">        from the same sample.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the waveforms,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        hence the error and standard deviations of errors.</span>
@@ -1469,7 +1470,7 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_metrics_waveform</span><span class="p">(</span>
-    <span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span>
+    <span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    compute the sensitivity, precision, f1_score, mean error</span>
@@ -1482,7 +1483,7 @@ document.write(`
 <span class="sd">        The ground truth.</span>
 <span class="sd">    preds : Sequence[ECGWaveForm]</span>
 <span class="sd">        The predictions corresponding to `truths`,</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the waveforms,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        hence the error and standard deviations of errors.</span>
@@ -1554,17 +1555,17 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_metrics_base</span><span class="p">(</span>
-    <span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span>
+    <span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The base function for computing the metrics.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    truths : Sequence[Real]</span>
+<span class="sd">    truths : Sequence[Union[float, int]]</span>
 <span class="sd">        Ground truth of indices of corresponding critical points.</span>
-<span class="sd">    preds : Sequence[Real]</span>
+<span class="sd">    preds : Sequence[Union[float, int]]</span>
 <span class="sd">        Predicted indices of corresponding critical points.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the critical points,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        hence the error and standard deviations of errors.</span>
@@ -1611,7 +1612,7 @@ document.write(`
     <span class="n">mean_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fs</span>
     <span class="n">standard_deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fs</span>
 
-    <span class="k">return</span> <span class="p">(</span>
+    <span class="k">return</span> <span class="p">(</span>  <span class="c1"># type: ignore</span>
         <span class="n">truth_positive</span><span class="p">,</span>
         <span class="n">false_negative</span><span class="p">,</span>
         <span class="n">false_positive</span><span class="p">,</span>

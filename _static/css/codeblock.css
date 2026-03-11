@@ -1,0 +1,96 @@
+div.highlight {
+  position: relative;
+  display: flex;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+div.highlight .custom-linenos {
+  flex-shrink: 0;
+  background: #fafafa;
+  border-right: 1px solid #eee;
+  color: #999;
+  text-align: right;
+  padding: 12px 8px;
+  font-family: monospace;
+  user-select: none;
+  line-height: 1.5;
+  white-space: pre;
+  min-width: 36px;
+}
+
+html[data-theme="dark"] div.highlight .custom-linenos {
+  background: #2a2a2a;
+  border-right-color: #444;
+  color: #aaa;
+}
+
+div.highlight pre {
+  flex: 1;
+  margin: 0;
+  padding: 12px 16px;
+  overflow-x: auto;
+  white-space: pre;
+  background: transparent;
+  line-height: 1.5;
+}
+
+div.highlight pre.code-wrapped {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+.code-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 50;
+}
+
+.code-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.1s ease;
+  width: 26px;
+  height: 26px;
+}
+.code-icon-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333;
+}
+.code-icon-btn.active {
+  background-color: #e8f4e8;
+  border-color: #8cc08c;
+  color: #2d7d2d;
+}
+
+.copy-tooltip {
+  position: fixed;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 9999;
+}
+.copy-tooltip.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-3px);
+}

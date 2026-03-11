@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/ecg_seq_lab_net';</script>
@@ -537,7 +539,7 @@ document.write(`
 <span class="sd">            The config dict. (if `return_config` is `True`)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">v1_model</span><span class="p">,</span> <span class="n">train_config</span> <span class="o">=</span> <span class="n">ECG_SEQ_LAB_NET_v1</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="n">v1_ckpt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">v1_model</span><span class="p">,</span> <span class="n">train_config</span> <span class="o">=</span> <span class="n">ECG_SEQ_LAB_NET_v1</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="n">v1_ckpt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">v1_model</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="n">v1_model</span><span class="o">.</span><span class="n">n_leads</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">v1_model</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">v1_model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">v1_model</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>

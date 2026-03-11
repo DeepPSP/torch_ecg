@@ -19,7 +19,12 @@ Changed
 
 - Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
   support 2D and 3D input signals.
+- Use `save_file` and `load_file` from the `safetensors` package for saving
+  and loading files in place of `torch.save` and `torch.load` in the `CkptMixin`
+  class in `torch_ecg.utils.utils_nn`.
 - Add retry mechanism to the `http_get` function in
+  `torch_ecg.utils.download` module.
+- Add length verification in the `http_get` function in
   `torch_ecg.utils.download` module.
 
 Deprecated
@@ -42,6 +47,14 @@ Fixed
 - Fix potential errors when deepcopying a `torch_ecg.cfg.CFG` object:
   previously, deepcopying such an object like `CFG({"a": {1: 0.1, 2: 0.2}})`
   would result in an error.
+- Fix potential bugs in contextmanager `torch_ecg.utils.timeout`: restore the previously
+  installed SIGALRM handler after use, cancel any pending alarm reliably in a finally block,
+  avoid installing a handler when duration <= 0 (preventing unintended global side-effects),
+  and thereby eliminate spurious `TimeoutError` exceptions that could be triggered later by
+  unrelated signal.alarm calls due to the old implementation not reinstating the original handler.
+- Fix bugs in utility function `torch_ecg.utils.make_serializable`: the previous implementation
+  does not drop some types of unserializable items correctly. Two additional parameters
+  `drop_unserializable` and `drop_paths` are added.
 
 Security
 ~~~~~~~~

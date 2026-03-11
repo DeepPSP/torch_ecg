@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/_preprocessors/normalize';</script>
@@ -398,7 +400,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span>
@@ -436,11 +438,11 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    method : {&quot;naive&quot;, &quot;min-max&quot;, &quot;z-score&quot;}, default &quot;z-score&quot;</span>
 <span class="sd">        Normalization method, case insensitive.</span>
-<span class="sd">    mean : numbers.Real or numpy.ndarray, default 0.0</span>
+<span class="sd">    mean : float or int or numpy.ndarray, default 0.0</span>
 <span class="sd">        Mean value of the normalized signal,</span>
 <span class="sd">        or mean values for each lead of the normalized signal.</span>
 <span class="sd">        Useless if `method` is &quot;min-max&quot;.</span>
-<span class="sd">    std : numbers.Real or numpy.ndarray, default 1.0</span>
+<span class="sd">    std : float or int or numpy.ndarray, default 1.0</span>
 <span class="sd">        Standard deviation of the normalized signal,</span>
 <span class="sd">        or standard deviations for each lead of the normalized signal.</span>
 <span class="sd">        Useless if `method` is &quot;min-max&quot;.</span>
@@ -463,8 +465,8 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;naive&quot;</span><span class="p">,</span> <span class="s2">&quot;min-max&quot;</span><span class="p">,</span> <span class="s2">&quot;z-score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;z-score&quot;</span><span class="p">,</span>
-        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">per_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -488,17 +490,17 @@ document.write(`
 
 <div class="viewcode-block" id="Normalize.apply">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize.apply">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to `sig`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sig : numpy.ndarray</span>
 <span class="sd">            The ECG signal, can be</span>
-<span class="sd">                - 1d array, which is a single-lead ECG;</span>
-<span class="sd">                - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
-<span class="sd">                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
-<span class="sd">        fs : numbers.Real</span>
+<span class="sd">            - 1d array, which is a single-lead ECG;</span>
+<span class="sd">            - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
+<span class="sd">            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
+<span class="sd">        fs : float or int</span>
 <span class="sd">            Sampling frequency of the ECG signal.</span>
 <span class="sd">            **NOT** used currently.</span>
 
@@ -513,7 +515,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_sig</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">normalized_sig</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span>
             <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">),</span>
-            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
             <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
             <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">,</span>
             <span class="n">sig_fmt</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
@@ -593,9 +595,9 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mean : numbers.Real or numpy.ndarray, default 0.0</span>
+<span class="sd">    mean : float or int or numpy.ndarray, default 0.0</span>
 <span class="sd">        Value(s) to be subtracted.</span>
-<span class="sd">    std : numbers.Real or numpy.ndarray, default 1.0</span>
+<span class="sd">    std : float or int or numpy.ndarray, default 1.0</span>
 <span class="sd">        Value(s) to be divided.</span>
 <span class="sd">    per_channel : bool, default False</span>
 <span class="sd">        If True, normalization will be done per channel.</span>
@@ -615,8 +617,8 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">per_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -652,10 +654,10 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mean : numbers.Real or numpy.ndarray, default 0.0</span>
+<span class="sd">    mean : float or int or numpy.ndarray, default 0.0</span>
 <span class="sd">        Mean value of the normalized signal,</span>
 <span class="sd">        or mean values for each lead of the normalized signal.</span>
-<span class="sd">    std : numbers.Real or numpy.ndarray, default 1.0</span>
+<span class="sd">    std : float or int or numpy.ndarray, default 1.0</span>
 <span class="sd">        Standard deviation of the normalized signal,</span>
 <span class="sd">        or standard deviations for each lead of the normalized signal.</span>
 <span class="sd">    per_channel : bool, default False</span>
@@ -676,8 +678,8 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">per_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

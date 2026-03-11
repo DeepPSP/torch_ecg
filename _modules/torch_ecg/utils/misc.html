@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/misc';</script>
@@ -400,7 +402,6 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
@@ -409,14 +410,15 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="kn">import</span> <span class="n">glob</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span><span class="p">,</span> <span class="n">Real</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">PurePath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bib_lookup</span><span class="w"> </span><span class="kn">import</span> <span class="n">CitationMixin</span> <span class="k">as</span> <span class="n">_CitationMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">deprecated</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">_DATA_CACHE</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 
@@ -480,10 +482,10 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">rec_ext</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*.</span><span class="si">{</span><span class="n">rec_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*.</span><span class="si">{</span><span class="n">rec_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">rec_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">rec_ext</span><span class="p">)]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">rec_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">rec_ext</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
     <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">res</span>
@@ -570,32 +572,32 @@ document.write(`
         <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rec_patterns</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-    <span class="n">_db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># make absolute</span>
+    <span class="n">_db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_dir</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
     <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">_db_dir</span><span class="p">]</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">new_roots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">:</span>
             <span class="n">tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">res</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)]</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rec_patterns</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">search</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)]</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">search</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
             <span class="n">new_roots</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tmp</span> <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
         <span class="n">roots</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">new_roots</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">with_suffix</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rec_patterns</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">with_suffix</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>  <span class="c1"># type: ignore</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
-            <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">_db_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>  <span class="c1"># type: ignore</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -683,9 +685,13 @@ document.write(`
 
 
 
+<span class="n">_TRUE_SET</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">}</span>
+<span class="n">_FALSE_SET</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">}</span>
+
+
 <div class="viewcode-block" id="str2bool">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.str2bool.html#torch_ecg.utils.str2bool">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">str2bool</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">str2bool</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a &quot;boolean&quot; value possibly</span>
 <span class="sd">    in the format of :class:`str` to :class:`bool`.</span>
 
@@ -693,8 +699,17 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    v : str or bool</span>
+<span class="sd">    v : str or bool or None</span>
 <span class="sd">        The &quot;boolean&quot; value.</span>
+<span class="sd">    default : bool, default False</span>
+<span class="sd">        The default value to return if `v` is ``None``,</span>
+<span class="sd">        or if `strict` is ``False`` and `v` could not be converted.</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
+<span class="sd">    strict : bool, default True</span>
+<span class="sd">        Whether to raise error if `v` could not be converted.</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -707,19 +722,26 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">v</span>
-    <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">):</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">):</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Boolean value expected.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">b</span></div>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected str|bool|None, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="n">v_norm</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">v_norm</span> <span class="ow">in</span> <span class="n">_TRUE_SET</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">v_norm</span> <span class="ow">in</span> <span class="n">_FALSE_SET</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean value expected, got </span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">default</span></div>
 
 
 
 <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `np.diff` instead.&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">diff_with_step</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diff_with_step</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute ``a[n+step] - a[n]`` for all valid `n`.</span>
 
 <span class="sd">    Parameters</span>
@@ -741,14 +763,14 @@ document.write(`
     <span class="k">return</span> <span class="n">d</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">ms2samples</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ms2samples</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert time duration in ms to number of samples.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    t : numbers.Real</span>
+<span class="sd">    t : float or int</span>
 <span class="sd">        Time duration in ms.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency.</span>
 
 <span class="sd">    Returns</span>
@@ -758,23 +780,23 @@ document.write(`
 <span class="sd">        with sampling frequency `fs`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">//</span> <span class="mi">1000</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">n_samples</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">samples2ms</span><span class="p">(</span><span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">samples2ms</span><span class="p">(</span><span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert number of samples to time duration in ms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    n_samples : int</span>
 <span class="sd">        Number of sample points.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int</span>
 <span class="sd">        Sampling frequency.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    t : numbers.Real</span>
+<span class="sd">    t : float</span>
 <span class="sd">        Time duration in ms converted from `n_samples`,</span>
 <span class="sd">        with sampling frequency `fs`.</span>
 
@@ -784,8 +806,8 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_single_lead</span><span class="p">(</span>
-    <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -809,8 +831,9 @@ document.write(`
 <span class="sd">    None</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipleLocator</span>
+
     <span class="n">palette</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;p_waves&quot;</span><span class="p">:</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
         <span class="s2">&quot;qrs&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
@@ -830,12 +853,12 @@ document.write(`
     <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
     <span class="c1"># NOTE that `Locator` has default `MAXTICKS` equal to 1000</span>
     <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 
     <span class="n">waves</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;waves&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;p_waves&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;qrs&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;t_waves&quot;</span><span class="p">:</span> <span class="p">[]})</span>
@@ -891,13 +914,13 @@ document.write(`
         <span class="n">log_file</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">-log-</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">.txt&quot;</span>
-        <span class="n">log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="n">log_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">-log-</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">.txt&quot;</span>  <span class="c1"># type: ignore</span>
+        <span class="n">log_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="n">log_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">log_dir</span>  <span class="c1"># type: ignore</span>
         <span class="n">log_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">log_file</span> <span class="o">=</span> <span class="n">log_dir</span> <span class="o">/</span> <span class="n">log_file</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="n">log_dir</span> <span class="o">/</span> <span class="n">log_file</span>  <span class="c1"># type: ignore</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;log file path: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">log_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_name</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">log_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_name</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="c1"># if a logger with the same name already exists, remove it</span>
     <span class="k">if</span> <span class="n">log_name</span> <span class="ow">in</span> <span class="n">logging</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">log_name</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>
@@ -912,21 +935,21 @@ document.write(`
         <span class="n">c_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># print(&quot;level of `f_handler` is set DEBUG&quot;)</span>
-            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># print(&quot;level of `c_handler` is set INFO&quot;)</span>
         <span class="n">c_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># print(&quot;level of `f_handler` is set DEBUG&quot;)</span>
-            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># print(&quot;level of `c_handler` is set WARNING&quot;)</span>
         <span class="n">c_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># print(&quot;level of `f_handler` is set INFO&quot;)</span>
-            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
     <span class="n">c_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -935,8 +958,8 @@ document.write(`
 
     <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">f_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">f_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">f_format</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">f_handler</span><span class="p">)</span>
+        <span class="n">f_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">f_format</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">f_handler</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">return</span> <span class="n">logger</span></div>
 
@@ -1011,7 +1034,7 @@ document.write(`
 <span class="sd">        Scalars summary, in the format of a :class:`~pandas.DataFrame`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar_startswith</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">field_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">scalar_startswith</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1028,7 +1051,8 @@ document.write(`
             <span class="n">field</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
             <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-            <span class="n">new_line</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">if</span> <span class="n">new_line</span><span class="p">:</span>
+                <span class="n">new_line</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
     <span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">summary</span>
@@ -1054,7 +1078,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.python.summary.event_accumulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventAccumulator</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.python.summary.event_accumulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventAccumulator</span>  <span class="c1"># type: ignore</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">tensorboard.backend.event_processing.event_accumulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventAccumulator</span>
@@ -1075,7 +1099,7 @@ document.write(`
         <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wall_time&quot;</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">]</span>
         <span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
     <span class="k">return</span> <span class="n">summary</span>
 
 
@@ -1230,15 +1254,15 @@ document.write(`
     <span class="n">closing_indent</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;extra_repr_keys&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()])</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()])</span>  <span class="c1"># type: ignore</span>
         <span class="n">extra_str</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;(</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="o">+</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">k</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">align</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;center&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;c&quot;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">default_class_repr</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;c.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span><span class="n">align</span><span class="p">,</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
                 <span class="p">]</span>
             <span class="p">)</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">closing_indent</span><span class="si">}</span><span class="se">\n</span><span class="s2">)&quot;</span>
@@ -1278,14 +1302,16 @@ document.write(`
     <span class="c1"># backwar compatibility</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">&quot;database_citation.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">&quot;database_citation.csv&quot;</span><span class="p">)</span>
+            <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">&quot;database_citation.csv&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">encoding_errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">:</span>
             <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;citation&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_old</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;citation&quot;</span><span class="p">]):</span>
             <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;citation&quot;</span><span class="p">])</span>
         <span class="n">df_old</span> <span class="o">=</span> <span class="n">df_old</span><span class="p">[[</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;citation&quot;</span><span class="p">]]</span>
         <span class="k">if</span> <span class="n">_CitationMixin</span><span class="o">.</span><span class="n">citation_cache</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">_CitationMixin</span><span class="o">.</span><span class="n">citation_cache</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">_CitationMixin</span><span class="o">.</span><span class="n">citation_cache</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">encoding_errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;citation&quot;</span><span class="p">])</span>
         <span class="c1"># merge the old and new tables and drop duplicates</span>
@@ -1306,7 +1332,7 @@ document.write(`
         <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">print_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get bib citation from DOIs.</span>
 
 <span class="sd">        Overrides the default method to make the `print_result` argument</span>
@@ -1373,7 +1399,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;verbose&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ema&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ema&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute moving average.</span>
 
 <span class="sd">        Parameters</span>
@@ -1382,13 +1408,11 @@ document.write(`
 <span class="sd">            The series data to compute its moving average.</span>
 <span class="sd">        method : str</span>
 <span class="sd">            method for computing moving average, can be one of</span>
-
-<span class="sd">                - &quot;sma&quot;, &quot;simple&quot;, &quot;simple moving average&quot;;</span>
-<span class="sd">                - &quot;ema&quot;, &quot;ewma&quot;, &quot;exponential&quot;, &quot;exponential weighted&quot;,</span>
-<span class="sd">                  &quot;exponential moving average&quot;, &quot;exponential weighted moving average&quot;;</span>
-<span class="sd">                - &quot;cma&quot;, &quot;cumulative&quot;, &quot;cumulative moving average&quot;;</span>
-<span class="sd">                - &quot;wma&quot;, &quot;weighted&quot;, &quot;weighted moving average&quot;.</span>
-
+<span class="sd">            - &quot;sma&quot;, &quot;simple&quot;, &quot;simple moving average&quot;;</span>
+<span class="sd">            - &quot;ema&quot;, &quot;ewma&quot;, &quot;exponential&quot;, &quot;exponential weighted&quot;,</span>
+<span class="sd">              &quot;exponential moving average&quot;, &quot;exponential weighted moving average&quot;;</span>
+<span class="sd">            - &quot;cma&quot;, &quot;cumulative&quot;, &quot;cumulative moving average&quot;;</span>
+<span class="sd">            - &quot;wma&quot;, &quot;weighted&quot;, &quot;weighted moving average&quot;.</span>
 <span class="sd">        kwargs : dict, optional</span>
 <span class="sd">            Keyword arguments for the specific moving average method.</span>
 
@@ -1420,7 +1444,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_sma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple moving average.</span>
 
 <span class="sd">        Parameters</span>
@@ -1456,13 +1480,13 @@ document.write(`
             <span class="n">smoothed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="n">smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">smoothed</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
-            <span class="n">smoothed</span><span class="p">[</span><span class="n">hw</span><span class="p">:</span><span class="o">-</span><span class="n">hw</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothed</span><span class="p">[</span><span class="n">window</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span>
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hw</span><span class="p">):</span>
-                <span class="n">smoothed</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span> <span class="n">n</span> <span class="o">+</span> <span class="n">hw</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-                <span class="n">smoothed</span><span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="n">hw</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:])</span>
+            <span class="n">smoothed</span><span class="p">[</span><span class="n">hw</span><span class="p">:</span><span class="o">-</span><span class="n">hw</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothed</span><span class="p">[</span><span class="n">window</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span>  <span class="c1"># type: ignore</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hw</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+                <span class="n">smoothed</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span> <span class="n">n</span> <span class="o">+</span> <span class="n">hw</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+                <span class="n">smoothed</span><span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="o">-</span> <span class="n">hw</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:])</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="n">smoothed</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_ema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Exponential moving average</span>
 
 <span class="sd">        This is also the function used in Tensorboard Scalar panel,</span>
@@ -1493,7 +1517,7 @@ document.write(`
         <span class="n">smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">smoothed</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">smoothed</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_cma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cumulative moving average.</span>
 
 <span class="sd">        Parameters</span>
@@ -1520,7 +1544,7 @@ document.write(`
         <span class="n">smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">smoothed</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">smoothed</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_wma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Weighted moving average.</span>
 
 <span class="sd">        Parameters</span>
@@ -1614,6 +1638,7 @@ document.write(`
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">returns</span> <span class="o">=</span> <span class="p">[</span><span class="n">returns</span><span class="p">]</span>
 
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">cleandoc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
     <span class="n">new_doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="n">parameters_indent</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">returns_indent</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1641,7 +1666,7 @@ document.write(`
         <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">indices2remove</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)))</span>
             <span class="n">start_idx</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">parameters_starts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters_indent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">parameters_starts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters_indent</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">indices2remove</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)))</span>
@@ -1652,7 +1677,7 @@ document.write(`
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">indices2remove</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)))</span>
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">returns_starts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns_indent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">returns_starts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">returns_indent</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">returns</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="n">start_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">indices2remove</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)))</span>
@@ -1671,11 +1696,9 @@ document.write(`
 <div class="viewcode-block" id="timeout">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout">[docs]</a>
 <span class="nd">@contextmanager</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">timeout</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeout</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A context manager that raises a</span>
 <span class="sd">    :class:`TimeoutError` after a specified time (in seconds).</span>
-
-<span class="sd">    Modified from [#timeout]_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1683,25 +1706,57 @@ document.write(`
 <span class="sd">        The time duration in seconds,</span>
 <span class="sd">        should be non-negative, 0 for no timeout.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [#timeout] https://stackoverflow.com/questions/492519/timeout-on-a-function-call</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">duration</span><span class="p">):</span>
         <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`duration` must be non-negative&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># granularity is 1 second, so round up</span>
+    <span class="k">elif</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">duration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">timeout_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;block timedout after `</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">` seconds&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">duration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span>
+        <span class="k">return</span>
 
-    <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">timeout_handler</span><span class="p">)</span>
-    <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
-    <span class="k">yield</span>
-    <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+    <span class="c1"># signal.alarm is not available on Windows</span>
+    <span class="c1"># so we use threading.Timer to raise TimeoutError</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_timeout_exception</span><span class="p">(</span><span class="n">tid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise TimeoutError in the target thread.&quot;&quot;&quot;</span>
+        <span class="c1"># ctypes.pythonapi.PyThreadState_SetAsyncExc returns the number of threads affected</span>
+        <span class="c1"># we need to cast the thread id to c_long</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">tid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyThreadState_SetAsyncExc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="n">tid</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">py_object</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># thread id not found</span>
+            <span class="c1"># this may happen if the thread has already finished</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># multiple threads affected, should not happen</span>
+            <span class="c1"># undo the effect</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyThreadState_SetAsyncExc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="n">tid</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># get the current thread id</span>
+    <span class="c1"># threading.get_ident() returns the thread identifier of the current thread</span>
+    <span class="c1"># which is an integer</span>
+    <span class="n">tid</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span>
+
+    <span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">_raise_timeout_exception</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">tid</span><span class="p">,))</span>
+    <span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+        <span class="c1"># Re-raise with custom message</span>
+        <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;block timedout after `</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">` seconds&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="c1"># Clear any pending async exception in case the timer fired</span>
+        <span class="c1"># just as the block was finishing</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyThreadState_SetAsyncExc</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="n">tid</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 
@@ -1825,7 +1880,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_kwargs">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_kwargs</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">kwonly</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_kwargs</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">kwonly</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the kwargs of a function or class.</span>
 
 <span class="sd">    Parameters</span>
@@ -1866,7 +1921,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_required_args">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_required_args</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="nb">callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_required_args</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the required positional arguments of a function or class.</span>
 
 <span class="sd">    Parameters</span>
@@ -1893,7 +1948,7 @@ document.write(`
 
 <div class="viewcode-block" id="add_kwargs">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">add_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">callable</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add keyword arguments to a function.</span>
 
 <span class="sd">    This function is used to add keyword arguments to a function</span>
@@ -1932,18 +1987,18 @@ document.write(`
     <span class="c1"># move the VAR_POSITIONAL and VAR_KEYWORD in `func_parameters` to the end</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">func_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">VAR_POSITIONAL</span><span class="p">:</span>
-            <span class="n">func_parameters</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">func_parameters</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="k">break</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">func_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">VAR_KEYWORD</span><span class="p">:</span>
-            <span class="n">func_parameters</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">func_parameters</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="k">break</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">):</span>
         <span class="c1"># can not assign `__signature__` to a bound method directly</span>
-        <span class="n">func</span><span class="o">.</span><span class="vm">__func__</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">func_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">func_parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">func</span><span class="o">.</span><span class="vm">__func__</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">func_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">func_parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">func</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">func_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">func_parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">func</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">func_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">func_parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
 
     <span class="c1"># docstring is automatically copied by `functools.wraps`</span>
 
@@ -1959,64 +2014,116 @@ document.write(`
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">make_serializable</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Number</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make an object serializable.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_pathlike_string</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Heuristically check if a string looks like a filesystem path.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
-<span class="sd">    This function is used to convert all numpy arrays to list in an object,</span>
-<span class="sd">    and also convert numpy data types to python data types in the object,</span>
-<span class="sd">    so that it can be serialized by :mod:`json`.</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">PurePath</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">altsep</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">altsep</span> <span class="ow">in</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_serializable</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">drop_unserializable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">drop_paths</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively convert object into JSON-serializable form.</span>
+
+<span class="sd">    Rules</span>
+<span class="sd">    -----</span>
+<span class="sd">    - NDArray → list</span>
+<span class="sd">    - np.generic → Python scalar</span>
+<span class="sd">    - dict → new dict with only serializable values</span>
+<span class="sd">    - list/tuple → list with only serializable values</span>
+<span class="sd">    - str/int/float/bool/None → kept</span>
+<span class="sd">    - if drop_unserializable:</span>
+<span class="sd">          anything else (like Path, custom classes) → dropped (return None)</span>
+<span class="sd">      else:</span>
+<span class="sd">          fallback to str(x)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : Union[numpy.ndarray, numpy.generic, dict, list, tuple]</span>
-<span class="sd">        Input data, which can be numpy array (or numpy data type),</span>
-<span class="sd">        or dict, list, tuple containing numpy arrays (or numpy data type).</span>
+<span class="sd">    x : Any</span>
+<span class="sd">        Input object to be converted.</span>
+<span class="sd">    drop_unserializable : bool, default=True</span>
+<span class="sd">        Whether to drop unserializable objects (return None),</span>
+<span class="sd">        or convert them to string with str(x).</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
+<span class="sd">    drop_paths : bool, default=False</span>
+<span class="sd">        If True, drop all filesystem paths (Path objects and strings</span>
+<span class="sd">        that look like paths).</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Union[list, dict, numbers.Number]</span>
-<span class="sd">        Converted data.</span>
+<span class="sd">    Optional[Union[list, dict, str, int, float, bool]]</span>
+<span class="sd">        A JSON-serializable object, or None if dropped.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; from fl_sim.utils.misc import make_serializable</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable(np.array([1, 2, 3]))</span>
 <span class="sd">    [1, 2, 3]</span>
-<span class="sd">    &gt;&gt;&gt; x = {&quot;a&quot;: np.array([1, 2, 3]), &quot;b&quot;: np.array([4, 5, 6])}</span>
-<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
-<span class="sd">    {&#39;a&#39;: [1, 2, 3], &#39;b&#39;: [4, 5, 6]}</span>
-<span class="sd">    &gt;&gt;&gt; x = [np.array([1, 2, 3]), np.array([4, 5, 6])]</span>
-<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
-<span class="sd">    [[1, 2, 3], [4, 5, 6]]</span>
-<span class="sd">    &gt;&gt;&gt; x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())</span>
-<span class="sd">    &gt;&gt;&gt; obj = make_serializable(x)</span>
-<span class="sd">    &gt;&gt;&gt; obj</span>
-<span class="sd">    [[1, 2, 3], 5.0]</span>
-<span class="sd">    &gt;&gt;&gt; type(obj[1]), type(x[1])</span>
-<span class="sd">    (float, numpy.float64)</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable({&quot;a&quot;: np.float64(3.14), &quot;b&quot;: Path(&quot;file.txt&quot;)})</span>
+<span class="sd">    {&#39;a&#39;: 3.14, &#39;b&#39;: &#39;file.txt&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable({&quot;a&quot;: np.float64(3.14), &quot;b&quot;: Path(&quot;file.txt&quot;)}, drop_paths=True)</span>
+<span class="sd">    {&#39;a&#39;: 3.14}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        <span class="c1"># to avoid cases where the list contains numpy data types</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">drop_unserializable</span><span class="o">=</span><span class="n">drop_unserializable</span><span class="p">,</span> <span class="n">drop_paths</span><span class="o">=</span><span class="n">drop_paths</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-    <span class="c1"># the other types will be returned directly</span>
-    <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">v_serial</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">drop_unserializable</span><span class="o">=</span><span class="n">drop_unserializable</span><span class="p">,</span> <span class="n">drop_paths</span><span class="o">=</span><span class="n">drop_paths</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v_serial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_serial</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+            <span class="n">v_serial</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">drop_unserializable</span><span class="o">=</span><span class="n">drop_unserializable</span><span class="p">,</span> <span class="n">drop_paths</span><span class="o">=</span><span class="n">drop_paths</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v_serial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_serial</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">drop_paths</span> <span class="ow">and</span> <span class="n">_is_pathlike_string</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">drop_paths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">drop_unserializable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="select_k">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.select_k.html#torch_ecg.utils.select_k">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">select_k</span><span class="p">(</span>
-    <span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="n">arr</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">],</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select elements from an array along a specified axis of specific rankings.</span>
 
 <span class="sd">    Parameters</span>
@@ -2074,7 +2181,7 @@ document.write(`
 
 <div class="viewcode-block" id="np_topk">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.np_topk.html#torch_ecg.utils.np_topk">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">np_topk</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">np_topk</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">largest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the k largest elements of an array along a specified axis.</span>
 
 <span class="sd">    Parameters</span>

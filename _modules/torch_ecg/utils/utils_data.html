@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/utils_data';</script>
@@ -402,12 +404,12 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_class_weight</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">from_numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate</span>
@@ -438,11 +440,11 @@ document.write(`
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.get_mask.html#torch_ecg.utils.get_mask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mask</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-    <span class="n">critical_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">critical_points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">left_bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">right_bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">return_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;intervals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mask around the given critical points.</span>
 
 <span class="sd">    Parameters</span>
@@ -490,6 +492,8 @@ document.write(`
             <span class="n">mask</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">elif</span> <span class="n">return_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;intervals&quot;</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">l_itv</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown return_fmt. Expected &#39;mask&#39; or &#39;intervals&#39;, but got </span><span class="si">{</span><span class="n">return_fmt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mask</span></div>
 
 
@@ -497,15 +501,15 @@ document.write(`
 <div class="viewcode-block" id="class_weight_to_sample_weight">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">class_weight_to_sample_weight</span><span class="p">(</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform class weight to sample weight.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">    y : numpy.ndarray or Sequence</span>
 <span class="sd">        The label (class) of each sample.</span>
-<span class="sd">    class_weight : str or dict or List[float] or numpy.ndarray, default &quot;balanced&quot;</span>
+<span class="sd">    class_weight : str or dict or List[float] or numpy.ndarray or None, default &quot;balanced&quot;</span>
 <span class="sd">        The weight for each sample class.</span>
 <span class="sd">        If is &quot;balanced&quot;, the class weight will automatically be given by</span>
 <span class="sd">        the inverse of the class frequency.</span>
@@ -538,6 +542,7 @@ document.write(`
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample_weight</span>
 
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -652,7 +657,7 @@ document.write(`
 
 <div class="viewcode-block" id="ensure_lead_fmt">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ensure_lead_fmt</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">n_leads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensure_lead_fmt</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">n_leads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the multi-lead (ECG) signal to be of specified format.</span>
 
 <span class="sd">    Parameters</span>
@@ -705,11 +710,11 @@ document.write(`
 <div class="viewcode-block" id="ensure_siglen">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.ensure_siglen.html#torch_ecg.utils.ensure_siglen">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ensure_siglen</span><span class="p">(</span>
-    <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the (ECG) signal to be of specified length.</span>
 
 <span class="sd">    Strategy:</span>
@@ -805,16 +810,16 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
 <span class="sd">        Name of the wave, e.g. &quot;N&quot;, &quot;p&quot;, &quot;t&quot;, etc.</span>
-<span class="sd">    onset : numbers.Real</span>
+<span class="sd">    onset : float or int</span>
 <span class="sd">        Onset index of the wave,</span>
 <span class="sd">        :class:`~numpy.nan` for unknown/unannotated onset.</span>
-<span class="sd">    offset : numbers.Real</span>
+<span class="sd">    offset : float or int</span>
 <span class="sd">        Offset index of the wave,</span>
 <span class="sd">        :class:`~numpy.nan` for unknown/unannotated offset.</span>
-<span class="sd">    peak : numbers.Real</span>
+<span class="sd">    peak : float or int</span>
 <span class="sd">        Peak index of the wave,</span>
 <span class="sd">        :class:`~numpy.nan` for unknown/unannotated peak.</span>
-<span class="sd">    duration : numbers.Real</span>
+<span class="sd">    duration : float or int</span>
 <span class="sd">        Suration of the wave, with units in milliseconds,</span>
 <span class="sd">        :class:`~numpy.nan` for unknown/unannotated duration.</span>
 
@@ -825,13 +830,26 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">onset</span><span class="p">:</span> <span class="n">Real</span>
-    <span class="n">offset</span><span class="p">:</span> <span class="n">Real</span>
-    <span class="n">peak</span><span class="p">:</span> <span class="n">Real</span>
-    <span class="n">duration</span><span class="p">:</span> <span class="n">Real</span>
+    <span class="n">onset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">peak</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ECGWaveForm</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="s2">&quot;peak&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]:</span>
+            <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v2</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">duration_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">duration_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Duration of the wave, with units in number of samples.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">onset</span>
@@ -854,9 +872,9 @@ document.write(`
 <div class="viewcode-block" id="masks_to_waveforms">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.masks_to_waveforms.html#torch_ecg.utils.masks_to_waveforms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">masks_to_waveforms</span><span class="p">(</span>
-    <span class="n">masks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">masks</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
     <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]]:</span>
@@ -870,7 +888,7 @@ document.write(`
 <span class="sd">    class_map : dict</span>
 <span class="sd">        Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
 <span class="sd">        the keys should contain &quot;pwave&quot;, &quot;qrs&quot;, &quot;twave&quot;.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the `masks`,</span>
 <span class="sd">        used to compute the duration of each waveform.</span>
 <span class="sd">    mask_format : str, default &quot;channel_first&quot;</span>
@@ -954,7 +972,7 @@ document.write(`
 <div class="viewcode-block" id="mask_to_intervals">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.mask_to_intervals.html#torch_ecg.utils.mask_to_intervals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mask_to_intervals</span><span class="p">(</span>
-    <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">vals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">right_inclusive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
@@ -1029,14 +1047,14 @@ document.write(`
 
 <div class="viewcode-block" id="uniform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">high</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">high</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a list of numbers uniformly distributed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    low : numbers.Real</span>
+<span class="sd">    low : float or int</span>
 <span class="sd">        Lower bound of the interval of the uniform distribution.</span>
-<span class="sd">    high : numbers.Real</span>
+<span class="sd">    high : float or int</span>
 <span class="sd">        Upper bound of the interval of the uniform distribution.</span>
 <span class="sd">    num : int</span>
 <span class="sd">        Number of random numbers to generate.</span>
@@ -1112,7 +1130,7 @@ document.write(`
     <span class="k">try</span><span class="p">:</span>
         <span class="n">df_inspection</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">stratified_cols</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">df_inspection</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">stratified_cols</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">df_inspection</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">stratified_cols</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">:</span>
         <span class="n">all_entities</span> <span class="o">=</span> <span class="n">df_inspection</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">entities_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_entities</span><span class="p">)}</span>
@@ -1122,7 +1140,7 @@ document.write(`
     <span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_inspection</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="n">cn</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">])</span>
-        <span class="n">df_inspection</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>
+        <span class="n">df_inspection</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>  <span class="c1"># type: ignore</span>
     <span class="n">item_names</span> <span class="o">=</span> <span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">item_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">df_inspection</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">item_names</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">item_names</span><span class="p">:</span>
@@ -1144,8 +1162,8 @@ document.write(`
 <div class="viewcode-block" id="one_hot_encode">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.one_hot_encode.html#torch_ecg.utils.one_hot_encode">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">one_hot_encode</span><span class="p">(</span>
-    <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a categorical array to a one-hot array.</span>
 
 <span class="sd">    Convert a categorical (class indices) array of shape ``(num_samples,)``</span>
@@ -1189,29 +1207,29 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># sequence of sequences of class indices</span>
             <span class="n">num_classes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cls_array</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">num_classes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_classes</span> <span class="o">&gt;=</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>
+        <span class="k">assert</span> <span class="n">num_classes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_classes</span> <span class="o">&gt;=</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>  <span class="c1"># type: ignore</span>
             <span class="s2">&quot;num_classes must be greater than 0 and greater than or equal to &quot;</span>
             <span class="s2">&quot;the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-            <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_classes</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cls_array</span><span class="p">]</span>
+            <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_classes</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cls_array</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="p">),</span> <span class="s2">&quot;all values in the multi-class `cls_array` should be less than `num_classes`&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_classes</span><span class="p">:</span>
         <span class="n">bin_array</span> <span class="o">=</span> <span class="n">cls_array</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cls_array</span><span class="p">),</span> <span class="n">num_classes</span><span class="p">)</span>
-        <span class="n">bin_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">bin_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="n">bin_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">cls_array</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">bin_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
 
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">one_hot_encode</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;one_hot_encode&quot;</span><span class="p">,</span> <span class="s2">&quot;cls_to_bin&quot;</span><span class="p">))</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">one_hot_encode</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;one_hot_encode&quot;</span><span class="p">,</span> <span class="s2">&quot;cls_to_bin&quot;</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cls_to_bin</span><span class="p">(</span>
-    <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias of `one_hot_encode`.&quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`cls_to_bin` is deprecated, use `one_hot_encode` instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">one_hot_encode</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
@@ -1220,14 +1238,14 @@ document.write(`
 <div class="viewcode-block" id="generate_weight_mask">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.generate_weight_mask.html#torch_ecg.utils.generate_weight_mask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_weight_mask</span><span class="p">(</span>
-    <span class="n">target_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">fg_weight</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">reduction</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">radius</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">boundary_weight</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">target_mask</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">fg_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">reduction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">radius</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">boundary_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate weight mask for a binary target mask,</span>
 <span class="sd">    accounting the foreground weight and boundary weight.</span>
 
@@ -1235,15 +1253,15 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    target_mask : numpy.ndarray</span>
 <span class="sd">        The target mask, assumed to be 1D and binary.</span>
-<span class="sd">    fg_weight: numbers.Real</span>
+<span class="sd">    fg_weight: float or int</span>
 <span class="sd">        Foreground (value 1) weight, usually &gt; 1.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal.</span>
-<span class="sd">    reduction : numbers.Real</span>
+<span class="sd">    reduction : float or int</span>
 <span class="sd">        Reduction ratio of the mask w.r.t. the signal.</span>
-<span class="sd">    radius : numbers.Real</span>
+<span class="sd">    radius : float or int</span>
 <span class="sd">        Radius of the boundary, with units in seconds.</span>
-<span class="sd">    boundary_weight : numbers.Real</span>
+<span class="sd">    boundary_weight : float or int</span>
 <span class="sd">        Weight for the boundaries (positions where values change)</span>
 <span class="sd">        of the target map.</span>
 <span class="sd">    plot : bool, default False</span>
@@ -1279,7 +1297,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">target_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`target_mask` should be 1D&quot;</span>
     <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target_mask</span><span class="p">))</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}),</span> <span class="s2">&quot;`target_mask` should be binary&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reduction</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="ow">and</span> <span class="n">reduction</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`reduction` should be a real number greater than 1&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reduction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">reduction</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`reduction` should be a real number greater than 1&quot;</span>
     <span class="k">if</span> <span class="n">reduction</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># downsample the target mask</span>
         <span class="n">target_mask</span> <span class="o">=</span> <span class="p">(</span>

@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/datasets/mitdb/mitdb_dataset';</script>
@@ -403,6 +405,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span> <span class="k">as</span> <span class="n">SS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
@@ -759,7 +762,7 @@ document.write(`
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdr</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;beat_classification&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_data</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_labels</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lazy</span><span class="p">:</span>
@@ -801,7 +804,7 @@ document.write(`
         <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments_dirs</span><span class="o">.</span><span class="n">ann</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">seg</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_ext</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">fp</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load data of the segment.</span>
 
 <span class="sd">        Parameters</span>
@@ -832,18 +835,18 @@ document.write(`
 <span class="sd">        dict</span>
 <span class="sd">            A dictionay of annotations of the segment, including</span>
 
-<span class="sd">                - rpeaks: indices of rpeaks of the segment</span>
-<span class="sd">                - qrs_mask: mask of qrs complexes of the segment</span>
-<span class="sd">                - rhythm_mask: mask of rhythms of the segment</span>
-<span class="sd">                - interval: interval ([start_idx, end_idx]) in the</span>
-<span class="sd">                  original ECG record of the segment</span>
+<span class="sd">            - rpeaks: indices of rpeaks of the segment</span>
+<span class="sd">            - qrs_mask: mask of qrs complexes of the segment</span>
+<span class="sd">            - rhythm_mask: mask of rhythms of the segment</span>
+<span class="sd">            - interval: interval ([start_idx, end_idx]) in the</span>
+<span class="sd">              original ECG record of the segment</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">seg_ann_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_seg_ann_path</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
         <span class="n">seg_ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seg_ann_fp</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)}</span>
         <span class="k">return</span> <span class="n">seg_ann</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load mask(s) of the segment.</span>
 
 <span class="sd">        Parameters</span>
@@ -883,7 +886,7 @@ document.write(`
             <span class="n">seg_mask</span> <span class="o">=</span> <span class="n">seg_mask</span><span class="p">[</span><span class="s2">&quot;rhythm_mask&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">seg_mask</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_seq_lab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reduction</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_seg_seq_lab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reduction</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load sequence label of the segment.</span>
 
 <span class="sd">        Parameters</span>
@@ -934,7 +937,7 @@ document.write(`
         <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_dirs</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rr_seq_ext</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">fp</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load_rr_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_rr_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load metadata of sequence of rr intervals.</span>
 
 <span class="sd">        Parameters</span>
@@ -947,12 +950,12 @@ document.write(`
 <span class="sd">        dict</span>
 <span class="sd">            Metadata of sequence of rr intervals, including</span>
 
-<span class="sd">                - rr: the sequence of rr intervals, with units in seconds,</span>
-<span class="sd">                  of shape ``(self.seglen, 1)``</span>
-<span class="sd">                - label: label of the rr intervals,</span>
-<span class="sd">                  of shape ``(self.seglen, self.n_classes)``</span>
-<span class="sd">                - interval: interval of the current rr sequence</span>
-<span class="sd">                  in the whole rr sequence in the original record</span>
+<span class="sd">            - rr: the sequence of rr intervals, with units in seconds,</span>
+<span class="sd">              of shape ``(self.seglen, 1)``.</span>
+<span class="sd">            - label: label of the rr intervals,</span>
+<span class="sd">              of shape ``(self.seglen, self.n_classes)``.</span>
+<span class="sd">            - interval: interval of the current rr sequence</span>
+<span class="sd">              in the whole rr sequence in the original record.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rr_seq_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rr_seq_path</span><span class="p">(</span><span class="n">seq_name</span><span class="p">)</span>
@@ -1175,7 +1178,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">__generate_segment</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
         <span class="n">start_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">end_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFG</span><span class="p">:</span>
@@ -1721,7 +1724,7 @@ document.write(`
             <span class="s2">&quot;af_event&quot;</span><span class="p">:</span> <span class="s2">&quot;rhythm_mask&quot;</span><span class="p">,</span>  <span class="c1"># segmentation of AF events</span>
         <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">collate_fn</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">index</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span>

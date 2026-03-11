@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
   
@@ -44,6 +45,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/codeblock.js?v=82bf629b"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'CHANGELOG';</script>
@@ -416,7 +418,12 @@ Versioning</a>.</p>
 <ul class="simple">
 <li><p>Make the function <cite>remove_spikes_naive</cite> in <cite>torch_ecg.utils.utils_signal</cite>
 support 2D and 3D input signals.</p></li>
+<li><p>Use <cite>save_file</cite> and <cite>load_file</cite> from the <cite>safetensors</cite> package for saving
+and loading files in place of <cite>torch.save</cite> and <cite>torch.load</cite> in the <cite>CkptMixin</cite>
+class in <cite>torch_ecg.utils.utils_nn</cite>.</p></li>
 <li><p>Add retry mechanism to the <cite>http_get</cite> function in
+<cite>torch_ecg.utils.download</cite> module.</p></li>
+<li><p>Add length verification in the <cite>http_get</cite> function in
 <cite>torch_ecg.utils.download</cite> module.</p></li>
 </ul>
 </section>
@@ -440,6 +447,14 @@ non-safe items in the configs are removed before saving the model.</p></li>
 <li><p>Fix potential errors when deepcopying a <cite>torch_ecg.cfg.CFG</cite> object:
 previously, deepcopying such an object like <cite>CFG({“a”: {1: 0.1, 2: 0.2}})</cite>
 would result in an error.</p></li>
+<li><p>Fix potential bugs in contextmanager <cite>torch_ecg.utils.timeout</cite>: restore the previously
+installed SIGALRM handler after use, cancel any pending alarm reliably in a finally block,
+avoid installing a handler when duration &lt;= 0 (preventing unintended global side-effects),
+and thereby eliminate spurious <cite>TimeoutError</cite> exceptions that could be triggered later by
+unrelated signal.alarm calls due to the old implementation not reinstating the original handler.</p></li>
+<li><p>Fix bugs in utility function <cite>torch_ecg.utils.make_serializable</cite>: the previous implementation
+does not drop some types of unserializable items correctly. Two additional parameters
+<cite>drop_unserializable</cite> and <cite>drop_paths</cite> are added.</p></li>
 </ul>
 </section>
 <section id="security">

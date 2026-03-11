@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/cinc2021';</script>
@@ -412,6 +414,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SS</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">wfdb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
@@ -483,8 +486,8 @@ document.write(`
 <span class="s2">            Each recording is 10 seconds long with a sampling frequency of 500 Hz</span>
 <span class="s2">            this tranche contains two subsets:</span>
 
-<span class="s2">                - Chapman_Shaoxing: &quot;JS00001&quot; - &quot;JS10646&quot;</span>
-<span class="s2">                - Ningbo: &quot;JS10647&quot; - &quot;JS45551&quot;</span>
+<span class="s2">            - Chapman_Shaoxing: &quot;JS00001&quot; - &quot;JS10646&quot;</span>
+<span class="s2">            - Ningbo: &quot;JS10647&quot; - &quot;JS45551&quot;</span>
 
 <span class="s2">       All files can be downloaded from [8]_ or [9]_.</span>
 
@@ -510,6 +513,7 @@ document.write(`
 <span class="s2">            ...         leads = ann[&quot;df_leads&quot;][&quot;lead_name&quot;].values.tolist()</span>
 <span class="s2">            ...     if leads not in set_leads:</span>
 <span class="s2">            ...         set_leads.append(leads)</span>
+
 <span class="s2">    5. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.</span>
 
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
@@ -1084,7 +1088,7 @@ document.write(`
         <span class="n">units</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mV&quot;</span><span class="p">,</span> <span class="s2">&quot;μV&quot;</span><span class="p">,</span> <span class="s2">&quot;uV&quot;</span><span class="p">,</span> <span class="s2">&quot;muV&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load physical (converted from digital) ECG data.</span>
 
 <span class="sd">        Parameters</span>
@@ -1472,10 +1476,9 @@ document.write(`
 <span class="sd">            in the CINC2021 official phase.</span>
 <span class="sd">        fmt : str, default &quot;s&quot;</span>
 <span class="sd">            Format of labels, one of the following (case insensitive):</span>
-
-<span class="sd">                - &quot;a&quot;, abbreviations</span>
-<span class="sd">                - &quot;f&quot;, full names</span>
-<span class="sd">                - &quot;s&quot;, SNOMED CT Code</span>
+<span class="sd">            - &quot;a&quot;, abbreviations</span>
+<span class="sd">            - &quot;f&quot;, full names</span>
+<span class="sd">            - &quot;s&quot;, SNOMED CT Code</span>
 
 <span class="sd">        normalize : bool, default True</span>
 <span class="sd">            If True, the labels will be transformed into their equavalents,</span>
@@ -1585,7 +1588,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ann</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1840,7 +1843,7 @@ document.write(`
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
         <span class="n">siglen</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resample the data of `rec` to 500Hz,</span>
 <span class="sd">        or load the resampled data in 500Hz, if the corr. data file already exists</span>
@@ -1913,7 +1916,7 @@ document.write(`
 
 <div class="viewcode-block" id="CINC2021.load_raw_data">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021.load_raw_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;wfdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scipy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">backend</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;wfdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scipy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scipy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load raw data from corresponding files with no further processing.</span>
 
 <span class="sd">        This method facilitates feeding data into the `run_12ECG_classifier` function.</span>
@@ -2146,7 +2149,7 @@ document.write(`
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_all_metrics_detailed</span><span class="p">(</span>
     <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">truth</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">binary_pred</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">scalar_pred</span><span class="p">:</span> <span class="n">Sequence</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute detailed metrics for each class.</span>
 
 <span class="sd">    Parameters</span>
@@ -2227,7 +2230,7 @@ document.write(`
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_all_metrics</span><span class="p">(</span>
     <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">truth</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">binary_pred</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">scalar_pred</span><span class="p">:</span> <span class="n">Sequence</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified version of :func:`compute_all_metrics_detailed`.</span>
 
 <span class="sd">    This function doesnot produce per-class scores.</span>
@@ -2287,7 +2290,7 @@ document.write(`
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_accuracy</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_accuracy</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute recording-wise accuracy.</span>
 
 <span class="sd">    Parameters</span>
@@ -2315,7 +2318,7 @@ document.write(`
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_correct_recordings</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_recordings</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_confusion_matrices</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_confusion_matrices</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute confusion matrices.</span>
 
 <span class="sd">    Compute a binary confusion matrix for each class k:</span>
@@ -2379,7 +2382,7 @@ document.write(`
     <span class="k">return</span> <span class="n">A</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_f_measure</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_f_measure</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute macro-averaged F1 score, and F1 score per class.</span>
 
 <span class="sd">    Parameters</span>
@@ -2419,7 +2422,7 @@ document.write(`
     <span class="k">return</span> <span class="n">macro_f_measure</span><span class="p">,</span> <span class="n">f_measure</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_beta_measures</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_beta_measures</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute F-beta and G-beta measures.</span>
 
 <span class="sd">    Parameters</span>
@@ -2464,7 +2467,7 @@ document.write(`
     <span class="k">return</span> <span class="n">macro_f_beta_measure</span><span class="p">,</span> <span class="n">macro_g_beta_measure</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_auc</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_auc</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute macro-averaged AUROC and macro-averaged AUPRC.</span>
 
 <span class="sd">    Parameters</span>
@@ -2571,7 +2574,7 @@ document.write(`
 
 
 <span class="c1"># Compute modified confusion matrix for multi-class, multi-label tasks.</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_modified_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_modified_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute a binary multi-class, multi-label confusion matrix,</span>
 <span class="sd">    where the rows are the labels and the columns are the outputs.</span>
@@ -2611,9 +2614,9 @@ document.write(`
 
 <span class="c1"># Compute the evaluation metric for the Challenge.</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_challenge_metric</span><span class="p">(</span>
-    <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">sinus_rhythm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

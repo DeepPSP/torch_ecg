@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/utils_interval';</script>
@@ -415,6 +417,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;overlaps&quot;</span><span class="p">,</span>
@@ -448,9 +451,9 @@ document.write(`
 
 <span class="sd">    The amount of overlap, in bp between interval and anohter, is returned.</span>
 
-<span class="sd">        - If &gt; 0, the number of bp of overlap</span>
-<span class="sd">        - If 0,  they are book-ended</span>
-<span class="sd">        - If &lt; 0, the distance in bp between them</span>
+<span class="sd">    - If &gt; 0, the number of bp of overlap</span>
+<span class="sd">    - If 0,  they are book-ended</span>
+<span class="sd">    - If &lt; 0, the distance in bp between them</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -504,8 +507,8 @@ document.write(`
 <span class="sd">    tuple</span>
 <span class="sd">        2-tuple consisting of</span>
 
-<span class="sd">            - bool: indicating whether `interval` is a valid interval</span>
-<span class="sd">            - an interval (can be empty)</span>
+<span class="sd">        - bool: indicating whether `interval` is a valid interval</span>
+<span class="sd">        - an interval (can be empty)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1195,9 +1198,9 @@ document.write(`
 <span class="sd">    dict</span>
 <span class="sd">        A dictionary containing the following keys:</span>
 
-<span class="sd">            - &quot;max_cont_len&quot;</span>
-<span class="sd">            - &quot;max_cont_sublist_start&quot;</span>
-<span class="sd">            - &quot;max_cont_sublist&quot;</span>
+<span class="sd">        - &quot;max_cont_len&quot;</span>
+<span class="sd">        - &quot;max_cont_sublist_start&quot;</span>
+<span class="sd">        - &quot;max_cont_sublist&quot;</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1290,7 +1293,7 @@ document.write(`
 
 <div class="viewcode-block" id="find_extrema">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_extrema</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_extrema</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Locate local extrema points in a 1D signal.</span>
 
 <span class="sd">    This function is based on Fermat&#39;s Theorem.</span>

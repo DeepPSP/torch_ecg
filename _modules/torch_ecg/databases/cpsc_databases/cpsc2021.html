@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/cpsc_databases/cpsc2021';</script>
@@ -408,6 +410,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">wfdb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">get_record_list_recursive3</span><span class="p">,</span> <span class="n">ms2samples</span>
@@ -435,50 +438,50 @@ document.write(`
 <span class="s2">    7. classification of a record is stored in corresponding .hea file, which can be accessed via the attribute `comments` of a wfdb Record obtained using :func:`wfdb.rdheader`, :func:`wfdb.rdrecord`, and :func:`wfdb.rdsamp`; beat annotations and rhythm annotations can be accessed using the attributes `symbol`, `aux_note` of a ``wfdb`` Annotation obtained using :func:`wfdb.rdann`, corresponding indices in the signal can be accessed via the attribute `sample`</span>
 <span class="s2">    8. challenge task:</span>
 
-<span class="s2">        - clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)</span>
-<span class="s2">        - locating of the onset and offset for any AF episode prediction</span>
+<span class="s2">       - clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)</span>
+<span class="s2">       - locating of the onset and offset for any AF episode prediction</span>
 
 <span class="s2">    9. challenge metrics:</span>
 
-<span class="s2">        - metrics (Ur, scoring matrix) for classification:</span>
+<span class="s2">       - metrics (Ur, scoring matrix) for classification:</span>
 
-<span class="s2">          .. tikz:: The scoring matrix for the recording-level classification result.</span>
-<span class="s2">            :align: center</span>
-<span class="s2">            :libs: positioning</span>
+<span class="s2">         .. tikz:: The scoring matrix for the recording-level classification result.</span>
+<span class="s2">         :align: center</span>
+<span class="s2">         :libs: positioning</span>
 
-<span class="s2">            \tikzstyle</span><span class="si">{rect}</span><span class="s2"> = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]</span>
-<span class="s2">            \tikzstyle</span><span class="si">{txt}</span><span class="s2"> = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]</span>
+<span class="s2">         \tikzstyle</span><span class="si">{rect}</span><span class="s2"> = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]</span>
+<span class="s2">         \tikzstyle</span><span class="si">{txt}</span><span class="s2"> = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]</span>
 
-<span class="s2">            \node[rect, fill = green!25] at (0,0) (31) {$-0.5$};</span>
-<span class="s2">            \node[rect, fill = green!10, right = 0 of 31] (32) {$0$};</span>
-<span class="s2">            \node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};</span>
-<span class="s2">            \node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};</span>
-<span class="s2">            \node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};</span>
-<span class="s2">            \node[rect, fill = green!10, above = 0 of 33] (23) {$0$};</span>
-<span class="s2">            \node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};</span>
-<span class="s2">            \node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};</span>
-<span class="s2">            \node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};</span>
+<span class="s2">         \node[rect, fill = green!25] at (0,0) (31) {$-0.5$};</span>
+<span class="s2">         \node[rect, fill = green!10, right = 0 of 31] (32) {$0$};</span>
+<span class="s2">         \node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};</span>
+<span class="s2">         \node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};</span>
+<span class="s2">         \node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};</span>
+<span class="s2">         \node[rect, fill = green!10, above = 0 of 33] (23) {$0$};</span>
+<span class="s2">         \node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};</span>
+<span class="s2">         \node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};</span>
+<span class="s2">         \node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};</span>
 
-<span class="s2">            \node[txt, below = 0 of 31] </span><span class="si">{N}</span><span class="s2">;</span>
-<span class="s2">            \node[txt, below = 0 of 32] (anchor_h) {AF$_{\text</span><span class="si">{f}</span><span class="s2">}$};</span>
-<span class="s2">            \node[txt, below = 0 of 33] {AF$_{\text</span><span class="si">{p}</span><span class="s2">}$};</span>
-<span class="s2">            \node[txt, left = 0 of 31] {AF$_{\text</span><span class="si">{p}</span><span class="s2">}$};</span>
-<span class="s2">            \node[txt, left = 0 of 21] (anchor_v) {AF$_{\text</span><span class="si">{f}</span><span class="s2">}$};</span>
-<span class="s2">            \node[txt, left = 0 of 11] </span><span class="si">{N}</span><span class="s2">;</span>
+<span class="s2">         \node[txt, below = 0 of 31] </span><span class="si">{N}</span><span class="s2">;</span>
+<span class="s2">         \node[txt, below = 0 of 32] (anchor_h) {AF$_{\text</span><span class="si">{f}</span><span class="s2">}$};</span>
+<span class="s2">         \node[txt, below = 0 of 33] {AF$_{\text</span><span class="si">{p}</span><span class="s2">}$};</span>
+<span class="s2">         \node[txt, left = 0 of 31] {AF$_{\text</span><span class="si">{p}</span><span class="s2">}$};</span>
+<span class="s2">         \node[txt, left = 0 of 21] (anchor_v) {AF$_{\text</span><span class="si">{f}</span><span class="s2">}$};</span>
+<span class="s2">         \node[txt, left = 0 of 11] </span><span class="si">{N}</span><span class="s2">;</span>
 
-<span class="s2">            \node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};</span>
-<span class="s2">            \node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf</span><span class="si">{Prediction}</span><span class="s2">};</span>
+<span class="s2">         \node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};</span>
+<span class="s2">         \node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf</span><span class="si">{Prediction}</span><span class="s2">};</span>
 
-<span class="s2">        - metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.</span>
-<span class="s2">        - final score (U):</span>
+<span class="s2">       - metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.</span>
+<span class="s2">       - final score (U):</span>
 
-<span class="s2">          .. math::</span>
+<span class="s2">         .. math::</span>
 
 <span class="s2">            U = \dfrac</span><span class="si">{1}{N}</span><span class="s2"> \sum\limits_{i=1}^N \left( Ur_i + \dfrac</span><span class="si">{Ma_i}</span><span class="s2">{\max\{Mr_i, Ma_i\}} \right)</span>
 
-<span class="s2">          where :math:`N` is the number of records,</span>
-<span class="s2">          :math:`Ma` is the number of annotated AF episodes,</span>
-<span class="s2">          :math:`Mr` is the number of predicted AF episodes.</span>
+<span class="s2">       where :math:`N` is the number of records,</span>
+<span class="s2">       :math:`Ma` is the number of annotated AF episodes,</span>
+<span class="s2">       :math:`Mr` is the number of predicted AF episodes.</span>
 
 <span class="s2">    10. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
@@ -810,7 +813,7 @@ document.write(`
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
@@ -829,12 +832,9 @@ document.write(`
 <span class="sd">            Key word arguments for functions</span>
 <span class="sd">            loading rpeaks, af_episodes, and label respectively,</span>
 <span class="sd">            including:</span>
-
-<span class="sd">                - fs: int, optional,</span>
-<span class="sd">                  the resampling frequency</span>
-<span class="sd">                - fmt: str,</span>
-<span class="sd">                  format of af_episodes, or format of label,</span>
-<span class="sd">                  for more details, ref. corresponding functions.</span>
+<span class="sd">            - fs: int, optional, the resampling frequency</span>
+<span class="sd">            - fmt: str, format of af_episodes, or format of label,</span>
+<span class="sd">              for more details, ref. corresponding functions.</span>
 
 <span class="sd">            Used only when `field` is specified (not None).</span>
 
@@ -887,7 +887,7 @@ document.write(`
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">valid_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load position (in terms of samples) of rpeaks.</span>
 
 <span class="sd">        Parameters</span>
@@ -953,7 +953,7 @@ document.write(`
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">valid_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of `self.load_rpeaks`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_rpeaks</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
@@ -977,7 +977,7 @@ document.write(`
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;c_intervals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the episodes of atrial fibrillation,</span>
 <span class="sd">        in terms of intervals or mask.</span>
 
@@ -1083,9 +1083,9 @@ document.write(`
 
 <span class="sd">        The three classes are:</span>
 
-<span class="sd">            - &quot;non atrial fibrillation&quot;,</span>
-<span class="sd">            - &quot;paroxysmal atrial fibrillation&quot;,</span>
-<span class="sd">            - &quot;persistent atrial fibrillation&quot;.</span>
+<span class="sd">        - &quot;non atrial fibrillation&quot;,</span>
+<span class="sd">        - &quot;paroxysmal atrial fibrillation&quot;,</span>
+<span class="sd">        - &quot;persistent atrial fibrillation&quot;.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1099,11 +1099,10 @@ document.write(`
 <span class="sd">            Not used, to keep in accordance with other methods.</span>
 <span class="sd">        fmt : str, default &quot;a&quot;</span>
 <span class="sd">            Format of the label, case in-sensitive, can be one of</span>
-
-<span class="sd">                - &quot;f&quot;, &quot;fullname&quot;: the full name of the label</span>
-<span class="sd">                - &quot;a&quot;, &quot;abbr&quot;, &quot;abbrevation&quot;: abbreviation for the label</span>
-<span class="sd">                - &quot;n&quot;, &quot;num&quot;, &quot;number&quot;: class number of the label</span>
-<span class="sd">                  (in accordance with the settings of the offical class map)</span>
+<span class="sd">            - &quot;f&quot;, &quot;fullname&quot;: the full name of the label</span>
+<span class="sd">            - &quot;a&quot;, &quot;abbr&quot;, &quot;abbrevation&quot;: abbreviation for the label</span>
+<span class="sd">            - &quot;n&quot;, &quot;num&quot;, &quot;number&quot;: class number of the label</span>
+<span class="sd">              (in accordance with the settings of the offical class map)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1129,7 +1128,7 @@ document.write(`
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">bias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the scoring mask for the onsets and offsets of af episodes.</span>
 
 <span class="sd">        Parameters</span>
@@ -1172,8 +1171,8 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ann</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ann</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1729,7 +1728,7 @@ document.write(`
     <span class="n">af_intervals</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
     <span class="n">bias</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    generate the scoring mask for the onsets and offsets of af episodes,</span>
 

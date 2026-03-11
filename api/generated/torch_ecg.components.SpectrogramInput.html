@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=97348ffd" />
   
@@ -44,6 +45,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -596,50 +598,32 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_ecg.components.</span></span><span class="sig-name descname"><span class="pre">SpectrogramInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_ecg.components.InputConfig.html#torch_ecg.components.InputConfig" title="torch_ecg.components.inputs.InputConfig"><span class="pre">InputConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/torch_ecg/components/inputs.html#SpectrogramInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.SpectrogramInput" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_SpectralInput</span></code></p>
 <p>Inputs from the spectro-temporal domain.</p>
-<dl class="simple">
-<dt>One has to set the following parameters for initialization:</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt>n_bins<span class="classifier">int</span></dt><dd><p>The number of frequency bins.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>fs (or sample_rate)<span class="classifier">int</span></dt><dd><p>The sample rate of the waveform.</p>
-</dd>
-</dl>
-</li>
+<p>One has to set the following parameters for initialization:</p>
+<ul class="simple">
+<li><p>n_bins : int
+The number of frequency bins.</p></li>
+<li><p>fs (or sample_rate) : int
+The sample rate of the waveform.</p></li>
 </ul>
-</dd>
-<dt>with the following optional parameters with default values:</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt>window_size<span class="classifier">float, default: 1 / 20</span></dt><dd><p>The size of the window in seconds.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>overlap_size<span class="classifier">float, default: 1 / 40</span></dt><dd><p>The overlap of the windows in seconds.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>feature_fs<span class="classifier">None or float,</span></dt><dd><p>The sample rate of the features.
+<p>with the following optional parameters with default values:
+- window_size : float, default: 1 / 20</p>
+<blockquote>
+<div><p>The size of the window in seconds.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>overlap_size : float, default: 1 / 40
+The overlap of the windows in seconds.</p></li>
+<li><p>feature_fs : None or float,
+The sample rate of the features.
 If specified, the features will be resampled
-against <cite>fs</cite> to this sample rate.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>to1d<span class="classifier">bool, default False</span></dt><dd><p>Whether to convert the features to 1D.
+against <cite>fs</cite> to this sample rate.</p></li>
+<li><p>to1d : bool, default False
+Whether to convert the features to 1D.
 NOTE that if <cite>to1d</cite> is True,
 then if the convolutions with <code class="docutils literal notranslate"><span class="pre">groups=1</span></code> applied to the <cite>input</cite>
 acts on all the bins, which is “global”
-w.r.t. the <cite>bins</cite> dimension of the corresponding 2d input.</p>
-</dd>
-</dl>
-</li>
+w.r.t. the <cite>bins</cite> dimension of the corresponding 2d input.</p></li>
 </ul>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">32</span>
@@ -665,12 +649,12 @@ w.r.t. the <cite>bins</cite> dimension of the corresponding 2d input.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.components.SpectrogramInput.from_waveform">
-<span class="sig-name descname"><span class="pre">from_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/components/inputs.html#SpectrogramInput.from_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.SpectrogramInput.from_waveform" title="Link to this definition">#</a></dt>
-<dd><p>Converts the input <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or
-<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a> waveform to a <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a> of spectrograms.</p>
+<span class="sig-name descname"><span class="pre">from_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/components/inputs.html#SpectrogramInput.from_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.SpectrogramInput.from_waveform" title="Link to this definition">#</a></dt>
+<dd><p>Converts the input <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a> waveform to a <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a> of spectrograms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>waveform</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)"><em>torch.Tensor</em></a>) – The waveform to be transformed,
+<dd class="field-odd"><p><strong>waveform</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a>) – The waveform to be transformed,
 of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">n_channels,</span> <span class="pre">n_samples)</span></code>
 or <code class="docutils literal notranslate"><span class="pre">(n_channels,</span> <span class="pre">n_samples)</span></code>.</p>
 </dd>
@@ -682,7 +666,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.8)">torch.Tensor</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a></p>
 </dd>
 </dl>
 <div class="admonition note">

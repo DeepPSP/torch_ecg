@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/regnet';</script>
@@ -437,49 +439,50 @@ document.write(`
 <span class="sd">        Index of the stage in the whole :class:`RegNet`.</span>
 <span class="sd">    block_config: dict,</span>
 <span class="sd">        (optional) configs for the blocks, including</span>
-<span class="sd">            - block: str or torch.nn.Module,</span>
-<span class="sd">              the block class, can be one of</span>
-<span class="sd">              &quot;bottleneck&quot;, &quot;bottle_neck&quot;, :class:`ResNetBottleNeck`, etc.</span>
-<span class="sd">            - expansion: int,</span>
-<span class="sd">              the expansion factor for the bottleneck block.</span>
-<span class="sd">            - increase_channels_method: str,</span>
-<span class="sd">              the method to increase the number of channels,</span>
-<span class="sd">              can be one of {&quot;conv&quot;, &quot;zero_padding&quot;}.</span>
-<span class="sd">            - subsample_mode: str,</span>
-<span class="sd">              the mode of subsampling, can be one of</span>
-<span class="sd">              {:class:`DownSample`.__MODES__},</span>
-<span class="sd">            - activation: str or torch.nn.Module,</span>
-<span class="sd">              the activation function, can be one of</span>
-<span class="sd">              {:class:`Activations`}.</span>
-<span class="sd">            - kw_activation: dict,</span>
-<span class="sd">              keyword arguments for the activation function.</span>
-<span class="sd">            - kernel_initializer: str,</span>
-<span class="sd">              the kernel initializer, can be one of</span>
-<span class="sd">              {:class:`Initializers`}.</span>
-<span class="sd">            - kw_initializer: dict,</span>
-<span class="sd">              keyword arguments for the kernel initializer.</span>
-<span class="sd">            - bias: bool,</span>
-<span class="sd">              whether to use bias in the convolution.</span>
-<span class="sd">            - dilation: int,</span>
-<span class="sd">              the dilation factor for the convolution.</span>
-<span class="sd">            - base_width: int,</span>
-<span class="sd">              number of filters per group for the neck conv layer</span>
-<span class="sd">              usually number of filters of the initial conv layer</span>
-<span class="sd">              of the whole :class:`RegNet`.</span>
-<span class="sd">            - base_groups: int,</span>
-<span class="sd">              pattern of connections between inputs and outputs of</span>
-<span class="sd">              conv layers at the two ends, which should divide `groups`.</span>
-<span class="sd">            - base_filter_length: int,</span>
-<span class="sd">              lengths (sizes) of the filter kernels for conv layers at the two ends.</span>
-<span class="sd">            - attn: dict,</span>
-<span class="sd">              attention mechanism for the neck conv layer.</span>
-<span class="sd">              If is None, no attention mechanism is used.</span>
-<span class="sd">              If is not None, it should be a dict with the following items:</span>
 
-<span class="sd">                - name: str, can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
-<span class="sd">                - pos: int, position of the attention mechanism.</span>
+<span class="sd">        - block: str or torch.nn.Module,</span>
+<span class="sd">          the block class, can be one of</span>
+<span class="sd">          &quot;bottleneck&quot;, &quot;bottle_neck&quot;, :class:`ResNetBottleNeck`, etc.</span>
+<span class="sd">        - expansion: int,</span>
+<span class="sd">          the expansion factor for the bottleneck block.</span>
+<span class="sd">        - increase_channels_method: str,</span>
+<span class="sd">          the method to increase the number of channels,</span>
+<span class="sd">          can be one of {&quot;conv&quot;, &quot;zero_padding&quot;}.</span>
+<span class="sd">        - subsample_mode: str,</span>
+<span class="sd">          the mode of subsampling, can be one of</span>
+<span class="sd">          {:class:`DownSample`.__MODES__},</span>
+<span class="sd">        - activation: str or torch.nn.Module,</span>
+<span class="sd">          the activation function, can be one of</span>
+<span class="sd">          {:class:`Activations`}.</span>
+<span class="sd">        - kw_activation: dict,</span>
+<span class="sd">          keyword arguments for the activation function.</span>
+<span class="sd">        - kernel_initializer: str,</span>
+<span class="sd">          the kernel initializer, can be one of</span>
+<span class="sd">          {:class:`Initializers`}.</span>
+<span class="sd">        - kw_initializer: dict,</span>
+<span class="sd">          keyword arguments for the kernel initializer.</span>
+<span class="sd">        - bias: bool,</span>
+<span class="sd">          whether to use bias in the convolution.</span>
+<span class="sd">        - dilation: int,</span>
+<span class="sd">          the dilation factor for the convolution.</span>
+<span class="sd">        - base_width: int,</span>
+<span class="sd">          number of filters per group for the neck conv layer</span>
+<span class="sd">          usually number of filters of the initial conv layer</span>
+<span class="sd">          of the whole :class:`RegNet`.</span>
+<span class="sd">        - base_groups: int,</span>
+<span class="sd">          pattern of connections between inputs and outputs of</span>
+<span class="sd">          conv layers at the two ends, which should divide `groups`.</span>
+<span class="sd">        - base_filter_length: int,</span>
+<span class="sd">          lengths (sizes) of the filter kernels for conv layers at the two ends.</span>
+<span class="sd">        - attn: dict,</span>
+<span class="sd">          attention mechanism for the neck conv layer.</span>
+<span class="sd">          If is None, no attention mechanism is used.</span>
+<span class="sd">          If is not None, it should be a dict with the following items:</span>
 
-<span class="sd">              Other keys are specific to the attention mechanism.</span>
+<span class="sd">          - name: str, can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">          - pos: int, position of the attention mechanism.</span>
+
+<span class="sd">        Other keys are specific to the attention mechanism.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -680,31 +683,31 @@ document.write(`
 <span class="sd">        Hyper-parameters of the Module, ref. corr. config file.</span>
 <span class="sd">        Keyword arguments that must be set:</span>
 
-<span class="sd">            - filter_lengths: int or sequence of int,</span>
-<span class="sd">              filter length(s) (kernel size(s)) of the convolutions,</span>
-<span class="sd">              with granularity to the whole network, to each stage.</span>
-<span class="sd">            - subsample_lengths: int or sequence of int,</span>
-<span class="sd">              subsampling length(s) (ratio(s)) of all blocks,</span>
-<span class="sd">              with granularity to the whole network, to each stage.</span>
-<span class="sd">            - tot_blocks: int,</span>
-<span class="sd">              the total number of building blocks.</span>
-<span class="sd">            - w_a, w_0, w_m: float,</span>
-<span class="sd">              the parameters for the widths generating function.</span>
-<span class="sd">            - group_widths: int or sequence of int,</span>
-<span class="sd">              the number of channels in each group,</span>
-<span class="sd">              with granularity to the whole network, to each stage.</span>
-<span class="sd">            - num_blocks: sequence of int, optional,</span>
-<span class="sd">              the number of blocks in each stage,</span>
-<span class="sd">              if not given, will be computed from tot_blocks</span>
-<span class="sd">              and `w_a`, `w_0`, `w_m`.</span>
-<span class="sd">            - num_filters: int or sequence of int, optional,</span>
-<span class="sd">              the number of filters in each stage.</span>
-<span class="sd">              If not given, will be computed from tot_blocks</span>
-<span class="sd">              and `w_a`, `w_0`, `w_m`.</span>
-<span class="sd">            - stem: dict,</span>
-<span class="sd">              the config of the input stem.</span>
-<span class="sd">            - block: dict,</span>
-<span class="sd">              other parameters that can be set for the building blocks.</span>
+<span class="sd">        - filter_lengths: int or sequence of int,</span>
+<span class="sd">          filter length(s) (kernel size(s)) of the convolutions,</span>
+<span class="sd">          with granularity to the whole network, to each stage.</span>
+<span class="sd">        - subsample_lengths: int or sequence of int,</span>
+<span class="sd">          subsampling length(s) (ratio(s)) of all blocks,</span>
+<span class="sd">          with granularity to the whole network, to each stage.</span>
+<span class="sd">        - tot_blocks: int,</span>
+<span class="sd">          the total number of building blocks.</span>
+<span class="sd">        - w_a, w_0, w_m: float,</span>
+<span class="sd">          the parameters for the widths generating function.</span>
+<span class="sd">        - group_widths: int or sequence of int,</span>
+<span class="sd">          the number of channels in each group,</span>
+<span class="sd">          with granularity to the whole network, to each stage.</span>
+<span class="sd">        - num_blocks: sequence of int, optional,</span>
+<span class="sd">          the number of blocks in each stage,</span>
+<span class="sd">          if not given, will be computed from tot_blocks</span>
+<span class="sd">          and `w_a`, `w_0`, `w_m`.</span>
+<span class="sd">        - num_filters: int or sequence of int, optional,</span>
+<span class="sd">          the number of filters in each stage.</span>
+<span class="sd">          If not given, will be computed from tot_blocks</span>
+<span class="sd">          and `w_a`, `w_0`, `w_m`.</span>
+<span class="sd">        - stem: dict,</span>
+<span class="sd">          the config of the input stem.</span>
+<span class="sd">        - block: dict,</span>
+<span class="sd">          other parameters that can be set for the building blocks.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

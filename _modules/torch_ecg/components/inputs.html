@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/components/inputs';</script>
@@ -401,9 +403,9 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">einops.layers.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rearrange</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
@@ -507,7 +509,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_init</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to transform the waveform to the input tensor.</span>
 
 <span class="sd">        Parameters</span>
@@ -524,11 +526,11 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the waveform to the input tensor.</span>
 
 <span class="sd">        Parameters</span>
@@ -689,14 +691,14 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure the input type is `waveform`.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;waveform&quot;</span><span class="p">,</span> <span class="s2">&quot;`input_type` must be `waveform`&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span>
 
 <div class="viewcode-block" id="WaveformInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveformInput.html#torch_ecg.components.WaveformInput.from_waveform">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor`.</span>
 
@@ -723,7 +725,7 @@ document.write(`
 
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">from_waveform</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
@@ -735,16 +737,18 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Inputs from the FFT, via concatenating the amplitudes and the phases.</span>
 
 <span class="sd">    One can set the following optional parameters for initialization:</span>
-<span class="sd">        - nfft: int</span>
-<span class="sd">            the number of FFT bins.</span>
-<span class="sd">            If nfft is None, the number of FFT bins is computed from the input shape.</span>
-<span class="sd">        - drop_dc: bool, default True</span>
-<span class="sd">            Whether to drop the zero frequency bin (the DC component).</span>
-<span class="sd">        - norm: str, optional</span>
-<span class="sd">            The normalization of the FFT, can be</span>
-<span class="sd">                - &quot;forward&quot;</span>
-<span class="sd">                - &quot;backward&quot;</span>
-<span class="sd">                - &quot;ortho&quot;</span>
+
+<span class="sd">    - nfft: int</span>
+<span class="sd">        the number of FFT bins.</span>
+<span class="sd">        If nfft is None, the number of FFT bins is computed from the input shape.</span>
+<span class="sd">    - drop_dc: bool, default True</span>
+<span class="sd">        Whether to drop the zero frequency bin (the DC component).</span>
+<span class="sd">    - norm: str, optional</span>
+<span class="sd">        The normalization of the FFT, can be</span>
+
+<span class="sd">        - &quot;forward&quot;</span>
+<span class="sd">        - &quot;backward&quot;</span>
+<span class="sd">        - &quot;ortho&quot;</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -806,7 +810,7 @@ document.write(`
                 <span class="s2">&quot;ortho&quot;</span><span class="p">,</span>
             <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`norm` must be one of [`forward`, `backward`, `ortho`], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
@@ -821,7 +825,7 @@ document.write(`
 
 <div class="viewcode-block" id="FFTInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput.from_waveform">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor` of FFTs.</span>
 
@@ -850,7 +854,7 @@ document.write(`
 
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">from_waveform</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FFTInput.extra_repr_keys">
@@ -865,25 +869,26 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Inputs from the spectro-temporal domain.</span>
 
 <span class="sd">    One has to set the following parameters for initialization:</span>
-<span class="sd">        - n_bins : int</span>
-<span class="sd">            The number of frequency bins.</span>
-<span class="sd">        - fs (or sample_rate) : int</span>
-<span class="sd">            The sample rate of the waveform.</span>
+
+<span class="sd">    - n_bins : int</span>
+<span class="sd">      The number of frequency bins.</span>
+<span class="sd">    - fs (or sample_rate) : int</span>
+<span class="sd">      The sample rate of the waveform.</span>
 <span class="sd">    with the following optional parameters with default values:</span>
-<span class="sd">        - window_size : float, default: 1 / 20</span>
-<span class="sd">            The size of the window in seconds.</span>
-<span class="sd">        - overlap_size : float, default: 1 / 40</span>
-<span class="sd">            The overlap of the windows in seconds.</span>
-<span class="sd">        - feature_fs : None or float,</span>
-<span class="sd">            The sample rate of the features.</span>
-<span class="sd">            If specified, the features will be resampled</span>
-<span class="sd">            against `fs` to this sample rate.</span>
-<span class="sd">        - to1d : bool, default False</span>
-<span class="sd">            Whether to convert the features to 1D.</span>
-<span class="sd">            NOTE that if `to1d` is True,</span>
-<span class="sd">            then if the convolutions with ``groups=1`` applied to the `input`</span>
-<span class="sd">            acts on all the bins, which is &quot;global&quot;</span>
-<span class="sd">            w.r.t. the `bins` dimension of the corresponding 2d input.</span>
+<span class="sd">    - window_size : float, default: 1 / 20</span>
+<span class="sd">      The size of the window in seconds.</span>
+<span class="sd">    - overlap_size : float, default: 1 / 40</span>
+<span class="sd">      The overlap of the windows in seconds.</span>
+<span class="sd">    - feature_fs : None or float,</span>
+<span class="sd">      The sample rate of the features.</span>
+<span class="sd">      If specified, the features will be resampled</span>
+<span class="sd">      against `fs` to this sample rate.</span>
+<span class="sd">    - to1d : bool, default False</span>
+<span class="sd">      Whether to convert the features to 1D.</span>
+<span class="sd">      NOTE that if `to1d` is True,</span>
+<span class="sd">      then if the convolutions with ``groups=1`` applied to the `input`</span>
+<span class="sd">      acts on all the bins, which is &quot;global&quot;</span>
+<span class="sd">      w.r.t. the `bins` dimension of the corresponding 2d input.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -954,9 +959,7 @@ document.write(`
 <div class="viewcode-block" id="SpectrogramInput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrogramInput</span><span class="p">(</span><span class="n">_SpectralInput</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_SpectralInput</span><span class="o">.</span><span class="vm">__doc__</span>
-        <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_SpectralInput</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">    Examples</span>
 <span class="s2">    --------</span>
@@ -982,7 +985,6 @@ document.write(`
 <span class="s2">    True</span>
 
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="p">)</span>
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;SpectrogramInput&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1004,7 +1006,7 @@ document.write(`
                 <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;... channel n_bins time -&gt; ... (channel n_bins) time&quot;</span><span class="p">),</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1022,7 +1024,7 @@ document.write(`
 
 <div class="viewcode-block" id="SpectrogramInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput.from_waveform">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor` of spectrograms.</span>
 
@@ -1053,7 +1055,7 @@ document.write(`
 
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">from_waveform</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
 </pre></div>

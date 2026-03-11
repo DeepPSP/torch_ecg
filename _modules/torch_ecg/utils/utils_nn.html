@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/utils_nn';</script>
@@ -398,6 +400,7 @@ document.write(`
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -407,11 +410,14 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">floor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">PosixPath</span><span class="p">,</span> <span class="n">WindowsPath</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easydict</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasyDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">safetensors</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_open</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">safetensors.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_file</span><span class="p">,</span> <span class="n">save_file</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">DTYPE</span>
@@ -447,10 +453,14 @@ document.write(`
     <span class="n">_safe_globals</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">CFG</span><span class="p">,</span> <span class="n">DTYPE</span><span class="p">,</span> <span class="n">EasyDict</span><span class="p">,</span>
         <span class="n">Path</span><span class="p">,</span> <span class="n">PosixPath</span><span class="p">,</span> <span class="n">WindowsPath</span><span class="p">,</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">multiarray</span><span class="o">.</span><span class="n">_reconstruct</span><span class="p">,</span>
+        <span class="c1"># np.core.multiarray._reconstruct,</span>
         <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
     <span class="p">]</span> <span class="o">+</span> <span class="n">_get_np_dtypes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">):</span>
+        <span class="n">_safe_globals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">multiarray</span><span class="o">.</span><span class="n">_reconstruct</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_safe_globals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">_core</span><span class="o">.</span><span class="n">multiarray</span><span class="o">.</span><span class="n">_reconstruct</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="c1"># fmt: on</span>
 
 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="p">,</span> <span class="s2">&quot;add_safe_globals&quot;</span><span class="p">):</span>
@@ -459,7 +469,9 @@ document.write(`
 
 <div class="viewcode-block" id="extend_predictions">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extend_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">extended_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extend_predictions</span><span class="p">(</span>
+    <span class="n">preds</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">extended_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend the prediction arrays to prediction arrays in larger range of classes</span>
 
 <span class="sd">    Parameters</span>
@@ -540,8 +552,8 @@ document.write(`
     <span class="n">output_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.</span>
 
 <span class="sd">    This function is based on the discussion [#disc]_.</span>
@@ -687,17 +699,17 @@ document.write(`
     <span class="n">none_dim_msg</span> <span class="o">=</span> <span class="s2">&quot;spatial dimensions should be all `None`, or all not `None`&quot;</span>
     <span class="k">if</span> <span class="n">channel_last</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>
-            <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span><span class="p">)</span>
-            <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>
+            <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
             <span class="k">return</span> <span class="n">check_output_validity</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">none_dim_msg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]]):</span>
-            <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">out_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out channel dimension and spatial dimensions are all `None`&quot;</span><span class="p">)</span>
-            <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>
+            <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>  <span class="c1"># type: ignore</span>
             <span class="k">return</span> <span class="n">check_output_validity</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">any</span><span class="p">([</span><span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">none_dim_msg</span><span class="p">)</span>
@@ -749,12 +761,12 @@ document.write(`
             <span class="n">_asymmetric_padding</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">asymmetric_padding</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ap</span><span class="p">)</span> <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">asymmetric_padding</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ap</span><span class="p">)</span> <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">asymmetric_padding</span>  <span class="c1"># type: ignore</span>
             <span class="p">),</span> <span class="s2">&quot;Invalid `asymmetric_padding`&quot;</span>
             <span class="n">_asymmetric_padding</span> <span class="o">=</span> <span class="n">asymmetric_padding</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
-            <span class="n">_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_asymmetric_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_asymmetric_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_asymmetric_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="n">_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_asymmetric_padding</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output_padding</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">_output_padding</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">output_padding</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
@@ -800,13 +812,13 @@ document.write(`
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">floor</span><span class="p">(((</span><span class="n">i</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">minus_term</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span> <span class="o">/</span> <span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">floor</span><span class="p">(((</span><span class="n">i</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">minus_term</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span> <span class="o">/</span> <span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_input_shape</span><span class="p">,</span> <span class="n">_padding</span><span class="p">,</span> <span class="n">_dilation</span><span class="p">,</span> <span class="n">_kernel_size</span><span class="p">,</span> <span class="n">_stride</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="k">if</span> <span class="n">channel_last</span><span class="p">:</span>
-        <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">output_shape</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>
+        <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">output_shape</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="p">]</span> <span class="o">+</span> <span class="n">output_shape</span><span class="p">)</span>
+        <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="p">]</span> <span class="o">+</span> <span class="n">output_shape</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">return</span> <span class="n">check_output_validity</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span></div>
 
@@ -822,8 +834,8 @@ document.write(`
     <span class="n">padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a convolution layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -883,7 +895,7 @@ document.write(`
     <span class="n">padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a maxpool layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -936,7 +948,7 @@ document.write(`
     <span class="n">stride</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a avgpool layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -990,8 +1002,8 @@ document.write(`
     <span class="n">output_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+    <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a transpose convolution layer</span>
 
 <span class="sd">    Parameters</span>
@@ -1072,10 +1084,12 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a sequential model.&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;model should be nn.Sequential, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;model has no modules&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">_seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">output_shape</span>
-    <span class="k">return</span> <span class="n">output_shape</span></div>
+    <span class="k">return</span> <span class="n">output_shape</span>  <span class="c1"># type: ignore</span></div>
 
 
 
@@ -1181,7 +1195,7 @@ document.write(`
     <span class="n">strides</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">input_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the receptive field of several types of</span>
 <span class="sd">    :class:`~torch.nn.Module`.</span>
@@ -1276,14 +1290,14 @@ document.write(`
         <span class="n">receptive_field</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">receptive_field</span><span class="p">,</span> <span class="n">input_len</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">receptive_field</span> <span class="o">/=</span> <span class="n">fs</span>
-    <span class="k">return</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">receptive_field</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">receptive_field</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
 
 <div class="viewcode-block" id="default_collate_fn">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.default_collate_fn.html#torch_ecg.utils.default_collate_fn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">default_collate_fn</span><span class="p">(</span>
-    <span class="n">batch</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]],</span>
+    <span class="n">batch</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Default collate functions for model training.</span>
 
@@ -1307,14 +1321,14 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">collated</span> <span class="o">=</span> <span class="n">_default_collate_fn</span><span class="p">([</span><span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">])</span>
+        <span class="n">collated</span> <span class="o">=</span> <span class="n">_default_collate_fn</span><span class="p">([</span><span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">collated</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">)}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_default_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">_default_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_default_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_default_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collate functions for tuples of tensors.</span>
 
 <span class="sd">    The data generator (:class:`~torch.utils.data.Dataset`) should</span>
@@ -1395,7 +1409,7 @@ document.write(`
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
                 <span class="c1"># DO NOT use `int`, which might not work for numpy array elements</span>
-                <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                     <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">/</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]))</span>
                     <span class="k">if</span> <span class="n">ensure_odd</span><span class="p">:</span>
                         <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
@@ -1448,27 +1462,27 @@ document.write(`
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of trainable parameters in the model in terms of number of parameters.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">module_size_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of trainable parameters in the model in terms of memory capacity.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of the model in terms of number of parameters, including non-trainable parameters and buffers.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sizeof_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Size of the model in terms of memory capacity, including non-trainable parameters and buffers.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compute_module_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_buffers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">dtype</span>  <span class="c1"># type: ignore</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -1477,7 +1491,7 @@ document.write(`
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">device</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">device</span>  <span class="c1"># type: ignore</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -1493,28 +1507,30 @@ document.write(`
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">make_safe_globals</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFG</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_safe_globals</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a dictionary or a dictionary-like object safe for serialization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : dict</span>
+<span class="sd">    obj : Any</span>
 <span class="sd">        The dictionary or dictionary-like object.</span>
 <span class="sd">    remove_paths : bool, default True</span>
 <span class="sd">        Whether to remove paths in the dictionary.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    CFG</span>
-<span class="sd">        The safe dictionary.</span>
+<span class="sd">    Any</span>
+<span class="sd">        The safe dictionary, which will be a plain `dict` for `CFG` or `dict` objects.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">CFG</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">sg</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">sg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">}</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
@@ -1534,7 +1550,16 @@ document.write(`
             <span class="n">sg</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sg</span><span class="p">):</span>
             <span class="n">sg</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">sg</span>
+    <span class="k">return</span> <span class="n">sg</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="n">_SFT_META_MODEL_CFG</span> <span class="o">=</span> <span class="s2">&quot;model_config&quot;</span>
+<span class="n">_SFT_META_TRAIN_CFG</span> <span class="o">=</span> <span class="s2">&quot;train_config&quot;</span>
+<span class="n">_SFT_META_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;__format__&quot;</span>
+<span class="n">_SFT_META_VERSION</span> <span class="o">=</span> <span class="s2">&quot;torch_ecg.ckpt.v1&quot;</span>
+<span class="n">_SFT_META_EXTRA_JSON_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;__extra_json__/&quot;</span>  <span class="c1"># JSON-serialized extras</span>
+<span class="n">_SFT_EXTRA_TENSOR_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;__extra__/&quot;</span>  <span class="c1"># Tensor extras grouped under this prefix</span>
+<span class="n">_SFT_META_EXTRA_TENSOR_GROUPS</span> <span class="o">=</span> <span class="s2">&quot;__extra_tensor_groups__&quot;</span>  <span class="c1"># JSON list of groups</span>
 
 
 <div class="viewcode-block" id="CkptMixin">
@@ -1557,8 +1582,9 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        path : `path-like`</span>
 <span class="sd">            Path to the checkpoint.</span>
-<span class="sd">            If it is a directory, then this directory should contain only one checkpoint file</span>
-<span class="sd">            (with the extension `.pth` or `.pt`).</span>
+<span class="sd">            If it is a directory, then this directory should be one of the following cases:</span>
+<span class="sd">            - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.</span>
+<span class="sd">            - contain only one checkpoint file (with the extension `.pth`, `.pt`, `.safetensors`).</span>
 <span class="sd">        device : torch.device, optional</span>
 <span class="sd">            Map location of the model parameters,</span>
 <span class="sd">            defaults to &quot;cuda&quot; if available, otherwise &quot;cpu&quot;.</span>
@@ -1575,36 +1601,113 @@ document.write(`
 <span class="sd">            Auxiliary configs that are needed for data preprocessing, etc.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-            <span class="n">candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pth&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pt&quot;</span><span class="p">))</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;The directory should contain only one checkpoint file&quot;</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">_device</span> <span class="o">=</span> <span class="n">device</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">_device</span> <span class="o">=</span> <span class="n">device</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">weights_only</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="p">,</span> <span class="s2">&quot;add_safe_globals&quot;</span><span class="p">):</span>
                 <span class="n">weights_only</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">weights_only</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pth&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pt&quot;</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;The directory should contain only one checkpoint file&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># the directory should contain a `model.safetensors` file, a `model_config.json` file,</span>
+                <span class="c1"># and a `train_config.json` file</span>
+                <span class="n">model_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;model.safetensors&quot;</span>
+                <span class="n">train_config_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;train_config.json&quot;</span>
+                <span class="n">model_config_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;model_config.json&quot;</span>
+                <span class="k">assert</span> <span class="n">model_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="s2">&quot;model.safetensors file not found&quot;</span>
+                <span class="k">assert</span> <span class="n">train_config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="s2">&quot;train_config.json file not found&quot;</span>
+                <span class="k">assert</span> <span class="n">model_config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="s2">&quot;model_config.json file not found&quot;</span>
+                <span class="n">train_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">train_config_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+                <span class="n">model_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">model_config_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+                <span class="n">aux_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">CFG</span><span class="p">(</span><span class="n">model_config</span><span class="p">))</span>
+                <span class="k">if</span> <span class="s2">&quot;classes&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;n_leads&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">load_file</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">_device</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span>  <span class="c1"># type: ignore</span>
+
+            <span class="c1"># we have only one checkpoint file in the directory</span>
+            <span class="c1"># and we will use `torch.load` to load the model</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.safetensors&quot;</span><span class="p">:</span>  <span class="c1"># load safetensors format file</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">safe_open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">framework</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">meta</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">()</span> <span class="ow">or</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">_SFT_META_MODEL_CFG</span> <span class="ow">in</span> <span class="n">meta</span> <span class="ow">and</span> <span class="n">_SFT_META_TRAIN_CFG</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+                        <span class="n">model_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="n">_SFT_META_MODEL_CFG</span><span class="p">])</span>
+                        <span class="n">train_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="n">_SFT_META_TRAIN_CFG</span><span class="p">])</span>
+                        <span class="n">aux_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
+                        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">CFG</span><span class="p">(</span><span class="n">model_config</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="s2">&quot;classes&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="s2">&quot;n_leads&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span>
+                        <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                        <span class="c1"># load only model weights, and ignores extra tensors</span>
+                        <span class="n">state_dict</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">_SFT_EXTRA_TENSOR_PREFIX</span><span class="p">):</span>
+                                <span class="n">state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                        <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">_device</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span>  <span class="c1"># type: ignore</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;Error(s) in loading state_dict&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to load the safetensors file. &quot;</span>
+                    <span class="s2">&quot;The file may be corrupted, or the version of safetensors is incompatible. &quot;</span>
+                    <span class="s2">&quot;Try updating safetensors to the latest version, or check the file integrity.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># failed to load the safetensors file</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to load the safetensors file. &quot;</span>
+                    <span class="s2">&quot;The file may be corrupted, or the version of safetensors is incompatible. &quot;</span>
+                    <span class="s2">&quot;Try updating safetensors to the latest version, or check the file integrity.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ckpt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">_device</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="n">weights_only</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">UnpicklingError</span> <span class="k">as</span> <span class="n">pue</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Maybe you are trying to load a model trained with numpy 1, &quot;</span>
+                <span class="s2">&quot;Failed to load the checkpoint. This may be due to the changes in PyTorch 2.6+ &quot;</span>
+                <span class="s2">&quot;which defaults to `weights_only=True` for security reasons. &quot;</span>
+                <span class="s2">&quot;The checkpoint may contain custom classes like `CFG` or `DTYPE` that are not &quot;</span>
+                <span class="s2">&quot;allowed by default. Try updating `torch_ecg` to the latest version, &quot;</span>
+                <span class="s2">&quot;or setting `weights_only=False` if you trust the source of the checkpoint. &quot;</span>
+                <span class="s2">&quot;Another possible reason is that you are trying to load a model trained with numpy 1, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;but the current numpy version is </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Try setting `weights_only=False` and load the model again.&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pue</span>
         <span class="n">aux_config</span> <span class="o">=</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train_config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ckpt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">aux_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aux_config</span><span class="p">,</span> <span class="n">CFG</span><span class="p">):</span>
+            <span class="n">aux_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">aux_config</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">aux_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;input checkpoint has no sufficient data to recover a model&quot;</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_config&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
+        <span class="n">model_config</span> <span class="o">=</span> <span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_config&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">CFG</span><span class="p">):</span>
+            <span class="n">model_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">model_config</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">model_config</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;classes&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;classes&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;n_leads&quot;</span> <span class="ow">in</span> <span class="n">aux_config</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_config</span><span class="p">[</span><span class="s2">&quot;n_leads&quot;</span><span class="p">]</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span></div>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">_device</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span>  <span class="c1"># type: ignore</span></div>
 
 
 <div class="viewcode-block" id="CkptMixin.from_remote">
@@ -1650,8 +1753,20 @@ document.write(`
 
 <div class="viewcode-block" id="CkptMixin.save">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.save">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+        <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">,</span>
+        <span class="n">extra_items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_safetensors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">safetensors_single_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            If `path` has a suffix of `.pth` or `.pt`, `safetensors` will NOT be used unless `use_safetensors=True` is explicitly set.</span>
+<span class="sd">            Otherwise, `safetensors` is used by default.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1660,22 +1775,102 @@ document.write(`
 <span class="sd">        train_config : CFG</span>
 <span class="sd">            Config for training the model,</span>
 <span class="sd">            used when one restores the model.</span>
+<span class="sd">        extra_items : dict, optional</span>
+<span class="sd">            Extra items to save along with the model.</span>
+<span class="sd">            The values should be serializable: can be saved as a json file,</span>
+<span class="sd">            or is a dict of torch tensors.</span>
+
+<span class="sd">            .. versionadded:: 0.0.32</span>
+<span class="sd">        use_safetensors : bool, optional</span>
+<span class="sd">            Whether to use `safetensors` to save the model.</span>
+<span class="sd">            If `None`, it is determined by the suffix of `path`:</span>
+<span class="sd">            if it is `.pth` or `.pt`, then `use_safetensors` is set to False;</span>
+<span class="sd">            otherwise it is set to True.</span>
+<span class="sd">            If True, and the suffix of `path` is `.pth` or `.pt`,</span>
+<span class="sd">            the suffix is changed to `.safetensors`.</span>
+
+<span class="sd">            .. versionadded:: 0.0.32</span>
+<span class="sd">        safetensors_single_file : bool, default True</span>
+<span class="sd">            Whether to save the metadata along with the state dict into one file.</span>
+
+<span class="sd">            .. versionadded:: 0.0.32</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">extra_items</span> <span class="o">=</span> <span class="n">extra_items</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_safetensors</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.pt&quot;</span><span class="p">]</span>
+
+        <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">_train_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.pt&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">use_safetensors</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.safetensors&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`safetensors` is used by default. The saved file name is changed to </span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.safetensors&quot;</span><span class="p">:</span>
+            <span class="n">use_safetensors</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">and</span> <span class="n">safetensors_single_file</span><span class="p">:</span>
+            <span class="n">tensors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
+
+            <span class="n">tensor_groups</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extra_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="n">tensor_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tname</span><span class="p">,</span> <span class="n">ten</span> <span class="ow">in</span> <span class="n">val</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">tensors</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_SFT_EXTRA_TENSOR_PREFIX</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ten</span>
+
+            <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">_SFT_META_FORMAT</span><span class="p">:</span> <span class="n">_SFT_META_VERSION</span><span class="p">,</span>
+                <span class="n">_SFT_META_MODEL_CFG</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">_model_config</span><span class="p">),</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="n">_SFT_META_TRAIN_CFG</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">_train_config</span><span class="p">),</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="n">_SFT_META_EXTRA_TENSOR_GROUPS</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">tensor_groups</span><span class="p">)),</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extra_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="k">continue</span>
+                <span class="n">meta</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_SFT_META_EXTRA_JSON_PREFIX</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">save_file</span><span class="p">(</span><span class="n">tensors</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.safetensors&quot;</span><span class="p">),</span> <span class="n">metadata</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">use_safetensors</span><span class="p">:</span>  <span class="c1"># not single file</span>
+            <span class="c1"># save the model with safetensors into a zip file with the same name as `path`</span>
+            <span class="c1"># `model_config` and `train_config` are saved as json files</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">_model_config</span><span class="p">)</span>
+            <span class="n">_train_config</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">_train_config</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;model_config.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_model_config</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;train_config.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_train_config</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">save_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;model.safetensors&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="c1"># save extra items</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extra_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># if val is a dict of torch tensors, save them as safetensors</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="n">save_file</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.safetensors&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">return</span>
+
         <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;model_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                <span class="s2">&quot;model_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>  <span class="c1"># type: ignore</span>
                 <span class="s2">&quot;model_config&quot;</span><span class="p">:</span> <span class="n">_model_config</span><span class="p">,</span>
                 <span class="s2">&quot;train_config&quot;</span><span class="p">:</span> <span class="n">_train_config</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">extra_items</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">path</span><span class="p">,</span>
         <span class="p">)</span></div>

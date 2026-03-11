@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/augmenters/baseline_wander';</script>
@@ -397,12 +399,12 @@ document.write(`
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span>
@@ -485,9 +487,9 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">gaussian</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gaussian</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -585,8 +587,8 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sig</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">gen_baseline_wander</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">)</span></div>
+            <span class="n">sig</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">gen_baseline_wander</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_tensors</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
 <div class="viewcode-block" id="BaselineWanderAugmenter.extra_repr_keys">
@@ -627,7 +629,7 @@ document.write(`
     <span class="k">return</span> <span class="n">ampl</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d Gaussian noise of given</span>
 <span class="sd">    length, mean, and standard deviation.</span>
 
@@ -635,9 +637,9 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    siglen : int</span>
 <span class="sd">        Length of the noise signal.</span>
-<span class="sd">    mean : numbers.Real, default 0</span>
+<span class="sd">    mean : float or int, default 0</span>
 <span class="sd">        Mean value of the noise.</span>
-<span class="sd">    std : numbers.Real, default 0</span>
+<span class="sd">    std : float or int, default 0</span>
 <span class="sd">        Standard deviation of the noise.</span>
 
 <span class="sd">    Returns</span>
@@ -652,12 +654,12 @@ document.write(`
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_gen_sinusoidal_noise</span><span class="p">(</span>
     <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">start_phase</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">end_phase</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">amplitude_mean</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">amplitude_std</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">start_phase</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">end_phase</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">amplitude_mean</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">amplitude_std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d sinusoidal noise of given</span>
 <span class="sd">    length, amplitude, start phase, and end phase.</span>
 
@@ -665,15 +667,15 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    siglen : int</span>
 <span class="sd">        Length of the (noise) signal.</span>
-<span class="sd">    start_phase : numbers.Real</span>
+<span class="sd">    start_phase : float or int</span>
 <span class="sd">        Start phase, with units in degrees.</span>
-<span class="sd">    end_phase : numbers.Real</span>
+<span class="sd">    end_phase : float or int</span>
 <span class="sd">        End phase, with units in degrees.</span>
-<span class="sd">    amplitude : numbers.Real</span>
+<span class="sd">    amplitude : float or int</span>
 <span class="sd">        Amplitude of the sinusoidal curve.</span>
-<span class="sd">    amplitude_mean : numbers.Real</span>
+<span class="sd">    amplitude_mean : float or int</span>
 <span class="sd">        Mean amplitude of an extra Gaussian noise.</span>
-<span class="sd">    amplitude_std : numbers.Real, default 0</span>
+<span class="sd">    amplitude_std : float or int, default 0</span>
 <span class="sd">        Standard deviation of an extra Gaussian noise</span>
 
 <span class="sd">    Returns</span>
@@ -690,11 +692,11 @@ document.write(`
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_gen_baseline_wander</span><span class="p">(</span>
     <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">amplitude_gaussian</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
+    <span class="n">amplitude_gaussian</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d baseline wander of given</span>
 <span class="sd">    length, amplitude, and frequency.</span>
 
@@ -702,14 +704,14 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    siglen : int</span>
 <span class="sd">        Length of the (noise) signal.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the original signal.</span>
-<span class="sd">    bw_fs : numbers.Real, or list of numbers.Real</span>
+<span class="sd">    bw_fs : float or int, or list of float or int</span>
 <span class="sd">        Frequency (Frequencies) of the baseline wander.</span>
-<span class="sd">    amplitude : numbers.Real, or list of numbers.Real</span>
+<span class="sd">    amplitude : float or int, or list of float or int</span>
 <span class="sd">        Amplitude of the baseline wander (corr. to each frequency band).</span>
-<span class="sd">    amplitude_gaussian : Tuple[numbers.Real], default [0,0]</span>
-<span class="sd">        2-tuple of :class:`~numbers.Real`.</span>
+<span class="sd">    amplitude_gaussian : Tuple[float or int], default [0,0]</span>
+<span class="sd">        2-tuple of :class:`~float or int`.</span>
 <span class="sd">        Mean and std of amplitude of an extra Gaussian noise.</span>
 
 <span class="sd">    Returns</span>
@@ -723,11 +725,11 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bw</span> <span class="o">=</span> <span class="n">_gen_gaussian_noise</span><span class="p">(</span><span class="n">siglen</span><span class="p">,</span> <span class="n">amplitude_gaussian</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">amplitude_gaussian</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bw_fs</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bw_fs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="n">_bw_fs</span> <span class="o">=</span> <span class="p">[</span><span class="n">bw_fs</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_bw_fs</span> <span class="o">=</span> <span class="n">bw_fs</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="n">_amplitude</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_bw_fs</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_amplitude</span> <span class="o">=</span> <span class="n">amplitude</span>
@@ -742,11 +744,11 @@ document.write(`
 
 <span class="k">def</span><span class="w"> </span><span class="nf">gen_baseline_wander</span><span class="p">(</span>
     <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]],</span>
-    <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">gaussian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">bw_fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
+    <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">gaussian</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate 1d baseline wander of given</span>
 <span class="sd">    length, amplitude, and frequency.</span>
 
@@ -754,9 +756,9 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    sig : torch.Tensor</span>
 <span class="sd">        Batched ECGs to be augmented, of shape (batch, lead, siglen).</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the original signal.</span>
-<span class="sd">    bw_fs : numbers.Real, or list of numbers.Real,</span>
+<span class="sd">    bw_fs : float or int, or list of float or int,</span>
 <span class="sd">        Frequency (Frequencies) of the baseline wander.</span>
 <span class="sd">    ampl_ratio : numpy.ndarray, optional</span>
 <span class="sd">        Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,</span>
@@ -767,7 +769,7 @@ document.write(`
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bw : numpy.ndarray</span>
+<span class="sd">    bw : torch.Tensor</span>
 <span class="sd">        Baseline wander of given length, amplitude, frequency,</span>
 <span class="sd">        of shape ``(batch, lead, siglen)``.</span>
 

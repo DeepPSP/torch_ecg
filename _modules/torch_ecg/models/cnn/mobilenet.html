@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
@@ -43,6 +44,7 @@
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/mobilenet';</script>
@@ -611,19 +613,18 @@ document.write(`
 <span class="sd">        Other hyper-parameters of the Module, ref. corresponding config file.</span>
 <span class="sd">        key word arguments that have to be set in 3 sub-dict,</span>
 <span class="sd">        namely in &quot;entry_flow&quot;, &quot;middle_flow&quot;, and &quot;exit_flow&quot;, including</span>
-
-<span class="sd">            - out_channels: int,</span>
-<span class="sd">              number of channels of the output.</span>
-<span class="sd">            - kernel_size: int,</span>
-<span class="sd">              kernel size of down sampling.</span>
-<span class="sd">              If not specified, defaults to `down_scale`.</span>
-<span class="sd">            - groups: int,</span>
-<span class="sd">              connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">            - padding: int,</span>
-<span class="sd">              zero-padding added to both sides of the input.</span>
-<span class="sd">            - batch_norm: bool or Module,</span>
-<span class="sd">              batch normalization, the Module itself</span>
-<span class="sd">              or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.</span>
+<span class="sd">        - out_channels: int,</span>
+<span class="sd">          number of channels of the output.</span>
+<span class="sd">        - kernel_size: int,</span>
+<span class="sd">          kernel size of down sampling.</span>
+<span class="sd">          If not specified, defaults to `down_scale`.</span>
+<span class="sd">        - groups: int,</span>
+<span class="sd">          connection pattern (of channels) of the inputs and outputs.</span>
+<span class="sd">        - padding: int,</span>
+<span class="sd">          zero-padding added to both sides of the input.</span>
+<span class="sd">        - batch_norm: bool or Module,</span>
+<span class="sd">          batch normalization, the Module itself</span>
+<span class="sd">          or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -858,9 +859,9 @@ document.write(`
 <span class="sd">        If is None, no attention mechanism is used.</span>
 <span class="sd">        Keys:</span>
 
-<span class="sd">            - &quot;name&quot;: str, can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
-<span class="sd">            - &quot;pos&quot;: int, position of the attention mechanism,</span>
-<span class="sd">              other keys are specific to the attention mechanism.</span>
+<span class="sd">        - &quot;name&quot;: str, can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">        - &quot;pos&quot;: int, position of the attention mechanism,</span>
+<span class="sd">            other keys are specific to the attention mechanism.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1072,36 +1073,36 @@ document.write(`
 <span class="sd">        - stem: CFG,</span>
 <span class="sd">          config of the stem block, with the following keys:</span>
 
-<span class="sd">            - num_filters: int or Sequence[int],</span>
-<span class="sd">              number of filters in the first convolutional layer(s).</span>
-<span class="sd">            - filter_lengths: int or Sequence[int],</span>
-<span class="sd">              filter lengths (kernel sizes) in the first convolutional layer(s).</span>
-<span class="sd">            - subsample_lengths: int or Sequence[int],</span>
-<span class="sd">              subsample lengths (strides) in the first convolutional layer(s).</span>
+<span class="sd">          - num_filters: int or Sequence[int],</span>
+<span class="sd">            number of filters in the first convolutional layer(s).</span>
+<span class="sd">          - filter_lengths: int or Sequence[int],</span>
+<span class="sd">            filter lengths (kernel sizes) in the first convolutional layer(s).</span>
+<span class="sd">          - subsample_lengths: int or Sequence[int],</span>
+<span class="sd">            subsample lengths (strides) in the first convolutional layer(s).</span>
 
 <span class="sd">        - inv_res: CFG,</span>
 <span class="sd">          Config of the inverted residual blocks, with the following keys:</span>
 
-<span class="sd">            - expansions: Sequence[int],</span>
-<span class="sd">              expansion ratios of the inverted residual blocks.</span>
-<span class="sd">            - out_channels: Sequence[int],</span>
-<span class="sd">              number of output channels in each block.</span>
-<span class="sd">            - n_blocks: Sequence[int],</span>
-<span class="sd">              number of inverted residual blocks.</span>
-<span class="sd">            - strides: Sequence[int],</span>
-<span class="sd">              strides of the inverted residual blocks.</span>
-<span class="sd">            - filter_lengths: Sequence[int],</span>
-<span class="sd">              filter lengths (kernel sizes) in each block.</span>
+<span class="sd">          - expansions: Sequence[int],</span>
+<span class="sd">            expansion ratios of the inverted residual blocks.</span>
+<span class="sd">          - out_channels: Sequence[int],</span>
+<span class="sd">            number of output channels in each block.</span>
+<span class="sd">          - n_blocks: Sequence[int],</span>
+<span class="sd">            number of inverted residual blocks.</span>
+<span class="sd">          - strides: Sequence[int],</span>
+<span class="sd">            strides of the inverted residual blocks.</span>
+<span class="sd">          - filter_lengths: Sequence[int],</span>
+<span class="sd">            filter lengths (kernel sizes) in each block.</span>
 
 <span class="sd">        - exit_flow: CFG,</span>
 <span class="sd">          Config of the exit flow blocks, with the following keys:</span>
 
-<span class="sd">            - num_filters: int or Sequence[int],</span>
-<span class="sd">              number of filters in the final convolutional layer(s).</span>
-<span class="sd">            - filter_lengths: int or Sequence[int],</span>
-<span class="sd">              filter lengths (kernel sizes) in the final convolutional layer(s).</span>
-<span class="sd">            - subsample_lengths: int or Sequence[int],</span>
-<span class="sd">              subsample lengths (strides) in the final convolutional layer(s).</span>
+<span class="sd">          - num_filters: int or Sequence[int],</span>
+<span class="sd">            number of filters in the final convolutional layer(s).</span>
+<span class="sd">          - filter_lengths: int or Sequence[int],</span>
+<span class="sd">            filter lengths (kernel sizes) in the final convolutional layer(s).</span>
+<span class="sd">          - subsample_lengths: int or Sequence[int],</span>
+<span class="sd">            subsample lengths (strides) in the final convolutional layer(s).</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -1407,12 +1408,12 @@ document.write(`
 <span class="sd">    config : CFG, optional</span>
 <span class="sd">        Config of the stem block, with the following items:</span>
 
-<span class="sd">            - num_filters: int or Sequence[int],</span>
-<span class="sd">              number of filters in the first convolutional layer(s).</span>
-<span class="sd">            - filter_lengths: int or Sequence[int],</span>
-<span class="sd">              filter lengths (kernel sizes) in the first convolutional layer(s).</span>
-<span class="sd">            - subsample_lengths: int or Sequence[int],</span>
-<span class="sd">              subsample lengths (strides) in the first convolutional layer(s).</span>
+<span class="sd">        - num_filters: int or Sequence[int],</span>
+<span class="sd">          number of filters in the first convolutional layer(s).</span>
+<span class="sd">        - filter_lengths: int or Sequence[int],</span>
+<span class="sd">          filter lengths (kernel sizes) in the first convolutional layer(s).</span>
+<span class="sd">        - subsample_lengths: int or Sequence[int],</span>
+<span class="sd">          subsample lengths (strides) in the first convolutional layer(s).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1497,64 +1498,64 @@ document.write(`
 <span class="sd">        Other hyper-parameters of the Module, ref. corresponding config file.</span>
 <span class="sd">        Keyword arguments that must be set:</span>
 
-<span class="sd">            - groups: int,</span>
-<span class="sd">              number of groups in the convolutional layer(s) other than depthwise convolutions.</span>
-<span class="sd">            - norm: bool or str or Module,</span>
-<span class="sd">              normalization layer.</span>
-<span class="sd">            - bias: bool,</span>
-<span class="sd">              whether to use bias in the convolutional layer(s).</span>
-<span class="sd">            - width_multiplier: float,</span>
-<span class="sd">              multiplier of the number of output channels of the pointwise convolution.</span>
-<span class="sd">            - stem: CFG,</span>
-<span class="sd">              config of the stem block, with the following keys:</span>
+<span class="sd">        - groups: int,</span>
+<span class="sd">          number of groups in the convolutional layer(s) other than depthwise convolutions.</span>
+<span class="sd">        - norm: bool or str or Module,</span>
+<span class="sd">          normalization layer.</span>
+<span class="sd">        - bias: bool,</span>
+<span class="sd">          whether to use bias in the convolutional layer(s).</span>
+<span class="sd">        - width_multiplier: float,</span>
+<span class="sd">          multiplier of the number of output channels of the pointwise convolution.</span>
+<span class="sd">        - stem: CFG,</span>
+<span class="sd">          config of the stem block, with the following keys:</span>
 
-<span class="sd">                - num_filters: int or Sequence[int],</span>
-<span class="sd">                  number of filters in the first convolutional layer(s).</span>
-<span class="sd">                - filter_lengths: int or Sequence[int],</span>
-<span class="sd">                  filter lengths (kernel sizes) in the first convolutional layer(s).</span>
-<span class="sd">                - subsample_lengths: int or Sequence[int],</span>
-<span class="sd">                  subsample lengths (strides) in the first convolutional layer(s).</span>
+<span class="sd">          - num_filters: int or Sequence[int],</span>
+<span class="sd">            number of filters in the first convolutional layer(s).</span>
+<span class="sd">          - filter_lengths: int or Sequence[int],</span>
+<span class="sd">            filter lengths (kernel sizes) in the first convolutional layer(s).</span>
+<span class="sd">          - subsample_lengths: int or Sequence[int],</span>
+<span class="sd">            subsample lengths (strides) in the first convolutional layer(s).</span>
 
-<span class="sd">            - inv_res: CFG,</span>
-<span class="sd">              config of the inverted residual blocks, with the following keys:</span>
+<span class="sd">        - inv_res: CFG,</span>
+<span class="sd">          config of the inverted residual blocks, with the following keys:</span>
 
-<span class="sd">                - in_channels: Sequence[int],</span>
-<span class="sd">                  number of input channels.</span>
-<span class="sd">                - n_blocks: Sequence[int],</span>
-<span class="sd">                  number of inverted residual blocks.</span>
-<span class="sd">                - expansions: sequence of floats or sequence of sequence of floats,</span>
-<span class="sd">                  expansion ratios of the inverted residual blocks.</span>
-<span class="sd">                - filter_lengths: sequence of ints or sequence of sequence of ints,</span>
-<span class="sd">                  filter length of the depthwise convolution in the inverted residual blocks.</span>
-<span class="sd">                - stride: sequence of ints or sequence of sequence of ints, optional,</span>
-<span class="sd">                  stride of the depthwise convolution in the inverted residual blocks,</span>
-<span class="sd">                  defaults to ``[2] + [1] * (n_blocks - 1)``.</span>
-<span class="sd">                - groups: int, default 1,</span>
-<span class="sd">                  number of groups in the expansion and pointwise convolution</span>
-<span class="sd">                  in the inverted residual blocks.</span>
-<span class="sd">                - dilation: sequence of ints or sequence of sequence of ints, optional,</span>
-<span class="sd">                  dilation of the depthwise convolution in the inverted residual blocks.</span>
-<span class="sd">                - batch_norm: bool or str or nn.Module, default True,</span>
-<span class="sd">                  normalization layer to use, defaults to batch normalization.</span>
-<span class="sd">                - activation: str or nn.Module or sequence of str or torch.nn.Module,</span>
-<span class="sd">                  activation function to use.</span>
-<span class="sd">                - width_multiplier: float or sequence of floats, default 1.0,</span>
-<span class="sd">                  width multiplier of the inverted residual blocks.</span>
-<span class="sd">                - out_channels: sequence of ints or sequence of Sequence[int], optional,</span>
-<span class="sd">                  number of output channels of the inverted residual blocks,</span>
-<span class="sd">                  defaults to ``2 * in_channels``.</span>
-<span class="sd">                - attn: sequence of CFG or sequence of sequence of CFG, optional,</span>
-<span class="sd">                  config of attention layer to use, defaults to None.</span>
+<span class="sd">          - in_channels: Sequence[int],</span>
+<span class="sd">            number of input channels.</span>
+<span class="sd">          - n_blocks: Sequence[int],</span>
+<span class="sd">            number of inverted residual blocks.</span>
+<span class="sd">          - expansions: sequence of floats or sequence of sequence of floats,</span>
+<span class="sd">            expansion ratios of the inverted residual blocks.</span>
+<span class="sd">          - filter_lengths: sequence of ints or sequence of sequence of ints,</span>
+<span class="sd">            filter length of the depthwise convolution in the inverted residual blocks.</span>
+<span class="sd">          - stride: sequence of ints or sequence of sequence of ints, optional,</span>
+<span class="sd">            stride of the depthwise convolution in the inverted residual blocks,</span>
+<span class="sd">            defaults to ``[2] + [1] * (n_blocks - 1)``.</span>
+<span class="sd">          - groups: int, default 1,</span>
+<span class="sd">            number of groups in the expansion and pointwise convolution</span>
+<span class="sd">            in the inverted residual blocks.</span>
+<span class="sd">          - dilation: sequence of ints or sequence of sequence of ints, optional,</span>
+<span class="sd">            dilation of the depthwise convolution in the inverted residual blocks.</span>
+<span class="sd">          - batch_norm: bool or str or nn.Module, default True,</span>
+<span class="sd">            normalization layer to use, defaults to batch normalization.</span>
+<span class="sd">          - activation: str or nn.Module or sequence of str or torch.nn.Module,</span>
+<span class="sd">            activation function to use.</span>
+<span class="sd">          - width_multiplier: float or sequence of floats, default 1.0,</span>
+<span class="sd">            width multiplier of the inverted residual blocks.</span>
+<span class="sd">          - out_channels: sequence of ints or sequence of Sequence[int], optional,</span>
+<span class="sd">            number of output channels of the inverted residual blocks,</span>
+<span class="sd">            defaults to ``2 * in_channels``.</span>
+<span class="sd">          - attn: sequence of CFG or sequence of sequence of CFG, optional,</span>
+<span class="sd">            config of attention layer to use, defaults to None.</span>
 
-<span class="sd">            - exit_flow: CFG,</span>
-<span class="sd">                config of the exit flow blocks, with the following keys:</span>
+<span class="sd">        - exit_flow: CFG,</span>
+<span class="sd">          config of the exit flow blocks, with the following keys:</span>
 
-<span class="sd">                - num_filters: int or Sequence[int],</span>
-<span class="sd">                  number of filters in the final convolutional layer(s).</span>
-<span class="sd">                - filter_lengths: int or Sequence[int],</span>
-<span class="sd">                  filter lengths (kernel sizes) in the final convolutional layer(s).</span>
-<span class="sd">                - subsample_lengths: int or Sequence[int],</span>
-<span class="sd">                  subsample lengths (strides) in the final convolutional layer(s).</span>
+<span class="sd">          - num_filters: int or Sequence[int],</span>
+<span class="sd">            number of filters in the final convolutional layer(s).</span>
+<span class="sd">          - filter_lengths: int or Sequence[int],</span>
+<span class="sd">            filter lengths (kernel sizes) in the final convolutional layer(s).</span>
+<span class="sd">          - subsample_lengths: int or Sequence[int],</span>
+<span class="sd">            subsample lengths (strides) in the final convolutional layer(s).</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
