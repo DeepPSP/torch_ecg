@@ -12,3 +12,4 @@ openpyxl
 pre-commit
 packaging
 gdown
+torchcodec

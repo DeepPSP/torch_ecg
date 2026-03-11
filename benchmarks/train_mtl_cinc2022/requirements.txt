@@ -36,3 +36,4 @@ accelerate
 # which is installed with --no-deps
 julius>=0.2.3,<0.3
 torch-pitch-shift>=1.2.2
+torchcodec

@@ -85,6 +85,7 @@ dev = [
     "tensorboard",
     "torch_audiomentations",
     "torchaudio",
+    "torchcodec",
 ]
 docs = [
     "nbsphinx",
@@ -119,6 +120,7 @@ test = [
     "tensorboard",
     "torch_audiomentations",
     "torchaudio",
+    "torchcodec",
 ]
 
 [project.urls]
