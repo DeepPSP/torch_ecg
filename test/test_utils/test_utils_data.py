@@ -51,6 +51,9 @@ def test_get_mask():
         assert intervals == mask_to_intervals(mask[idx], 1)
     assert (get_mask(5000, np.arange(250, 5000 - 250, 400), 50, 50) == mask[0]).all()
 
+    with pytest.raises(ValueError, match="Unknown return_fmt. Expected 'mask' or 'intervals', but got"):
+        get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="xxx")  # type: ignore
+
 
 def test_mask_to_intervals():
     mask = np.zeros(100, dtype=int)
@@ -126,7 +129,7 @@ def test_rdheader():
     with pytest.raises(FileNotFoundError, match="file `not_exist_file\\.hea` not found"):
         rdheader("not_exist_file")
     with pytest.raises(TypeError, match="header_data must be str or sequence of str, but got"):
-        rdheader(1)
+        rdheader(1)  # type: ignore
 
 
 def test_ensure_lead_fmt():

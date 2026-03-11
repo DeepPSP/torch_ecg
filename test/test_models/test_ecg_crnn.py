@@ -24,18 +24,18 @@ def test_ecg_crnn():
     inp = torch.randn(2, n_leads, 2000).to(DEVICE)
 
     grid = itertools.product(
-        [cnn_name for cnn_name in ECG_CRNN_CONFIG.cnn.keys() if cnn_name != "name"],
-        [rnn_name for rnn_name in ECG_CRNN_CONFIG.rnn.keys() if rnn_name != "name"] + ["none"],
-        [attn_name for attn_name in ECG_CRNN_CONFIG.attn.keys() if attn_name != "name"] + ["none"],
+        [cnn_name for cnn_name in ECG_CRNN_CONFIG.cnn.keys() if cnn_name != "name"],  # type: ignore
+        [rnn_name for rnn_name in ECG_CRNN_CONFIG.rnn.keys() if rnn_name != "name"] + ["none"],  # type: ignore
+        [attn_name for attn_name in ECG_CRNN_CONFIG.attn.keys() if attn_name != "name"] + ["none"],  # type: ignore
         ["none", "max", "avg"],  # global pool
     )
-    total = (len(ECG_CRNN_CONFIG.cnn.keys()) - 1) * len(ECG_CRNN_CONFIG.rnn.keys()) * len(ECG_CRNN_CONFIG.attn.keys()) * 3
+    total = (len(ECG_CRNN_CONFIG.cnn.keys()) - 1) * len(ECG_CRNN_CONFIG.rnn.keys()) * len(ECG_CRNN_CONFIG.attn.keys()) * 3  # type: ignore
 
     for cnn_name, rnn_name, attn_name, global_pool in tqdm(grid, total=total, mininterval=1):
         config = deepcopy(ECG_CRNN_CONFIG)
-        config.cnn.name = cnn_name
-        config.rnn.name = rnn_name
-        config.attn.name = attn_name
+        config.cnn.name = cnn_name  # type: ignore
+        config.rnn.name = rnn_name  # type: ignore
+        config.attn.name = attn_name  # type: ignore
         config.global_pool = global_pool
 
         model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config).to(DEVICE)
@@ -55,15 +55,15 @@ def test_ecg_crnn():
         # load weights from v1
         model.cnn.load_state_dict(model_v1.cnn.state_dict())
         if model.rnn.__class__.__name__ != "Identity":
-            model.rnn.load_state_dict(model_v1.rnn.state_dict())
+            model.rnn.load_state_dict(model_v1.rnn.state_dict())  # type: ignore
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
 
-    doi = model.doi
+    doi = model.doi  # type: ignore
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi]), doi
-    doi = model_v1.doi
+    doi = model_v1.doi  # type: ignore
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi]), doi
 
@@ -85,24 +85,24 @@ def test_warns_errors():
         model_v1.inference(inp)
 
     config = deepcopy(ECG_CRNN_CONFIG)
-    config.cnn.name = "not_implemented"
-    config.cnn.not_implemented = {}
+    config.cnn.name = "not_implemented"  # type: ignore
+    config.cnn.not_implemented = {}  # type: ignore
     with pytest.raises(NotImplementedError, match="CNN \042.+\042 not implemented yet"):
         ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
     with pytest.raises(NotImplementedError, match="CNN \042.+\042 not implemented yet"):
         ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config)
 
     config = deepcopy(ECG_CRNN_CONFIG)
-    config.rnn.name = "not_implemented"
-    config.rnn.not_implemented = {}
+    config.rnn.name = "not_implemented"  # type: ignore
+    config.rnn.not_implemented = {}  # type: ignore
     with pytest.raises(NotImplementedError, match="RNN \042.+\042 not implemented yet"):
         ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
     with pytest.raises(NotImplementedError, match="RNN \042.+\042 not implemented yet"):
         ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config)
 
     config = deepcopy(ECG_CRNN_CONFIG)
-    config.attn.name = "not_implemented"
-    config.attn.not_implemented = {}
+    config.attn.name = "not_implemented"  # type: ignore
+    config.attn.not_implemented = {}  # type: ignore
     with pytest.raises(NotImplementedError, match="Attention \042.+\042 not implemented yet"):
         ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
     with pytest.raises(NotImplementedError, match="Attention \042.+\042 not implemented yet"):
@@ -128,10 +128,10 @@ def test_from_v1():
     n_leads = 12
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
     model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config)
-    model_v1.save(_TMP_DIR / "ecg_crnn_v1.pth", {"classes": classes, "n_leads": n_leads})
+    model_v1.save(_TMP_DIR / "ecg_crnn_v1.pth", {"classes": classes, "n_leads": n_leads}, use_safetensors=False)  # type: ignore
     model = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth")
     del model
-    model, _ = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth", return_config=True)
+    model, _ = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth", return_config=True)  # type: ignore
     (_TMP_DIR / "ecg_crnn_v1.pth").unlink()
     del model_v1, model
 

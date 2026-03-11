@@ -95,7 +95,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         super().__init__(ModelCfg.mask_classes, n_leads, model_config)
 
     @torch.no_grad()
-    def inference(
+    def inference(  # type: ignore
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
         bin_pred_thr: float = 0.5,
@@ -130,7 +130,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             prob = self.softmax(prob)
         else:
             prob = torch.sigmoid(prob)
-        prob = prob.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
 
         if "i" in self.classes:
             mask = np.argmax(prob, axis=-1)
@@ -165,37 +165,37 @@ class LUDBTrainer(BaseTrainer):
         """
         Parameters
         ----------
-        model: Module,
+        model : Module
             the model to be trained
-        model_config: dict,
+        model_config : dict
             the configuration of the model,
             used to keep a record in the checkpoints
-        train_config: dict,
+        train_config : dict
             the configuration of the training,
             including configurations for the data loader, for the optimization, etc.
             will also be recorded in the checkpoints.
             `train_config` should at least contain the following keys:
-                "monitor": str,
-                "loss": str,
-                "n_epochs": int,
-                "batch_size": int,
-                "learning_rate": float,
-                "lr_scheduler": str,
-                    "lr_step_size": int, optional, depending on the scheduler
-                    "lr_gamma": float, optional, depending on the scheduler
-                    "max_lr": float, optional, depending on the scheduler
-                "optimizer": str,
-                    "decay": float, optional, depending on the optimizer
-                    "momentum": float, optional, depending on the optimizer
-        device: torch.device, optional,
+            - "monitor": str,
+            - "loss": str,
+            - "n_epochs": int,
+            - "batch_size": int,
+            - "learning_rate": float,
+            - "lr_scheduler": str,
+                - "lr_step_size": int, optional, depending on the scheduler
+                - "lr_gamma": float, optional, depending on the scheduler
+                - "max_lr": float, optional, depending on the scheduler
+            - "optimizer": str,
+                - "decay": float, optional, depending on the optimizer
+                - "momentum": float, optional, depending on the optimizer
+        device : torch.device, optional
             the device to be used for training
-        lazy: bool, default True,
+        lazy : bool, default True
             whether to initialize the data loader lazily
 
         """
         super().__init__(
             model=model,
-            dataset_cls=LUDBDataset,
+            dataset_cls=LUDBDataset,  # type: ignore
             model_config=model_config,
             train_config=train_config,
             device=device,
@@ -212,21 +212,21 @@ class LUDBTrainer(BaseTrainer):
 
         Parameters
         ----------
-        train_dataset: Dataset, optional,
+        train_dataset : Dataset, optional
             the training dataset
-        val_dataset: Dataset, optional,
+        val_dataset : Dataset, optional
             the validation dataset
 
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)  # type: ignore
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)  # type: ignore
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         if torch.cuda.is_available():
@@ -235,7 +235,7 @@ class LUDBTrainer(BaseTrainer):
             num_workers = 0
 
         self.train_loader = DataLoader(
-            dataset=train_dataset,
+            dataset=train_dataset,  # type: ignore
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=num_workers,
@@ -246,7 +246,7 @@ class LUDBTrainer(BaseTrainer):
 
         if self.train_config.debug:
             self.val_train_loader = DataLoader(
-                dataset=val_train_dataset,
+                dataset=val_train_dataset,  # type: ignore
                 batch_size=self.batch_size,
                 shuffle=True,
                 num_workers=num_workers,
@@ -257,7 +257,7 @@ class LUDBTrainer(BaseTrainer):
         else:
             self.val_train_loader = None
         self.val_loader = DataLoader(
-            dataset=val_dataset,
+            dataset=val_dataset,  # type: ignore
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=num_workers,
@@ -266,7 +266,7 @@ class LUDBTrainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:  # type: ignore
         """
         Parameters
         ----------
@@ -331,9 +331,9 @@ class LUDBTrainer(BaseTrainer):
         # each scoring is a dict consisting of the following metrics:
         # sensitivity, precision, f1_score, mean_error, standard_deviation
         eval_res_split = compute_ludb_metrics(
-            np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),
-            np.repeat(all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1),
-            self._cm,
+            np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),  # type: ignore
+            np.repeat(all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1),  # type: ignore
+            self._cm,  # type: ignore
             self.train_config.fs,
         )
 
@@ -356,7 +356,7 @@ class LUDBTrainer(BaseTrainer):
 
         self.model.train()
 
-        return eval_res
+        return eval_res  # type: ignore
 
     @property
     def _cm(self) -> Dict[str, str]:
@@ -401,9 +401,10 @@ def test_unet_trainer() -> None:
     # ds_train_fl = LUDB(train_cfg_fl, training=True, lazy=False)
     # ds_val_fl = LUDB(train_cfg_fl, training=False, lazy=False)
 
-    train_cfg_fl.keep_checkpoint_max = 0
-    train_cfg_fl.monitor = None
-    train_cfg_fl.n_epochs = 2
+    train_cfg_fl.keep_checkpoint_max = 2
+    train_cfg_fl.monitor = "f1_score"
+    train_cfg_fl.n_epochs = 3
+    train_cfg_fl.flooding_level = 0.1
 
     model_config = deepcopy(ModelCfg)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -423,6 +424,8 @@ def test_unet_trainer() -> None:
         lazy=False,
     )
 
+    print(repr(trainer))
+
     bmd = trainer.train()
 
     del model, trainer, bmd
@@ -430,7 +433,7 @@ def test_unet_trainer() -> None:
 
 def test_base_trainer():
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-        BaseTrainer(
+        BaseTrainer(  # type: ignore
             model=ECG_UNET_LUDB(12, ModelCfg),
             dataset_cls=LUDBDataset,
             train_config=LUDBTrainCfg,

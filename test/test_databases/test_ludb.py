@@ -60,7 +60,7 @@ class TestLUDB:
         data_1 = reader.load_data(0, leads=[1, 7])
         assert data.shape[0] == 12
         assert data_1.shape[0] == 2
-        assert np.allclose(data[[1, 7], :], data_1)
+        assert np.allclose(data[[1, 7], :], data_1)  # type: ignore
 
     def test_load_ann(self):
         ann = reader.load_ann(0)
@@ -114,7 +114,11 @@ class TestLUDB:
     def test_plot(self):
         reader.plot(0, leads=["I", 5], ticks_granularity=2)
         data = reader.load_data(0, leads="III", data_format="flat")
-        reader.plot(0, data=data, leads="III")
+        reader.plot(0, data=data, leads="III")  # type: ignore
+
+    def test_get_absolute_path(self):
+        path = reader.get_absolute_path(0, extension="avf")
+        assert path.is_file() and path.suffix == ".avf"
 
 
 config = deepcopy(LUDBTrainCfg)

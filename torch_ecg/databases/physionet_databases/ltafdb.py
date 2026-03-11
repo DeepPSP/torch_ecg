@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import CFG
 from ...utils.misc import add_docstring
@@ -160,7 +161,7 @@ class LTAFDB(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     def load_ann(
@@ -234,7 +235,7 @@ class LTAFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         rhythm_format: Literal["intervals", "mask"] = "intervals",
         keep_original: bool = False,
-    ) -> Union[Dict[str, list], np.ndarray]:
+    ) -> Union[Dict[str, list], NDArray]:
         """Load rhythm annotations of the record.
 
         Rhythm annotations are stored in the `aux_note` attribute
@@ -323,7 +324,7 @@ class LTAFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         beat_format: Literal["beat", "dict"] = "beat",
         keep_original: bool = False,
-    ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
+    ) -> Union[Dict[str, NDArray], List[BeatAnn]]:
         """Load beat annotations of the record.
 
         Beat annotations are stored in the `symbol` attribute
@@ -390,7 +391,7 @@ class LTAFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         use_manual: bool = True,
         keep_original: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load rpeak indices of the record.
 
         Rpeak indices, or equivalently qrs complex locations,
@@ -437,10 +438,10 @@ class LTAFDB(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
-        beat_ann: Optional[Dict[str, np.ndarray]] = None,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
+        beat_ann: Optional[Dict[str, NDArray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[int, List[int]]] = None,
         sampfrom: Optional[int] = None,

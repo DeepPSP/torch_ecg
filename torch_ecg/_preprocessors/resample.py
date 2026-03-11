@@ -1,10 +1,9 @@
 """Resample the signal into fixed sampling frequency or length."""
 
-from numbers import Real
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Union
 
-import numpy as np
 import scipy.signal as SS
+from numpy.typing import NDArray
 
 from ..cfg import DEFAULTS
 from .base import PreProcessor
@@ -46,18 +45,17 @@ class Resample(PreProcessor):
         self.siglen = siglen
         assert sum([bool(self.fs), bool(self.siglen)]) == 1, "one and only one of `fs` and `siglen` should be set"
 
-    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: NDArray, fs: Union[float, int]) -> Tuple[NDArray, Union[float, int]]:
         """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-
-                - 1d array, which is a single-lead ECG;
-                - 2d array, which is a multi-lead ECG of "lead_first" format;
-                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
-        fs : numbers.Real
+            - 1d array, which is a single-lead ECG;
+            - 2d array, which is a multi-lead ECG of "lead_first" format;
+            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+        fs : float or int
             Sampling frequency of the ECG signal.
 
         Returns
@@ -75,7 +73,7 @@ class Resample(PreProcessor):
         else:  # self.siglen is not None
             rsmp_sig = SS.resample(sig.astype(DEFAULTS.np_dtype), num=self.siglen, axis=-1)
             new_fs = int(round(self.siglen / sig.shape[-1] * fs))
-        return rsmp_sig, new_fs
+        return rsmp_sig, new_fs  # type: ignore
 
     def extra_repr_keys(self) -> List[str]:
         return [

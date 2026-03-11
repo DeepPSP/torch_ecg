@@ -63,10 +63,10 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         If is None, no attention mechanism is used.
         keys:
 
-            - name: str,
-              can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            - pos: int,
-              position of the attention mechanism.
+        - name: str,
+          can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+        - pos: int,
+          position of the attention mechanism.
 
         Other keys are specific to the attention mechanism.
     config : dict
@@ -297,10 +297,10 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         If is  None, no attention mechanism is used.
         Keys:
 
-            - name: str,
-              can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            - pos: int,
-              position of the attention mechanism.
+        - name: str,
+          can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+        - pos: int,
+          position of the attention mechanism.
 
         Other keys are specific to the attention mechanism.
     config : dict
@@ -643,25 +643,25 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         Hyper-parameters of the Module, ref. corr. config file.
         keyword arguments that must be set:
 
-            - bias: bool,
-              if True, each convolution will have a bias term.
-            - num_blocks: sequence of int,
-              number of building blocks in each macro block.
-            - filter_lengths: int or sequence of int or sequence of sequences of int,
-              filter length(s) (kernel size(s)) of the convolutions,
-              with granularity to the whole network, to each macro block,
-              or to each building block.
-            - subsample_lengths: int or sequence of int or sequence of sequences of int,
-              subsampling length(s) (ratio(s)) of all blocks,
-              with granularity to the whole network, to each macro block,
-              or to each building block,
-              the former 2 subsample at the first building block.
-            - groups: int,
-              connection pattern (of channels) of the inputs and outputs.
-            - stem: dict,
-              other parameters that can be set for the input stem.
-            - block: dict,
-              other parameters that can be set for the building blocks.
+        - bias: bool,
+          if True, each convolution will have a bias term.
+        - num_blocks: sequence of int,
+          number of building blocks in each macro block.
+        - filter_lengths: int or sequence of int or sequence of sequences of int,
+          filter length(s) (kernel size(s)) of the convolutions,
+          with granularity to the whole network, to each macro block,
+          or to each building block.
+        - subsample_lengths: int or sequence of int or sequence of sequences of int,
+          subsampling length(s) (ratio(s)) of all blocks,
+          with granularity to the whole network, to each macro block,
+          or to each building block,
+          the former 2 subsample at the first building block.
+        - groups: int,
+          connection pattern (of channels) of the inputs and outputs.
+        - stem: dict,
+          other parameters that can be set for the input stem.
+        - block: dict,
+          other parameters that can be set for the building blocks.
 
         For a full list of configurable parameters, ref. corr. config file.
 

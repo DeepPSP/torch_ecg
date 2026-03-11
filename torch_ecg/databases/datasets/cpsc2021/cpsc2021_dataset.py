@@ -46,6 +46,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
 from torch.utils.data.dataset import Dataset
@@ -78,19 +79,19 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     The returned values (tuple) of :meth:`__getitem__` depends on the task:
 
-        1. "qrs_detection": (`data`, `qrs_mask`, None)
-        2. "rr_lstm": (`rr_seq`, `rr_af_mask`, `rr_weight_mask`)
-        3. "main": (`data`, `af_mask`, `weight_mask`)
+    1. "qrs_detection": (`data`, `qrs_mask`, None)
+    2. "rr_lstm": (`rr_seq`, `rr_af_mask`, `rr_weight_mask`)
+    3. "main": (`data`, `af_mask`, `weight_mask`)
 
     where
 
-        - `data` shape: ``(n_lead, n_sample)``
-        - `qrs_mask` shape: ``(n_sample, 1)``
-        - `af_mask` shape: ``(n_sample, 1)``
-        - `weight_mask` shape: ``(n_sample, 1)``
-        - `rr_seq` shape: ``(n_rr, 1)``
-        - `rr_af_mask` shape: ``(n_rr, 1)``
-        - `rr_weight_mask` shape: ``(n_rr, 1)``
+    - `data` shape: ``(n_lead, n_sample)``
+    - `qrs_mask` shape: ``(n_sample, 1)``
+    - `af_mask` shape: ``(n_sample, 1)``
+    - `weight_mask` shape: ``(n_sample, 1)``
+    - `rr_seq` shape: ``(n_rr, 1)``
+    - `rr_af_mask` shape: ``(n_rr, 1)``
+    - `rr_weight_mask` shape: ``(n_rr, 1)``
 
     Typical values of ``n_sample`` and ``n_rr`` are 6000 and 30, respectively.
 
@@ -386,7 +387,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.fdr)
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, ...]:
         if self.lazy:
             if self.task in ["qrs_detection"]:
                 return self.fdr[index][:2]
@@ -426,7 +427,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         fp = self.segments_dirs.ann[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
-    def _load_seg_data(self, seg: str) -> np.ndarray:
+    def _load_seg_data(self, seg: str) -> NDArray:
         """Load the data of the segment.
 
         Parameters
@@ -456,19 +457,18 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         seg_ann : dict
             Annotations of the segment, containing:
-
-                - rpeaks: indices of rpeaks of the segment
-                - qrs_mask: mask of qrs complexes of the segment
-                - af_mask: mask of af episodes of the segment
-                - interval: interval ([start_idx, end_idx]) in
-                  the original ECG record of the segment
+            - rpeaks: indices of rpeaks of the segment
+            - qrs_mask: mask of qrs complexes of the segment
+            - af_mask: mask of af episodes of the segment
+            - interval: interval ([start_idx, end_idx]) in
+              the original ECG record of the segment
 
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_ann = {k: v.flatten() for k, v in loadmat(str(seg_ann_fp)).items() if not k.startswith("__")}
         return seg_ann
 
-    def _load_seg_mask(self, seg: str, task: Optional[str] = None) -> Union[np.ndarray, Dict[str, np.ndarray]]:
+    def _load_seg_mask(self, seg: str, task: Optional[str] = None) -> Union[NDArray, Dict[str, NDArray]]:
         """Load the mask(s) of segment.
 
         Parameters
@@ -510,7 +510,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             seg_mask = seg_mask["af_mask"]
         return seg_mask
 
-    def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
+    def _load_seg_seq_lab(self, seg: str, reduction: int) -> NDArray:
         """Load sequence labeling annotations of the segment.
 
         Parameters
@@ -561,7 +561,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         fp = self.rr_seq_dirs[subject] / f"{seq_name}.{self.rr_seq_ext}"
         return fp
 
-    def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
+    def _load_rr_seq(self, seq_name: str) -> Dict[str, NDArray]:
         """Load the metadata of the rr_seq.
 
         Parameters
@@ -573,13 +573,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         dict
             metadata of sequence of rr intervals, including
-
-                - rr: the sequence of rr intervals, with units in seconds,
-                  of shape ``(self.seglen, 1)``
-                - label: label of the rr intervals, 0 for normal, 1 for af,
-                  of shape ``(self.seglen, self.n_classes)``
-                - interval: interval of the current rr sequence in the whole
-                  rr sequence in the original record
+            - rr: the sequence of rr intervals, with units in seconds,
+              of shape ``(self.seglen, 1)``
+            - label: label of the rr intervals, 0 for normal, 1 for af,
+              of shape ``(self.seglen, self.n_classes)``
+            - interval: interval of the current rr sequence in the whole
+              rr sequence in the original record
 
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
@@ -680,7 +679,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         pps, _ = self.ppm(self.reader.load_data(rec), self.config.fs)
         savemat(save_fp, {"ecg": pps}, format="5")
 
-    def load_preprocessed_data(self, rec: str) -> np.ndarray:
+    def load_preprocessed_data(self, rec: str) -> NDArray:
         """Load the preprocessed data of the record.
 
         Parameters
@@ -860,7 +859,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __generate_segment(
         self,
         rec: str,
-        data: np.ndarray,
+        data: NDArray,
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
@@ -885,12 +884,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         dict
             Segments (meta-)data, containing:
 
-                - data: values of the segment, with units in mV
-                - rpeaks: indices of rpeaks of the segment
-                - qrs_mask: mask of qrs complexes of the segment
-                - af_mask: mask of af episodes of the segment
-                - interval: interval ([start_idx, end_idx]) in the
-                  original ECG record of the segment
+            - data: values of the segment, with units in mV
+            - rpeaks: indices of rpeaks of the segment
+            - qrs_mask: mask of qrs complexes of the segment
+            - af_mask: mask of af episodes of the segment
+            - interval: interval ([start_idx, end_idx]) in the
+              original ECG record of the segment
 
         """
         assert not all([start_idx is None, end_idx is None]), "at least one of `start_idx` and `end_idx` should be set"
@@ -1439,7 +1438,7 @@ class _FastDataReader(ReprMixin, Dataset):
             "main": "af_mask",
         }
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, ...]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, ...]:
         if isinstance(index, slice):
             return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.task in [

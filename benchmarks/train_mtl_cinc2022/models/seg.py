@@ -138,8 +138,8 @@ class SEQ_LAB_NET_CINC2022(ECG_SEQ_LAB_NET):
         else:
             prob = self.sigmoid(self.forward(_input)["segmentation"])
             pred = (prob > bin_pred_threshold).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
-        prob = prob.cpu().detach().numpy()
-        pred = pred.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
 
         segmentation_output = SequenceLabellingOutput(
             classes=self.classes,
@@ -264,8 +264,8 @@ class UNET_CINC2022(ECG_UNET):
         else:
             prob = self.sigmoid(self.forward(_input)["segmentation"])
             pred = (prob > bin_pred_threshold).int() * (prob == prob.max(dim=-1, keepdim=True).values).int()
-        prob = prob.cpu().detach().numpy()
-        pred = pred.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
 
         segmentation_output = SequenceLabellingOutput(
             classes=self.classes,

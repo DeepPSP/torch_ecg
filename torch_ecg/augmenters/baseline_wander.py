@@ -2,12 +2,12 @@
 
 import multiprocessing as mp
 from itertools import repeat
-from numbers import Real
 from random import randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
+from numpy.typing import NDArray
 from torch import Tensor
 
 from ..cfg import DEFAULTS
@@ -88,9 +88,9 @@ class BaselineWanderAugmenter(Augmenter):
     def __init__(
         self,
         fs: int,
-        bw_fs: Optional[np.ndarray] = None,
-        ampl_ratio: Optional[np.ndarray] = None,
-        gaussian: Optional[np.ndarray] = None,
+        bw_fs: Optional[NDArray] = None,
+        ampl_ratio: Optional[NDArray] = None,
+        gaussian: Optional[NDArray] = None,
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any,
@@ -186,8 +186,8 @@ class BaselineWanderAugmenter(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob > 0:
-            sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
-        return (sig, label, *extra_tensors)
+            sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))  # type: ignore
+        return (sig, label, *extra_tensors)  # type: ignore
 
     def extra_repr_keys(self) -> List[str]:
         return [
@@ -223,7 +223,7 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
     return ampl
 
 
-def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarray:
+def _gen_gaussian_noise(siglen: int, mean: Union[float, int] = 0, std: Union[float, int] = 0) -> NDArray:
     """Generate 1d Gaussian noise of given
     length, mean, and standard deviation.
 
@@ -231,9 +231,9 @@ def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarra
     ----------
     siglen : int
         Length of the noise signal.
-    mean : numbers.Real, default 0
+    mean : float or int, default 0
         Mean value of the noise.
-    std : numbers.Real, default 0
+    std : float or int, default 0
         Standard deviation of the noise.
 
     Returns
@@ -248,12 +248,12 @@ def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarra
 
 def _gen_sinusoidal_noise(
     siglen: int,
-    start_phase: Real,
-    end_phase: Real,
-    amplitude: Real,
-    amplitude_mean: Real = 0,
-    amplitude_std: Real = 0,
-) -> np.ndarray:
+    start_phase: Union[float, int],
+    end_phase: Union[float, int],
+    amplitude: Union[float, int],
+    amplitude_mean: Union[float, int] = 0,
+    amplitude_std: Union[float, int] = 0,
+) -> NDArray:
     """Generate 1d sinusoidal noise of given
     length, amplitude, start phase, and end phase.
 
@@ -261,15 +261,15 @@ def _gen_sinusoidal_noise(
     ----------
     siglen : int
         Length of the (noise) signal.
-    start_phase : numbers.Real
+    start_phase : float or int
         Start phase, with units in degrees.
-    end_phase : numbers.Real
+    end_phase : float or int
         End phase, with units in degrees.
-    amplitude : numbers.Real
+    amplitude : float or int
         Amplitude of the sinusoidal curve.
-    amplitude_mean : numbers.Real
+    amplitude_mean : float or int
         Mean amplitude of an extra Gaussian noise.
-    amplitude_std : numbers.Real, default 0
+    amplitude_std : float or int, default 0
         Standard deviation of an extra Gaussian noise
 
     Returns
@@ -286,11 +286,11 @@ def _gen_sinusoidal_noise(
 
 def _gen_baseline_wander(
     siglen: int,
-    fs: Real,
-    bw_fs: Union[Real, Sequence[Real]],
-    amplitude: Union[Real, Sequence[Real]],
-    amplitude_gaussian: Sequence[Real] = [0, 0],
-) -> np.ndarray:
+    fs: Union[float, int],
+    bw_fs: Union[float, int, Sequence[Union[float, int]]],
+    amplitude: Union[float, int, Sequence[Union[float, int]]],
+    amplitude_gaussian: Sequence[Union[float, int]] = [0, 0],
+) -> NDArray:
     """Generate 1d baseline wander of given
     length, amplitude, and frequency.
 
@@ -298,14 +298,14 @@ def _gen_baseline_wander(
     ----------
     siglen : int
         Length of the (noise) signal.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the original signal.
-    bw_fs : numbers.Real, or list of numbers.Real
+    bw_fs : float or int, or list of float or int
         Frequency (Frequencies) of the baseline wander.
-    amplitude : numbers.Real, or list of numbers.Real
+    amplitude : float or int, or list of float or int
         Amplitude of the baseline wander (corr. to each frequency band).
-    amplitude_gaussian : Tuple[numbers.Real], default [0,0]
-        2-tuple of :class:`~numbers.Real`.
+    amplitude_gaussian : Tuple[float or int], default [0,0]
+        2-tuple of :class:`~float or int`.
         Mean and std of amplitude of an extra Gaussian noise.
 
     Returns
@@ -319,11 +319,11 @@ def _gen_baseline_wander(
 
     """
     bw = _gen_gaussian_noise(siglen, amplitude_gaussian[0], amplitude_gaussian[1])
-    if isinstance(bw_fs, Real):
+    if isinstance(bw_fs, (int, float)):
         _bw_fs = [bw_fs]
     else:
         _bw_fs = bw_fs
-    if isinstance(amplitude, Real):
+    if isinstance(amplitude, (int, float)):
         _amplitude = list(repeat(amplitude, len(_bw_fs)))
     else:
         _amplitude = amplitude
@@ -338,11 +338,11 @@ def _gen_baseline_wander(
 
 def gen_baseline_wander(
     sig: Tensor,
-    fs: Real,
-    bw_fs: Union[Real, Sequence[Real]],
-    ampl_ratio: np.ndarray,
-    gaussian: np.ndarray,
-) -> np.ndarray:
+    fs: Union[float, int],
+    bw_fs: Union[float, int, Sequence[Union[float, int]]],
+    ampl_ratio: NDArray,
+    gaussian: NDArray,
+) -> Tensor:
     """Generate 1d baseline wander of given
     length, amplitude, and frequency.
 
@@ -350,9 +350,9 @@ def gen_baseline_wander(
     ----------
     sig : torch.Tensor
         Batched ECGs to be augmented, of shape (batch, lead, siglen).
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the original signal.
-    bw_fs : numbers.Real, or list of numbers.Real,
+    bw_fs : float or int, or list of float or int,
         Frequency (Frequencies) of the baseline wander.
     ampl_ratio : numpy.ndarray, optional
         Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
@@ -363,7 +363,7 @@ def gen_baseline_wander(
 
     Returns
     -------
-    bw : numpy.ndarray
+    bw : torch.Tensor
         Baseline wander of given length, amplitude, frequency,
         of shape ``(batch, lead, siglen)``.
 

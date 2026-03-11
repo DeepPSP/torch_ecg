@@ -7,12 +7,12 @@ import warnings
 from collections import Counter
 from copy import deepcopy
 from dataclasses import dataclass
-from numbers import Real
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from sklearn.utils import compute_class_weight
 from torch import Tensor, from_numpy
 from torch.nn.functional import interpolate
@@ -41,11 +41,11 @@ __all__ = [
 
 def get_mask(
     shape: Union[int, Sequence[int]],
-    critical_points: np.ndarray,
+    critical_points: NDArray,
     left_bias: int,
     right_bias: int,
     return_fmt: Literal["mask", "intervals"] = "mask",
-) -> Union[np.ndarray, list]:
+) -> Union[NDArray, list]:
     """Get the mask around the given critical points.
 
     Parameters
@@ -93,19 +93,21 @@ def get_mask(
             mask[..., itv[0] : itv[1]] = 1
     elif return_fmt.lower() == "intervals":
         mask = l_itv
+    else:
+        raise ValueError(f"Unknown return_fmt. Expected 'mask' or 'intervals', but got {return_fmt}")
     return mask
 
 
 def class_weight_to_sample_weight(
-    y: np.ndarray, class_weight: Union[str, dict, List[float], np.ndarray] = "balanced"
-) -> np.ndarray:
+    y: Union[NDArray, Sequence], class_weight: Union[str, dict, List[float], NDArray, None] = "balanced"
+) -> NDArray:
     """Transform class weight to sample weight.
 
     Parameters
     ----------
-    y : numpy.ndarray
+    y : numpy.ndarray or Sequence
         The label (class) of each sample.
-    class_weight : str or dict or List[float] or numpy.ndarray, default "balanced"
+    class_weight : str or dict or List[float] or numpy.ndarray or None, default "balanced"
         The weight for each sample class.
         If is "balanced", the class weight will automatically be given by
         the inverse of the class frequency.
@@ -138,6 +140,7 @@ def class_weight_to_sample_weight(
         sample_weight = np.ones_like(y, dtype=DEFAULTS.np_dtype)
         return sample_weight
 
+    y = np.asarray(y)
     try:
         sample_weight = np.array(y.copy()).astype(int)
     except ValueError:
@@ -249,7 +252,7 @@ def rdheader(header_data: Union[Path, str, Sequence[str]]) -> Union[Record, Mult
     return record
 
 
-def ensure_lead_fmt(values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first") -> np.ndarray:
+def ensure_lead_fmt(values: NDArray, n_leads: int = 12, fmt: str = "lead_first") -> NDArray:
     """Ensure the multi-lead (ECG) signal to be of specified format.
 
     Parameters
@@ -299,11 +302,11 @@ def ensure_lead_fmt(values: np.ndarray, n_leads: int = 12, fmt: str = "lead_firs
 
 
 def ensure_siglen(
-    values: np.ndarray,
+    values: NDArray,
     siglen: int,
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Ensure the (ECG) signal to be of specified length.
 
     Strategy:
@@ -398,16 +401,16 @@ class ECGWaveForm:
     ----------
     name : str
         Name of the wave, e.g. "N", "p", "t", etc.
-    onset : numbers.Real
+    onset : float or int
         Onset index of the wave,
         :class:`~numpy.nan` for unknown/unannotated onset.
-    offset : numbers.Real
+    offset : float or int
         Offset index of the wave,
         :class:`~numpy.nan` for unknown/unannotated offset.
-    peak : numbers.Real
+    peak : float or int
         Peak index of the wave,
         :class:`~numpy.nan` for unknown/unannotated peak.
-    duration : numbers.Real
+    duration : float or int
         Suration of the wave, with units in milliseconds,
         :class:`~numpy.nan` for unknown/unannotated duration.
 
@@ -418,13 +421,26 @@ class ECGWaveForm:
     """
 
     name: str
-    onset: Real
-    offset: Real
-    peak: Real
-    duration: Real
+    onset: Union[float, int]
+    offset: Union[float, int]
+    peak: Union[float, int]
+    duration: Union[float, int]
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, ECGWaveForm):
+            return False
+        if self.name != other.name:
+            return False
+        for attr in ["onset", "offset", "peak", "duration"]:
+            v1, v2 = getattr(self, attr), getattr(other, attr)
+            if np.isnan(v1) and np.isnan(v2):
+                continue
+            if not np.allclose(v1, v2):
+                return False
+        return True
 
     @property
-    def duration_(self) -> Real:
+    def duration_(self) -> Union[float, int]:
         """Duration of the wave, with units in number of samples."""
         try:
             return self.offset - self.onset
@@ -445,9 +461,9 @@ ECGWaveFormNames = [
 
 
 def masks_to_waveforms(
-    masks: np.ndarray,
+    masks: NDArray,
     class_map: Dict[str, int],
-    fs: Real,
+    fs: Union[float, int],
     mask_format: str = "channel_first",
     leads: Optional[Sequence[str]] = None,
 ) -> Dict[str, List[ECGWaveForm]]:
@@ -461,7 +477,7 @@ def masks_to_waveforms(
     class_map : dict
         Class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain "pwave", "qrs", "twave".
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal corresponding to the `masks`,
         used to compute the duration of each waveform.
     mask_format : str, default "channel_first"
@@ -542,7 +558,7 @@ def masks_to_waveforms(
 
 
 def mask_to_intervals(
-    mask: np.ndarray,
+    mask: NDArray,
     vals: Optional[Union[int, Sequence[int]]] = None,
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
@@ -614,14 +630,14 @@ def mask_to_intervals(
     return intervals
 
 
-def uniform(low: Real, high: Real, num: int) -> List[float]:
+def uniform(low: Union[float, int], high: Union[float, int], num: int) -> List[float]:
     """Generate a list of numbers uniformly distributed.
 
     Parameters
     ----------
-    low : numbers.Real
+    low : float or int
         Lower bound of the interval of the uniform distribution.
-    high : numbers.Real
+    high : float or int
         Upper bound of the interval of the uniform distribution.
     num : int
         Number of random numbers to generate.
@@ -694,7 +710,7 @@ def stratified_train_test_split(
     try:
         df_inspection = df[stratified_cols].copy().map(str)
     except AttributeError:
-        df_inspection = df[stratified_cols].copy().applymap(str)
+        df_inspection = df[stratified_cols].copy().applymap(str)  # type: ignore
     for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
@@ -704,7 +720,7 @@ def stratified_train_test_split(
     df_inspection[inspection_col_name] = ""
     for idx, row in df_inspection.iterrows():
         cn = "-".join([row[sc] for sc in stratified_cols])
-        df_inspection.loc[idx, inspection_col_name] = cn
+        df_inspection.loc[idx, inspection_col_name] = cn  # type: ignore
     item_names = df_inspection[inspection_col_name].unique().tolist()
     item_indices = {n: df_inspection.index[df_inspection[inspection_col_name] == n].tolist() for n in item_names}
     for n in item_names:
@@ -723,8 +739,8 @@ def stratified_train_test_split(
 
 
 def one_hot_encode(
-    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
-) -> np.ndarray:
+    cls_array: Union[NDArray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> NDArray:
     """Convert a categorical array to a one-hot array.
 
     Convert a categorical (class indices) array of shape ``(num_samples,)``
@@ -768,42 +784,42 @@ def one_hot_encode(
         else:  # sequence of sequences of class indices
             num_classes = max([max(c) for c in cls_array]) + 1
     if isinstance(cls_array, np.ndarray) and cls_array.ndim == 1:
-        assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
+        assert num_classes > 0 and num_classes >= cls_array.max() + 1, (  # type: ignore
             "num_classes must be greater than 0 and greater than or equal to "
             "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
         )
     elif isinstance(cls_array, Sequence):
         assert all(
-            [max(c) < num_classes for c in cls_array]
+            [max(c) < num_classes for c in cls_array]  # type: ignore
         ), "all values in the multi-class `cls_array` should be less than `num_classes`"
     if isinstance(cls_array, np.ndarray) and cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:
         shape = (len(cls_array), num_classes)
-        bin_array = np.zeros(shape)
+        bin_array = np.zeros(shape)  # type: ignore
         for i in range(shape[0]):
             bin_array[i, cls_array[i]] = 1
     return bin_array.astype(dtype)
 
 
-@add_docstring(one_hot_encode.__doc__.replace("one_hot_encode", "cls_to_bin"))
+@add_docstring(one_hot_encode.__doc__.replace("one_hot_encode", "cls_to_bin"))  # type: ignore
 def cls_to_bin(
-    cls_array: Union[np.ndarray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
-) -> np.ndarray:
+    cls_array: Union[NDArray, Tensor, Sequence[Sequence[int]]], num_classes: Optional[int] = None, dtype: type = np.float32
+) -> NDArray:
     """Alias of `one_hot_encode`."""
     warnings.warn("`cls_to_bin` is deprecated, use `one_hot_encode` instead", DeprecationWarning)
     return one_hot_encode(cls_array, num_classes, dtype)
 
 
 def generate_weight_mask(
-    target_mask: np.ndarray,
-    fg_weight: Real,
-    fs: Real,
-    reduction: Real,
-    radius: Real,
-    boundary_weight: Real,
+    target_mask: NDArray,
+    fg_weight: Union[float, int],
+    fs: Union[float, int],
+    reduction: Union[float, int],
+    radius: Union[float, int],
+    boundary_weight: Union[float, int],
     plot: bool = False,
-) -> np.ndarray:
+) -> NDArray:
     """Generate weight mask for a binary target mask,
     accounting the foreground weight and boundary weight.
 
@@ -811,15 +827,15 @@ def generate_weight_mask(
     ----------
     target_mask : numpy.ndarray
         The target mask, assumed to be 1D and binary.
-    fg_weight: numbers.Real
+    fg_weight: float or int
         Foreground (value 1) weight, usually > 1.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency of the signal.
-    reduction : numbers.Real
+    reduction : float or int
         Reduction ratio of the mask w.r.t. the signal.
-    radius : numbers.Real
+    radius : float or int
         Radius of the boundary, with units in seconds.
-    boundary_weight : numbers.Real
+    boundary_weight : float or int
         Weight for the boundaries (positions where values change)
         of the target map.
     plot : bool, default False
@@ -855,7 +871,7 @@ def generate_weight_mask(
     """
     assert target_mask.ndim == 1, "`target_mask` should be 1D"
     assert set(np.unique(target_mask)).issubset({0, 1}), "`target_mask` should be binary"
-    assert isinstance(reduction, Real) and reduction >= 1, "`reduction` should be a real number greater than 1"
+    assert isinstance(reduction, (int, float)) and reduction >= 1, "`reduction` should be a real number greater than 1"
     if reduction > 1:
         # downsample the target mask
         target_mask = (

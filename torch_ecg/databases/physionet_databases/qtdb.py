@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import CFG
 from ...utils.misc import add_docstring
@@ -280,7 +281,7 @@ class QTDB(PhysioNetDataBase):
         keep_original: bool = False,
         ignore_beat_types: bool = True,
         extension: str = "q1c",
-    ) -> np.ndarray:
+    ) -> NDArray:
         """alias of self.load_ann"""
         return self.load_ann(
             rec,
@@ -299,7 +300,7 @@ class QTDB(PhysioNetDataBase):
         mask_format: str = "channel_first",
         class_map: Optional[Dict[str, int]] = None,
         extension: str = "q1c",
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load the wave delineation in the form of masks.
 
         Parameters
@@ -341,7 +342,7 @@ class QTDB(PhysioNetDataBase):
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
         extension: Literal["atr", "man"] = "atr",
-    ) -> Union[Dict[str, list], np.ndarray]:
+    ) -> Union[Dict[str, list], NDArray]:
         """Load rhythm annotations of a record.
 
         Rhythm annotations are stored in the `aux_note` attribute
@@ -385,7 +386,7 @@ class QTDB(PhysioNetDataBase):
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
         extension: Literal["atr", "man"] = "atr",
-    ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
+    ) -> Union[Dict[str, NDArray], List[BeatAnn]]:
         """Load beat annotations of the record.
 
         Beat annotations are stored in the `symbol` attribute
@@ -453,7 +454,7 @@ class QTDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         keep_original: bool = False,
         extension: Literal["atr", "man"] = "atr",
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load rpeak indices of the record.
 
         Rpeak indices, or equivalently qrs complex locations,
@@ -509,15 +510,15 @@ class QTDB(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
+        data: Optional[NDArray] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, int, List[str], List[int]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         same_range: bool = False,
         waves: Optional[ECGWaveForm] = None,
-        beat_ann: Optional[Dict[str, np.ndarray]] = None,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        beat_ann: Optional[Dict[str, NDArray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
         **kwargs: Any,
     ) -> None:
         """

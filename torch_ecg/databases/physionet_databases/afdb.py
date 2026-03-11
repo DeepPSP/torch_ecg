@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import CFG
 from ...utils.misc import add_docstring, get_record_list_recursive
@@ -29,10 +30,10 @@ _AFDB_INFO = DataBaseInfo(
     3. signals are sampled at 250 samples per second with 12-bit resolution over a range of ±10 millivolts, with a typical recording bandwidth of approximately 0.1 Hz to 40 Hz
     4. 4 classes of rhythms are annotated:
 
-        - AFIB:  atrial fibrillation
-        - AFL:   atrial flutter
-        - J:     AV junctional rhythm
-        - N:     all other rhythms
+       - AFIB:  atrial fibrillation
+       - AFL:   atrial flutter
+       - J:     AV junctional rhythm
+       - N:     all other rhythms
 
     5. rhythm annotations almost all start with "(N", except for 4 which start with '(AFIB', which are all within 1 second (250 samples)
     6. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
@@ -138,7 +139,7 @@ class AFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         ann_format: Literal["intervals", "mask"] = "intervals",
         keep_original: bool = False,
-    ) -> Union[Dict[str, list], np.ndarray]:
+    ) -> Union[Dict[str, list], NDArray]:
         """Load annotations (header) from the .hea files.
 
         Parameters
@@ -203,7 +204,7 @@ class AFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         use_manual: bool = True,
         keep_original: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load beat annotations from corresponding annotation files.
 
         Parameters
@@ -253,7 +254,7 @@ class AFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         use_manual: bool = True,
         keep_original: bool = False,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """
         alias of `self.load_beat_ann`
         """
@@ -262,9 +263,9 @@ class AFDB(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, int, List[str], List[int]]] = None,
         sampfrom: Optional[int] = None,

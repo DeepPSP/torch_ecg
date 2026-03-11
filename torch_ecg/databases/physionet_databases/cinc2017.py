@@ -9,6 +9,7 @@ from typing import Any, List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring, get_record_list_recursive3
@@ -208,9 +209,8 @@ class CINC2017(PhysioNetDataBase):
             Version of the annotation file, by default the latest version.
         ann_format : {"a", "f"}, optional
             Format of returned annotation, by default "a".
-
-                - "a" - abbreviation
-                - "f" - full name
+            - "a", abbreviation
+            - "f", full name
 
         Returns
         -------
@@ -236,10 +236,10 @@ class CINC2017(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
+        data: Optional[NDArray] = None,
         ann: Optional[str] = None,
         ticks_granularity: int = 0,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
     ) -> None:
         """Plot the ECG signal of the record.
 

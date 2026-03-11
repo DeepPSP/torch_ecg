@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import scipy.io as sio
 import wfdb
+from numpy.typing import NDArray
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring, get_record_list_recursive3, ms2samples
@@ -40,50 +41,50 @@ _CPSC2021_INFO = DataBaseInfo(
     7. classification of a record is stored in corresponding .hea file, which can be accessed via the attribute `comments` of a wfdb Record obtained using :func:`wfdb.rdheader`, :func:`wfdb.rdrecord`, and :func:`wfdb.rdsamp`; beat annotations and rhythm annotations can be accessed using the attributes `symbol`, `aux_note` of a ``wfdb`` Annotation obtained using :func:`wfdb.rdann`, corresponding indices in the signal can be accessed via the attribute `sample`
     8. challenge task:
 
-        - clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)
-        - locating of the onset and offset for any AF episode prediction
+       - clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)
+       - locating of the onset and offset for any AF episode prediction
 
     9. challenge metrics:
 
-        - metrics (Ur, scoring matrix) for classification:
+       - metrics (Ur, scoring matrix) for classification:
 
-          .. tikz:: The scoring matrix for the recording-level classification result.
-            :align: center
-            :libs: positioning
+         .. tikz:: The scoring matrix for the recording-level classification result.
+         :align: center
+         :libs: positioning
 
-            \tikzstyle{rect} = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]
-            \tikzstyle{txt} = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]
+         \tikzstyle{rect} = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]
+         \tikzstyle{txt} = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]
 
-            \node[rect, fill = green!25] at (0,0) (31) {$-0.5$};
-            \node[rect, fill = green!10, right = 0 of 31] (32) {$0$};
-            \node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};
-            \node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};
-            \node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};
-            \node[rect, fill = green!10, above = 0 of 33] (23) {$0$};
-            \node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};
-            \node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};
-            \node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};
+         \node[rect, fill = green!25] at (0,0) (31) {$-0.5$};
+         \node[rect, fill = green!10, right = 0 of 31] (32) {$0$};
+         \node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};
+         \node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};
+         \node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};
+         \node[rect, fill = green!10, above = 0 of 33] (23) {$0$};
+         \node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};
+         \node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};
+         \node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};
 
-            \node[txt, below = 0 of 31] {N};
-            \node[txt, below = 0 of 32] (anchor_h) {AF$_{\text{f}}$};
-            \node[txt, below = 0 of 33] {AF$_{\text{p}}$};
-            \node[txt, left = 0 of 31] {AF$_{\text{p}}$};
-            \node[txt, left = 0 of 21] (anchor_v) {AF$_{\text{f}}$};
-            \node[txt, left = 0 of 11] {N};
+         \node[txt, below = 0 of 31] {N};
+         \node[txt, below = 0 of 32] (anchor_h) {AF$_{\text{f}}$};
+         \node[txt, below = 0 of 33] {AF$_{\text{p}}$};
+         \node[txt, left = 0 of 31] {AF$_{\text{p}}$};
+         \node[txt, left = 0 of 21] (anchor_v) {AF$_{\text{f}}$};
+         \node[txt, left = 0 of 11] {N};
 
-            \node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};
-            \node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf{Prediction}};
+         \node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};
+         \node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf{Prediction}};
 
-        - metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.
-        - final score (U):
+       - metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.
+       - final score (U):
 
-          .. math::
+         .. math::
 
             U = \dfrac{1}{N} \sum\limits_{i=1}^N \left( Ur_i + \dfrac{Ma_i}{\max\{Mr_i, Ma_i\}} \right)
 
-          where :math:`N` is the number of records,
-          :math:`Ma` is the number of annotated AF episodes,
-          :math:`Mr` is the number of predicted AF episodes.
+       where :math:`N` is the number of records,
+       :math:`Ma` is the number of annotated AF episodes,
+       :math:`Mr` is the number of predicted AF episodes.
 
     10. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.
     """,
@@ -405,7 +406,7 @@ class CPSC2021(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         **kwargs: Any,
-    ) -> Union[dict, np.ndarray, List[List[int]], str]:
+    ) -> Union[dict, NDArray, List[List[int]], str]:
         """Load annotations of the record.
 
         Parameters
@@ -424,12 +425,9 @@ class CPSC2021(PhysioNetDataBase):
             Key word arguments for functions
             loading rpeaks, af_episodes, and label respectively,
             including:
-
-                - fs: int, optional,
-                  the resampling frequency
-                - fmt: str,
-                  format of af_episodes, or format of label,
-                  for more details, ref. corresponding functions.
+            - fs: int, optional, the resampling frequency
+            - fmt: str, format of af_episodes, or format of label,
+              for more details, ref. corresponding functions.
 
             Used only when `field` is specified (not None).
 
@@ -479,7 +477,7 @@ class CPSC2021(PhysioNetDataBase):
         keep_original: bool = False,
         valid_only: bool = True,
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Load position (in terms of samples) of rpeaks.
 
         Parameters
@@ -542,7 +540,7 @@ class CPSC2021(PhysioNetDataBase):
         keep_original: bool = False,
         valid_only: bool = True,
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """alias of `self.load_rpeaks`"""
         return self.load_rpeaks(
             rec=rec,
@@ -563,7 +561,7 @@ class CPSC2021(PhysioNetDataBase):
         keep_original: bool = False,
         fs: Optional[Real] = None,
         fmt: Literal["intervals", "mask", "c_intervals"] = "intervals",
-    ) -> Union[List[List[int]], np.ndarray]:
+    ) -> Union[List[List[int]], NDArray]:
         """Load the episodes of atrial fibrillation,
         in terms of intervals or mask.
 
@@ -666,9 +664,9 @@ class CPSC2021(PhysioNetDataBase):
 
         The three classes are:
 
-            - "non atrial fibrillation",
-            - "paroxysmal atrial fibrillation",
-            - "persistent atrial fibrillation".
+        - "non atrial fibrillation",
+        - "paroxysmal atrial fibrillation",
+        - "persistent atrial fibrillation".
 
         Parameters
         ----------
@@ -682,11 +680,10 @@ class CPSC2021(PhysioNetDataBase):
             Not used, to keep in accordance with other methods.
         fmt : str, default "a"
             Format of the label, case in-sensitive, can be one of
-
-                - "f", "fullname": the full name of the label
-                - "a", "abbr", "abbrevation": abbreviation for the label
-                - "n", "num", "number": class number of the label
-                  (in accordance with the settings of the offical class map)
+            - "f", "fullname": the full name of the label
+            - "a", "abbr", "abbrevation": abbreviation for the label
+            - "n", "num", "number": class number of the label
+              (in accordance with the settings of the offical class map)
 
         Returns
         -------
@@ -709,7 +706,7 @@ class CPSC2021(PhysioNetDataBase):
         rec: Union[str, int],
         bias: dict = {1: 1, 2: 0.5},
         verbose: Optional[int] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[NDArray, NDArray]:
         """Generate the scoring mask for the onsets and offsets of af episodes.
 
         Parameters
@@ -749,8 +746,8 @@ class CPSC2021(PhysioNetDataBase):
     def plot(
         self,
         rec: Union[str, int],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
         ticks_granularity: int = 0,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
@@ -1304,7 +1301,7 @@ def gen_endpoint_score_mask(
     af_intervals: Sequence[Sequence[int]],
     bias: dict = {1: 1, 2: 0.5},
     verbose: int = 0,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[NDArray, NDArray]:
     """
     generate the scoring mask for the onsets and offsets of af episodes,
 

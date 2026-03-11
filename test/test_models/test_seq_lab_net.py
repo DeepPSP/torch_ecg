@@ -33,36 +33,36 @@ def test_ecg_seq_lab_net():
 
     for cnn, rnn, attn, recover_length in tqdm(grid, total=total, mininterval=1):
         config = adjust_cnn_filter_lengths(ECG_SEQ_LAB_NET_CONFIG, fs)
-        config.cnn.name = cnn
-        config.rnn.name = rnn
-        config.attn.name = attn
-        config.recover_length = recover_length
+        config.cnn.name = cnn  # type: ignore
+        config.rnn.name = rnn  # type: ignore
+        config.attn.name = attn  # type: ignore
+        config.recover_length = recover_length  # type: ignore
 
-        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config).to(DEVICE)
+        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config).to(DEVICE)  # type: ignore
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(seq_len=inp.shape[-1], batch_size=inp.shape[0])
         if recover_length:
             assert out.shape[1] == inp.shape[-1]
 
-        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config).to(DEVICE)
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config).to(DEVICE)  # type: ignore
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model.cnn.load_state_dict(model_v1.cnn.state_dict())
         if model.rnn.__class__.__name__ != "Identity":
-            model.rnn.load_state_dict(model_v1.rnn.state_dict())
+            model.rnn.load_state_dict(model_v1.rnn.state_dict())  # type: ignore
         if model.attn.__class__.__name__ != "Identity":
-            model.attn.load_state_dict(model_v1.attn.state_dict())
+            model.attn.load_state_dict(model_v1.attn.state_dict())  # type: ignore
         model.clf.load_state_dict(model_v1.clf.state_dict())
 
-    doi = model.doi
+    doi = model.doi  # type: ignore
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi]), doi
-    doi = model_v1.doi
+    doi = model_v1.doi  # type: ignore
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi]), doi
 
-    with pytest.raises(RuntimeError, match="Maybe you are trying to load a model trained with numpy 1"):
+    with pytest.raises(RuntimeError, match="Failed to load the checkpoint"):
         ECG_SEQ_LAB_NET.from_remote(
             url="https://drive.google.com/uc?id=18Jta73DjqXVarEYjN_CWeYqM8rH7I3An",
             model_dir=_TMP_DIR,
@@ -92,9 +92,9 @@ def test_from_v1():
     n_leads = 12
     classes = ["N"]
     model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=n_leads, config=config)
-    model_v1.save(_TMP_DIR / "ecg_seq_lab_net_v1.pth", {"classes": classes, "n_leads": n_leads})
-    model = ECG_SEQ_LAB_NET.from_v1(_TMP_DIR / "ecg_seq_lab_net_v1.pth")
+    model_v1.save(_TMP_DIR / "ecg_seq_lab_net_v1.pth", {"classes": classes, "n_leads": n_leads}, use_safetensors=False)  # type: ignore
+    model = ECG_SEQ_LAB_NET.from_v1(_TMP_DIR / "ecg_seq_lab_net_v1.pth")  # type: ignore
     del model
-    model, _ = ECG_SEQ_LAB_NET.from_v1(_TMP_DIR / "ecg_seq_lab_net_v1.pth", return_config=True)
+    model, _ = ECG_SEQ_LAB_NET.from_v1(_TMP_DIR / "ecg_seq_lab_net_v1.pth", return_config=True)  # type: ignore
     (_TMP_DIR / "ecg_seq_lab_net_v1.pth").unlink()
     del model_v1, model

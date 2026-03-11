@@ -140,14 +140,14 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
         and more for :class:`VGGBlock`.
         Key word arguments that have to be set:
 
-            - num_convs: sequence of int,
-              number of convolutional layers for each :class:`VGGBlock`.
-            - num_filters: sequence of int,
-              number of filters for each :class:`VGGBlock`.
-            - groups: int,
-              connection pattern (of channels) of the inputs and outputs.
-            - block: dict,
-              other parameters that can be set for :class:`VGGBlock`.
+        - num_convs: sequence of int,
+          number of convolutional layers for each :class:`VGGBlock`.
+        - num_filters: sequence of int,
+          number of filters for each :class:`VGGBlock`.
+        - groups: int,
+          connection pattern (of channels) of the inputs and outputs.
+        - block: dict,
+          other parameters that can be set for :class:`VGGBlock`.
 
         For a full list of configurable parameters, ref. corr. config file.
 

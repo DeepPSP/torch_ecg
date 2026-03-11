@@ -4,6 +4,7 @@ TestSHHS: accomplished
 subsampling: accomplished
 """
 
+import os
 import time
 from numbers import Real
 from pathlib import Path
@@ -13,6 +14,11 @@ import pandas as pd
 import pytest
 
 from torch_ecg.databases import SHHS, DataBaseInfo
+
+pytestmark = pytest.mark.skipif(
+    os.getenv("SHHS_DATA_AVAILABLE") != "true", reason="SHHS dataset not available (token invalid or download skipped)"
+)
+
 
 ###############################################################################
 # set paths
@@ -80,28 +86,28 @@ class TestSHHS:
             assert isinstance(value, tuple)
             assert len(value) == 2
             assert isinstance(value[0], np.ndarray)
-            assert isinstance(value[1], Real) and value[1] > 0
+            assert isinstance(value[1], Real) and value[1] > 0  # type: ignore
         available_signals = reader.get_available_signals(0)
-        for signal in available_signals:
+        for signal in available_signals:  # type: ignore
             psg_data = reader.load_psg_data(0, channel=signal, physical=True)
             assert isinstance(psg_data, tuple)
             assert len(psg_data) == 2
             assert isinstance(psg_data[0], np.ndarray)
-            assert isinstance(psg_data[1], Real) and psg_data[1] > 0
+            assert isinstance(psg_data[1], Real) and psg_data[1] > 0  # type: ignore
 
     def test_load_data(self):
         data, fs = reader.load_data(0)
         assert isinstance(data, np.ndarray)
         assert data.ndim == 2
-        assert isinstance(fs, Real) and fs > 0
+        assert isinstance(fs, Real) and fs > 0  # type: ignore
         data_1, fs_1 = reader.load_data(0, fs=500, data_format="flat")
         assert isinstance(data_1, np.ndarray)
         assert data_1.ndim == 1
         assert fs_1 == 500
         data_1, fs_1 = reader.load_data(0, sampfrom=10, sampto=20, data_format="flat")
         assert fs_1 == fs
-        assert data_1.shape[0] == int(10 * fs)
-        assert np.allclose(data_1, data[0, int(10 * fs) : int(20 * fs)])
+        assert data_1.shape[0] == int(10 * fs)  # type: ignore
+        assert np.allclose(data_1, data[0, int(10 * fs) : int(20 * fs)])  # type: ignore
         data_1 = reader.load_data(0, sampfrom=10, sampto=20, data_format="flat", return_fs=False)
         assert isinstance(data_1, np.ndarray)
         data_2, _ = reader.load_data(0, sampfrom=10, sampto=20, data_format="flat", units="uv")
@@ -244,7 +250,7 @@ class TestSHHS:
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
         ):
-            reader.load_rpeak_ann(rec, units="invalid")
+            reader.load_rpeak_ann(rec, units="invalid")  # type: ignore
 
     def test_load_rr_ann(self):
         rec = reader.rec_with_rpeaks_ann[0]
@@ -271,7 +277,7 @@ class TestSHHS:
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
         ):
-            reader.load_rr_ann(rec, units="invalid")
+            reader.load_rr_ann(rec, units="invalid")  # type: ignore
 
     def test_load_nn_ann(self):
         rec = reader.rec_with_rpeaks_ann[0]
@@ -331,7 +337,7 @@ class TestSHHS:
         assert isinstance(ann["df_events"], pd.DataFrame) and len(ann["df_events"]) == 0
 
         with pytest.raises(ValueError, match="Source `.+` not supported, "):
-            reader.load_sleep_ann(rec, source="invalid")
+            reader.load_sleep_ann(rec, source="invalid")  # type: ignore
 
     def test_load_apnea_ann(self):
         rec = reader.rec_with_event_ann[0]
@@ -352,7 +358,7 @@ class TestSHHS:
         assert isinstance(ann, pd.DataFrame) and ann.empty
 
         with pytest.raises(ValueError, match="Source `hrv` contains no apnea annotations"):
-            reader.load_apnea_ann(rec, source="hrv")
+            reader.load_apnea_ann(rec, source="hrv")  # type: ignore
 
     def test_load_sleep_event_ann(self):
         rec = reader.rec_with_event_ann[0]
@@ -379,7 +385,7 @@ class TestSHHS:
         assert isinstance(ann, pd.DataFrame) and len(ann) == 0
 
         with pytest.raises(ValueError, match="Source `.+` not supported, "):
-            reader.load_sleep_event_ann(rec, source="invalid")
+            reader.load_sleep_event_ann(rec, source="invalid")  # type: ignore
 
     def test_load_sleep_stage_ann(self):
         rec = reader.rec_with_event_ann[0]
@@ -402,7 +408,7 @@ class TestSHHS:
         assert isinstance(ann, pd.DataFrame) and len(ann) == 0
 
         with pytest.raises(ValueError, match="Source `.+` not supported, "):
-            reader.load_sleep_stage_ann(rec, source="invalid")
+            reader.load_sleep_stage_ann(rec, source="invalid")  # type: ignore
 
     def test_locate_abnormal_beats(self):
         rec = reader.rec_with_rpeaks_ann[0]
@@ -439,12 +445,12 @@ class TestSHHS:
 
         rec = reader.rec_with_rpeaks_ann[0]
         with pytest.raises(ValueError, match="No abnormal type of `.+`"):
-            reader.locate_abnormal_beats(rec, abnormal_type="AF")
+            reader.locate_abnormal_beats(rec, abnormal_type="AF")  # type: ignore
         with pytest.raises(
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
         ):
-            reader.locate_abnormal_beats(rec, units="invalid")
+            reader.locate_abnormal_beats(rec, units="invalid")  # type: ignore
 
     def test_locate_artifacts(self):
         rec = reader.rec_with_rpeaks_ann[0]
@@ -473,7 +479,7 @@ class TestSHHS:
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
         ):
-            reader.locate_artifacts(rec, units="invalid")
+            reader.locate_artifacts(rec, units="invalid")  # type: ignore
 
     def test_get_available_signals(self):
         assert reader.get_available_signals(None) is None  # no return
@@ -486,14 +492,14 @@ class TestSHHS:
 
     def test_get_chn_num(self):
         available_signals = reader.get_available_signals(0)
-        for sig in available_signals:
+        for sig in available_signals:  # type: ignore
             chn_num = reader.get_chn_num(0, sig)
             assert isinstance(chn_num, int)
-            assert 0 <= chn_num < len(available_signals)
+            assert 0 <= chn_num < len(available_signals)  # type: ignore
 
     def test_match_channel(self):
         available_signals = reader.get_available_signals(0)
-        for sig in available_signals:
+        for sig in available_signals:  # type: ignore
             assert sig == reader.match_channel(sig.lower())
             assert sig in reader.all_signals
 
@@ -501,13 +507,13 @@ class TestSHHS:
 
     def test_get_fs(self):
         available_signals = reader.get_available_signals(0)
-        for sig in available_signals:
+        for sig in available_signals:  # type: ignore
             fs = reader.get_fs(0, sig)
-            assert isinstance(fs, Real) and fs > 0
+            assert isinstance(fs, Real) and fs > 0  # type: ignore
 
         rec = reader.rec_with_rpeaks_ann[0]
         fs = reader.get_fs(rec, "rpeak")
-        assert isinstance(fs, Real) and fs > 0
+        assert isinstance(fs, Real) and fs > 0  # type: ignore
 
         rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         fs = reader.get_fs(rec)
@@ -629,7 +635,7 @@ class TestSHHS:
             match="Unknown plot format `xxx`! `plot_format` can only be one of `span`, `hypnogram`",
         ):
             rec = reader.rec_with_event_ann[0]
-            reader.plot_ann(rec, event_source="event", plot_format="xxx")
+            reader.plot_ann(rec, event_source="event", plot_format="xxx")  # type: ignore
 
         with pytest.raises(ValueError, match="No input data"):
             rec = reader.rec_with_event_ann[0]

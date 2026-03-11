@@ -28,6 +28,7 @@ import numpy as np
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
+from numpy.typing import NDArray
 from scipy.ndimage.filters import median_filter
 
 from ..cfg import CFG
@@ -62,14 +63,14 @@ PreprocCfg.beat_winR = 250
 
 
 def preprocess_multi_lead_signal(
-    raw_sig: np.ndarray,
+    raw_sig: NDArray,
     fs: Real,
     sig_fmt: str = "channel_first",
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
-) -> Dict[str, np.ndarray]:
+) -> Dict[str, NDArray]:
     """
     perform preprocessing for multi-lead ECG signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -146,13 +147,13 @@ def preprocess_multi_lead_signal(
 
 
 def preprocess_single_lead_signal(
-    raw_sig: np.ndarray,
+    raw_sig: NDArray,
     fs: Real,
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
-) -> Dict[str, np.ndarray]:
+) -> Dict[str, NDArray]:
     """
     perform preprocessing for single lead ECG signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -225,12 +226,12 @@ def preprocess_single_lead_signal(
 
 
 def rpeaks_detect_multi_leads(
-    sig: np.ndarray,
+    sig: NDArray,
     fs: Real,
     sig_fmt: str = "channel_first",
     rpeak_fn: str = "xqrs",
     verbose: int = 0,
-) -> np.ndarray:
+) -> NDArray:
     """
     detect rpeaks from the filtered multi-lead ECG signal (with units in mV)
 
@@ -252,7 +253,7 @@ def rpeaks_detect_multi_leads(
 
     Returns
     -------
-    rpeaks: np.ndarray,
+    rpeaks: NDArray,
         array of indices of the detected rpeaks of the multi-lead ECG signal
 
     """
@@ -273,7 +274,7 @@ def rpeaks_detect_multi_leads(
     return rpeaks
 
 
-def merge_rpeaks(rpeaks_candidates: List[np.ndarray], sig: np.ndarray, fs: Real, verbose: int = 0) -> np.ndarray:
+def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: Real, verbose: int = 0) -> NDArray:
     """
     merge rpeaks that are detected from each lead of multi-lead signals (with units in mV),
     using certain criterion merging qrs masks from each lead
@@ -291,7 +292,7 @@ def merge_rpeaks(rpeaks_candidates: List[np.ndarray], sig: np.ndarray, fs: Real,
 
     Returns
     -------
-    final_rpeaks: np.ndarray
+    final_rpeaks: NDArray
         the final rpeaks obtained by merging the rpeaks from all the leads
 
     """

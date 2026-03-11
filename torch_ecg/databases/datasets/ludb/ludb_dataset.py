@@ -7,6 +7,7 @@ from random import randint, shuffle
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpy.typing import NDArray
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -83,7 +84,7 @@ class LUDBDataset(ReprMixin, Dataset):
             return len(self.leads) * len(self.records)
         return len(self.records)
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, NDArray]:
         if isinstance(index, slice):
             return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         if self.config.use_single_lead:
@@ -124,14 +125,14 @@ class LUDBDataset(ReprMixin, Dataset):
         self._labels = np.array(self._labels)
 
     @property
-    def signals(self) -> np.ndarray:
+    def signals(self) -> NDArray:
         """Cached signals, only available when `lazy=False`
         or preloading is performed manually.
         """
         return self._signals
 
     @property
-    def labels(self) -> np.ndarray:
+    def labels(self) -> NDArray:
         """Cached labels, only available when `lazy=False`
         or preloading is performed manually.
         """
@@ -230,7 +231,7 @@ class _FastDataReader(ReprMixin, Dataset):
     def __len__(self) -> int:
         return len(self.records)
 
-    def __getitem__(self, index: Union[int, slice]) -> Tuple[np.ndarray, np.ndarray]:
+    def __getitem__(self, index: Union[int, slice]) -> Tuple[NDArray, NDArray]:
         if isinstance(index, slice):
             return collate_fn([self[i] for i in range(*index.indices(len(self)))])
         rec = self.records[index]

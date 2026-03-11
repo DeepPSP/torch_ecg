@@ -184,6 +184,8 @@ class TestCINC2021:
             match="the dataframe of stats is empty, try using _aggregate_stats",
         ):
             assert reader.df_stats.empty
+        # `_ls_diagnoses_records` is called, inside which `_aggregate_stats` is called
+        # so `df_stats` should not be empty anymore
         assert set(reader.diagnoses_records_list.keys()) >= set(dx_mapping_scored.Abbreviation)
         assert not reader.df_stats.empty
         assert set(reader._check_exceptions()) <= set(reader.exceptional_records)

@@ -585,41 +585,40 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     config : dict
         Other hyper-parameters of the Module, ref. corresponding config file.
         Keyword arguments that must be set are as follows:
+        - num_layers: sequence of int,
+          number of building block layers of each dense (macro) block.
+        - init_num_filters: sequence of int,
+          number of filters of the first convolutional layer.
+        - init_filter_length: sequence of int,
+          filter length (kernel size) of the first convolutional layer.
+        - init_conv_stride: int,
+          stride of the first convolutional layer.
+        - init_pool_size: int,
+          pooling kernel size of the first pooling layer.
+        - init_pool_stride: int,
+          pooling stride of the first pooling layer.
+        - growth_rates: int or sequence of int or sequence of sequences of int,
+          growth rates of the building blocks,
+          with granularity to the whole network, or to each dense (macro) block,
+          or to each building block.
+        - filter_lengths: int or sequence of int or sequence of sequences of int,
+          filter length(s) (kernel size(s)) of the convolutions,
+          with granularity to the whole network, or to each macro block,
+          or to each building block.
+        - subsample_lengths: int or sequence of int,
+          subsampling length(s) (ratio(s)) of the transition blocks.
+        - compression: float,
+          compression factor of the transition blocks.
+        - bn_size: int,
+          bottleneck base width, used only when building block is :class:`DenseBottleNeck`.
+        - dropouts: float or dict,
+          dropout ratio of each building block.
+        - groups: int,
+          connection pattern (of channels) of the inputs and outputs.
+        - block: dict,
+          other parameters that can be set for the building blocks.
 
-            - num_layers: sequence of int,
-              number of building block layers of each dense (macro) block
-            - init_num_filters: sequence of int,
-              number of filters of the first convolutional layer
-            - init_filter_length: sequence of int,
-              filter length (kernel size) of the first convolutional layer
-            - init_conv_stride: int,
-              stride of the first convolutional layer
-            - init_pool_size: int,
-              pooling kernel size of the first pooling layer
-            - init_pool_stride: int,
-              pooling stride of the first pooling layer
-            - growth_rates: int or sequence of int or sequence of sequences of int,
-              growth rates of the building blocks,
-              with granularity to the whole network, or to each dense (macro) block,
-              or to each building block
-            - filter_lengths: int or sequence of int or sequence of sequences of int,
-              filter length(s) (kernel size(s)) of the convolutions,
-              with granularity to the whole network, or to each macro block,
-              or to each building block
-            - subsample_lengths: int or sequence of int,
-              subsampling length(s) (ratio(s)) of the transition blocks
-            - compression: float,
-              compression factor of the transition blocks
-            - bn_size: int,
-              bottleneck base width, used only when building block is :class:`DenseBottleNeck`
-            - dropouts: float or dict,
-              dropout ratio of each building block
-            - groups: int,
-              connection pattern (of channels) of the inputs and outputs
-            - block: dict,
-              other parameters that can be set for the building blocks
-
-        For a full list of configurable parameters, ref. corr. config file
+        For a full list of configurable parameters, ref. corr. config file.
 
     NOTE
     ----

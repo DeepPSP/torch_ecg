@@ -112,7 +112,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                 mode="linear",
                 align_corners=True,
             ).permute(0, 2, 1)
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
@@ -132,7 +132,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                     sampling_rate=self.config.fs,
                     tol=0.05,
                 )[0]
-                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                for b_input, b_rpeaks in zip(_input.detach().cpu().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(
@@ -224,7 +224,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
@@ -244,7 +244,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                     sampling_rate=self.config.fs,
                     tol=0.05,
                 )[0]
-                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                for b_input, b_rpeaks in zip(_input.detach().cpu().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(
@@ -336,7 +336,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
-        prob = prob.cpu().detach().numpy().squeeze(-1)
+        prob = prob.detach().cpu().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
@@ -356,7 +356,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                     sampling_rate=self.config.fs,
                     tol=0.05,
                 )[0]
-                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                for b_input, b_rpeaks in zip(_input.detach().cpu().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(

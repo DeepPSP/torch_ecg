@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import scipy.signal as SS
+from numpy.typing import NDArray
 from scipy.io import loadmat
 
 from ...cfg import CFG, DEFAULTS
@@ -380,7 +381,7 @@ class CPSC2020(CPSCDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load the ECG data of the record `rec`.
 
         Parameters
@@ -444,7 +445,7 @@ class CPSC2020(CPSCDataBase):
         rec: Union[int, str],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-    ) -> Dict[str, np.ndarray]:
+    ) -> Dict[str, NDArray]:
         """Load the annotations of the record `rec`.
 
         Parameters
@@ -587,12 +588,12 @@ class CPSC2020(CPSCDataBase):
     def plot(
         self,
         rec: Union[int, str],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[Dict[str, NDArray]] = None,
         ticks_granularity: int = 0,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], NDArray]] = None,
     ) -> None:
         """Plot the ECG signal of a record.
 
@@ -750,10 +751,10 @@ class CPSC2020(CPSCDataBase):
 
 
 def compute_metrics(
-    sbp_true: List[np.ndarray],
-    pvc_true: List[np.ndarray],
-    sbp_pred: List[np.ndarray],
-    pvc_pred: List[np.ndarray],
+    sbp_true: List[NDArray],
+    pvc_true: List[NDArray],
+    sbp_pred: List[NDArray],
+    pvc_pred: List[NDArray],
     verbose: int = 0,
 ) -> Union[Tuple[int], dict]:
     """Score Function for all (test) records.
@@ -771,10 +772,10 @@ def compute_metrics(
         Tuple of (negative) scores for each ectopic beat type (SBP, PVC),
         or dict of more scoring details, including
 
-            - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
-            - true_positive: number of true positives of each ectopic beat type
-            - false_positive: number of false positives of each ectopic beat type
-            - false_negative: number of false negatives of each ectopic beat type
+        - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
+        - true_positive: number of true positives of each ectopic beat type
+        - false_positive: number of false positives of each ectopic beat type
+        - false_negative: number of false negatives of each ectopic beat type
 
     """
     BaseCfg = CFG()

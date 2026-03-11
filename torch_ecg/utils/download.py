@@ -19,13 +19,15 @@ import urllib.parse
 import warnings
 import zipfile
 from pathlib import Path
-from typing import Any, Iterable, Literal, Optional, Union
+from typing import Any, Iterable, Literal, Optional, Tuple, Union
 
 import boto3
 import requests
 from botocore import UNSIGNED
 from botocore.client import Config
 from tqdm.auto import tqdm
+
+from .misc import str2bool
 
 __all__ = [
     "http_get",
@@ -36,10 +38,10 @@ PHYSIONET_DB_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+"
 
 
 def _requests_retry_session(
-    retries=5,
-    backoff_factor=0.5,
-    status_forcelist=(500, 502, 503, 504),
-    session=None,
+    retries: int = 5,
+    backoff_factor: float = 0.5,
+    status_forcelist: Tuple[int, ...] = (429, 500, 502, 503, 504, 403),
+    session: Optional[requests.Session] = None,
 ) -> requests.Session:
     """Get a requests session with retry strategy.
 
@@ -50,7 +52,7 @@ def _requests_retry_session(
     backoff_factor : float, default 0.5
         A backoff factor to apply between attempts.
         A backoff factor of 0.5 will sleep for [0.5s, 1s, 2s, ...] between retries.
-    status_forcelist : tuple, default (500, 502, 503, 504)
+    status_forcelist : tuple, default (429, 500, 502, 503, 504, 403)
         A set of HTTP status codes that we should force a retry on.
     session : requests.Session, optional
         An existing requests session.
@@ -63,17 +65,23 @@ def _requests_retry_session(
 
     """
     session = session or requests.Session()
-    retry = requests.packages.urllib3.util.retry.Retry(
+    from requests.adapters import HTTPAdapter
+    from requests.packages.urllib3.util.retry import Retry  # type: ignore
+
+    retry = Retry(
         total=retries,
         read=retries,
         connect=retries,
+        status=retries,
         backoff_factor=backoff_factor,
         status_forcelist=status_forcelist,
-        allowed_methods=["HEAD", "GET", "OPTIONS"],
+        allowed_methods=frozenset(["HEAD", "GET", "OPTIONS"]),
+        raise_on_redirect=True,
+        raise_on_status=False,
     )
-    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
-    session.mount("http://", adapter)
+    adapter = HTTPAdapter(max_retries=retry)
     session.mount("https://", adapter)
+    session.mount("http://", adapter)
     return session
 
 
@@ -83,6 +91,9 @@ def http_get(
     proxies: Optional[dict] = None,
     extract: Literal[True, False, "auto"] = "auto",
     filename: Optional[str] = None,
+    *,
+    timeout: Union[Tuple[float, float], float] = (5.0, 60.0),
+    verify_length: bool = True,
 ) -> Path:
     """Download contents of a URL and save to a file.
 
@@ -108,6 +119,16 @@ def http_get(
         which is set to `dst_dir`, and `filename` is only the downloaded file name.
 
         .. versionadded:: 0.0.20
+    timeout : float or tuple, default (5.0, 60.0)
+        How many seconds to wait for the server to send data
+        before giving up, as a float, or a (connect timeout, read timeout) tuple.
+
+        .. versionadded:: 0.0.32
+    verify_length : bool, default True
+        Whether to verify the length of the downloaded file
+        with the `Content-Length` header in the HTTP response.
+
+        .. versionadded:: 0.0.32
 
     Returns
     -------
@@ -119,8 +140,8 @@ def http_get(
     .. [1] https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
 
     """
-    Path(dst_dir).mkdir(parents=True, exist_ok=True)
-    if filename is not None and (Path(dst_dir) / filename).exists():
+    Path(dst_dir).mkdir(parents=True, exist_ok=True)  # type: ignore
+    if filename is not None and (Path(dst_dir) / filename).exists():  # type: ignore
         raise FileExistsError("file already exists")
     url_parsed = urllib.parse.urlparse(url)
     if url_parsed.scheme == "":
@@ -134,7 +155,7 @@ def http_get(
 
     if url_parsed.scheme == "s3":
         _download_from_aws_s3_using_awscli(url, dst_dir)
-        return Path(dst_dir)
+        return Path(dst_dir)  # type: ignore
 
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
         url_parsed = url_parsed._replace(query="dl=1")
@@ -163,7 +184,7 @@ def http_get(
             delete=False,
         )
         _download_from_google_drive(url, downloaded_file.name)
-        df_suffix = _suffix(filename)
+        df_suffix = _suffix(filename)  # type: ignore
         downloaded_file.close()
     else:
         print(f"Downloading {url}.")
@@ -186,7 +207,7 @@ def http_get(
                     RuntimeWarning,
                 )
                 extract = False
-        parent_dir = Path(dst_dir).parent
+        parent_dir = Path(dst_dir).parent  # type: ignore
         df_suffix = _suffix(pure_url) if filename is None else _suffix(filename)
         downloaded_file = tempfile.NamedTemporaryFile(
             dir=parent_dir,
@@ -194,18 +215,45 @@ def http_get(
             delete=False,
         )
         # req = requests.get(url, stream=True, proxies=proxies)
-        req = _requests_retry_session().get(url, stream=True, proxies=proxies)
-        content_length = req.headers.get("Content-Length")
-        total = int(content_length) if content_length is not None else None
-        if req.status_code in [403, 404]:
-            raise Exception(f"Could not reach {url}.")
-        progress = tqdm(unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=1.0)
-        for chunk in req.iter_content(chunk_size=1024):
-            if chunk:  # filter out keep-alive new chunks
-                progress.update(len(chunk))
-                downloaded_file.write(chunk)
-        progress.close()
+        session = _requests_retry_session()
+        try:
+            req = session.get(url, stream=True, proxies=proxies, timeout=timeout)
+            try:
+                req.raise_for_status()
+            except Exception:
+                snippet = ""
+                try:
+                    snippet = req.text[:300]
+                except Exception:
+                    pass
+                raise RuntimeError(f"Failed to download {url}, status={req.status_code}, body[:300]={snippet!r}")
+
+            content_length = req.headers.get("Content-Length")
+            total = int(content_length) if content_length is not None else None
+            if req.status_code in [403, 404]:
+                raise Exception(f"Could not reach {url}.")
+            if str2bool(os.environ.get("CI")):
+                mininterval = 10.0
+                disable = True
+            else:
+                mininterval = 1.0
+                disable = False
+            progress = tqdm(
+                unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=mininterval, disable=disable
+            )
+            downloaded_size = 0
+            for chunk in req.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    progress.update(len(chunk))
+                    downloaded_file.write(chunk)
+                    downloaded_size += len(chunk)
+            progress.close()
+        finally:
+            session.close()
         downloaded_file.close()
+
+        if verify_length and total is not None and downloaded_size != total:
+            raise IOError(f"Size mismatch for {url}. Expected {total} bytes, got {downloaded_size} bytes.")
 
     # add a delay to avoid the error "process cannot access the file because it is being used by another process"
     time.sleep(0.1)
@@ -225,20 +273,20 @@ def http_get(
             _folder = Path(url).name.replace(_suffix(url), "")
         else:
             _folder = _stem(Path(filename))
-        if _folder in os.listdir(dst_dir):
+        if (Path(dst_dir) / _folder).exists():  # type: ignore
             tmp_folder = str(dst_dir).rstrip(os.sep) + "_tmp"
             # move (rename) the dst_dir to a temporary folder
             os.rename(dst_dir, tmp_folder)
             # move (rename) the extracted folder to the destination folder
             os.rename(Path(tmp_folder) / _folder, dst_dir)
             shutil.rmtree(tmp_folder)
-        final_dst = Path(dst_dir)
+        final_dst = Path(dst_dir)  # type: ignore
     else:
-        Path(dst_dir).mkdir(parents=True, exist_ok=True)
+        Path(dst_dir).mkdir(parents=True, exist_ok=True)  # type: ignore
         if filename is None:
-            final_dst = Path(dst_dir) / Path(pure_url).name
+            final_dst = Path(dst_dir) / Path(pure_url).name  # type: ignore
         else:
-            final_dst = Path(dst_dir) / filename
+            final_dst = Path(dst_dir) / filename  # type: ignore
         shutil.copyfile(downloaded_file.name, final_dst)
     os.remove(downloaded_file.name)
     return final_dst
@@ -258,7 +306,9 @@ def _stem(path: Union[str, bytes, os.PathLike]) -> str:
         Filename without extension.
 
     """
-    ret = Path(path).stem
+    if isinstance(path, bytes):
+        path = path.decode()
+    ret = Path(path).stem  # type: ignore
     if Path(ret).suffix in [".tar", ".gz", ".tz", ".lz", ".bz2", ".xz", ".zip", ".7z"]:
         return _stem(ret)
     return ret
@@ -342,8 +392,8 @@ def _untar_file(path_to_tar_file: Union[str, bytes, os.PathLike], dst_dir: Union
 
     """
     print(f"Extracting file {path_to_tar_file} to {dst_dir}.")
-    mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "").strip(":")
-    with tarfile.open(str(path_to_tar_file), mode) as tar_ref:
+    mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "").strip(":")  # type: ignore
+    with tarfile.open(str(path_to_tar_file), mode) as tar_ref:  # type: ignore
         # tar_ref.extractall(str(dst_dir))
         # CVE-2007-4559 (related to  CVE-2001-1267):
         # directory traversal vulnerability in `extract` and `extractall` in `tarfile` module
@@ -370,7 +420,7 @@ def _is_within_directory(directory: Union[str, bytes, os.PathLike], target: Unio
     abs_directory = os.path.abspath(directory)
     abs_target = os.path.abspath(target)
 
-    prefix = os.path.commonprefix([abs_directory, abs_target])
+    prefix = os.path.commonprefix([abs_directory, abs_target])  # type: ignore
 
     return prefix == abs_directory
 
@@ -409,7 +459,7 @@ def _safe_tar_extract(
 
     """
     for member in members or tar.getmembers():
-        member_path = os.path.join(dst_dir, member.name)
+        member_path = os.path.join(dst_dir, member.name)  # type: ignore
         if not _is_within_directory(dst_dir, member_path):
             raise Exception("Attempted Path Traversal in Tar File")
 
@@ -510,11 +560,12 @@ def count_aws_s3_bucket(bucket_name: str, prefix: str = "") -> int:
     page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
 
     object_count = 0
-    for page in page_iterator:
-        if "Contents" in page:
-            object_count += len(page["Contents"])
-
-    s3.close()
+    try:
+        for page in page_iterator:
+            if "Contents" in page:
+                object_count += len(page.get("Contents", []))
+    finally:
+        s3.close()
 
     return object_count
 
@@ -562,7 +613,7 @@ def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.Pa
             if "Contents" in page:
                 for obj in page["Contents"]:
                     key = obj["Key"]
-                    dst_file = Path(dst_dir) / key
+                    dst_file = Path(dst_dir) / key  # type: ignore
                     if not dst_file.parent.exists():
                         dst_file.parent.mkdir(parents=True, exist_ok=True)
                         s3.download_file(bucket_name, key, str(dst_file))
@@ -571,7 +622,13 @@ def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.Pa
     s3.close()
 
 
-def _download_from_aws_s3_using_awscli(url: str, dst_dir: Union[str, bytes, os.PathLike]) -> None:
+def _download_from_aws_s3_using_awscli(
+    url: str,
+    dst_dir: Union[str, bytes, os.PathLike],
+    *,
+    show_progress: bool = True,
+    env: Optional[dict] = None,
+) -> None:
     """Download a file from AWS S3 using awscli.
 
     Parameters
@@ -581,51 +638,78 @@ def _download_from_aws_s3_using_awscli(url: str, dst_dir: Union[str, bytes, os.P
         For example, "s3://bucket-name/files/pre-fix".
     dst_dir : `path-like`
         The output directory.
+    show_progress : bool, default True
+        Whether to display tqdm progress bar.
+    env : dict, optional
+        Custom environment.
 
     Returns
     -------
     None
 
     """
-    assert shutil.which("aws") is not None, "AWS cli is required to download from S3."
+    if shutil.which("aws") is None:
+        raise RuntimeError("AWS cli is required to download from S3 (please install AWS CLI v2).")
 
     pattern = "^s3://(?P<bucket_name>[^/]+)/(?P<prefix>.+)$"
     match = re.match(pattern, url)
     if match is None:
         raise ValueError(f"Invalid S3 URL: {url}")
+
     bucket_name = match.group("bucket_name")
     prefix = match.group("prefix")
     if prefix.startswith("files/"):
-        prefix = prefix.replace("files/", "")
-    object_count = count_aws_s3_bucket(bucket_name, prefix)
-    print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {object_count}")
+        prefix = prefix[len("files/") :]
+    total_files = count_aws_s3_bucket(bucket_name, prefix)
 
-    pbar = tqdm(total=object_count, dynamic_ncols=True, mininterval=1.0)
+    if total_files == 0:
+        print(f"[S3 sync] No objects found at {bucket_name}/{prefix}, skipping.")
+        return
+
+    print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {total_files}")
+
+    dst_dir = Path(dst_dir).expanduser().resolve()  # type: ignore
+    dst_dir.mkdir(parents=True, exist_ok=True)
+
+    if str2bool(os.environ.get("CI")):
+        mininterval = 10.0
+        disable = True
+    else:
+        mininterval = 1.0
+        disable = not show_progress
+    pbar = tqdm(total=total_files, dynamic_ncols=True, mininterval=mininterval, disable=disable)
     download_count = 0
-    command = f"aws s3 sync --no-sign-request {url} {dst_dir}"
-    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    debug_stdout = collections.deque(maxlen=10)
-    while 1:
-        line = process.stdout.readline().decode("utf-8", errors="replace")
-        if line.rstrip():
+    command = f"aws s3 sync --no-sign-request --only-show-errors {url} {shlex.quote(str(dst_dir))}"
+    process = subprocess.Popen(
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        bufsize=1,
+        text=True,
+        env=env if env is not None else os.environ.copy(),
+    )
+    debug_stdout = collections.deque(maxlen=50)
+    try:
+        assert process.stdout is not None  # for type checker
+        for line in process.stdout:
+            line = line.rstrip("\n")
             debug_stdout.append(line)
-            if "download: s3:" in line:
+            if "download: s3://" in line:
                 download_count += 1
                 pbar.update(1)
-        exitcode = process.poll()
-        if exitcode is not None:
-            for line in process.stdout:
-                debug_stdout.append(line.decode("utf-8", errors="replace"))
-            if exitcode is not None and exitcode != 0:
-                error_msg = "\n".join(debug_stdout)
-                process.communicate()
-                process.stdout.close()
-                raise subprocess.CalledProcessError(exitcode, error_msg)
-            else:
-                break
-    process.communicate()
-    process.stdout.close()
-    # object_count - download_count files skipped for they already exist
-    pbar.update(object_count - download_count)
-    pbar.close()
-    print(f"Downloaded {download_count} files from S3.")
+
+        retcode = process.wait()
+        if retcode != 0:
+            raise subprocess.CalledProcessError(
+                retcode,
+                command,
+                output="\n".join(debug_stdout),
+            )
+    finally:
+        if download_count < total_files:
+            pbar.update(total_files - download_count)
+        pbar.close()
+        if process.stdout and not process.stdout.closed:
+            process.stdout.close()
+
+    print(f"[S3 sync] Completed. Reported downloads: {download_count}/{total_files} (existing files are skipped silently).")

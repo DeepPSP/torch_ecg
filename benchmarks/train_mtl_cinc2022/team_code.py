@@ -424,8 +424,8 @@ def run_challenge_model(
     # forward_output = main_model.clf(features)  # shape (1, n_classes)
     # probabilities = main_model.softmax(forward_output)
     # labels = (probabilities == probabilities.max(dim=-1, keepdim=True).values).to(int)
-    # probabilities = probabilities.squeeze(dim=0).cpu().detach().numpy()
-    # labels = labels.squeeze(dim=0).cpu().detach().numpy()
+    # probabilities = probabilities.squeeze(dim=0).detach().cpu().numpy()
+    # labels = labels.squeeze(dim=0).detach().cpu().numpy()
 
     # get final prediction for murmurs:
     # strategy:

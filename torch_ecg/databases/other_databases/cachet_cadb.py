@@ -13,6 +13,7 @@ import h5py
 import numpy as np
 import pandas as pd
 import scipy.signal as SS
+from numpy.typing import NDArray
 
 from ...cfg import DEFAULTS
 from ...utils.download import http_get
@@ -349,7 +350,7 @@ class CACHET_CADB(_DataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load physical (converted from digital) ECG data,
         or load digital signal directly.
 
@@ -434,7 +435,7 @@ class CACHET_CADB(_DataBase):
         channels: Optional[Union[str, int, List[str], List[int]]] = None,
         units: Optional[str] = None,
         fs: Optional[Real] = None,
-    ) -> Union[np.ndarray, pd.DataFrame]:
+    ) -> Union[NDArray, pd.DataFrame]:
         """Load context data (e.g. accelerometer, heart rate, etc.).
 
         Parameters
@@ -544,7 +545,7 @@ class CACHET_CADB(_DataBase):
 
     def load_ann(
         self, rec: Union[str, int], ann_format: str = "pd"
-    ) -> Union[pd.DataFrame, np.ndarray, Dict[Union[int, str], np.ndarray]]:
+    ) -> Union[pd.DataFrame, NDArray, Dict[Union[int, str], NDArray]]:
         """Load annotation from the metadata file.
 
         Parameters

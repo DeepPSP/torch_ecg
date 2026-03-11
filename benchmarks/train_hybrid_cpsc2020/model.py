@@ -92,8 +92,8 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
             _input = _input.unsqueeze(0)  # add a batch dimension
         prob = self.sigmoid(self.forward(_input))
         pred = (prob >= bin_pred_thr).int()
-        prob = prob.cpu().detach().numpy()
-        pred = pred.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
         for row_idx, row in enumerate(pred):
             row_max_prob = prob[row_idx, ...].max()
             if row.sum() == 0:
@@ -190,14 +190,14 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         if self.n_classes == 2:
             prob = self.sigmoid(prob)  # (batch_size, seq_len, 2)
             pred = (prob >= bin_pred_thr).int()
-            prob = prob.cpu().detach().numpy()
-            pred = pred.cpu().detach().numpy()
+            prob = prob.detach().cpu().numpy()
+            pred = pred.detach().cpu().numpy()
             # aux used to filter out potential simultaneous predictions of SPB and PVC
             aux = (prob == np.max(prob, axis=2, keepdims=True)).astype(int)
             pred = aux * pred
         elif self.n_classes == 3:
             prob = self.softmax(prob)  # (batch_size, seq_len, 3)
-            prob = prob.cpu().detach().numpy()
+            prob = prob.detach().cpu().numpy()
             pred = np.argmax(prob, axis=2)
 
         if rpeak_inds is not None:

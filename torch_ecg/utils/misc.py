@@ -5,7 +5,6 @@ import inspect
 import logging
 import os
 import re
-import signal
 import sys
 import time
 import types
@@ -14,14 +13,15 @@ from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
 from glob import glob
-from numbers import Number, Real
-from pathlib import Path
+from numbers import Number
+from pathlib import Path, PurePath
 from typing import Any, Callable, Dict, Iterable, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from bib_lookup import CitationMixin as _CitationMixin
 from deprecated import deprecated
+from numpy.typing import NDArray
 
 from ..cfg import _DATA_CACHE, DEFAULTS
 
@@ -85,10 +85,10 @@ def get_record_list_recursive(db_dir: Union[str, bytes, os.PathLike], rec_ext: s
 
     """
     if not rec_ext.startswith("."):
-        res = Path(db_dir).rglob(f"*.{rec_ext}")
+        res = Path(db_dir).rglob(f"*.{rec_ext}")  # type: ignore
     else:
-        res = Path(db_dir).rglob(f"*{rec_ext}")
-    res = [str((item.relative_to(db_dir) if relative else item).with_suffix("")) for item in res if str(item).endswith(rec_ext)]
+        res = Path(db_dir).rglob(f"*{rec_ext}")  # type: ignore
+    res = [str((item.relative_to(db_dir) if relative else item).with_suffix("")) for item in res if str(item).endswith(rec_ext)]  # type: ignore
     res = sorted(res)
 
     return res
@@ -173,32 +173,32 @@ def get_record_list_recursive3(
         res = []
     elif isinstance(rec_patterns, dict):
         res = {k: [] for k in rec_patterns.keys()}
-    _db_dir = Path(db_dir).resolve()  # make absolute
+    _db_dir = Path(db_dir).resolve()  # type: ignore
     roots = [_db_dir]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
             tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
-                res += [r / item for item in filter(re.compile(rec_patterns).search, tmp)]
+                res += [r / item for item in filter(re.compile(rec_patterns).search, tmp)]  # type: ignore
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
-                    res[k] += [r / item for item in filter(re.compile(rec_patterns[k]).search, tmp)]
+                    res[k] += [r / item for item in filter(re.compile(rec_patterns[k]).search, tmp)]  # type: ignore
             new_roots += [r / item for item in tmp if (r / item).is_dir()]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
         if with_suffix:
-            res = [str((item.relative_to(_db_dir) if relative else item)) for item in res]
+            res = [str((item.relative_to(_db_dir) if relative else item)) for item in res]  # type: ignore
         else:
-            res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]
+            res = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res]  # type: ignore
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
             if with_suffix:
-                res[k] = [str((item.relative_to(_db_dir) if relative else item)) for item in res[k]]
+                res[k] = [str((item.relative_to(_db_dir) if relative else item)) for item in res[k]]  # type: ignore
             else:
-                res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]
-            res[k] = sorted(res[k])
+                res[k] = [str((item.relative_to(_db_dir) if relative else item).with_suffix("")) for item in res[k]]  # type: ignore
+            res[k] = sorted(res[k])  # type: ignore
     return res
 
 
@@ -282,7 +282,11 @@ def dict_to_str(d: Union[dict, list, tuple], current_depth: int = 1, indent_spac
     return s
 
 
-def str2bool(v: Union[str, bool]) -> bool:
+_TRUE_SET = {"yes", "true", "t", "y", "1"}
+_FALSE_SET = {"no", "false", "f", "n", "0"}
+
+
+def str2bool(v: Union[str, bool, None], *, default: bool = False, strict: bool = True) -> bool:
     """Converts a "boolean" value possibly
     in the format of :class:`str` to :class:`bool`.
 
@@ -290,8 +294,17 @@ def str2bool(v: Union[str, bool]) -> bool:
 
     Parameters
     ----------
-    v : str or bool
+    v : str or bool or None
         The "boolean" value.
+    default : bool, default False
+        The default value to return if `v` is ``None``,
+        or if `strict` is ``False`` and `v` could not be converted.
+
+        .. versionadded:: 0.0.32
+    strict : bool, default True
+        Whether to raise error if `v` could not be converted.
+
+        .. versionadded:: 0.0.32
 
     Returns
     -------
@@ -304,18 +317,25 @@ def str2bool(v: Union[str, bool]) -> bool:
 
     """
     if isinstance(v, bool):
-        b = v
-    elif v.lower() in ("yes", "true", "t", "y", "1"):
-        b = True
-    elif v.lower() in ("no", "false", "f", "n", "0"):
-        b = False
-    else:
-        raise ValueError("Boolean value expected.")
-    return b
+        return v
+    if v is None:
+        return default
+    if not isinstance(v, str):
+        if strict:
+            raise TypeError(f"Expected str|bool|None, got {type(v)}")
+        return default
+    v_norm = v.strip().lower()
+    if v_norm in _TRUE_SET:
+        return True
+    if v_norm in _FALSE_SET:
+        return False
+    if strict:
+        raise ValueError(f"Boolean value expected, got {v!r}")
+    return default
 
 
 @deprecated("Use `np.diff` instead.")
-def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
+def diff_with_step(a: NDArray, step: int = 1) -> NDArray:
     """Compute ``a[n+step] - a[n]`` for all valid `n`.
 
     Parameters
@@ -337,14 +357,14 @@ def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
     return d
 
 
-def ms2samples(t: Real, fs: Real) -> int:
+def ms2samples(t: Union[float, int], fs: Union[float, int]) -> int:
     """Convert time duration in ms to number of samples.
 
     Parameters
     ----------
-    t : numbers.Real
+    t : float or int
         Time duration in ms.
-    fs : numbers.Real
+    fs : float or int
         Sampling frequency.
 
     Returns
@@ -354,23 +374,23 @@ def ms2samples(t: Real, fs: Real) -> int:
         with sampling frequency `fs`.
 
     """
-    n_samples = t * fs // 1000
+    n_samples = int(t * fs / 1000)
     return n_samples
 
 
-def samples2ms(n_samples: int, fs: Real) -> Real:
+def samples2ms(n_samples: int, fs: int) -> float:
     """Convert number of samples to time duration in ms.
 
     Parameters
     ----------
     n_samples : int
         Number of sample points.
-    fs : numbers.Real
+    fs : int
         Sampling frequency.
 
     Returns
     -------
-    t : numbers.Real
+    t : float
         Time duration in ms converted from `n_samples`,
         with sampling frequency `fs`.
 
@@ -380,8 +400,8 @@ def samples2ms(n_samples: int, fs: Real) -> Real:
 
 
 def plot_single_lead(
-    t: np.ndarray,
-    sig: np.ndarray,
+    t: NDArray,
+    sig: NDArray,
     ax: Optional[Any] = None,
     ticks_granularity: int = 0,
     **kwargs,
@@ -405,8 +425,9 @@ def plot_single_lead(
     None
 
     """
-    if "plt" not in dir():
-        import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import MultipleLocator
+
     palette = {
         "p_waves": "cyan",
         "qrs": "green",
@@ -426,12 +447,12 @@ def plot_single_lead(
     ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
     # NOTE that `Locator` has default `MAXTICKS` equal to 1000
     if ticks_granularity >= 1:
-        ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
-        ax.yaxis.set_major_locator(plt.MultipleLocator(500))
+        ax.xaxis.set_major_locator(MultipleLocator(0.2))
+        ax.yaxis.set_major_locator(MultipleLocator(500))
         ax.grid(which="major", linestyle="-", linewidth="0.5", color="red")
     if ticks_granularity >= 2:
-        ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
-        ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
+        ax.xaxis.set_minor_locator(MultipleLocator(0.04))
+        ax.yaxis.set_minor_locator(MultipleLocator(100))
         ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
 
     waves = kwargs.get("waves", {"p_waves": [], "qrs": [], "t_waves": []})
@@ -485,13 +506,13 @@ def init_logger(
         log_file = None
     else:
         if log_file is None:
-            log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"
-        log_dir = Path(log_dir).expanduser().resolve() if log_dir is not None else DEFAULTS.log_dir
+            log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"  # type: ignore
+        log_dir = Path(log_dir).expanduser().resolve() if log_dir is not None else DEFAULTS.log_dir  # type: ignore
         log_dir.mkdir(parents=True, exist_ok=True)
-        log_file = log_dir / log_file
+        log_file = log_dir / log_file  # type: ignore
         print(f"log file path: {str(log_file)}")
 
-    log_name = (log_name or DEFAULTS.prefix) + (f"-{suffix}" if suffix else "")
+    log_name = (log_name or DEFAULTS.prefix) + (f"-{suffix}" if suffix else "")  # type: ignore
     # if a logger with the same name already exists, remove it
     if log_name in logging.root.manager.loggerDict:
         logging.getLogger(log_name).handlers = []
@@ -506,21 +527,21 @@ def init_logger(
         c_handler.setLevel(logging.DEBUG)
         if log_file is not None:
             # print("level of `f_handler` is set DEBUG")
-            f_handler.setLevel(logging.DEBUG)
+            f_handler.setLevel(logging.DEBUG)  # type: ignore
         logger.setLevel(logging.DEBUG)
     elif verbose >= 1:
         # print("level of `c_handler` is set INFO")
         c_handler.setLevel(logging.INFO)
         if log_file is not None:
             # print("level of `f_handler` is set DEBUG")
-            f_handler.setLevel(logging.DEBUG)
+            f_handler.setLevel(logging.DEBUG)  # type: ignore
         logger.setLevel(logging.DEBUG)
     else:
         # print("level of `c_handler` is set WARNING")
         c_handler.setLevel(logging.WARNING)
         if log_file is not None:
             # print("level of `f_handler` is set INFO")
-            f_handler.setLevel(logging.INFO)
+            f_handler.setLevel(logging.INFO)  # type: ignore
         logger.setLevel(logging.INFO)
 
     c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
@@ -529,8 +550,8 @@ def init_logger(
 
     if log_file is not None:
         f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        f_handler.setFormatter(f_format)
-        logger.addHandler(f_handler)
+        f_handler.setFormatter(f_format)  # type: ignore
+        logger.addHandler(f_handler)  # type: ignore
 
     return logger
 
@@ -598,7 +619,7 @@ def read_log_txt(
         Scalars summary, in the format of a :class:`~pandas.DataFrame`.
 
     """
-    content = Path(fp).read_text().splitlines()
+    content = Path(fp).read_text().splitlines()  # type: ignore
     if isinstance(scalar_startswith, str):
         field_pattern = f"({scalar_startswith})"
     else:
@@ -615,7 +636,8 @@ def read_log_txt(
             field, val = line.split(":")[-2:]
             field = field.strip()
             val = float(val.strip())
-            new_line[field] = val
+            if new_line:
+                new_line[field] = val
     summary.append(new_line)
     summary = pd.DataFrame(summary)
     return summary
@@ -641,7 +663,7 @@ def read_event_scalars(
 
     """
     try:
-        from tensorflow.python.summary.event_accumulator import EventAccumulator
+        from tensorflow.python.summary.event_accumulator import EventAccumulator  # type: ignore
     except Exception:
         try:
             from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
@@ -662,7 +684,7 @@ def read_event_scalars(
         df.columns = ["wall_time", "step", "value"]
         summary[k] = df
     if isinstance(keys, str):
-        summary = summary[k]
+        summary = summary[k]  # type: ignore
     return summary
 
 
@@ -809,15 +831,15 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     closing_indent = 4 * (depth - 1) * " "
     if not hasattr(c, "extra_repr_keys"):
         return repr(c)
-    elif len(c.extra_repr_keys()) > 0:
-        max_len = max([len(k) for k in c.extra_repr_keys()])
+    elif len(c.extra_repr_keys()) > 0:  # type: ignore
+        max_len = max([len(k) for k in c.extra_repr_keys()])  # type: ignore
         extra_str = (
             "(\n"
             + ",\n".join(
                 [
                     f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}"""
                     for k in c.__dir__()
-                    if k in c.extra_repr_keys()
+                    if k in c.extra_repr_keys()  # type: ignore
                 ]
             )
             + f"{closing_indent}\n)"
@@ -848,14 +870,16 @@ class CitationMixin(_CitationMixin):
     # backwar compatibility
     if (_DATA_CACHE / "database_citation.csv").exists():
         try:
-            df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
+            df_old = pd.read_csv(
+                _DATA_CACHE / "database_citation.csv", encoding="utf-8", encoding_errors="replace", on_bad_lines="warn"
+            )
         except pd.errors.EmptyDataError:
             df_old = pd.DataFrame(columns=["doi", "citation"])
         if set(df_old.columns) != set(["doi", "citation"]):
             df_old = pd.DataFrame(columns=["doi", "citation"])
         df_old = df_old[["doi", "citation"]]
         if _CitationMixin.citation_cache.exists():
-            df = pd.read_csv(_CitationMixin.citation_cache)
+            df = pd.read_csv(_CitationMixin.citation_cache, encoding="utf-8", encoding_errors="replace", on_bad_lines="warn")
         else:
             df = pd.DataFrame(columns=["doi", "citation"])
         # merge the old and new tables and drop duplicates
@@ -874,7 +898,7 @@ class CitationMixin(_CitationMixin):
         style: Optional[str] = None,
         timeout: Optional[float] = None,
         print_result: bool = True,
-    ) -> Union[str, type(None)]:
+    ) -> Union[str, None]:
         """Get bib citation from DOIs.
 
         Overrides the default method to make the `print_result` argument
@@ -937,7 +961,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
 
-    def __call__(self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any) -> np.ndarray:
+    def __call__(self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any) -> NDArray:
         """Compute moving average.
 
         Parameters
@@ -946,13 +970,11 @@ class MovingAverage(object):
             The series data to compute its moving average.
         method : str
             method for computing moving average, can be one of
-
-                - "sma", "simple", "simple moving average";
-                - "ema", "ewma", "exponential", "exponential weighted",
-                  "exponential moving average", "exponential weighted moving average";
-                - "cma", "cumulative", "cumulative moving average";
-                - "wma", "weighted", "weighted moving average".
-
+            - "sma", "simple", "simple moving average";
+            - "ema", "ewma", "exponential", "exponential weighted",
+              "exponential moving average", "exponential weighted moving average";
+            - "cma", "cumulative", "cumulative moving average";
+            - "wma", "weighted", "weighted moving average".
         kwargs : dict, optional
             Keyword arguments for the specific moving average method.
 
@@ -984,7 +1006,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         return func(**kwargs)
 
-    def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> np.ndarray:
+    def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> NDArray:
         """Simple moving average.
 
         Parameters
@@ -1020,13 +1042,13 @@ class MovingAverage(object):
             smoothed.append(s)
         smoothed = np.array(smoothed)
         if center:
-            smoothed[hw:-hw] = smoothed[window - 1 :]
-            for n in range(hw):
-                smoothed[n] = np.mean(self.data[: n + hw + 1])
-                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])
+            smoothed[hw:-hw] = smoothed[window - 1 :]  # type: ignore
+            for n in range(hw):  # type: ignore
+                smoothed[n] = np.mean(self.data[: n + hw + 1])  # type: ignore
+                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])  # type: ignore
         return smoothed
 
-    def _ema(self, weight: float = 0.6, **kwargs: Any) -> np.ndarray:
+    def _ema(self, weight: float = 0.6, **kwargs: Any) -> NDArray:
         """Exponential moving average
 
         This is also the function used in Tensorboard Scalar panel,
@@ -1057,7 +1079,7 @@ class MovingAverage(object):
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _cma(self, **kwargs) -> np.ndarray:
+    def _cma(self, **kwargs) -> NDArray:
         """Cumulative moving average.
 
         Parameters
@@ -1084,7 +1106,7 @@ class MovingAverage(object):
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _wma(self, window: int = 5, **kwargs: Any) -> np.ndarray:
+    def _wma(self, window: int = 5, **kwargs: Any) -> NDArray:
         """Weighted moving average.
 
         Parameters
@@ -1172,6 +1194,7 @@ def remove_parameters_returns_from_docstring(
     elif isinstance(returns, str):
         returns = [returns]
 
+    doc = inspect.cleandoc(doc)
     new_doc = doc.splitlines()
     parameters_indent = None
     returns_indent = None
@@ -1199,7 +1222,7 @@ def remove_parameters_returns_from_docstring(
         if start_idx is not None and len(line.strip()) == 0:
             indices2remove.extend(list(range(start_idx, idx)))
             start_idx = None
-        if parameters_starts and len(line.lstrip()) == len(line) - len(parameters_indent):
+        if parameters_starts and len(line.lstrip()) == len(line) - len(parameters_indent):  # type: ignore
             if any([line.lstrip().startswith(p) for p in parameters]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1210,7 +1233,7 @@ def remove_parameters_returns_from_docstring(
                 else:
                     indices2remove.extend(list(range(start_idx, idx)))
                 start_idx = None
-        if returns_starts and len(line.lstrip()) == len(line) - len(returns_indent):
+        if returns_starts and len(line.lstrip()) == len(line) - len(returns_indent):  # type: ignore
             if any([line.lstrip().startswith(p) for p in returns]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1226,11 +1249,9 @@ def remove_parameters_returns_from_docstring(
 
 
 @contextmanager
-def timeout(duration: float):
+def timeout(duration: Union[float, int]):
     """A context manager that raises a
     :class:`TimeoutError` after a specified time (in seconds).
-
-    Modified from [#timeout]_.
 
     Parameters
     ----------
@@ -1238,25 +1259,57 @@ def timeout(duration: float):
         The time duration in seconds,
         should be non-negative, 0 for no timeout.
 
-    References
-    ----------
-    .. [#timeout] https://stackoverflow.com/questions/492519/timeout-on-a-function-call
-
     """
     if np.isinf(duration):
         duration = 0
     elif duration < 0:
         raise ValueError("`duration` must be non-negative")
-    elif duration > 0:  # granularity is 1 second, so round up
+    elif duration > 0:
         duration = max(1, int(duration))
 
-    def timeout_handler(signum, frame):
-        raise TimeoutError(f"block timedout after `{duration}` seconds")
+    if duration == 0:
+        yield
+        return
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(duration)
-    yield
-    signal.alarm(0)
+    # signal.alarm is not available on Windows
+    # so we use threading.Timer to raise TimeoutError
+    import ctypes
+    import threading
+
+    def _raise_timeout_exception(tid):
+        """Raise TimeoutError in the target thread."""
+        # ctypes.pythonapi.PyThreadState_SetAsyncExc returns the number of threads affected
+        # we need to cast the thread id to c_long
+        if not isinstance(tid, int):
+            tid = int(tid)
+
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(TimeoutError))
+        if res == 0:
+            # thread id not found
+            # this may happen if the thread has already finished
+            pass
+        elif res > 1:
+            # multiple threads affected, should not happen
+            # undo the effect
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), 0)
+
+    # get the current thread id
+    # threading.get_ident() returns the thread identifier of the current thread
+    # which is an integer
+    tid = threading.get_ident()
+
+    timer = threading.Timer(duration, _raise_timeout_exception, args=(tid,))
+    timer.start()
+    try:
+        yield
+    except TimeoutError:
+        # Re-raise with custom message
+        raise TimeoutError(f"block timedout after `{duration}` seconds")
+    finally:
+        timer.cancel()
+        # Clear any pending async exception in case the timer fired
+        # just as the block was finishing
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), None)
 
 
 class Timer(ReprMixin):
@@ -1365,7 +1418,7 @@ class Timer(ReprMixin):
         return ["name", "verbose"]
 
 
-def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
+def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     """Get the kwargs of a function or class.
 
     Parameters
@@ -1403,7 +1456,7 @@ def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
     return kwargs
 
 
-def get_required_args(func_or_cls: callable) -> List[str]:
+def get_required_args(func_or_cls: Callable) -> List[str]:
     """Get the required positional arguments of a function or class.
 
     Parameters
@@ -1427,7 +1480,7 @@ def get_required_args(func_or_cls: callable) -> List[str]:
     return required_args
 
 
-def add_kwargs(func: callable, **kwargs: Any) -> callable:
+def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
     """Add keyword arguments to a function.
 
     This function is used to add keyword arguments to a function
@@ -1466,18 +1519,18 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     # move the VAR_POSITIONAL and VAR_KEYWORD in `func_parameters` to the end
     for k, v in func_parameters.items():
         if v.kind == inspect.Parameter.VAR_POSITIONAL:
-            func_parameters.move_to_end(k)
+            func_parameters.move_to_end(k)  # type: ignore
             break
     for k, v in func_parameters.items():
         if v.kind == inspect.Parameter.VAR_KEYWORD:
-            func_parameters.move_to_end(k)
+            func_parameters.move_to_end(k)  # type: ignore
             break
 
     if isinstance(func, types.MethodType):
         # can not assign `__signature__` to a bound method directly
-        func.__func__.__signature__ = func_signature.replace(parameters=func_parameters.values())
+        func.__func__.__signature__ = func_signature.replace(parameters=func_parameters.values())  # type: ignore
     else:
-        func.__signature__ = func_signature.replace(parameters=func_parameters.values())
+        func.__signature__ = func_signature.replace(parameters=func_parameters.values())  # type: ignore
 
     # docstring is automatically copied by `functools.wraps`
 
@@ -1492,62 +1545,114 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
     return wrapper
 
 
-def make_serializable(x: Union[np.ndarray, np.generic, dict, list, tuple]) -> Union[list, dict, Number]:
-    """Make an object serializable.
+def _is_pathlike_string(s: str) -> bool:
+    """Heuristically check if a string looks like a filesystem path."""
+    if not isinstance(s, str):
+        return False
 
-    This function is used to convert all numpy arrays to list in an object,
-    and also convert numpy data types to python data types in the object,
-    so that it can be serialized by :mod:`json`.
+    p = PurePath(s)
+    if os.sep in s or (os.altsep and os.altsep in s):
+        return True
+    if s.startswith((".", "~")) or p.is_absolute():
+        return True
+    if p.suffix != "":
+        return True
+    if len(s) > 2 and s[1] == ":" and s[0].isalpha() and s[2] in ("/", "\\"):
+        return True
+    return False
+
+
+def make_serializable(
+    x: Any, drop_unserializable: bool = True, drop_paths: bool = False
+) -> Optional[Union[list, dict, str, int, float, bool]]:
+    """Recursively convert object into JSON-serializable form.
+
+    Rules
+    -----
+    - NDArray → list
+    - np.generic → Python scalar
+    - dict → new dict with only serializable values
+    - list/tuple → list with only serializable values
+    - str/int/float/bool/None → kept
+    - if drop_unserializable:
+          anything else (like Path, custom classes) → dropped (return None)
+      else:
+          fallback to str(x)
 
     Parameters
     ----------
-    x : Union[numpy.ndarray, numpy.generic, dict, list, tuple]
-        Input data, which can be numpy array (or numpy data type),
-        or dict, list, tuple containing numpy arrays (or numpy data type).
+    x : Any
+        Input object to be converted.
+    drop_unserializable : bool, default=True
+        Whether to drop unserializable objects (return None),
+        or convert them to string with str(x).
+
+        .. versionadded:: 0.0.32
+    drop_paths : bool, default=False
+        If True, drop all filesystem paths (Path objects and strings
+        that look like paths).
+
+        .. versionadded:: 0.0.32
 
     Returns
     -------
-    Union[list, dict, numbers.Number]
-        Converted data.
+    Optional[Union[list, dict, str, int, float, bool]]
+        A JSON-serializable object, or None if dropped.
 
     Examples
     --------
     >>> import numpy as np
-    >>> from fl_sim.utils.misc import make_serializable
-    >>> x = np.array([1, 2, 3])
-    >>> make_serializable(x)
+    >>> make_serializable(np.array([1, 2, 3]))
     [1, 2, 3]
-    >>> x = {"a": np.array([1, 2, 3]), "b": np.array([4, 5, 6])}
-    >>> make_serializable(x)
-    {'a': [1, 2, 3], 'b': [4, 5, 6]}
-    >>> x = [np.array([1, 2, 3]), np.array([4, 5, 6])]
-    >>> make_serializable(x)
-    [[1, 2, 3], [4, 5, 6]]
-    >>> x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())
-    >>> obj = make_serializable(x)
-    >>> obj
-    [[1, 2, 3], 5.0]
-    >>> type(obj[1]), type(x[1])
-    (float, numpy.float64)
+    >>> make_serializable({"a": np.float64(3.14), "b": Path("file.txt")})
+    {'a': 3.14, 'b': 'file.txt'}
+    >>> make_serializable({"a": np.float64(3.14), "b": Path("file.txt")}, drop_paths=True)
+    {'a': 3.14}
 
     """
+
     if isinstance(x, np.ndarray):
-        return x.tolist()
-    elif isinstance(x, (list, tuple)):
-        # to avoid cases where the list contains numpy data types
-        return [make_serializable(v) for v in x]
-    elif isinstance(x, dict):
-        for k, v in x.items():
-            x[k] = make_serializable(v)
+        return make_serializable(x.tolist(), drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+
     elif isinstance(x, np.generic):
         return x.item()
-    # the other types will be returned directly
-    return x
+
+    elif isinstance(x, dict):
+        result = {}
+        for k, v in x.items():
+            v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+            if v_serial is not None:
+                result[k] = v_serial
+        return result
+
+    elif isinstance(x, (list, tuple)):
+        result = []
+        for v in x:
+            v_serial = make_serializable(v, drop_unserializable=drop_unserializable, drop_paths=drop_paths)
+            if v_serial is not None:
+                result.append(v_serial)
+        return result
+
+    elif isinstance(x, (str, int, float, bool, type(None))):
+        if isinstance(x, str) and drop_paths and _is_pathlike_string(x):
+            return None
+        return x
+
+    elif isinstance(x, Path):
+        if drop_paths:
+            return None
+        return str(x)
+
+    else:
+        if drop_unserializable:
+            return None
+        else:
+            return str(x)
 
 
 def select_k(
-    arr: np.ndarray, k: Union[int, List[int], np.ndarray], dim: int = -1, largest: bool = True, sorted: bool = True
-) -> Tuple[np.ndarray, np.ndarray]:
+    arr: NDArray, k: Union[int, List[int], NDArray], dim: int = -1, largest: bool = True, sorted: bool = True
+) -> Tuple[NDArray, NDArray]:
     """Select elements from an array along a specified axis of specific rankings.
 
     Parameters
@@ -1602,7 +1707,7 @@ def select_k(
     return values, indices
 
 
-def np_topk(arr: np.ndarray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+def np_topk(arr: NDArray, k: int, dim: int = -1, largest: bool = True, sorted: bool = True) -> Tuple[NDArray, NDArray]:
     """Find the k largest elements of an array along a specified axis.
 
     Parameters

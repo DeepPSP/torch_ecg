@@ -9,6 +9,7 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import scipy.signal as SS
+from numpy.typing import NDArray
 from scipy.io import loadmat
 
 from ...cfg import DEFAULTS
@@ -222,7 +223,7 @@ class CPSC2019(CPSCDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load the ECG data of the record `rec`.
 
         Parameters
@@ -273,7 +274,7 @@ class CPSC2019(CPSCDataBase):
             return data, data_fs
         return data
 
-    def load_ann(self, rec: Union[int, str]) -> np.ndarray:
+    def load_ann(self, rec: Union[int, str]) -> NDArray:
         """Load the annotations (indices of R peaks) of the record `rec`.
 
         Parameters
@@ -292,14 +293,14 @@ class CPSC2019(CPSCDataBase):
         return ann
 
     @add_docstring(load_ann.__doc__)
-    def load_rpeaks(self, rec: Union[int, str]) -> np.ndarray:
+    def load_rpeaks(self, rec: Union[int, str]) -> NDArray:
         """
         alias of `self.load_ann`
         """
         return self.load_ann(rec=rec)
 
     @add_docstring(load_rpeaks.__doc__)
-    def load_rpeak_indices(self, rec: Union[int, str]) -> np.ndarray:
+    def load_rpeak_indices(self, rec: Union[int, str]) -> NDArray:
         """
         alias of `self.load_rpeaks`
         """
@@ -308,8 +309,8 @@ class CPSC2019(CPSCDataBase):
     def plot(
         self,
         rec: Union[int, str],
-        data: Optional[np.ndarray] = None,
-        ann: Optional[np.ndarray] = None,
+        data: Optional[NDArray] = None,
+        ann: Optional[NDArray] = None,
         ticks_granularity: int = 0,
         **kwargs: Any,
     ) -> None:
@@ -397,8 +398,8 @@ class CPSC2019(CPSCDataBase):
 
 
 def compute_metrics(
-    rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
-    rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
+    rpeaks_truths: Sequence[Union[NDArray, Sequence[int]]],
+    rpeaks_preds: Sequence[Union[NDArray, Sequence[int]]],
     fs: Real,
     thr: float = 0.075,
     verbose: int = 0,

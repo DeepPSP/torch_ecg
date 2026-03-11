@@ -3,6 +3,7 @@ utilities for nn models
 
 """
 
+import json
 import os
 import pickle
 import re
@@ -12,11 +13,14 @@ from itertools import chain, repeat
 from math import floor
 from numbers import Real
 from pathlib import Path, PosixPath, WindowsPath
-from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 from easydict import EasyDict
+from numpy.typing import NDArray
+from safetensors import safe_open
+from safetensors.torch import load_file, save_file
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS, DTYPE
@@ -52,17 +56,23 @@ with warnings.catch_warnings():
     _safe_globals = [
         CFG, DTYPE, EasyDict,
         Path, PosixPath, WindowsPath,
-        np.core.multiarray._reconstruct,
+        # np.core.multiarray._reconstruct,
         np.ndarray, np.dtype,
         np.float32, np.float64, np.int32, np.int64, np.uint8, np.int8,
     ] + _get_np_dtypes()
+    if hasattr(np, "core"):
+        _safe_globals.append(np.core.multiarray._reconstruct)  # type: ignore
+    else:
+        _safe_globals.append(np._core.multiarray._reconstruct)  # type: ignore
     # fmt: on
 
 if hasattr(torch.serialization, "add_safe_globals"):
     torch.serialization.add_safe_globals(_safe_globals)
 
 
-def extend_predictions(preds: Sequence, classes: List[str], extended_classes: List[str]) -> np.ndarray:
+def extend_predictions(
+    preds: Union[Sequence, NDArray, torch.Tensor], classes: List[str], extended_classes: List[str]
+) -> NDArray:
     """Extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
@@ -140,8 +150,8 @@ def compute_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.
 
     This function is based on the discussion [#disc]_.
@@ -287,17 +297,17 @@ def compute_output_shape(
     none_dim_msg = "spatial dimensions should be all `None`, or all not `None`"
     if channel_last:
         if all([n is None for n in input_shape[1:-1]]):
-            if out_channels is None:
+            if out_channels is None:  # type: ignore
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple(list(input_shape[:-1]) + [out_channels])
+            output_shape = tuple(list(input_shape[:-1]) + [out_channels])  # type: ignore
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[1:-1]]):
             raise ValueError(none_dim_msg)
     else:
         if all([n is None for n in input_shape[2:]]):
-            if out_channels is None:
+            if out_channels is None:  # type: ignore
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
+            output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))  # type: ignore
             return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[2:]]):
             raise ValueError(none_dim_msg)
@@ -349,12 +359,12 @@ def compute_output_shape(
             _asymmetric_padding = list(repeat(asymmetric_padding, dim))
         else:
             assert len(asymmetric_padding) == dim and all(
-                len(ap) == 2 and all(isinstance(p, int) for p in ap) for ap in asymmetric_padding
+                len(ap) == 2 and all(isinstance(p, int) for p in ap) for ap in asymmetric_padding  # type: ignore
             ), "Invalid `asymmetric_padding`"
             _asymmetric_padding = asymmetric_padding
         for idx in range(dim):
-            _padding[idx][0] += _asymmetric_padding[idx][0]
-            _padding[idx][1] += _asymmetric_padding[idx][1]
+            _padding[idx][0] += _asymmetric_padding[idx][0]  # type: ignore
+            _padding[idx][1] += _asymmetric_padding[idx][1]  # type: ignore
 
     if isinstance(output_padding, int):
         _output_padding = list(repeat(output_padding, dim))
@@ -400,13 +410,13 @@ def compute_output_shape(
         ]
     else:
         output_shape = [
-            floor(((i + sum(p) - minus_term(d, k)) / s) + 1)
+            floor(((i + sum(p) - minus_term(d, k)) / s) + 1)  # type: ignore
             for i, p, d, k, s in zip(_input_shape, _padding, _dilation, _kernel_size, _stride)
         ]
     if channel_last:
-        output_shape = tuple([input_shape[0]] + output_shape + [out_channels])
+        output_shape = tuple([input_shape[0]] + output_shape + [out_channels])  # type: ignore
     else:
-        output_shape = tuple([input_shape[0], out_channels] + output_shape)
+        output_shape = tuple([input_shape[0], out_channels] + output_shape)  # type: ignore
 
     return check_output_validity(output_shape)
 
@@ -419,8 +429,8 @@ def compute_conv_output_shape(
     padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a convolution layer.
 
     Parameters
@@ -477,7 +487,7 @@ def compute_maxpool_output_shape(
     padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-) -> Tuple[Union[int, None]]:
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a maxpool layer.
 
     Parameters
@@ -527,7 +537,7 @@ def compute_avgpool_output_shape(
     stride: Union[Sequence[int], int] = 1,
     padding: Union[Sequence[int], int] = 0,
     channel_last: bool = False,
-) -> Tuple[Union[int, None]]:
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a avgpool layer.
 
     Parameters
@@ -578,8 +588,8 @@ def compute_deconv_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
-    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
-) -> Tuple[Union[int, None]]:
+    asymmetric_padding: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+) -> Tuple[Union[int, None], ...]:
     """Compute the output shape of a transpose convolution layer
 
     Parameters
@@ -657,10 +667,12 @@ def compute_sequential_output_shape(
     """Compute the output shape of a sequential model."""
     assert issubclass(type(model), nn.Sequential), f"model should be nn.Sequential, but got {type(model)}"
     _seq_len = seq_len
+    if len(model) == 0:
+        raise AssertionError("model has no modules")
     for module in model:
         output_shape = module.compute_output_shape(_seq_len, batch_size)
         _, _, _seq_len = output_shape
-    return output_shape
+    return output_shape  # type: ignore
 
 
 def compute_module_size(
@@ -760,7 +772,7 @@ def compute_receptive_field(
     strides: Union[Sequence[int], int] = 1,
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
-    fs: Optional[Real] = None,
+    fs: Optional[Union[int, float]] = None,
 ) -> Union[int, float]:
     """Compute the receptive field of several types of
     :class:`~torch.nn.Module`.
@@ -855,11 +867,11 @@ def compute_receptive_field(
         receptive_field = min(receptive_field, input_len)
     if fs is not None:
         receptive_field /= fs
-    return make_serializable(receptive_field)
+    return make_serializable(receptive_field)  # type: ignore
 
 
 def default_collate_fn(
-    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]],
+    batch: Sequence[Union[Tuple[NDArray, ...], Dict[str, NDArray]]],
 ) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
     """Default collate functions for model training.
 
@@ -883,13 +895,13 @@ def default_collate_fn(
     """
     if isinstance(batch[0], dict):
         keys = batch[0].keys()
-        collated = _default_collate_fn([tuple(b[k] for k in keys) for b in batch])
+        collated = _default_collate_fn([tuple(b[k] for k in keys) for b in batch])  # type: ignore
         return {k: collated[i] for i, k in enumerate(keys)}
     else:
-        return _default_collate_fn(batch)
+        return _default_collate_fn(batch)  # type: ignore
 
 
-def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
+def _default_collate_fn(batch: Sequence[Tuple[NDArray, ...]]) -> Tuple[Tensor, ...]:
     """Collate functions for tuples of tensors.
 
     The data generator (:class:`~torch.utils.data.Dataset`) should
@@ -970,7 +982,7 @@ def _adjust_cnn_filter_lengths(
                 ]
             elif isinstance(v, Real):
                 # DO NOT use `int`, which might not work for numpy array elements
-                if v > 1:
+                if v > 1:  # type: ignore
                     config[k] = int(round(v * fs / config["fs"]))
                     if ensure_odd:
                         config[k] = config[k] - config[k] % 2 + 1
@@ -1018,27 +1030,27 @@ class SizeMixin(object):
     @property
     def module_size(self) -> int:
         """Size of trainable parameters in the model in terms of number of parameters."""
-        return compute_module_size(self)
+        return compute_module_size(self)  # type: ignore
 
     @property
     def module_size_(self) -> str:
         """Size of trainable parameters in the model in terms of memory capacity."""
-        return compute_module_size(self, human=True)
+        return compute_module_size(self, human=True)  # type: ignore
 
     @property
     def sizeof(self) -> int:
         """Size of the model in terms of number of parameters, including non-trainable parameters and buffers."""
-        return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=False)  # type: ignore
 
     @property
     def sizeof_(self) -> str:
         """Size of the model in terms of memory capacity, including non-trainable parameters and buffers."""
-        return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)
+        return compute_module_size(self, requires_grad=False, include_buffers=True, human=True)  # type: ignore
 
     @property
     def dtype(self) -> torch.dtype:
         try:
-            return next(self.parameters()).dtype
+            return next(self.parameters()).dtype  # type: ignore
         except StopIteration:
             return torch.float32
         except Exception as err:
@@ -1047,7 +1059,7 @@ class SizeMixin(object):
     @property
     def device(self) -> torch.device:
         try:
-            return next(self.parameters()).device
+            return next(self.parameters()).device  # type: ignore
         except StopIteration:
             return torch.device("cpu")
         except Exception as err:
@@ -1062,28 +1074,30 @@ class SizeMixin(object):
         return str(self.device)
 
 
-def make_safe_globals(obj: CFG, remove_paths: bool = True) -> CFG:
+def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
     """Make a dictionary or a dictionary-like object safe for serialization.
 
     Parameters
     ----------
-    obj : dict
+    obj : Any
         The dictionary or dictionary-like object.
     remove_paths : bool, default True
         Whether to remove paths in the dictionary.
 
     Returns
     -------
-    CFG
-        The safe dictionary.
+    Any
+        The safe dictionary, which will be a plain `dict` for `CFG` or `dict` objects.
 
     """
     if isinstance(obj, (CFG, dict)):
         sg = {k: make_safe_globals(v) for k, v in obj.items()}
-        sg = CFG({k: v for k, v in sg.items() if v is not None})
+        sg = {k: v for k, v in sg.items() if v is not None}
     elif isinstance(obj, (list, tuple)):
         sg = [make_safe_globals(item) for item in obj]
         sg = [item for item in sg if item is not None]
+        if isinstance(obj, tuple):
+            sg = tuple(sg)
     elif isinstance(obj, set):
         sg = {make_safe_globals(item) for item in obj}
         sg = {item for item in sg if item is not None}
@@ -1103,7 +1117,16 @@ def make_safe_globals(obj: CFG, remove_paths: bool = True) -> CFG:
             sg = None
         elif isinstance(sg, (str, bytes)) and os.path.exists(sg):
             sg = None
-    return sg
+    return sg  # type: ignore
+
+
+_SFT_META_MODEL_CFG = "model_config"
+_SFT_META_TRAIN_CFG = "train_config"
+_SFT_META_FORMAT = "__format__"
+_SFT_META_VERSION = "torch_ecg.ckpt.v1"
+_SFT_META_EXTRA_JSON_PREFIX = "__extra_json__/"  # JSON-serialized extras
+_SFT_EXTRA_TENSOR_PREFIX = "__extra__/"  # Tensor extras grouped under this prefix
+_SFT_META_EXTRA_TENSOR_GROUPS = "__extra_tensor_groups__"  # JSON list of groups
 
 
 class CkptMixin(object):
@@ -1122,8 +1145,9 @@ class CkptMixin(object):
         ----------
         path : `path-like`
             Path to the checkpoint.
-            If it is a directory, then this directory should contain only one checkpoint file
-            (with the extension `.pth` or `.pt`).
+            If it is a directory, then this directory should be one of the following cases:
+            - contain a `model.safetensors` file, a `model_config.json` file, and a `train_config.json` file.
+            - contain only one checkpoint file (with the extension `.pth`, `.pt`, `.safetensors`).
         device : torch.device, optional
             Map location of the model parameters,
             defaults to "cuda" if available, otherwise "cpu".
@@ -1140,36 +1164,113 @@ class CkptMixin(object):
             Auxiliary configs that are needed for data preprocessing, etc.
 
         """
-        if Path(path).is_dir():
-            candidates = list(Path(path).glob("*.pth")) + list(Path(path).glob("*.pt"))
-            assert len(candidates) == 1, "The directory should contain only one checkpoint file"
-            path = candidates[0]
-        _device = device or DEFAULTS.device
+        _device = device or DEFAULTS.device  # type: ignore
         if weights_only == "auto":
             if hasattr(torch.serialization, "add_safe_globals"):
                 weights_only = True
             else:
                 weights_only = False
+
+        if isinstance(path, bytes):
+            path = path.decode()
+        path = Path(path).expanduser().resolve()  # type: ignore
+
+        if path.is_dir():
+            candidates = list(path.glob("*.pth")) + list(path.glob("*.pt"))
+            assert len(candidates) in [0, 1], "The directory should contain only one checkpoint file"
+            if len(candidates) == 0:
+                # the directory should contain a `model.safetensors` file, a `model_config.json` file,
+                # and a `train_config.json` file
+                model_path = path / "model.safetensors"
+                train_config_path = path / "train_config.json"
+                model_config_path = path / "model_config.json"
+                assert model_path.exists(), "model.safetensors file not found"
+                assert train_config_path.exists(), "train_config.json file not found"
+                assert model_config_path.exists(), "model_config.json file not found"
+                train_config = json.loads(train_config_path.read_text())
+                model_config = json.loads(model_config_path.read_text())
+                aux_config = CFG(train_config)
+                kwargs = dict(config=CFG(model_config))
+                if "classes" in aux_config:
+                    kwargs["classes"] = aux_config["classes"]
+                if "n_leads" in aux_config:
+                    kwargs["n_leads"] = aux_config["n_leads"]
+                model = cls(**kwargs)
+                model.load_state_dict(load_file(model_path, device="cpu"))  # type: ignore
+                model.to(_device)  # type: ignore
+                return model, aux_config  # type: ignore
+
+            # we have only one checkpoint file in the directory
+            # and we will use `torch.load` to load the model
+            path = candidates[0]
+
+        if path.suffix == ".safetensors":  # load safetensors format file
+            try:
+                with safe_open(str(path), framework="pt", device="cpu") as f:  # type: ignore
+                    meta = f.metadata() or {}
+                    if _SFT_META_MODEL_CFG in meta and _SFT_META_TRAIN_CFG in meta:
+                        model_config = json.loads(meta[_SFT_META_MODEL_CFG])
+                        train_config = json.loads(meta[_SFT_META_TRAIN_CFG])
+                        aux_config = CFG(train_config)
+                        kwargs = dict(config=CFG(model_config))
+                        if "classes" in aux_config:
+                            kwargs["classes"] = aux_config["classes"]
+                        if "n_leads" in aux_config:
+                            kwargs["n_leads"] = aux_config["n_leads"]
+                        model = cls(**kwargs)
+
+                        # load only model weights, and ignores extra tensors
+                        state_dict = {}
+                        for key in f.keys():
+                            if not key.startswith(_SFT_EXTRA_TENSOR_PREFIX):
+                                state_dict[key] = f.get_tensor(key)
+                        model.load_state_dict(state_dict, strict=True)  # type: ignore
+                        model.to(_device)  # type: ignore
+                        return model, aux_config  # type: ignore
+            except RuntimeError as e:
+                if "Error(s) in loading state_dict" in str(e):
+                    raise e
+                raise RuntimeError(
+                    "Failed to load the safetensors file. "
+                    "The file may be corrupted, or the version of safetensors is incompatible. "
+                    "Try updating safetensors to the latest version, or check the file integrity."
+                ) from e
+            except Exception as e:
+                # failed to load the safetensors file
+                raise RuntimeError(
+                    "Failed to load the safetensors file. "
+                    "The file may be corrupted, or the version of safetensors is incompatible. "
+                    "Try updating safetensors to the latest version, or check the file integrity."
+                ) from e
+
         try:
             ckpt = torch.load(path, map_location=_device, weights_only=weights_only)
         except pickle.UnpicklingError as pue:
             raise RuntimeError(
-                "Maybe you are trying to load a model trained with numpy 1, "
+                "Failed to load the checkpoint. This may be due to the changes in PyTorch 2.6+ "
+                "which defaults to `weights_only=True` for security reasons. "
+                "The checkpoint may contain custom classes like `CFG` or `DTYPE` that are not "
+                "allowed by default. Try updating `torch_ecg` to the latest version, "
+                "or setting `weights_only=False` if you trust the source of the checkpoint. "
+                "Another possible reason is that you are trying to load a model trained with numpy 1, "
                 f"but the current numpy version is {np.__version__}. "
-                "Try setting `weights_only=False` and load the model again."
             ) from pue
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
+        if aux_config is not None and not isinstance(aux_config, CFG):
+            aux_config = CFG(aux_config)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        kwargs = dict(
-            config=ckpt["model_config"],
-        )
+        model_config = ckpt["model_config"]
+        if not isinstance(model_config, CFG):
+            model_config = CFG(model_config)
+        kwargs = dict(config=model_config)
         if "classes" in aux_config:
             kwargs["classes"] = aux_config["classes"]
         if "n_leads" in aux_config:
             kwargs["n_leads"] = aux_config["n_leads"]
         model = cls(**kwargs)
-        model.load_state_dict(ckpt["model_state_dict"])
-        return model, aux_config
+        model.load_state_dict(ckpt["model_state_dict"])  # type: ignore
+        model.to(_device)  # type: ignore
+        return model, aux_config  # type: ignore
 
     @classmethod
     def from_remote(
@@ -1209,8 +1310,20 @@ class CkptMixin(object):
         model_path_or_dir = http_get(url, model_dir, extract="auto", filename=filename)
         return cls.from_checkpoint(model_path_or_dir, device=device, weights_only=weights_only)
 
-    def save(self, path: Union[str, bytes, os.PathLike], train_config: CFG) -> None:
+    def save(
+        self,
+        path: Union[str, bytes, os.PathLike],
+        train_config: CFG,
+        extra_items: Optional[dict] = None,
+        use_safetensors: Optional[bool] = None,
+        safetensors_single_file: bool = True,
+    ) -> None:
         """Save the model to disk.
+
+        .. note::
+
+            If `path` has a suffix of `.pth` or `.pt`, `safetensors` will NOT be used unless `use_safetensors=True` is explicitly set.
+            Otherwise, `safetensors` is used by default.
 
         Parameters
         ----------
@@ -1219,22 +1332,102 @@ class CkptMixin(object):
         train_config : CFG
             Config for training the model,
             used when one restores the model.
+        extra_items : dict, optional
+            Extra items to save along with the model.
+            The values should be serializable: can be saved as a json file,
+            or is a dict of torch tensors.
+
+            .. versionadded:: 0.0.32
+        use_safetensors : bool, optional
+            Whether to use `safetensors` to save the model.
+            If `None`, it is determined by the suffix of `path`:
+            if it is `.pth` or `.pt`, then `use_safetensors` is set to False;
+            otherwise it is set to True.
+            If True, and the suffix of `path` is `.pth` or `.pt`,
+            the suffix is changed to `.safetensors`.
+
+            .. versionadded:: 0.0.32
+        safetensors_single_file : bool, default True
+            Whether to save the metadata along with the state dict into one file.
+
+            .. versionadded:: 0.0.32
 
         Returns
         -------
         None
 
         """
-        path = Path(path)
+        if isinstance(path, bytes):
+            path = path.decode()
+        path = Path(path).expanduser().resolve()  # type: ignore
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
-        _model_config = make_safe_globals(self.config)
+        extra_items = extra_items or {}
+
+        if use_safetensors is None:
+            use_safetensors = path.suffix not in [".pth", ".pt"]
+
+        _model_config = make_safe_globals(self.config)  # type: ignore
         _train_config = make_safe_globals(train_config)
+
+        if path.suffix in [".pth", ".pt"]:
+            if use_safetensors:
+                path = path.with_suffix(".safetensors")
+                warnings.warn(
+                    f"`safetensors` is used by default. The saved file name is changed to {path.name}", RuntimeWarning
+                )
+        elif path.suffix == ".safetensors":
+            use_safetensors = True
+
+        if use_safetensors and safetensors_single_file:
+            tensors = dict(self.state_dict())  # type: ignore
+
+            tensor_groups = []
+            for key, val in extra_items.items():
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    tensor_groups.append(key)
+                    for tname, ten in val.items():
+                        tensors[f"{_SFT_EXTRA_TENSOR_PREFIX}{key}/{tname}"] = ten
+
+            meta = {
+                _SFT_META_FORMAT: _SFT_META_VERSION,
+                _SFT_META_MODEL_CFG: json.dumps(make_serializable(_model_config), ensure_ascii=False),
+                _SFT_META_TRAIN_CFG: json.dumps(make_serializable(_train_config), ensure_ascii=False),
+                _SFT_META_EXTRA_TENSOR_GROUPS: json.dumps(sorted(tensor_groups)),
+            }
+            for key, val in extra_items.items():
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    continue
+                meta[f"{_SFT_META_EXTRA_JSON_PREFIX}{key}"] = json.dumps(make_serializable(val), ensure_ascii=False)
+
+            save_file(tensors, path.with_suffix(".safetensors"), metadata=meta)
+            return
+
+        if use_safetensors:  # not single file
+            # save the model with safetensors into a zip file with the same name as `path`
+            # `model_config` and `train_config` are saved as json files
+            path = path.with_suffix("")
+            path.mkdir(exist_ok=True)
+            _model_config = make_serializable(_model_config)
+            _train_config = make_serializable(_train_config)
+            (path / "model_config.json").write_text(json.dumps(_model_config, ensure_ascii=False))
+            (path / "train_config.json").write_text(json.dumps(_train_config, ensure_ascii=False))
+            save_file(self.state_dict(), path / "model.safetensors")  # type: ignore
+            # save extra items
+            for key, val in extra_items.items():
+                # if val is a dict of torch tensors, save them as safetensors
+                if isinstance(val, dict) and all(isinstance(v, torch.Tensor) for v in val.values()):
+                    save_file(val, path / f"{key}.safetensors")
+                else:
+                    (path / f"{key}.json").write_text(json.dumps(make_serializable(val), ensure_ascii=False))
+            return
+
         torch.save(
             {
-                "model_state_dict": self.state_dict(),
+                "model_state_dict": self.state_dict(),  # type: ignore
                 "model_config": _model_config,
                 "train_config": _train_config,
+                **extra_items,
             },
             path,
         )

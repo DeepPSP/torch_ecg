@@ -16,10 +16,10 @@ References:
 
 """
 
-from numbers import Real
+from typing import Union
 
 import biosppy.signals.ecg as BSE
-import numpy as np
+from numpy.typing import NDArray
 from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
 
@@ -38,7 +38,7 @@ __all__ = [
 # algorithms from wfdb
 
 
-def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def xqrs_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """XQRS algorithm.
 
     default kwargs:
@@ -60,7 +60,7 @@ def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def gqrs_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """GQRS algorithm.
 
     default kwargs:
@@ -102,7 +102,7 @@ def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 # ---------------------------------------------------------------------
 # algorithms from biosppy
-def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def hamilton_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """The default detector used by `biosppy`.
 
     This algorithm is based on [#ham]_.
@@ -126,7 +126,7 @@ def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def ssf_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """Slope Sum Function (SSF)
 
     This algorithm is originally proposed for blood pressure (BP)
@@ -157,7 +157,7 @@ def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def christov_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """Christov detector.
 
     Detector proposed in [#chr]_.
@@ -181,7 +181,7 @@ def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def engzee_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """Detector proposed by Engelse and Zeelenberg.
 
     This algorithm is originally proposed in [#ez1]_,
@@ -213,7 +213,7 @@ def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def gamboa_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def gamboa_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
     """Detector proposed by Gamboa.
 
     This algorithm is proposed in a PhD thesis [#gam]_.

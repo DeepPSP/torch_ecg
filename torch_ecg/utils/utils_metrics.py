@@ -12,6 +12,7 @@ from typing import Dict, Optional, Sequence, Tuple, Union
 import einops
 import numpy as np
 import torch
+from numpy.typing import NDArray
 from torch import Tensor
 
 from ..cfg import DEFAULTS
@@ -29,8 +30,8 @@ __all__ = [
 
 
 def top_n_accuracy(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     n: Union[int, Sequence[int]] = 1,
 ) -> Union[float, Dict[str, float]]:
     """Compute top n accuracy.
@@ -85,10 +86,10 @@ def top_n_accuracy(
 
 
 def confusion_matrix(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Compute a binary confusion matrix
 
     The columns are ground truth labels and rows are predicted labels.
@@ -129,10 +130,10 @@ def confusion_matrix(
 
 
 def one_vs_rest_confusion_matrix(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-) -> np.ndarray:
+) -> NDArray:
     """Compute binary one-vs-rest confusion matrices.
 
     Columns are ground truth labels and rows are predicted labels.
@@ -216,13 +217,13 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
     "prepend",
 )
 def metrics_from_confusion_matrix(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Dict[str, Union[float, np.ndarray]]:
+) -> Dict[str, Union[float, NDArray]]:
     """
     Returns
     -------
@@ -434,13 +435,13 @@ def metrics_from_confusion_matrix(
     "prepend",
 )
 def f_measure(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Tuple[float, np.ndarray]:
+) -> Tuple[float, NDArray]:
     """
     Returns
     -------
@@ -460,13 +461,13 @@ def f_measure(
     "prepend",
 )
 def sensitivity(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Tuple[float, np.ndarray]:
+) -> Tuple[float, NDArray]:
     """
     Returns
     -------
@@ -492,13 +493,13 @@ hit_rate = sensitivity
     "prepend",
 )
 def precision(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Tuple[float, np.ndarray]:
+) -> Tuple[float, NDArray]:
     """
     Returns
     -------
@@ -522,13 +523,13 @@ positive_predictive_value = precision
     "prepend",
 )
 def specificity(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Tuple[float, np.ndarray]:
+) -> Tuple[float, NDArray]:
     """
     Returns
     -------
@@ -553,13 +554,13 @@ true_negative_rate = specificity
     "prepend",
 )
 def auc(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
+) -> Tuple[float, float, NDArray, NDArray]:
     """
     Returns
     -------
@@ -585,10 +586,10 @@ def auc(
     "prepend",
 )
 def accuracy(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
+    labels: Union[NDArray, Tensor],
+    outputs: Union[NDArray, Tensor],
     num_classes: Optional[int] = None,
-    weights: Optional[Union[np.ndarray, Tensor]] = None,
+    weights: Optional[Union[NDArray, Tensor]] = None,
     thr: float = 0.5,
     fillna: Union[bool, float] = 0.0,
 ) -> float:
@@ -607,8 +608,8 @@ def accuracy(
 
 
 def QRS_score(
-    rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
-    rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
+    rpeaks_truths: Sequence[Union[NDArray, Sequence[int]]],
+    rpeaks_preds: Sequence[Union[NDArray, Sequence[int]]],
     fs: Real,
     thr: float = 0.075,
 ) -> float:
@@ -679,10 +680,10 @@ def QRS_score(
 
 
 def one_hot_pair(
-    labels: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
-    outputs: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
+    labels: Union[NDArray, Tensor, Sequence[Sequence[int]]],
+    outputs: Union[NDArray, Tensor, Sequence[Sequence[int]]],
     num_classes: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[NDArray, NDArray]:
     """Convert categorical (of shape ``(n_samples,)``) labels and outputs
     to binary (of shape ``(n_samples, n_classes)``) labels and outputs if applicable.
 
@@ -729,7 +730,7 @@ def one_hot_pair(
     return labels, outputs
 
 
-def _one_hot_pair(cls_array: Union[np.ndarray, Sequence[Sequence[int]]], shape: Tuple[int]) -> np.ndarray:
+def _one_hot_pair(cls_array: Union[NDArray, Sequence[Sequence[int]]], shape: Tuple[int]) -> NDArray:
     """Convert categorical array to binary array.
 
     Parameters
@@ -757,18 +758,18 @@ def _one_hot_pair(cls_array: Union[np.ndarray, Sequence[Sequence[int]]], shape: 
 
 @add_docstring(one_hot_pair.__doc__)
 def cls_to_bin(
-    labels: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
-    outputs: Union[np.ndarray, Tensor, Sequence[Sequence[int]]],
+    labels: Union[NDArray, Tensor, Sequence[Sequence[int]]],
+    outputs: Union[NDArray, Tensor, Sequence[Sequence[int]]],
     num_classes: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[NDArray, NDArray]:
     """Alias of `one_hot_pair`."""
     warnings.warn("`cls_to_bin` is deprecated, use `one_hot_pair` instead", DeprecationWarning)
     return one_hot_pair(labels, outputs, num_classes)
 
 
 def compute_wave_delineation_metrics(
-    truth_masks: Sequence[np.ndarray],
-    pred_masks: Sequence[np.ndarray],
+    truth_masks: Sequence[NDArray],
+    pred_masks: Sequence[NDArray],
     class_map: Dict[str, int],
     fs: Real,
     mask_format: str = "channel_first",

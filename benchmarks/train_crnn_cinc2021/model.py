@@ -99,8 +99,8 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
         # batch_size, channels, seq_len = _input.shape
         prob = self.sigmoid(self.forward(_input))
         pred = (prob >= bin_pred_thr).int()
-        prob = prob.cpu().detach().numpy()
-        pred = pred.cpu().detach().numpy()
+        prob = prob.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
         for row_idx, row in enumerate(pred):
             row_max_prob = prob[row_idx, ...].max()
             if row_max_prob < ModelCfg.bin_pred_nsr_thr and nsr_cid is not None:

@@ -1,4 +1,4 @@
-black==24.10.0
+black
 flake8
 pytest
 pytest-xdist

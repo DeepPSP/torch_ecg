@@ -33,11 +33,12 @@ dependencies = [
     "einops",
     "matplotlib",
     "numpy",
-    "pandas",
+    "pandas < 3.0.0",
     "pyarrow",
     "pyEDFlib",
     "PyWavelets",
     "requests",
+    "safetensors",
     "scikit-learn",
     "scipy",
     "soundfile",
@@ -54,7 +55,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black==24.10.0",
+    "black",
     "flake8",
     "gdown",
     "librosa",
@@ -104,7 +105,7 @@ docs = [
     "sphinxcontrib-tikz",
 ]
 test = [
-    "black==24.10.0",
+    "black",
     "flake8",
     "gdown",
     "librosa",
@@ -130,3 +131,40 @@ path = "torch_ecg/version.py"
 include = [
     "/torch_ecg",
 ]
+
+# configuration for pytest and coverage
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-vv -s --cov=torch_ecg --ignore=test/test_pipelines"
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["torch_ecg"]
+patch = ["subprocess"]
+omit = [
+    "torch_ecg/databases/nsrr_databases/shhs.py",
+]
+
+[tool.coverage.report]
+omit = [
+    # "torch_ecg/databases/nsrr_databases/shhs.py",
+    # NSRR databases are ignored temporarily, since data access is denied by the US government
+    "torch_ecg/databases/nsrr_databases/*",
+    # temporarily ignore torch_ecg/components/nas.py since it's not implemented completely
+    "torch_ecg/components/nas.py",
+    # temporarily ignore torch_ecg/models/grad_cam.py since it's not implemented completely
+    "torch_ecg/models/grad_cam.py",
+    # temporarily ignore torch_ecg/ssl since it's not implemented
+    "torch_ecg/ssl/*",
+]
+exclude_also = [
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    # base class of the NSRR databases are also ignored temporarily
+    "^class NSRRDataBase\\(.*\\):",
+]
+# show_missing = true
+# skip_covered = true

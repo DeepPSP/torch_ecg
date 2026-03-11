@@ -2,10 +2,10 @@
 """
 Base classes for datasets from different sources:
 
-    - PhysioNet
-    - NSRR
-    - CPSC
-    - Other databases
+- PhysioNet
+- NSRR
+- CPSC
+- Other databases
 
 Remarks
 -------
@@ -36,6 +36,7 @@ import pandas as pd
 import requests
 import scipy.signal as SS
 import wfdb
+from numpy.typing import NDArray
 from pyedflib import EdfReader
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
@@ -135,11 +136,13 @@ class _DataBase(ReprMixin, ABC):
     """Universal abstract base class for all databases.
 
     Abstract methods that should be implemented by the subclass:
+
     - `_ls_rec`: Find all records in the database.
     - `load_data`: Load data from a record.
     - `load_ann`: Load annotations of a record.
 
     Abstract properties that should be implemented by the subclass:
+
     - `database_info`: The :class:`DataBaseInfo` object of the database.
     - `url`: URL(s) for downloading the database.
 
@@ -172,7 +175,7 @@ class _DataBase(ReprMixin, ABC):
                 f"`db_dir` is not specified, " f"using default `{db_dir}` as the storage path",
                 RuntimeWarning,
             )
-        self.db_dir = Path(db_dir).expanduser().resolve()
+        self.db_dir = Path(db_dir).expanduser().resolve()  # type: ignore
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
             warnings.warn(
@@ -182,7 +185,7 @@ class _DataBase(ReprMixin, ABC):
                 "please use the `download()` method.",
                 RuntimeWarning,
             )
-        self.working_dir = Path(working_dir or DEFAULTS.working_dir).expanduser().resolve().absolute() / self.db_name
+        self.working_dir = Path(working_dir or DEFAULTS.working_dir).expanduser().resolve().absolute() / self.db_name  # type: ignore
         self.working_dir.mkdir(parents=True, exist_ok=True)
 
         self.logger = kwargs.get("logger", None)
@@ -256,7 +259,7 @@ class _DataBase(ReprMixin, ABC):
         """
         self.database_info.get_citation(lookup=True, format=format, style=style, timeout=10.0, print_result=True)
 
-    def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
+    def _auto_infer_units(self, sig: NDArray, sig_type: str = "ECG") -> str:
         """Automatically infer the units of the signal.
 
         It is assumed that `sig` is not raw signal, but with baseline removed.
@@ -286,7 +289,7 @@ class _DataBase(ReprMixin, ABC):
         return units
 
     @property
-    def all_records(self) -> List[str]:
+    def all_records(self) -> Union[List[str], None]:
         if self._all_records is None:
             self._ls_rec()
         return self._all_records
@@ -312,6 +315,7 @@ class _DataBase(ReprMixin, ABC):
         path = self._df_records.loc[rec].path
         if extension is not None:
             path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
+        path = Path(path).expanduser().resolve()  # type: ignore
         return path
 
     def _normalize_leads(
@@ -347,24 +351,24 @@ class _DataBase(ReprMixin, ABC):
             all_leads = self.all_leads
         err_msg = (
             f"`leads` should be a subset of {all_leads} or non-negative integers "
-            f"less than {len(all_leads)}, but got {leads}"
+            f"less than {len(all_leads)}, but got {leads}"  # type: ignore
         )
         if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = all_leads
         elif isinstance(leads, str):
             _leads = [leads]
         elif isinstance(leads, int):
-            assert len(all_leads) > leads >= 0, err_msg
-            _leads = [all_leads[leads]]
+            assert len(all_leads) > leads >= 0, err_msg  # type: ignore
+            _leads = [all_leads[leads]]  # type: ignore
         else:
             try:
-                _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
+                _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]  # type: ignore
             except Exception:
                 raise AssertionError(err_msg)
-        assert set(_leads).issubset(all_leads), err_msg
+        assert set(_leads).issubset(all_leads), err_msg  # type: ignore
         if numeric:
-            _leads = [all_leads.index(ld) for ld in _leads]
-        return _leads
+            _leads = [all_leads.index(ld) for ld in _leads]  # type: ignore
+        return _leads  # type: ignore
 
     @classmethod
     def get_arrhythmia_knowledge(cls, arrhythmias: Union[str, List[str]]) -> None:
@@ -416,7 +420,9 @@ class _DataBase(ReprMixin, ABC):
             Number of records in the database.
 
         """
-        return len(self.all_records)
+        if self._all_records is None:
+            return 0
+        return len(self.all_records)  # type: ignore
 
     def __getitem__(self, index: int) -> str:
         """Get the record name by index.
@@ -434,7 +440,7 @@ class _DataBase(ReprMixin, ABC):
             Record name.
 
         """
-        return self.all_records[index]
+        return self.all_records[index]  # type: ignore
 
 
 class PhysioNetDataBase(_DataBase):
@@ -490,13 +496,13 @@ class PhysioNetDataBase(_DataBase):
         self.df_all_db_info = get_physionet_dbs(local=(self.verbose <= 2))
         if self.db_name not in self.df_all_db_info["db_name"].values:
             if self.verbose <= 2:
-                self.logger.warning(
+                self.logger.warning(  # type: ignore
                     f"Database `{self.db_name}` is not found in the local database list. "
                     "Please check if the database name is correct, "
                     "or call method `_update_db_list()` to update the database list."
                 )
             else:
-                self.logger.warning(
+                self.logger.warning(  # type: ignore
                     f"Database `{self.db_name}` is not found in the database list on PhysioNet server. "
                     "Please check if the database name is correct."
                 )
@@ -552,7 +558,7 @@ class PhysioNetDataBase(_DataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")  # type: ignore
                 self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
             self._all_records = self._df_records.index.tolist()
         except Exception:
@@ -572,7 +578,7 @@ class PhysioNetDataBase(_DataBase):
                         len(self._df_records),
                         max(1, int(round(self._subsample * len(self._df_records)))),
                     )
-                    self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                    self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")  # type: ignore
                     self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
                 self._df_records["path"] = self._df_records["record"].apply(lambda x: (self.db_dir / x).resolve())
                 self._df_records = self._df_records[self._df_records["path"].apply(lambda x: x.is_file())]
@@ -581,16 +587,16 @@ class PhysioNetDataBase(_DataBase):
         if len(self._df_records) == 0:
             print("Please wait patiently to let the reader find " "all records of the database from local storage...")
             start = time.time()
-            self._df_records["path"] = get_record_list_recursive(self.db_dir, self.data_ext, relative=False)
+            self._df_records["path"] = get_record_list_recursive(self.db_dir, self.data_ext, relative=False)  # type: ignore
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
-                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
+                self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")  # type: ignore
                 self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
-            self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
-            self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
+            self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))  # type: ignore
+            self.logger.info(f"Done in {time.time() - start:.3f} seconds!")  # type: ignore
             self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
@@ -611,17 +617,17 @@ class PhysioNetDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def load_data(
+    def load_data(  # type: ignore
         self,
         rec: Union[str, int],
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
+        units: Union[str, None] = "mV",
         fs: Optional[Real] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, Real]]:
         """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
@@ -705,9 +711,9 @@ class PhysioNetDataBase(_DataBase):
             sampto=sampto,
             physical=units is not None,
             return_res=DEFAULTS.DTYPE.INT,
-            channels=[all_leads.index(ld) for ld in _leads],
+            channels=[all_leads.index(ld) for ld in _leads],  # type: ignore
         )  # use `channels` instead of `channel_names` since there're exceptional cases where `channel_names` has duplicates
-        wfdb_rec = wfdb.rdrecord(fp, **rdrecord_kwargs)
+        wfdb_rec = wfdb.rdrecord(fp, **rdrecord_kwargs)  # type: ignore
 
         # p_signal or d_signal is in the format of "lead_last", and with units in "mV"
         if units is None:
@@ -715,7 +721,7 @@ class PhysioNetDataBase(_DataBase):
         elif units.lower() == "mv":
             data = wfdb_rec.p_signal
         elif units.lower() in ["μv", "uv", "muv"]:
-            data = 1000 * wfdb_rec.p_signal
+            data = 1000 * wfdb_rec.p_signal  # type: ignore
 
         if fs is not None:
             data_fs = fs
@@ -724,18 +730,18 @@ class PhysioNetDataBase(_DataBase):
         else:
             data_fs = wfdb_rec.fs
         if data_fs != wfdb_rec.fs:
-            data = SS.resample_poly(data, data_fs, wfdb_rec.fs, axis=0).astype(data.dtype)
+            data = SS.resample_poly(data, data_fs, wfdb_rec.fs, axis=0).astype(data.dtype)  # type: ignore
 
         if data_format.lower() in ["channel_first", "lead_first"]:
-            data = data.T
+            data = data.T  # type: ignore
         elif data_format.lower() in ["flat", "plain"]:
-            data = data.flatten()
+            data = data.flatten()  # type: ignore
 
         if return_fs:
-            return data, data_fs
-        return data
+            return data, data_fs  # type: ignore
+        return data  # type: ignore
 
-    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+    def helper(self, items: Union[List[str], str, None] = None) -> None:
         """Print corr. meanings of symbols belonging to `items`.
 
         More details can be found
@@ -837,11 +843,11 @@ class PhysioNetDataBase(_DataBase):
             URL of the file to be downloaded.
 
         """
-        url = posixpath.join(
+        url = posixpath.join(  # type: ignore
             wfdb.io.download.PN_INDEX_URL,
             self.db_name,
             self.version,
-            file_name,
+            file_name,  # type: ignore
         )
         return url
 
@@ -879,7 +885,7 @@ class PhysioNetDataBase(_DataBase):
         return f"s3://physionet-open/{self.db_name}/{self.version}/"
 
     @property
-    def url_(self) -> Union[str, type(None)]:
+    def url_(self) -> Union[str, None]:
         """URL of the compressed database file for downloading."""
         if self._url_compressed is not None:
             return self._url_compressed
@@ -888,7 +894,7 @@ class PhysioNetDataBase(_DataBase):
         try:
             db_desc = self.df_all_db_info[self.df_all_db_info["db_name"] == self.db_name].iloc[0]["db_description"]
         except IndexError:
-            self.logger.info(f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!")
+            self.logger.info(f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!")  # type: ignore
             return None
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
@@ -924,7 +930,7 @@ class PhysioNetDataBase(_DataBase):
         """
         if shutil.which("aws") is None:
             use_s3 = False
-            self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")
+            self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")  # type: ignore
         if use_s3:
             http_get(self.s3_url, self.db_dir)
         elif compressed:
@@ -933,7 +939,7 @@ class PhysioNetDataBase(_DataBase):
                 self._ls_rec()
                 return
             else:
-                self.logger.info("No compressed database available! Downloading the uncompressed version...")
+                self.logger.info("No compressed database available! Downloading the uncompressed version...")  # type: ignore
         else:
             wfdb.dl_database(
                 self.db_name,
@@ -1085,7 +1091,7 @@ class NSRRDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+    def helper(self, items: Union[List[str], str, None] = None) -> None:
         """Print corr. meanings of symbols belonging to `items`.
 
         Parameters
@@ -1181,7 +1187,7 @@ class CPSCDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+    def helper(self, items: Union[List[str], str, None] = None) -> None:
         """Print corr. meanings of symbols belonging to `items`.
 
         Parameters
@@ -1331,9 +1337,9 @@ class DataBaseInfo(CitationMixin):
             docstring = f"{self.status}\n\n{docstring}"
 
         lookup = os.getenv("DB_BIB_LOOKUP", False)
-        citation = self.get_citation(lookup=lookup, print_result=False)
-        if citation.startswith("@"):
-            citation = textwrap.indent(citation, indent)
+        citation = self.get_citation(lookup=lookup, print_result=False)  # type: ignore
+        if citation.startswith("@"):  # type: ignore
+            citation = textwrap.indent(citation, indent)  # type: ignore
             citation = textwrap.indent(f"""Citation\n--------\n.. code-block:: bibtex\n\n{citation}""", indent)
             docstring = f"{docstring}\n\n{citation}\n"
         elif not lookup:
@@ -1359,7 +1365,7 @@ class PSGDataBaseMixin:
         fs: Optional[int] = None,
         granularity: int = 30,
         class_map: Optional[Dict[str, int]] = None,
-    ) -> np.ndarray:
+    ) -> NDArray:
         """Convert sleep stage intervals to sleep stage mask.
 
         Parameters
@@ -1391,7 +1397,7 @@ class PSGDataBaseMixin:
             assert class_map is not None, "`class_map` must be provided"
         else:
             class_map = class_map or {k: len(self.sleep_stage_names) - i - 1 for i, k in enumerate(self.sleep_stage_names)}
-        intervals = {
+        intervals = {  # type: ignore
             class_map[k]: [[int(round(s / fs / granularity)), int(round(e / fs / granularity))] for s, e in v]
             for k, v in intervals.items()
         }
@@ -1406,7 +1412,7 @@ class PSGDataBaseMixin:
 
     def plot_hypnogram(
         self,
-        mask: np.ndarray,
+        mask: NDArray,
         granularity: int = 30,
         class_map: Optional[Dict[str, int]] = None,
         **kwargs,
@@ -1435,13 +1441,12 @@ class PSGDataBaseMixin:
             Axes object.
 
         """
+        import matplotlib.pyplot as plt
+
         if not hasattr(self, "sleep_stage_names"):
             pass
         else:
             class_map = class_map or {k: len(self.sleep_stage_names) - i - 1 for i, k in enumerate(self.sleep_stage_names)}
-
-        if "plt" not in globals():
-            import matplotlib.pyplot as plt
 
         fig_width = len(mask) * granularity / 3600 / 6 * 20  # stardard width is 20 for 6 hours
 
@@ -1457,8 +1462,8 @@ class PSGDataBaseMixin:
         ax.set_xlabel("Time", fontsize=18)
         ax.set_xlim(0, len(mask))
         # yticks to the format of sleep stages
-        yticks = sorted(class_map.values())
-        yticklabels = [k for k, v in sorted(class_map.items(), key=lambda x: x[1])]
+        yticks = sorted(class_map.values())  # type: ignore
+        yticklabels = [k for k, v in sorted(class_map.items(), key=lambda x: x[1])]  # type: ignore
         ax.set_yticks(yticks)
         ax.set_yticklabels(yticklabels, fontsize=14)
         ax.set_ylabel("Sleep Stage", fontsize=18)

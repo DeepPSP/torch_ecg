@@ -13,7 +13,8 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_PRIMARY_VERSION: '3.10'
+  PYTHON_PRIMARY_VERSION: '3.12'
+  SHHS_DATA_AVAILABLE: 'false'
 
 jobs:
   build:
@@ -23,7 +24,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.12", "3.13"]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v4
@@ -66,40 +68,62 @@ jobs:
     - name: List installed Python packages
       run: |
         python -m pip list
-    - name: Install nsrr and download a samll part of SHHS to do test
+    - name: Install nsrr and download a small part of SHHS to do test
     # ref. https://github.com/DeepPSP/nsrr-automate
-      uses: gacts/run-and-post-run@v1
-      with:
-        # if ~/tmp/nsrr-data/shhs is empty (no files downloaded),
-        # fail and terminate the workflow
-        run: |
-          gem install nsrr --no-document
-          nsrr download shhs/polysomnography/edfs/shhs1/ --file="^shhs1\-20010.*\.edf" --token=${{ secrets.NSRR_TOKEN }}
-          nsrr download shhs/polysomnography/annotations-events-nsrr/shhs1/ --file="^shhs1\-20010.*\-nsrr\.xml" --token=${{ secrets.NSRR_TOKEN }}
-          nsrr download shhs/polysomnography/annotations-events-profusion/shhs1/ --file="^shhs1\-20010.*\-profusion\.xml" --token=${{ secrets.NSRR_TOKEN }}
-          nsrr download shhs/polysomnography/annotations-rpoints/shhs1/ --file="^shhs1\-20010.*\-rpoint\.csv" --token=${{ secrets.NSRR_TOKEN }}
-          nsrr download shhs/datasets/ --shallow --token=${{ secrets.NSRR_TOKEN }}
-          nsrr download shhs/datasets/hrv-analysis/ --token=${{ secrets.NSRR_TOKEN }}
-          mkdir -p ~/tmp/nsrr-data/
-          mv shhs/ ~/tmp/nsrr-data/
-          du -sh ~/tmp/nsrr-data/*
-          if [ "$(find ~/tmp/nsrr-data/shhs -type f | wc -l)" -eq 0 ]; \
-          then (echo "No files downloaded. Exiting..." && exit 1); \
-          else echo "Found $(find ~/tmp/nsrr-data/shhs -type f | wc -l) files"; fi
-        post: |
-          cd ~/tmp/ && du -sh $(ls -A)
-          rm -rf ~/tmp/nsrr-data/
-          cd ~/tmp/ && du -sh $(ls -A)
+      # uses: gacts/run-and-post-run@v1
+      continue-on-error: true
+      if: ${{ env.SHHS_DATA_AVAILABLE == 'true' }}
+      run: |
+        set -u -o pipefail
+        gem install nsrr --no-document
+        nsrr download shhs/polysomnography/edfs/shhs1/ --file="^shhs1\-20010.*\.edf" --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+        nsrr download shhs/polysomnography/annotations-events-nsrr/shhs1/ --file="^shhs1\-20010.*\-nsrr\.xml" --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+        nsrr download shhs/polysomnography/annotations-events-profusion/shhs1/ --file="^shhs1\-20010.*\-profusion\.xml" --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+        nsrr download shhs/polysomnography/annotations-rpoints/shhs1/ --file="^shhs1\-20010.*\-rpoint\.csv" --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+        nsrr download shhs/datasets/ --shallow --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+        nsrr download shhs/datasets/hrv-analysis/ --token=${{ secrets.NSRR_TOKEN }} 2>&1 | sed -E '/^[[:space:]]*[Ss]kipped([[:space:]]|$)/d' || true
+
+        mkdir -p ~/tmp/nsrr-data/
+        mv shhs/ ~/tmp/nsrr-data/
+        du -sh ~/tmp/nsrr-data/* || true
+
+        EDF_COUNT=$(find ~/tmp/nsrr-data/shhs -type f -name "*.edf" 2>/dev/null | wc -l | tr -d ' ')
+        echo "Detected SHHS EDF file count: $EDF_COUNT"
+
+        if [ "$EDF_COUNT" -eq 0 ]; then
+          echo "::error title=No SHHS EDF files downloaded::No .edf files were downloaded (token may be invalid or pattern mismatch). SHHS tests will be skipped."
+          echo "No SHHS EDF files downloaded; setting SHHS_DATA_AVAILABLE=false"
+          echo "SHHS_DATA_AVAILABLE=false" >> $GITHUB_ENV
+          exit 1
+        else
+          echo "Found $EDF_COUNT SHHS EDF files; setting SHHS_DATA_AVAILABLE=true"
+          echo "SHHS_DATA_AVAILABLE=true" >> $GITHUB_ENV
+        fi
+      # post: |
+      #   cd ~/tmp/ && du -sh $(ls -A)
+      #   rm -rf ~/tmp/nsrr-data/
+      #   cd ~/tmp/ && du -sh $(ls -A)
     - name: Run test with pytest and collect coverage
       run: |
-        pytest -vv -s \
-        --cov=torch_ecg \
-        --ignore=test/test_pipelines \
-        test
+        echo "SHHS_DATA_AVAILABLE at test step: $SHHS_DATA_AVAILABLE"
+        pytest --cov --junitxml=junit.xml -o junit_family=legacy
+      env:
+        SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
-      if: matrix.python-version == ${{ env.PYTHON_PRIMARY_VERSION }}
+      if: ${{ matrix.python-version == env.PYTHON_PRIMARY_VERSION }}
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
         token: ${{ secrets.CODECOV_TOKEN }} # required
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Cleanup SHHS temp data
+      if: always() && true
+      run: |
+        cd ~/tmp/ && du -sh $(ls -A)
+        rm -rf ~/tmp/nsrr-data/
+        cd ~/tmp/ && du -sh $(ls -A)

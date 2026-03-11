@@ -368,28 +368,28 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         Other hyper-parameters of the Module, ref. corr. config file.
         Key word arguments that must be set:
 
-            - scopes: sequence of sequences of sequences of :obj:`int`,
-              scopes (in terms of dilation) of each convolution.
-            - num_filters: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
-              number of filters of the convolutional layers,
-              with granularity to each block of each branch,
-              or to each convolution of each block of each branch.
-            - filter_lengths: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
-              filter length(s) (kernel size(s)) of the convolutions,
-              with granularity to each block of each branch,
-              or to each convolution of each block of each branch.
-            - subsample_lengths: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
-              subsampling length(s) (ratio(s)) of all blocks,
-              with granularity to each branch or to each block of each branch,
-              each subsamples after the last convolution of each block.
-            - dropouts: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
-              dropout rates of all blocks,
-              with granularity to each branch or to each block of each branch,
-              each dropouts at the last of each block.
-            - groups: :obj:`int`,
-              connection pattern (of channels) of the inputs and outputs.
-            - block: :obj:`dict`,
-              other parameters that can be set for the building blocks.
+        - scopes: sequence of sequences of sequences of :obj:`int`,
+          scopes (in terms of dilation) of each convolution.
+        - num_filters: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
+          number of filters of the convolutional layers,
+          with granularity to each block of each branch,
+          or to each convolution of each block of each branch.
+        - filter_lengths: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
+          filter length(s) (kernel size(s)) of the convolutions,
+          with granularity to each block of each branch,
+          or to each convolution of each block of each branch.
+        - subsample_lengths: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
+          subsampling length(s) (ratio(s)) of all blocks,
+          with granularity to each branch or to each block of each branch,
+          each subsamples after the last convolution of each block.
+        - dropouts: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
+          dropout rates of all blocks,
+          with granularity to each branch or to each block of each branch,
+          each dropouts at the last of each block.
+        - groups: :obj:`int`,
+          connection pattern (of channels) of the inputs and outputs.
+        - block: :obj:`dict`,
+          other parameters that can be set for the building blocks.
 
         For a full list of configurable parameters, ref. corr. config file.
 

@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict, deque
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -52,19 +52,18 @@ class BaseTrainer(ReprMixin, ABC):
         including configurations for the data loader, for the optimization, etc.
         Will also be recorded in the checkpoints.
         `train_config` should at least contain the following keys:
-
-            - "monitor": str
-            - "loss": str
-            - "n_epochs": int
-            - "batch_size": int
-            - "learning_rate": float
-            - "lr_scheduler": str
-                - "lr_step_size": int, optional, depending on the scheduler
-                - "lr_gamma": float, optional, depending on the scheduler
-                - "max_lr": float, optional, depending on the scheduler
-            - "optimizer": str
-                - "decay": float, optional, depending on the optimizer
-                - "momentum": float, optional, depending on the optimizer
+        - "monitor": str
+        - "loss": str
+        - "n_epochs": int
+        - "batch_size": int
+        - "learning_rate": float
+        - "lr_scheduler": str
+          - "lr_step_size": int, optional, depending on the scheduler
+          - "lr_gamma": float, optional, depending on the scheduler
+          - "max_lr": float, optional, depending on the scheduler
+        - "optimizer": str
+          - "decay": float, optional, depending on the optimizer
+          - "momentum": float, optional, depending on the optimizer
     collate_fn : callable, optional
         The collate function for the data loader,
         defaults to :meth:`default_collate_fn`.
@@ -93,7 +92,7 @@ class BaseTrainer(ReprMixin, ABC):
         dataset_cls: Dataset,
         model_config: dict,
         train_config: dict,
-        collate_fn: Optional[callable] = None,
+        collate_fn: Optional[Callable] = None,
         device: Optional[torch.device] = None,
         lazy: bool = False,
     ) -> None:
@@ -108,7 +107,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.dataset_cls = dataset_cls
         self.model_config = CFG(deepcopy(model_config))
         self._train_config = CFG(deepcopy(train_config))
-        self._train_config.checkpoints = Path(self._train_config.checkpoints)
+        self._train_config.checkpoints = Path(self._train_config.checkpoints)  # type: ignore
         self.device = device or next(self._model.parameters()).device
         self.dtype = next(self._model.parameters()).dtype
         self.model.to(self.device)
@@ -150,12 +149,12 @@ class BaseTrainer(ReprMixin, ABC):
 
         self._setup_criterion()
 
-        if self.train_config.monitor is not None:
+        if self.train_config.monitor is not None:  # type: ignore
             # if monitor is set but val_loader is None, use train_loader for validation
             # and choose the best model based on the metrics on the train set
             if self.val_loader is None and self.val_train_loader is None:
                 self.val_train_loader = self.train_loader
-                self.log_manager.log_message(
+                self.log_manager.log_message(  # type: ignore
                     (
                         "No separate validation set is provided, while monitor is set. "
                         "The training set will be used for validation, "
@@ -179,7 +178,7 @@ class BaseTrainer(ReprMixin, ABC):
             -----------------------------------------
             """
         )
-        self.log_manager.log_message(msg)
+        self.log_manager.log_message(msg)  # type: ignore
 
         start_epoch = self.epoch
         for _ in range(start_epoch, self.n_epochs):
@@ -193,15 +192,15 @@ class BaseTrainer(ReprMixin, ABC):
                 dynamic_ncols=True,
                 mininterval=1.0,
             ) as pbar:
-                self.log_manager.epoch_start(self.epoch)
+                self.log_manager.epoch_start(self.epoch)  # type: ignore
                 # train one epoch
                 self.train_one_epoch(pbar)
 
                 # evaluate on train set, if debug is True
                 if self.val_train_loader is not None:
                     eval_train_res = self.evaluate(self.val_train_loader)
-                    self.log_manager.log_metrics(
-                        metrics=eval_train_res,
+                    self.log_manager.log_metrics(  # type: ignore
+                        metrics=eval_train_res,  # type: ignore
                         step=self.global_step,
                         epoch=self.epoch,
                         part="train",
@@ -211,8 +210,8 @@ class BaseTrainer(ReprMixin, ABC):
                 # evaluate on val set
                 if self.val_loader is not None:
                     eval_res = self.evaluate(self.val_loader)
-                    self.log_manager.log_metrics(
-                        metrics=eval_res,
+                    self.log_manager.log_metrics(  # type: ignore
+                        metrics=eval_res,  # type: ignore
                         step=self.global_step,
                         epoch=self.epoch,
                         part="val",
@@ -224,19 +223,19 @@ class BaseTrainer(ReprMixin, ABC):
                     eval_res = {}
 
                 # update best model and best metric if monitor is set
-                if self.train_config.monitor is not None:
-                    if eval_res[self.train_config.monitor] > self.best_metric:
-                        self.best_metric = eval_res[self.train_config.monitor]
+                if self.train_config.monitor is not None:  # type: ignore
+                    if eval_res[self.train_config.monitor] > self.best_metric:  # type: ignore
+                        self.best_metric = eval_res[self.train_config.monitor]  # type: ignore
                         self.best_state_dict = self._model.state_dict()
                         self.best_eval_res = deepcopy(eval_res)
                         self.best_epoch = self.epoch
                         self.pseudo_best_epoch = self.epoch
-                    elif self.train_config.early_stopping:
-                        if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:
+                    elif self.train_config.early_stopping:  # type: ignore
+                        if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:  # type: ignore
                             self.pseudo_best_epoch = self.epoch
-                        elif self.epoch - self.pseudo_best_epoch >= self.train_config.early_stopping.patience:
+                        elif self.epoch - self.pseudo_best_epoch >= self.train_config.early_stopping.patience:  # type: ignore
                             msg = f"early stopping is triggered at epoch {self.epoch}"
-                            self.log_manager.log_message(msg)
+                            self.log_manager.log_message(msg)  # type: ignore
                             break
 
                     msg = textwrap.dedent(
@@ -245,62 +244,64 @@ class BaseTrainer(ReprMixin, ABC):
                         obtained at epoch {self.best_epoch}
                     """
                     )
-                    self.log_manager.log_message(msg)
+                    self.log_manager.log_message(msg)  # type: ignore
 
                     # save checkpoint
-                    save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
+                    save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"  # type: ignore
                 else:
                     save_suffix = f"epochloss_{self.epoch_loss:.5f}"
-                save_filename = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-                save_path = self.train_config.checkpoints / save_filename
-                if self.train_config.keep_checkpoint_max != 0:
+                save_folder = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}"
+                save_path = self.train_config.checkpoints / save_folder  # type: ignore
+                if self.train_config.keep_checkpoint_max != 0:  # type: ignore
                     self.save_checkpoint(str(save_path))
                     self.saved_models.append(save_path)
                 # remove outdated models
-                if len(self.saved_models) > self.train_config.keep_checkpoint_max > 0:
+                if len(self.saved_models) > self.train_config.keep_checkpoint_max > 0:  # type: ignore
                     model_to_remove = self.saved_models.popleft()
                     try:
                         os.remove(model_to_remove)
                     except Exception:
-                        self.log_manager.log_message(f"failed to remove {str(model_to_remove)}")
+                        self.log_manager.log_message(f"failed to remove {str(model_to_remove)}")  # type: ignore
 
                 # update learning rate using lr_scheduler
-                if self.train_config.lr_scheduler.lower() == "plateau":
+                if self.train_config.lr_scheduler.lower() == "plateau":  # type: ignore
                     self._update_lr(eval_res)
 
-                self.log_manager.epoch_end(self.epoch)
+                self.log_manager.epoch_end(self.epoch)  # type: ignore
 
             self.epoch += 1
 
         # save the best model
         if self.best_metric > -np.inf:
-            if self.train_config.final_model_name:
-                save_filename = self.train_config.final_model_name
+            if self.train_config.final_model_name:  # type: ignore
+                save_folder = self.train_config.final_model_name  # type: ignore
             else:
-                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
-                save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-            save_path = self.train_config.model_dir / save_filename
+                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"  # type: ignore
+                # save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
+                save_folder = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}"
+            save_path = self.train_config.model_dir / save_folder  # type: ignore
             # self.save_checkpoint(path=str(save_path))
             self._model.save(path=str(save_path), train_config=self.train_config)
-            self.log_manager.log_message(f"best model is saved at {save_path}")
-        elif self.train_config.monitor is None:
-            self.log_manager.log_message("no monitor is set, the last model is selected and saved as the best model")
+            self.log_manager.log_message(f"best model is saved at {save_path}")  # type: ignore
+        elif self.train_config.monitor is None:  # type: ignore
+            self.log_manager.log_message("no monitor is set, the last model is selected and saved as the best model")  # type: ignore
             self.best_state_dict = self._model.state_dict()
-            save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
-            save_path = self.train_config.model_dir / save_filename
+            # save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
+            save_folder = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}"
+            save_path = self.train_config.model_dir / save_folder  # type: ignore
             # self.save_checkpoint(path=str(save_path))
             self._model.save(path=str(save_path), train_config=self.train_config)
         else:
             raise ValueError("No best model found!")
 
-        self.log_manager.close()
+        self.log_manager.close()  # type: ignore
 
         if not self.best_state_dict:
             # in case no best model is found,
             # e.g. monitor is not set, or keep_checkpoint_max is 0
             self.best_state_dict = self._model.state_dict()
 
-        return self.best_state_dict
+        return self.best_state_dict  # type: ignore
 
     def train_one_epoch(self, pbar: tqdm) -> None:
         """Train one epoch, and update the progress bar
@@ -311,16 +312,16 @@ class BaseTrainer(ReprMixin, ABC):
             The progress bar for training.
 
         """
-        for epoch_step, data in enumerate(self.train_loader):
+        for epoch_step, data in enumerate(self.train_loader):  # type: ignore
             self.global_step += 1
             # data is assumed to be a tuple of tensors, of the following order:
             # signals, labels, *extra_tensors
-            data = self.augmenter_manager(*data)
+            data = self.augmenter_manager(*data)  # type: ignore
             out_tensors = self.run_one_step(*data)
 
             loss = self.criterion(*out_tensors).to(self.dtype)
-            if self.train_config.flooding_level > 0:
-                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
+            if self.train_config.flooding_level > 0:  # type: ignore
+                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level  # type: ignore
                 self.epoch_loss += loss.item()
                 self.optimizer.zero_grad()
                 flood.backward()
@@ -331,7 +332,7 @@ class BaseTrainer(ReprMixin, ABC):
             self.optimizer.step()
             self._update_lr()
 
-            if self.global_step % self.train_config.log_step == 0:
+            if self.global_step % self.train_config.log_step == 0:  # type: ignore
                 train_step_metrics = {"loss": loss.item()}
                 if self.scheduler:
                     train_step_metrics.update({"lr": self.scheduler.get_last_lr()[0]})
@@ -347,9 +348,9 @@ class BaseTrainer(ReprMixin, ABC):
                             "loss (batch)": loss.item(),
                         }
                     )
-                if self.train_config.flooding_level > 0:
-                    train_step_metrics.update({"flood": flood.item()})
-                self.log_manager.log_metrics(
+                if self.train_config.flooding_level > 0:  # type: ignore
+                    train_step_metrics.update({"flood": flood.item()})  # type: ignore
+                self.log_manager.log_metrics(  # type: ignore
                     metrics=train_step_metrics,
                     step=self.global_step,
                     epoch=self.epoch,
@@ -458,22 +459,22 @@ class BaseTrainer(ReprMixin, ABC):
             The evaluation results (metrics).
 
         """
-        if self.train_config.lr_scheduler.lower() == "none":
+        if self.train_config.lr_scheduler.lower() == "none":  # type: ignore
             pass
-        elif self.train_config.lr_scheduler.lower() == "plateau":
+        elif self.train_config.lr_scheduler.lower() == "plateau":  # type: ignore
             if eval_res is None:
                 return
-            metrics = eval_res[self.train_config.monitor]
+            metrics = eval_res[self.train_config.monitor]  # type: ignore
             if isinstance(metrics, torch.Tensor):
                 metrics = metrics.item()
-            self.scheduler.step(metrics)
-        elif self.train_config.lr_scheduler.lower() == "step":
-            self.scheduler.step()
-        elif self.train_config.lr_scheduler.lower() in [
+            self.scheduler.step(metrics)  # type: ignore
+        elif self.train_config.lr_scheduler.lower() == "step":  # type: ignore
+            self.scheduler.step()  # type: ignore
+        elif self.train_config.lr_scheduler.lower() in [  # type: ignore
             "one_cycle",
             "onecycle",
         ]:
-            self.scheduler.step()
+            self.scheduler.step()  # type: ignore
 
     def _setup_from_config(self, train_config: dict) -> None:
         """Setup the trainer from the training configuration.
@@ -492,14 +493,14 @@ class BaseTrainer(ReprMixin, ABC):
         self._validate_train_config()
 
         # set aliases
-        self.n_epochs = self.train_config.n_epochs
-        self.batch_size = self.train_config.batch_size
-        self.lr = self.train_config.learning_rate
+        self.n_epochs = self.train_config.n_epochs  # type: ignore
+        self.batch_size = self.train_config.batch_size  # type: ignore
+        self.lr = self.train_config.learning_rate  # type: ignore
 
         # setup log manager first
         self._setup_log_manager()
         msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
-        self.log_manager.log_message(msg)
+        self.log_manager.log_message(msg)  # type: ignore
 
         # setup directories
         self._setup_directories()
@@ -517,7 +518,7 @@ class BaseTrainer(ReprMixin, ABC):
     def extra_log_suffix(self) -> str:
         """Extra suffix for the log file name."""
         model_name = self._model.__name__ if hasattr(self._model, "__name__") else self._model.__class__.__name__
-        return f"{model_name}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
+        return f"{model_name}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"  # type: ignore
 
     def _setup_log_manager(self) -> None:
         """Setup the log manager."""
@@ -528,27 +529,27 @@ class BaseTrainer(ReprMixin, ABC):
     def _setup_directories(self) -> None:
         """Setup the directories for saving checkpoints and logs."""
         if not self.train_config.get("model_dir", None):
-            self._train_config.model_dir = self.train_config.checkpoints
-        self._train_config.model_dir = Path(self._train_config.model_dir)
-        self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)
-        self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
+            self._train_config.model_dir = self.train_config.checkpoints  # type: ignore
+        self._train_config.model_dir = Path(self._train_config.model_dir)  # type: ignore
+        self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)  # type: ignore
+        self.train_config.model_dir.mkdir(parents=True, exist_ok=True)  # type: ignore
 
     def _setup_callbacks(self) -> None:
         """Setup the callbacks."""
         self._train_config.monitor = self.train_config.get("monitor", None)
-        if self.train_config.monitor is None:
+        if self.train_config.monitor is None:  # type: ignore
             assert (
-                self.train_config.lr_scheduler.lower() != "plateau"
+                self.train_config.lr_scheduler.lower() != "plateau"  # type: ignore
             ), "monitor is not specified, lr_scheduler should not be ReduceLROnPlateau"
         self._train_config.keep_checkpoint_max = self.train_config.get("keep_checkpoint_max", 1)
-        if self._train_config.keep_checkpoint_max < 0:
+        if self._train_config.keep_checkpoint_max < 0:  # type: ignore
             self._train_config.keep_checkpoint_max = -1
-            self.log_manager.log_message(
+            self.log_manager.log_message(  # type: ignore
                 msg="keep_checkpoint_max is set to -1, all checkpoints will be kept",
                 level=logging.WARNING,
             )
-        elif self._train_config.keep_checkpoint_max == 0:
-            self.log_manager.log_message(
+        elif self._train_config.keep_checkpoint_max == 0:  # type: ignore
+            self.log_manager.log_message(  # type: ignore
                 msg="keep_checkpoint_max is set to 0, no checkpoint will be kept",
                 level=logging.WARNING,
             )
@@ -617,7 +618,7 @@ class BaseTrainer(ReprMixin, ABC):
 
     def _setup_optimizer(self) -> None:
         """Setup the optimizer."""
-        if self.train_config.optimizer.lower() == "adam":
+        if self.train_config.optimizer.lower() == "adam":  # type: ignore
             optimizer_kwargs = get_kwargs(optim.Adam)
             optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
@@ -625,20 +626,20 @@ class BaseTrainer(ReprMixin, ABC):
                 params=self.model.parameters(),
                 **optimizer_kwargs,
             )
-        elif self.train_config.optimizer.lower() in ["adamw", "adamw_amsgrad"]:
+        elif self.train_config.optimizer.lower() in ["adamw", "adamw_amsgrad"]:  # type: ignore
             optimizer_kwargs = get_kwargs(optim.AdamW)
             optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(
                 dict(
                     lr=self.lr,
-                    amsgrad=self.train_config.optimizer.lower().endswith("amsgrad"),
+                    amsgrad=self.train_config.optimizer.lower().endswith("amsgrad"),  # type: ignore
                 )
             )
             self.optimizer = optim.AdamW(
                 params=self.model.parameters(),
                 **optimizer_kwargs,
             )
-        elif self.train_config.optimizer.lower() == "sgd":
+        elif self.train_config.optimizer.lower() == "sgd":  # type: ignore
             optimizer_kwargs = get_kwargs(optim.SGD)
             optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
@@ -648,44 +649,42 @@ class BaseTrainer(ReprMixin, ABC):
             )
         else:
             raise NotImplementedError(
-                f"optimizer `{self.train_config.optimizer}` not implemented! "
+                f"optimizer `{self.train_config.optimizer}` not implemented! "  # type: ignore
                 "Please use one of the following: `adam`, `adamw`, `adamw_amsgrad`, `sgd`, "
                 "or override this method to setup your own optimizer."
             )
 
     def _setup_scheduler(self) -> None:
         """Setup the learning rate scheduler."""
-        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":
+        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":  # type: ignore
             self.train_config.lr_scheduler = "none"
             self.scheduler = None
-        elif self.train_config.lr_scheduler.lower() == "plateau":
+        elif self.train_config.lr_scheduler.lower() == "plateau":  # type: ignore
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
                 self.optimizer,
                 "max",
                 patience=2,
-                verbose=False,
             )
-        elif self.train_config.lr_scheduler.lower() == "step":
+        elif self.train_config.lr_scheduler.lower() == "step":  # type: ignore
             self.scheduler = optim.lr_scheduler.StepLR(
                 self.optimizer,
-                self.train_config.lr_step_size,
-                self.train_config.lr_gamma,
-                # verbose=False,
+                self.train_config.lr_step_size,  # type: ignore
+                self.train_config.lr_gamma,  # type: ignore
             )
-        elif self.train_config.lr_scheduler.lower() in [
+        elif self.train_config.lr_scheduler.lower() in [  # type: ignore
             "one_cycle",
             "onecycle",
         ]:
             self.scheduler = optim.lr_scheduler.OneCycleLR(
                 optimizer=self.optimizer,
-                max_lr=self.train_config.max_lr,
+                max_lr=self.train_config.max_lr,  # type: ignore
                 epochs=self.n_epochs,
-                steps_per_epoch=len(self.train_loader),
+                steps_per_epoch=len(self.train_loader),  # type: ignore
                 # verbose=False,
             )
         else:  # TODO: add linear and linear with warmup schedulers
             raise NotImplementedError(
-                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training! "
+                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training! "  # type: ignore
                 "Please use one of the following: `none`, `plateau`, `step`, `one_cycle`, "
                 "or override this method to setup your own lr scheduler."
             )
@@ -696,7 +695,7 @@ class BaseTrainer(ReprMixin, ABC):
         for k, v in loss_kw.items():
             if isinstance(v, torch.Tensor):
                 loss_kw[k] = v.to(device=self.device, dtype=self.dtype)
-        self.criterion = setup_criterion(self.train_config.loss, **loss_kw)
+        self.criterion = setup_criterion(self.train_config.loss, **loss_kw)  # type: ignore
         self.criterion.to(self.device)
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
@@ -765,16 +764,30 @@ class BaseTrainer(ReprMixin, ABC):
             Path to save the checkpoint
 
         """
-        torch.save(
-            {
-                "model_state_dict": self._model.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-                "model_config": make_safe_globals(self.model_config),
-                "train_config": make_safe_globals(self.train_config),
-                "epoch": self.epoch,
-            },
-            path,
-        )
+        # if self._model has method `save`, then use it
+        if hasattr(self._model, "save"):
+            self._model.save(
+                path=path,
+                train_config=self.train_config,
+                extra_items={
+                    "optimizer_state_dict": self.optimizer.state_dict(),
+                    "epoch": self.epoch,
+                },
+                use_safetensors=True,
+            )
+        else:
+            if not str(path).endswith(".pth.tar"):
+                path = Path(path).with_suffix(".pth.tar")  # type: ignore
+            torch.save(
+                {
+                    "model_state_dict": self._model.state_dict(),
+                    "optimizer_state_dict": self.optimizer.state_dict(),
+                    "model_config": make_safe_globals(self.model_config),
+                    "train_config": make_safe_globals(self.train_config),
+                    "epoch": self.epoch,
+                },
+                path,
+            )
 
     def extra_repr_keys(self) -> List[str]:
         return [

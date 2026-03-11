@@ -4,7 +4,7 @@ import warnings
 from random import sample
 from typing import List, Optional, Tuple
 
-import numpy as np
+from numpy.typing import NDArray
 
 from ..utils.misc import ReprMixin
 from .bandpass import BandPass
@@ -101,7 +101,7 @@ class PreprocManager(ReprMixin):
         """
         self._preprocessors.append(Resample(**config))
 
-    def __call__(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
+    def __call__(self, sig: NDArray, fs: int) -> Tuple[NDArray, int]:
         """The main function of the manager, which applies the preprocessors
 
         Parameters
