@@ -54,11 +54,15 @@ from .cnn import VGG16, DenseNet, MobileNetV1, MobileNetV2, MobileNetV3, MultiSc
 from .ecg_crnn import ECG_CRNN
 from .ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from .grad_cam import GradCam
+from .registry import BACKBONES, MODELS
 from .rr_lstm import RR_LSTM
 from .transformers import Transformer
 from .unets import ECG_SUBTRACT_UNET, ECG_UNET
 
 __all__ = [
+    # registries
+    "BACKBONES",
+    "MODELS",
     # CNN backbone
     "ResNet",
     "RegNet",

@@ -12,12 +12,14 @@ from ..cfg import CFG
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ..utils import add_docstring
 from .ecg_crnn import ECG_CRNN, ECG_CRNN_v1
+from .registry import MODELS
 
 __all__ = [
     "ECG_SEQ_LAB_NET",
 ]
 
 
+@MODELS.register()
 class ECG_SEQ_LAB_NET(ECG_CRNN):
     """SOTA model from CPSC2019 challenge.
 

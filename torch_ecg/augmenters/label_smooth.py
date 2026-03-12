@@ -6,12 +6,15 @@ import torch
 from torch import Tensor
 
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "LabelSmooth",
 ]
 
 
+@AUGMENTERS.register(name="label_smooth")
+@AUGMENTERS.register()
 class LabelSmooth(Augmenter):
     """Label smoothing augmentation.
 

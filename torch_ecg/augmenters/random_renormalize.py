@@ -9,12 +9,15 @@ from torch import Tensor
 from ..cfg import DEFAULTS
 from ..utils.utils_signal_t import normalize as normalize_t
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "RandomRenormalize",
 ]
 
 
+@AUGMENTERS.register(name="random_renormalize")
+@AUGMENTERS.register()
 class RandomRenormalize(Augmenter):
     """Randomly re-normalize the ECG tensor,
     using the Z-score normalization method.

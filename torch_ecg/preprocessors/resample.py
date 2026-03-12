@@ -5,12 +5,15 @@ from typing import Any, Optional
 import torch
 
 from ..utils.utils_signal_t import resample as resample_t
+from .registry import PREPROCESSORS
 
 __all__ = [
     "Resample",
 ]
 
 
+@PREPROCESSORS.register(name="resample")
+@PREPROCESSORS.register()
 class Resample(torch.nn.Module):
     """Resample the signal into fixed sampling frequency or length.
 

@@ -15,6 +15,7 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
+from ..registry import BACKBONES
 
 __all__ = [
     "VGG16",
@@ -127,6 +128,8 @@ class VGGBlock(nn.Sequential, SizeMixin):
         return output_shape
 
 
+@BACKBONES.register(name="vgg16")
+@BACKBONES.register()
 class VGG16(nn.Sequential, SizeMixin, CitationMixin):
     """CNN feature extractor of VGG architecture.
 

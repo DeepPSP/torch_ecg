@@ -7,12 +7,15 @@ from typing import Any
 import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
+from .registry import PREPROCESSORS
 
 __all__ = [
     "BaselineRemove",
 ]
 
 
+@PREPROCESSORS.register(name="baseline_remove")
+@PREPROCESSORS.register()
 class BaselineRemove(torch.nn.Module):
     """Baseline removal using median filtering.
 

@@ -2,16 +2,13 @@
 
 import warnings
 from random import sample
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
 
 from ..utils.misc import ReprMixin
-from .bandpass import BandPass
-from .baseline_remove import BaselineRemove
-from .normalize import Normalize
-from .resample import Resample
+from .registry import PREPROCESSORS
 
 __all__ = [
     "PreprocManager",
@@ -59,67 +56,34 @@ class PreprocManager(ReprMixin, nn.Module):
     ) -> None:
         super().__init__()
         self.random = random
-        self._preprocessors = list(pps)
+        self._preprocessors = nn.ModuleList(list(pps))
 
-    def _add_bandpass(self, **config: dict) -> None:
-        """Add a bandpass filter to the manager.
-
-        Parameters
-        ----------
-        config : dict
-            The configuration of the bandpass filter.
-
-        Returns
-        -------
-        None
-
-        """
-        self._preprocessors.append(BandPass(**config))
-
-    def _add_baseline_remove(self, **config: dict) -> None:
-        """Add a median filter for baseline removal to the manager.
+    def add_(self, pp: Union[nn.Module, str, dict], pos: int = -1, **kwargs: Any) -> None:
+        """Add a preprocessor to the manager.
 
         Parameters
         ----------
-        config : dict
-            The configuration of the median filter.
-
-        Returns
-        -------
-        None
-
-        """
-        self._preprocessors.append(BaselineRemove(**config))
-
-    def _add_normalize(self, **config: dict) -> None:
-        """Add a normalizer to the manager.
-
-        Parameters
-        ----------
-        config : dict
-            The configuration of the normalizer.
-
-        Returns
-        -------
-        None
+        pp : torch.nn.Module or str or dict
+            The preprocessor to be added.
+            If it's a string or a dict, it will be built using the registry.
+        pos : int, default -1
+            The position to insert the preprocessor.
+            Should be >= -1, with -1 being the indicator of the end.
+        **kwargs : Any
+            Additional keyword arguments for building the preprocessor.
 
         """
-        self._preprocessors.append(Normalize(**config))
-
-    def _add_resample(self, **config: dict) -> None:
-        """Add a resampler to the manager.
-
-        Parameters
-        ----------
-        config : dict
-            The configuration of the resampler.
-
-        Returns
-        -------
-        None
-
-        """
-        self._preprocessors.append(Resample(**config))
+        if isinstance(pp, (str, dict)):
+            pp = PREPROCESSORS.build(pp, **kwargs)
+        assert isinstance(pp, nn.Module)
+        assert pp.__class__.__name__ not in [
+            p.__class__.__name__ for p in self.preprocessors
+        ], f"Preprocessor {pp.__class__.__name__} already exists."
+        assert isinstance(pos, int) and pos >= -1, f"pos must be an integer >= -1, but got {pos}."
+        if pos == -1:
+            self._preprocessors.append(pp)
+        else:
+            self._preprocessors.insert(pos, pp)
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """Apply the preprocessors to the signal tensor.
@@ -163,20 +127,23 @@ class PreprocManager(ReprMixin, nn.Module):
 
         """
         ppm = cls(random=config.get("random", False), inplace=config.get("inplace", True))
-        _mapping = {
-            "bandpass": ppm._add_bandpass,
-            "baseline_remove": ppm._add_baseline_remove,
-            "normalize": ppm._add_normalize,
-            "resample": ppm._add_resample,
-        }
         for pp_name, pp_config in config.items():
             if pp_name in [
                 "random",
                 "inplace",
+                "fs",
             ]:
                 continue
-            if pp_name in _mapping and isinstance(pp_config, dict):
-                _mapping[pp_name](**pp_config)
+            if pp_name in PREPROCESSORS or pp_name in [
+                "".join([w.capitalize() for w in k.split("_")]) for k in PREPROCESSORS.list_all()
+            ]:
+                if isinstance(pp_config, dict):
+                    # add default fs from config if not specified in pp_config
+                    if "fs" not in pp_config and "fs" in config:
+                        pp_config["fs"] = config["fs"]
+                    ppm.add_(pp_name, **pp_config)
+                else:
+                    ppm.add_(pp_name)
             else:
                 # just ignore the other items
                 pass
@@ -206,6 +173,7 @@ class PreprocManager(ReprMixin, nn.Module):
                 "The preprocessors are applied in random order, " "rearranging the preprocessors will not take effect.",
                 RuntimeWarning,
             )
+        # TODO: use a more robust way to map names to classes
         _mapping = {  # built-in preprocessors
             "Resample": "resample",
             "BandPass": "bandpass",
@@ -220,36 +188,12 @@ class PreprocManager(ReprMixin, nn.Module):
                 _mapping.update({k: k})
         assert len(new_ordering) == len(set(new_ordering)), "Duplicate preprocessor names."
         assert len(new_ordering) == len(self._preprocessors), "Number of preprocessors mismatch."
-        self._preprocessors.sort(key=lambda item: new_ordering.index(_mapping[item.__class__.__name__]))
-
-    def add_(self, pp: nn.Module, pos: int = -1) -> None:
-        """Add a (custom) preprocessor to the manager.
-
-        This method is preferred against directly manipulating
-        the internal list of preprocessors via
-        ``PreprocManager.preprocessors.append(pp)``.
-
-        Parameters
-        ----------
-        pp : torch.nn.Module
-            The preprocessor to be added.
-        pos : int, default -1
-            The position to insert the preprocessor.
-            Should be >= -1, with -1 being the indicator of the end.
-
-        """
-        assert isinstance(pp, nn.Module)
-        assert pp.__class__.__name__ not in [
-            p.__class__.__name__ for p in self.preprocessors
-        ], f"Preprocessor {pp.__class__.__name__} already exists."
-        assert isinstance(pos, int) and pos >= -1, f"pos must be an integer >= -1, but got {pos}."
-        if pos == -1:
-            self._preprocessors.append(pp)
-        else:
-            self._preprocessors.insert(pos, pp)
+        pps = list(self._preprocessors)
+        pps.sort(key=lambda item: new_ordering.index(_mapping[item.__class__.__name__]))
+        self._preprocessors = nn.ModuleList(pps)
 
     @property
-    def preprocessors(self) -> List[nn.Module]:
+    def preprocessors(self) -> nn.ModuleList:
         return self._preprocessors
 
     @property

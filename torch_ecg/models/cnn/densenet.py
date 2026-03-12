@@ -25,6 +25,7 @@ from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample
 from ...utils.misc import CitationMixin, add_docstring, list_sum
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 
 __all__ = [
     "DenseNet",
@@ -566,6 +567,9 @@ class DenseTransition(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
+@BACKBONES.register(name="densenet")
+@BACKBONES.register(name="dense_net")
+@BACKBONES.register()
 class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     """The core part of the SOTA model (framework) of CPSC2020.
 

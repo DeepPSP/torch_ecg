@@ -14,6 +14,7 @@ from torch import Tensor
 from ..cfg import DEFAULTS
 from ..utils.misc import ReprMixin, add_docstring
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "StretchCompress",
@@ -21,6 +22,8 @@ __all__ = [
 ]
 
 
+@AUGMENTERS.register(name="stretch_compress")
+@AUGMENTERS.register()
 class StretchCompress(Augmenter):
     """Stretch-or-compress augmenter on ECG tensors.
 

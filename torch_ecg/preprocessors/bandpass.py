@@ -6,12 +6,15 @@ from typing import Any, Optional
 import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
+from .registry import PREPROCESSORS
 
 __all__ = [
     "BandPass",
 ]
 
 
+@PREPROCESSORS.register(name="bandpass")
+@PREPROCESSORS.register()
 class BandPass(torch.nn.Module):
     """Bandpass filtering preprocessor.
 

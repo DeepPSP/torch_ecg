@@ -24,6 +24,7 @@ from ..models.loss import setup_criterion
 from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
 from ..utils.utils_nn import default_collate_fn, make_safe_globals
 from .loggers import LoggerManager
+from .registry import OPTIMIZERS, SCHEDULERS
 
 __all__ = [
     "BaseTrainer",
@@ -614,74 +615,86 @@ class BaseTrainer(ReprMixin, ABC):
 
     def _setup_optimizer(self) -> None:
         """Setup the optimizer."""
-        if self.train_config.optimizer.lower() == "adam":  # type: ignore
-            optimizer_kwargs = get_kwargs(optim.Adam)
+        opt_name = self.train_config.optimizer.lower()
+        if opt_name == "adamw_amsgrad":
+            opt_name = "adamw"
+            self.train_config.amsgrad = True
+        elif opt_name == "adam_amsgrad":
+            opt_name = "adam"
+            self.train_config.amsgrad = True
+
+        if opt_name not in OPTIMIZERS:
+            # try to find in torch.optim
+            for name in dir(optim):
+                if name.lower() == opt_name:
+                    OPTIMIZERS.register(name=opt_name)(getattr(optim, name))
+                    break
+
+        if opt_name in OPTIMIZERS:
+            opt_cls = OPTIMIZERS.get(opt_name)
+            optimizer_kwargs = get_kwargs(opt_cls)
             optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
             optimizer_kwargs.update(dict(lr=self.lr))
-            self.optimizer = optim.Adam(
-                params=self.model.parameters(),
-                **optimizer_kwargs,
-            )
-        elif self.train_config.optimizer.lower() in ["adamw", "adamw_amsgrad"]:  # type: ignore
-            optimizer_kwargs = get_kwargs(optim.AdamW)
-            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
-            optimizer_kwargs.update(
-                dict(
-                    lr=self.lr,
-                    amsgrad=self.train_config.optimizer.lower().endswith("amsgrad"),  # type: ignore
-                )
-            )
-            self.optimizer = optim.AdamW(
-                params=self.model.parameters(),
-                **optimizer_kwargs,
-            )
-        elif self.train_config.optimizer.lower() == "sgd":  # type: ignore
-            optimizer_kwargs = get_kwargs(optim.SGD)
-            optimizer_kwargs.update({k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()})
-            optimizer_kwargs.update(dict(lr=self.lr))
-            self.optimizer = optim.SGD(
+            self.optimizer = opt_cls(
                 params=self.model.parameters(),
                 **optimizer_kwargs,
             )
         else:
             raise NotImplementedError(
-                f"optimizer `{self.train_config.optimizer}` not implemented! "  # type: ignore
-                "Please use one of the following: `adam`, `adamw`, `adamw_amsgrad`, `sgd`, "
+                f"optimizer `{self.train_config.optimizer}` not implemented! "
+                "Please use one of the optimizers in `torch.optim`, "
                 "or override this method to setup your own optimizer."
             )
 
     def _setup_scheduler(self) -> None:
         """Setup the learning rate scheduler."""
-        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":  # type: ignore
+        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":
             self.train_config.lr_scheduler = "none"
             self.scheduler = None
-        elif self.train_config.lr_scheduler.lower() == "plateau":  # type: ignore
+            return
+
+        lrs_name = self.train_config.lr_scheduler.lower()
+        if lrs_name == "onecycle":
+            lrs_name = "one_cycle"
+
+        if lrs_name not in SCHEDULERS:
+            # try to find in torch.optim.lr_scheduler
+            for name in dir(optim.lr_scheduler):
+                if name.lower() == lrs_name.replace("_", ""):
+                    SCHEDULERS.register(name=lrs_name)(getattr(optim.lr_scheduler, name))
+                    break
+            # special case for OneCycleLR
+            if lrs_name == "one_cycle" and "OneCycleLR" in dir(optim.lr_scheduler):
+                SCHEDULERS.register(name="one_cycle")(optim.lr_scheduler.OneCycleLR)
+
+        if lrs_name == "plateau":
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
                 self.optimizer,
                 "max",
                 patience=2,
             )
-        elif self.train_config.lr_scheduler.lower() == "step":  # type: ignore
+        elif lrs_name == "step":
             self.scheduler = optim.lr_scheduler.StepLR(
                 self.optimizer,
-                self.train_config.lr_step_size,  # type: ignore
-                self.train_config.lr_gamma,  # type: ignore
+                self.train_config.lr_step_size,
+                self.train_config.lr_gamma,
             )
-        elif self.train_config.lr_scheduler.lower() in [  # type: ignore
-            "one_cycle",
-            "onecycle",
-        ]:
+        elif lrs_name == "one_cycle":
             self.scheduler = optim.lr_scheduler.OneCycleLR(
                 optimizer=self.optimizer,
-                max_lr=self.train_config.max_lr,  # type: ignore
+                max_lr=self.train_config.max_lr,
                 epochs=self.n_epochs,
-                steps_per_epoch=len(self.train_loader),  # type: ignore
-                # verbose=False,
+                steps_per_epoch=len(self.train_loader),
             )
-        else:  # TODO: add linear and linear with warmup schedulers
+        elif lrs_name in SCHEDULERS:
+            lrs_cls = SCHEDULERS.get(lrs_name)
+            lrs_kwargs = get_kwargs(lrs_cls)
+            lrs_kwargs.update({k: self.train_config.get(k, v) for k, v in lrs_kwargs.items()})
+            self.scheduler = lrs_cls(self.optimizer, **lrs_kwargs)
+        else:
             raise NotImplementedError(
-                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training! "  # type: ignore
-                "Please use one of the following: `none`, `plateau`, `step`, `one_cycle`, "
+                f"lr scheduler `{self.train_config.lr_scheduler}` not implemented for training! "
+                "Please use one of the schedulers in `torch.optim.lr_scheduler`, "
                 "or override this method to setup your own lr scheduler."
             )
 

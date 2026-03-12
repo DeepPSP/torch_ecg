@@ -19,20 +19,16 @@ from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
 from ._nets import MLP, GlobalContextBlock, NonLocalBlock, SEBlock, SelfAttention, StackedLSTM
-from .cnn.densenet import DenseNet
-from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
-from .cnn.multi_scopic import MultiScopicCNN
-from .cnn.regnet import RegNet
-from .cnn.resnet import ResNet
-from .cnn.vgg import VGG16
-from .cnn.xception import Xception
+from .registry import BACKBONES, MODELS
 from .transformers import Transformer
 
 __all__ = [
     "ECG_CRNN",
+    "ECG_CRNN_v1",
 ]
 
 
+@MODELS.register()
 class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """Convolutional (Recurrent) Neural Network for ECG tasks.
 
@@ -82,29 +78,20 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         cnn_choice = self.config.cnn.name.lower()  # type: ignore
         cnn_config = self.config.cnn[self.config.cnn.name]  # type: ignore
-        if "resnet" in cnn_choice or "resnext" in cnn_choice:
-            self.cnn = ResNet(self.n_leads, **cnn_config)
-        elif "regnet" in cnn_choice:
-            self.cnn = RegNet(self.n_leads, **cnn_config)
-        elif "multi_scopic" in cnn_choice:
-            self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)
-        elif "mobile_net" in cnn_choice or "mobilenet" in cnn_choice:
-            if "v1" in cnn_choice:
-                self.cnn = MobileNetV1(self.n_leads, **cnn_config)
-            elif "v2" in cnn_choice:
-                self.cnn = MobileNetV2(self.n_leads, **cnn_config)
-            elif "v3" in cnn_choice:
-                self.cnn = MobileNetV3(self.n_leads, **cnn_config)
-            else:
-                raise ValueError(f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}")
-        elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
-            self.cnn = DenseNet(self.n_leads, **cnn_config)
-        elif "vgg16" in cnn_choice:
-            self.cnn = VGG16(self.n_leads, **cnn_config)
-        elif "xception" in cnn_choice:
-            self.cnn = Xception(self.n_leads, **cnn_config)
-        else:
+
+        self.cnn = None
+        # order by length descending to match the most specific name first
+        for name in sorted(BACKBONES.list_all(), key=len, reverse=True):
+            if name.lower() in cnn_choice:
+                try:
+                    self.cnn = BACKBONES.build(name, in_channels=self.n_leads, **cnn_config)
+                except TypeError:
+                    self.cnn = BACKBONES.build(name, n_leads=self.n_leads, **cnn_config)
+                break
+
+        if self.cnn is None:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
+
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
 
         if self.config.rnn.name.lower() == "none":  # type: ignore
@@ -518,29 +505,20 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         cnn_choice = self.config.cnn.name.lower()  # type: ignore
         cnn_config = self.config.cnn[self.config.cnn.name]  # type: ignore
-        if "resnet" in cnn_choice or "resnext" in cnn_choice:
-            self.cnn = ResNet(self.n_leads, **cnn_config)
-        elif "regnet" in cnn_choice:
-            self.cnn = RegNet(self.n_leads, **cnn_config)
-        elif "multi_scopic" in cnn_choice:
-            self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)
-        elif "mobile_net" in cnn_choice or "mobilenet" in cnn_choice:
-            if "v1" in cnn_choice:
-                self.cnn = MobileNetV1(self.n_leads, **cnn_config)
-            elif "v2" in cnn_choice:
-                self.cnn = MobileNetV2(self.n_leads, **cnn_config)
-            elif "v3" in cnn_choice:
-                self.cnn = MobileNetV3(self.n_leads, **cnn_config)
-            else:
-                raise ValueError(f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}")
-        elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
-            self.cnn = DenseNet(self.n_leads, **cnn_config)
-        elif "vgg16" in cnn_choice:
-            self.cnn = VGG16(self.n_leads, **cnn_config)
-        elif "xception" in cnn_choice:
-            self.cnn = Xception(self.n_leads, **cnn_config)
-        else:
+
+        self.cnn = None
+        # order by length descending to match the most specific name first
+        for name in sorted(BACKBONES.list_all(), key=len, reverse=True):
+            if name.lower() in cnn_choice:
+                try:
+                    self.cnn = BACKBONES.build(name, in_channels=self.n_leads, **cnn_config)
+                except TypeError:
+                    self.cnn = BACKBONES.build(name, n_leads=self.n_leads, **cnn_config)
+                break
+
+        if self.cnn is None:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
+
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
 
         if self.config.rnn.name.lower() == "none":  # type: ignore

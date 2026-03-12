@@ -17,6 +17,7 @@ from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample, SpaceToDepth
 from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 from .resnet import ResNetBasicBlock, ResNetBottleNeck
 
 
@@ -263,6 +264,8 @@ class RegNetStem(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
+@BACKBONES.register(name="regnet")
+@BACKBONES.register()
 class RegNet(nn.Sequential, SizeMixin, CitationMixin):
     """RegNet model.
 

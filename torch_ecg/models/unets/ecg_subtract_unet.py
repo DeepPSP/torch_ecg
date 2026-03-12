@@ -30,6 +30,7 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
+from ..registry import MODELS
 
 __all__ = [
     "ECG_SUBTRACT_UNET",
@@ -476,6 +477,7 @@ class UpTripleConv(nn.Module, SizeMixin):
         return output_shape
 
 
+@MODELS.register()
 class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     """U-Net for ECG wave delineation.
 
