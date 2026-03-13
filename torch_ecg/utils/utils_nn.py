@@ -1364,13 +1364,14 @@ class CkptMixin(object):
             path.parent.mkdir(parents=True)
         extra_items = extra_items or {}
 
+        excluded_suffixes = (".pt", ".pth", ".ckpt", ".ckpt.pt", ".ckpt.pth", ".pth.tar", ".pt.tar")
         if use_safetensors is None:
-            use_safetensors = path.suffix not in [".pth", ".pt"]
+            use_safetensors = path.name.endswith(excluded_suffixes) is False
 
         _model_config = make_safe_globals(self.config)  # type: ignore
         _train_config = make_safe_globals(train_config)
 
-        if path.suffix in [".pth", ".pt"]:
+        if path.name.endswith(excluded_suffixes):
             if use_safetensors:
                 path = path.with_suffix(".safetensors")
                 warnings.warn(
@@ -1404,7 +1405,7 @@ class CkptMixin(object):
             return
 
         if use_safetensors:  # not single file
-            # save the model with safetensors into a zip file with the same name as `path`
+            # save the model with safetensors with the same name as `path`
             # `model_config` and `train_config` are saved as json files
             path = path.with_suffix("")
             path.mkdir(exist_ok=True)
