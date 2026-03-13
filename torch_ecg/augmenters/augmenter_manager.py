@@ -152,6 +152,8 @@ class AugmenterManager(torch.nn.Module):
             if aug_name in AUGMENTERS or aug_name in [
                 "".join([w.capitalize() for w in k.split("_")]) for k in AUGMENTERS.list_all()
             ]:
+                if aug_config is False:
+                    continue
                 if isinstance(aug_config, dict):
                     # add default fs from config if not specified in aug_config
                     if "fs" not in aug_config and "fs" in config:

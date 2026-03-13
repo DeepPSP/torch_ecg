@@ -137,6 +137,8 @@ class PreprocManager(ReprMixin, nn.Module):
             if pp_name in PREPROCESSORS or pp_name in [
                 "".join([w.capitalize() for w in k.split("_")]) for k in PREPROCESSORS.list_all()
             ]:
+                if pp_config is False:
+                    continue
                 if isinstance(pp_config, dict):
                     # add default fs from config if not specified in pp_config
                     if "fs" not in pp_config and "fs" in config:
