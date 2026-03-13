@@ -18,9 +18,8 @@ from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
-from ._nets import MLP, GlobalContextBlock, NonLocalBlock, SEBlock, SelfAttention, StackedLSTM
-from .registry import BACKBONES, MODELS
-from .transformers import Transformer
+from ._nets import MLP, StackedLSTM
+from .registry import ATTN_LAYERS, BACKBONES, MODELS
 
 __all__ = [
     "ECG_CRNN",
@@ -92,7 +91,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         if self.cnn is None:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
 
-        rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
+        rnn_input_size = self.cnn.compute_output_shape(2000, 2)[1]
 
         if self.config.rnn.name.lower() == "none":  # type: ignore
             self.rnn_in_rearrange = Rearrange("batch_size channels seq_len -> seq_len batch_size channels")
@@ -147,77 +146,43 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.__attn_seqlen_dim = -1
             self.attn_out_rearrange = nn.Identity()
             clf_input_size = attn_input_size
-        elif self.config.attn.name.lower() == "nl":  # type: ignore
-            # non_local
-            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
-            self.attn = NonLocalBlock(
-                in_channels=attn_input_size,  # type: ignore
-                filter_lengths=self.config.attn.nl.filter_lengths,  # type: ignore
-                subsample_length=self.config.attn.nl.subsample_length,  # type: ignore
-                batch_norm=self.config.attn.nl.batch_norm,  # type: ignore
-            )
-            self.__attn_seqlen_dim = -1
-            self.attn_out_rearrange = nn.Identity()
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "se":  # type: ignore
-            # squeeze_exitation
-            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
-            self.attn = SEBlock(
-                in_channels=attn_input_size,  # type: ignore
-                reduction=self.config.attn.se.reduction,  # type: ignore
-                activation=self.config.attn.se.activation,  # type: ignore
-                kw_activation=self.config.attn.se.kw_activation,  # type: ignore
-                bias=self.config.attn.se.bias,  # type: ignore
-            )
-            self.__attn_seqlen_dim = -1
-            self.attn_out_rearrange = nn.Identity()
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "gc":  # type: ignore
-            # global_context
-            self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
-            self.attn = GlobalContextBlock(
-                in_channels=attn_input_size,  # type: ignore
-                ratio=self.config.attn.gc.ratio,  # type: ignore
-                reduction=self.config.attn.gc.reduction,  # type: ignore
-                pooling_type=self.config.attn.gc.pooling_type,  # type: ignore
-                fusion_types=self.config.attn.gc.fusion_types,  # type: ignore
-            )
-            self.__attn_seqlen_dim = -1
-            self.attn_out_rearrange = nn.Identity()
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "sa":  # type: ignore
-            # self_attention
-            # NOTE: this branch NOT tested
-            self.attn_in_rearrange = nn.Identity()
-            self.attn = SelfAttention(  # type: ignore
-                embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),  # type: ignore
-                dropout=self.config.attn.sa.dropout,  # type: ignore
-                bias=self.config.attn.sa.bias,  # type: ignore
-            )
-            self.__attn_seqlen_dim = 0
-            self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
-            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
-        elif self.config.attn.name.lower() == "transformer":  # type: ignore
-            self.attn = Transformer(
-                input_size=attn_input_size,  # type: ignore
-                hidden_size=self.config.attn.transformer.hidden_size,  # type: ignore
-                num_layers=self.config.attn.transformer.num_layers,  # type: ignore
-                num_heads=self.config.attn.transformer.num_heads,  # type: ignore
-                dropout=self.config.attn.transformer.dropout,  # type: ignore
-                activation=self.config.attn.transformer.activation,  # type: ignore
-            )
-            if self.attn.batch_first:
-                self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size seq_len channels")
-                self.attn_out_rearrange = Rearrange("batch_size seq_len channels -> batch_size channels seq_len")
-                self.__attn_seqlen_dim = 1
-            else:
-                self.attn_in_rearrange = nn.Identity()
-                self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
-                self.__attn_seqlen_dim = 0
-            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")  # type: ignore
+            attn_choice = self.config.attn.name.lower()
+            attn_config = self.config.attn[self.config.attn.name]
+            self.attn = None
+            for name in sorted(ATTN_LAYERS.list_all(), key=len, reverse=True):
+                if name.lower() in attn_choice:
+                    if name.lower() in ["transformer", "transformer_encoder"]:
+                        self.attn = ATTN_LAYERS.build(name, input_size=attn_input_size, **attn_config)
+                    elif name.lower() in ["sa", "self_attention", "multi_head_attention", "attentive_pooling"]:
+                        self.attn = ATTN_LAYERS.build(name, in_features=attn_input_size, **attn_config)
+                    else:
+                        self.attn = ATTN_LAYERS.build(name, in_channels=attn_input_size, **attn_config)
+                    break
+
+            if self.attn is None:
+                raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")
+
+            if attn_choice in ["nl", "non_local", "se", "se_block", "gc", "global_context", "cbam", "cbam_block"]:
+                self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
+                self.__attn_seqlen_dim = -1
+                self.attn_out_rearrange = nn.Identity()
+                clf_input_size = int(self.attn.compute_output_shape(2000, 2)[1])
+            elif attn_choice in ["sa", "self_attention"]:
+                self.attn_in_rearrange = nn.Identity()
+                self.__attn_seqlen_dim = 0
+                self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
+                clf_input_size = self.attn.compute_output_shape(2000, 2)[-1]
+            elif attn_choice in ["transformer", "transformer_encoder"]:
+                if self.attn.batch_first:
+                    self.attn_in_rearrange = Rearrange("seq_len batch_size channels -> batch_size seq_len channels")
+                    self.attn_out_rearrange = Rearrange("batch_size seq_len channels -> batch_size channels seq_len")
+                    self.__attn_seqlen_dim = 1
+                else:
+                    self.attn_in_rearrange = nn.Identity()
+                    self.attn_out_rearrange = Rearrange("seq_len batch_size channels -> batch_size channels seq_len")
+                    self.__attn_seqlen_dim = 0
+                clf_input_size = self.attn.compute_output_shape(2000, 2)[-1]
 
         # global pooling
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:  # type: ignore
@@ -430,7 +395,14 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         """
         v1_model, train_config = ECG_CRNN_v1.from_checkpoint(v1_ckpt, device=device, weights_only=False)
-        model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=v1_model.config)
+        # v1 models usually have no global pooling
+        # and the classifier input size is the cnn/rnn/attn output size
+        # which is usually 2000 if seq_len is 2000
+        # however, in the new version, the default is max pooling
+        config = deepcopy(ECG_CRNN_CONFIG)
+        config.update(deepcopy(v1_model.config))
+        config.global_pool = "none"
+        model = cls(classes=v1_model.classes, n_leads=v1_model.n_leads, config=config)
         model = model.to(v1_model.device)
         model.cnn.load_state_dict(v1_model.cnn.state_dict())
         if model.rnn.__class__.__name__ != "Identity":
@@ -444,6 +416,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         return model
 
 
+@MODELS.register()
 class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """Convolutional (Recurrent) Neural Network for ECG tasks.
 
@@ -519,7 +492,8 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         if self.cnn is None:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
 
-        rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
+        rnn_input_size = self.cnn.compute_output_shape(2000, 2)[1]
+        clf_input_size = rnn_input_size  # default
 
         if self.config.rnn.name.lower() == "none":  # type: ignore
             self.rnn = None
@@ -548,9 +522,10 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             raise NotImplementedError(f"RNN \042{self.config.rnn.name}\042 not implemented yet")  # type: ignore
 
         # attention
+        clf_input_size = attn_input_size
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:  # type: ignore
             self.attn = None
-            clf_input_size = attn_input_size
+            self.__attn_seqlen_dim = 0
             if self.config.attn.name.lower() != "none":  # type: ignore
                 warnings.warn(
                     f"since `retseq` of rnn is False, hence attention `{self.config.attn.name}` is ignored",  # type: ignore
@@ -558,58 +533,33 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 )
         elif self.config.attn.name.lower() == "none":  # type: ignore
             self.attn = None
-            clf_input_size = attn_input_size
-        elif self.config.attn.name.lower() == "nl":  # type: ignore
-            # non_local
-            self.attn = NonLocalBlock(
-                in_channels=attn_input_size,  # type: ignore
-                filter_lengths=self.config.attn.nl.filter_lengths,  # type: ignore
-                subsample_length=self.config.attn.nl.subsample_length,  # type: ignore
-                batch_norm=self.config.attn.nl.batch_norm,  # type: ignore
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "se":  # type: ignore
-            # squeeze_exitation
-            self.attn = SEBlock(
-                in_channels=attn_input_size,  # type: ignore
-                reduction=self.config.attn.se.reduction,  # type: ignore
-                activation=self.config.attn.se.activation,  # type: ignore
-                kw_activation=self.config.attn.se.kw_activation,  # type: ignore
-                bias=self.config.attn.se.bias,  # type: ignore
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "gc":  # type: ignore
-            # global_context
-            self.attn = GlobalContextBlock(
-                in_channels=attn_input_size,  # type: ignore
-                ratio=self.config.attn.gc.ratio,  # type: ignore
-                reduction=self.config.attn.gc.reduction,  # type: ignore
-                pooling_type=self.config.attn.gc.pooling_type,  # type: ignore
-                fusion_types=self.config.attn.gc.fusion_types,  # type: ignore
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "sa":  # type: ignore
-            # self_attention
-            # NOTE: this branch NOT tested
-            self.attn = SelfAttention(  # type: ignore
-                embed_dim=attn_input_size,
-                num_heads=self.config.attn.sa.get("num_heads", self.config.attn.sa.get("head_num")),  # type: ignore
-                dropout=self.config.attn.sa.dropout,  # type: ignore
-                bias=self.config.attn.sa.bias,  # type: ignore
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
-        elif self.config.attn.name.lower() == "transformer":  # type: ignore
-            self.attn = Transformer(
-                input_size=attn_input_size,  # type: ignore
-                hidden_size=self.config.attn.transformer.hidden_size,  # type: ignore
-                num_layers=self.config.attn.transformer.num_layers,  # type: ignore
-                num_heads=self.config.attn.transformer.num_heads,  # type: ignore
-                dropout=self.config.attn.transformer.dropout,  # type: ignore
-                activation=self.config.attn.transformer.activation,  # type: ignore
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
+            self.__attn_seqlen_dim = -1
         else:
-            raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")  # type: ignore
+            attn_choice = self.config.attn.name.lower()
+            attn_config = self.config.attn[self.config.attn.name]
+            self.attn = None
+            for name in sorted(ATTN_LAYERS.list_all(), key=len, reverse=True):
+                if name.lower() in attn_choice:
+                    if name.lower() in ["transformer", "transformer_encoder"]:
+                        self.attn = ATTN_LAYERS.build(name, input_size=attn_input_size, **attn_config)
+                    elif name.lower() in ["sa", "self_attention", "multi_head_attention", "attentive_pooling"]:
+                        self.attn = ATTN_LAYERS.build(name, in_features=attn_input_size, **attn_config)
+                    else:
+                        self.attn = ATTN_LAYERS.build(name, in_channels=attn_input_size, **attn_config)
+                    break
+
+            if self.attn is None:
+                raise NotImplementedError(f"Attention \042{self.config.attn.name}\042 not implemented yet")
+
+            if attn_choice in ["nl", "non_local", "se", "se_block", "gc", "global_context", "cbam", "cbam_block"]:
+                clf_input_size = int(self.attn.compute_output_shape(2000, 2)[1])
+                self.__attn_seqlen_dim = -1
+            elif attn_choice in ["sa", "self_attention"]:
+                clf_input_size = int(self.attn.compute_output_shape(2000, 2)[-1])
+                self.__attn_seqlen_dim = 0
+            elif attn_choice in ["transformer", "transformer_encoder"]:
+                clf_input_size = int(self.attn.compute_output_shape(2000, 2)[-1])
+                self.__attn_seqlen_dim = 1 if self.attn.batch_first else 0
 
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:  # type: ignore
             self.pool = None
@@ -689,20 +639,23 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         if self.attn is None and features.ndim == 3:
             # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
             features = features.permute(1, 2, 0)
-        elif self.config.attn.name.lower() in ["nl", "se", "gc"]:  # type: ignore
-            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            features = features.permute(1, 2, 0)
-            # (batch_size, channels, seq_len)
-            features = self.attn(features)  # type: ignore
-        elif self.config.attn.name.lower() in ["sa"]:  # type: ignore
-            # (seq_len, batch_size, channels)
-            features = self.attn(features)  # type: ignore
-            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            features = features.permute(1, 2, 0)
-        elif self.config.attn.name.lower() in ["transformer"]:  # type: ignore
-            features = self.attn(features)  # type: ignore
-            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            features = features.permute(1, 2, 0)
+        elif self.attn is not None:
+            if self.__attn_seqlen_dim == -1:
+                # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
+                features = features.permute(1, 2, 0)
+                # (batch_size, channels, seq_len)
+                features = self.attn(features)
+            elif self.__attn_seqlen_dim == 0:
+                # (seq_len, batch_size, channels)
+                features = self.attn(features)
+                # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
+                features = features.permute(1, 2, 0)
+            elif self.__attn_seqlen_dim == 1:
+                # (seq_len, batch_size, channels) -> (batch_size, seq_len, channels)
+                features = features.permute(1, 0, 2)
+                features = self.attn(features)
+                # (batch_size, seq_len, channels) -> (batch_size, channels, seq_len)
+                features = features.permute(0, 2, 1)
         return features
 
     def forward(self, input: Tensor) -> Tensor:
