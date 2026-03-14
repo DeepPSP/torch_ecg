@@ -17,7 +17,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def test_backbone_api(backbone_name):
     # Skip aliases to avoid redundant tests
     if backbone_name != backbone_name.lower():
-        return
+        pytest.skip(f"Skipping alias backbone name: {backbone_name}")
 
     n_leads = 12
     batch_size = 2
