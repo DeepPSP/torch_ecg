@@ -1,0 +1,6 @@
+﻿torch\_ecg.preprocessors.PREPROCESSORS
+======================================
+
+.. currentmodule:: torch_ecg.preprocessors
+
+.. autodata:: PREPROCESSORS

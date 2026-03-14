@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.utils
+
+
+Registry
+========
+
+.. autoclass:: Registry
+    :members:

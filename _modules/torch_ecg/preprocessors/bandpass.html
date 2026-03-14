@@ -387,6 +387,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._preprocessors.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess_multi_lead_signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PREPROCESSORS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;BandPass&quot;</span><span class="p">,</span>
@@ -395,6 +396,8 @@
 
 <div class="viewcode-block" id="BandPass">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass">[docs]</a>
+<span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">)</span>
+<span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BandPass</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bandpass filtering preprocessor.</span>
 

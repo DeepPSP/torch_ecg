@@ -393,6 +393,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..model_configs.ecg_seq_lab_net</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_SEQ_LAB_NET_CONFIG</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_docstring</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.ecg_crnn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span><span class="p">,</span> <span class="n">ECG_CRNN_v1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODELS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;ECG_SEQ_LAB_NET&quot;</span><span class="p">,</span>
@@ -401,6 +402,7 @@
 
 <div class="viewcode-block" id="ECG_SEQ_LAB_NET">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.ECG_SEQ_LAB_NET.html#torch_ecg.models.ECG_SEQ_LAB_NET">[docs]</a>
+<span class="nd">@MODELS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ECG_SEQ_LAB_NET</span><span class="p">(</span><span class="n">ECG_CRNN</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SOTA model from CPSC2019 challenge.</span>
 

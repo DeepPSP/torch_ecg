@@ -54,7 +54,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/augmenters';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="AugmenterManager" href="generated/torch_ecg.augmenters.AugmenterManager.html" />
+    <link rel="next" title="torch_ecg.augmenters.AUGMENTERS" href="generated/torch_ecg.augmenters.AUGMENTERS.html" />
     <link rel="prev" title="torch_ecg.models.loss.setup_criterion" href="generated/torch_ecg.models.loss.setup_criterion.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -382,6 +382,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">torch_ecg.augmenters</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.AUGMENTERS.html">torch_ecg.augmenters.AUGMENTERS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.Augmenter.html">Augmenter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a></li>
@@ -504,6 +505,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.Registry.html">Registry</a></li>
 </ul>
 </details></li>
 </ul>
@@ -571,37 +573,40 @@
 <p>Augmenters are used to augment the training data.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager" title="torch_ecg.augmenters.AugmenterManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a>(*augs[, random])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.AUGMENTERS.html#torch_ecg.augmenters.AUGMENTERS" title="torch_ecg.augmenters.AUGMENTERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AUGMENTERS</span></code></a></p></td>
+<td><p>Registry for managing and building modules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager" title="torch_ecg.augmenters.AugmenterManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a>(*augs[, random])</p></td>
 <td><p>The <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> to manage the augmenters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter" title="torch_ecg.augmenters.Augmenter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Augmenter</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter" title="torch_ecg.augmenters.Augmenter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Augmenter</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Base class for augmenters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter" title="torch_ecg.augmenters.BaselineWanderAugmenter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code></a>(fs[, bw_fs, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter" title="torch_ecg.augmenters.BaselineWanderAugmenter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code></a>(fs[, bw_fs, ...])</p></td>
 <td><p>Generate baseline wander composed of sinusoidal and Gaussian noise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix" title="torch_ecg.augmenters.CutMix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CutMix</span></code></a>([fs, num_mix, alpha, beta, prob, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix" title="torch_ecg.augmenters.CutMix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CutMix</span></code></a>([fs, num_mix, alpha, beta, prob, inplace])</p></td>
 <td><p>CutMix augmentation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth" title="torch_ecg.augmenters.LabelSmooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LabelSmooth</span></code></a>([fs, smoothing, prob, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth" title="torch_ecg.augmenters.LabelSmooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LabelSmooth</span></code></a>([fs, smoothing, prob, inplace])</p></td>
 <td><p>Label smoothing augmentation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup" title="torch_ecg.augmenters.Mixup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mixup</span></code></a>([fs, alpha, beta, prob, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup" title="torch_ecg.augmenters.Mixup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mixup</span></code></a>([fs, alpha, beta, prob, inplace])</p></td>
 <td><p>Mixup augmentor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip" title="torch_ecg.augmenters.RandomFlip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomFlip</span></code></a>([fs, per_channel, prob, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip" title="torch_ecg.augmenters.RandomFlip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomFlip</span></code></a>([fs, per_channel, prob, inplace])</p></td>
 <td><p>Randomly flip the ECGs along the voltage axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking" title="torch_ecg.augmenters.RandomMasking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomMasking</span></code></a>(fs[, mask_value, mask_width, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking" title="torch_ecg.augmenters.RandomMasking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomMasking</span></code></a>(fs[, mask_value, mask_width, ...])</p></td>
 <td><p>Randomly mask ECGs with a probability.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize" title="torch_ecg.augmenters.RandomRenormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomRenormalize</span></code></a>([mean, std, per_channel, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize" title="torch_ecg.augmenters.RandomRenormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomRenormalize</span></code></a>([mean, std, per_channel, ...])</p></td>
 <td><p>Randomly re-normalize the ECG tensor, using the Z-score normalization method.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress" title="torch_ecg.augmenters.StretchCompress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StretchCompress</span></code></a>([ratio, prob, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress" title="torch_ecg.augmenters.StretchCompress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StretchCompress</span></code></a>([ratio, prob, inplace])</p></td>
 <td><p>Stretch-or-compress augmenter on ECG tensors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline" title="torch_ecg.augmenters.StretchCompressOffline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StretchCompressOffline</span></code></a>([ratio, prob, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline" title="torch_ecg.augmenters.StretchCompressOffline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StretchCompressOffline</span></code></a>([ratio, prob, ...])</p></td>
 <td><p>Offline stretch-or-compress augmenter.</p></td>
 </tr>
 </tbody>
@@ -629,11 +634,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="generated/torch_ecg.augmenters.AugmenterManager.html"
+       href="generated/torch_ecg.augmenters.AUGMENTERS.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">AugmenterManager</p>
+        <p class="prev-next-title">torch_ecg.augmenters.AUGMENTERS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

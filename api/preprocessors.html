@@ -386,6 +386,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="augmenters.html">torch_ecg.augmenters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.AUGMENTERS.html">torch_ecg.augmenters.AUGMENTERS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.Augmenter.html">Augmenter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a></li>
@@ -508,6 +509,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.utils.Registry.html">Registry</a></li>
 </ul>
 </details></li>
 </ul>
@@ -617,28 +619,31 @@
 <p>This module contains the preprocessors for signals of torch Tensor format.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager" title="torch_ecg.preprocessors.PreprocManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreprocManager</span></code></a>(*pps[, random, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.PREPROCESSORS.html#torch_ecg.preprocessors.PREPROCESSORS" title="torch_ecg.preprocessors.PREPROCESSORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PREPROCESSORS</span></code></a></p></td>
+<td><p>Registry for managing and building modules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager" title="torch_ecg.preprocessors.PreprocManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreprocManager</span></code></a>(*pps[, random, inplace])</p></td>
 <td><p>Manager class for preprocessors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass" title="torch_ecg.preprocessors.BandPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandPass</span></code></a>(fs[, lowcut, highcut, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass" title="torch_ecg.preprocessors.BandPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandPass</span></code></a>(fs[, lowcut, highcut, inplace])</p></td>
 <td><p>Bandpass filtering preprocessor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove" title="torch_ecg.preprocessors.BaselineRemove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a>(fs[, window1, window2, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove" title="torch_ecg.preprocessors.BaselineRemove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a>(fs[, window1, window2, inplace])</p></td>
 <td><p>Baseline removal using median filtering.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize" title="torch_ecg.preprocessors.Normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Normalize</span></code></a>([method, mean, std, per_channel, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize" title="torch_ecg.preprocessors.Normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Normalize</span></code></a>([method, mean, std, per_channel, ...])</p></td>
 <td><p>Normalization preprocessor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.MinMaxNormalize.html#torch_ecg.preprocessors.MinMaxNormalize" title="torch_ecg.preprocessors.MinMaxNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a>([per_channel, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.MinMaxNormalize.html#torch_ecg.preprocessors.MinMaxNormalize" title="torch_ecg.preprocessors.MinMaxNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a>([per_channel, inplace])</p></td>
 <td><p>Min-Max normalization.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.NaiveNormalize.html#torch_ecg.preprocessors.NaiveNormalize" title="torch_ecg.preprocessors.NaiveNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a>([mean, std, per_channel, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.NaiveNormalize.html#torch_ecg.preprocessors.NaiveNormalize" title="torch_ecg.preprocessors.NaiveNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a>([mean, std, per_channel, inplace])</p></td>
 <td><p>Naive normalization</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.ZScoreNormalize.html#torch_ecg.preprocessors.ZScoreNormalize" title="torch_ecg.preprocessors.ZScoreNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a>([mean, std, per_channel, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.ZScoreNormalize.html#torch_ecg.preprocessors.ZScoreNormalize" title="torch_ecg.preprocessors.ZScoreNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a>([mean, std, per_channel, ...])</p></td>
 <td><p>Z-score normalization.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample" title="torch_ecg.preprocessors.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([fs, dst_fs, siglen, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample" title="torch_ecg.preprocessors.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([fs, dst_fs, siglen, inplace])</p></td>
 <td><p>Resample the signal into fixed sampling frequency or length.</p></td>
 </tr>
 </tbody>

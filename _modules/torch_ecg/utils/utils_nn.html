@@ -1791,13 +1791,14 @@
             <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">extra_items</span> <span class="o">=</span> <span class="n">extra_items</span> <span class="ow">or</span> <span class="p">{}</span>
 
+        <span class="n">excluded_suffixes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.ckpt&quot;</span><span class="p">,</span> <span class="s2">&quot;.ckpt.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;.ckpt.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.pth.tar&quot;</span><span class="p">,</span> <span class="s2">&quot;.pt.tar&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">use_safetensors</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.pt&quot;</span><span class="p">]</span>
+            <span class="n">use_safetensors</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">excluded_suffixes</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
 
         <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">_train_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.pth&quot;</span><span class="p">,</span> <span class="s2">&quot;.pt&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">excluded_suffixes</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">use_safetensors</span><span class="p">:</span>
                 <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.safetensors&quot;</span><span class="p">)</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1831,7 +1832,7 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">use_safetensors</span><span class="p">:</span>  <span class="c1"># not single file</span>
-            <span class="c1"># save the model with safetensors into a zip file with the same name as `path`</span>
+            <span class="c1"># save the model with safetensors with the same name as `path`</span>
             <span class="c1"># `model_config` and `train_config` are saved as json files</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

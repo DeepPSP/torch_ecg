@@ -1,0 +1,6 @@
+﻿torch\_ecg.augmenters.AUGMENTERS
+================================
+
+.. currentmodule:: torch_ecg.augmenters
+
+.. autodata:: AUGMENTERS

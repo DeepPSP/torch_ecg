@@ -396,6 +396,7 @@
     <span class="n">compute_sequential_output_shape</span><span class="p">,</span>
     <span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;VGG16&quot;</span><span class="p">,</span>
@@ -510,6 +511,8 @@
 
 <div class="viewcode-block" id="VGG16">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.VGG16.html#torch_ecg.models.VGG16">[docs]</a>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;vgg16&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">VGG16</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;CNN feature extractor of VGG architecture.</span>
 

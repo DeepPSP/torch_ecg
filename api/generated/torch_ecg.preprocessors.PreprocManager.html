@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BandPass" href="torch_ecg.preprocessors.BandPass.html" />
-    <link rel="prev" title="torch_ecg._preprocessors.preprocess_single_lead_signal" href="torch_ecg._preprocessors.preprocess_single_lead_signal.html" />
+    <link rel="prev" title="torch_ecg.preprocessors.PREPROCESSORS" href="torch_ecg.preprocessors.PREPROCESSORS.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
@@ -386,6 +386,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../augmenters.html">torch_ecg.augmenters</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.AUGMENTERS.html">torch_ecg.augmenters.AUGMENTERS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.Augmenter.html">Augmenter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a></li>
@@ -508,6 +509,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.Registry.html">Registry</a></li>
 </ul>
 </details></li>
 </ul>
@@ -606,17 +608,16 @@
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.preprocessors.PreprocManager.add_">
-<span class="sig-name descname"><span class="pre">add_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><span class="pre">Module</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/preprocessors/preproc_manager.html#PreprocManager.add_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.preprocessors.PreprocManager.add_" title="Link to this definition">#</a></dt>
-<dd><p>Add a (custom) preprocessor to the manager.</p>
-<p>This method is preferred against directly manipulating
-the internal list of preprocessors via
-<code class="docutils literal notranslate"><span class="pre">PreprocManager.preprocessors.append(pp)</span></code>.</p>
+<span class="sig-name descname"><span class="pre">add_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><span class="pre">Module</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/preprocessors/preproc_manager.html#PreprocManager.add_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.preprocessors.PreprocManager.add_" title="Link to this definition">#</a></dt>
+<dd><p>Add a preprocessor to the manager.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pp</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><em>torch.nn.Module</em></a>) – The preprocessor to be added.</p></li>
+<li><p><strong>pp</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.10)"><em>torch.nn.Module</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – The preprocessor to be added.
+If it’s a string or a dict, it will be built using the registry.</p></li>
 <li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default -1</em>) – The position to insert the preprocessor.
 Should be &gt;= -1, with -1 being the indicator of the end.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Additional keyword arguments for building the preprocessor.</p></li>
 </ul>
 </dd>
 </dl>
@@ -692,12 +693,12 @@ better to be an <a class="reference external" href="https://docs.python.org/3/li
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torch_ecg._preprocessors.preprocess_single_lead_signal.html"
+       href="torch_ecg.preprocessors.PREPROCESSORS.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">torch_ecg._preprocessors.preprocess_single_lead_signal</p>
+        <p class="prev-next-title">torch_ecg.preprocessors.PREPROCESSORS</p>
       </div>
     </a>
     <a class="right-next"

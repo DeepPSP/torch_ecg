@@ -412,6 +412,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">..components.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOSSES</span>
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;WeightedBCELoss&quot;</span><span class="p">,</span>
     <span class="s2">&quot;BCEWithLogitsWithClassWeightLoss&quot;</span><span class="p">,</span>
@@ -482,6 +484,7 @@
 
 <div class="viewcode-block" id="WeightedBCELoss">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss">[docs]</a>
+<span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WeightedBCELoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Weighted Binary Cross Entropy Loss class.</span>
 
@@ -573,6 +576,7 @@
 
 <div class="viewcode-block" id="BCEWithLogitsWithClassWeightLoss">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss">[docs]</a>
+<span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BCEWithLogitsWithClassWeightLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class-weighted Binary Cross Entropy Loss class.</span>
 
@@ -618,6 +622,7 @@
 
 <div class="viewcode-block" id="MaskedBCEWithLogitsLoss">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss">[docs]</a>
+<span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MaskedBCEWithLogitsLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Masked Binary Cross Entropy Loss class.</span>
 
@@ -691,6 +696,7 @@
 
 <div class="viewcode-block" id="FocalLoss">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss">[docs]</a>
+<span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FocalLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">_WeightedLoss</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Focal loss class.</span>
 
@@ -816,6 +822,7 @@
 
 <div class="viewcode-block" id="AsymmetricLoss">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss">[docs]</a>
+<span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AsymmetricLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Asymmetric loss class.</span>
 
@@ -1059,17 +1066,9 @@
 <span class="sd">        The criterion (loss function).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;WeightedBCELoss&quot;</span><span class="p">:</span>
-        <span class="n">criterion</span> <span class="o">=</span> <span class="n">WeightedBCELoss</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;BCEWithLogitsWithClassWeightLoss&quot;</span><span class="p">:</span>
-        <span class="n">criterion</span> <span class="o">=</span> <span class="n">BCEWithLogitsWithClassWeightLoss</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;MaskedBCEWithLogitsLoss&quot;</span><span class="p">:</span>
-        <span class="n">criterion</span> <span class="o">=</span> <span class="n">MaskedBCEWithLogitsLoss</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;FocalLoss&quot;</span><span class="p">:</span>
-        <span class="n">criterion</span> <span class="o">=</span> <span class="n">FocalLoss</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;AsymmetricLoss&quot;</span><span class="p">:</span>
-        <span class="n">criterion</span> <span class="o">=</span> <span class="n">AsymmetricLoss</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;nn.&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">LOSSES</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">LOSSES</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;nn.&quot;</span><span class="p">):</span>
         <span class="n">criterion</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">__all__</span><span class="p">:</span>
         <span class="n">criterion</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

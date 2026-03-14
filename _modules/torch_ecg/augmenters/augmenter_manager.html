@@ -390,13 +390,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">default_class_repr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Augmenter</span><span class="p">,</span> <span class="n">_augmenter_forward_doc</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.baseline_wander</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaselineWanderAugmenter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.label_smooth</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelSmooth</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.mixup</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mixup</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.random_flip</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomFlip</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.random_masking</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomMasking</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.random_renormalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomRenormalize</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.stretch_compress</span><span class="w"> </span><span class="kn">import</span> <span class="n">StretchCompress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">AUGMENTERS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;AugmenterManager&quot;</span><span class="p">,</span>
@@ -448,84 +442,37 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">augs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Augmenter</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span> <span class="n">random</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">augs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">augs</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_baseline_wander</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the baseline wander augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the baseline wander augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BaselineWanderAugmenter</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_label_smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the label smooth augmenter to the manager.</span>
+<div class="viewcode-block" id="AugmenterManager.add_">
+<a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.add_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aug</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Augmenter</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an augmenter to the manager.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the label smooth augmenter.</span>
+<span class="sd">        aug : Augmenter or str or dict</span>
+<span class="sd">            The augmenter to be added.</span>
+<span class="sd">            If it&#39;s a string or a dict, it will be built using the registry.</span>
+<span class="sd">        pos : int, default -1</span>
+<span class="sd">            The position to insert the augmenter.</span>
+<span class="sd">            Should be &gt;= -1, with -1 being the indicator of the end.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional keyword arguments for building the augmenter.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LabelSmooth</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">aug</span> <span class="o">=</span> <span class="n">AUGMENTERS</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug</span><span class="p">,</span> <span class="n">Augmenter</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">a</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmenters</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Augmenter </span><span class="si">{</span><span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pos must be an integer &gt;= -1, but got </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aug</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">aug</span><span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_mixup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the mixup augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the mixup augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mixup</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_random_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the random flip augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the random flip augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RandomFlip</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_random_masking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the random masking augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the random masking augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RandomMasking</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_random_renormalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the random renormalize augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the random renormalize augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RandomRenormalize</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_stretch_compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the stretch compress augmenter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **config : dict</span>
-<span class="sd">            The configuration for the stretch compress augmenter.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StretchCompress</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
 
 <div class="viewcode-block" id="AugmenterManager.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.forward">[docs]</a>
@@ -554,7 +501,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">augmenters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Augmenter</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">augmenters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The list of augmenters in the manager.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span>
 
@@ -590,23 +537,24 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">am</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">random</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
-        <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;baseline_wander&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_baseline_wander</span><span class="p">,</span>
-            <span class="s2">&quot;label_smooth&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_label_smooth</span><span class="p">,</span>
-            <span class="s2">&quot;mixup&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_mixup</span><span class="p">,</span>
-            <span class="s2">&quot;random_flip&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_random_flip</span><span class="p">,</span>
-            <span class="s2">&quot;random_masking&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_random_masking</span><span class="p">,</span>
-            <span class="s2">&quot;random_renormalize&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_random_renormalize</span><span class="p">,</span>
-            <span class="s2">&quot;stretch_compress&quot;</span><span class="p">:</span> <span class="n">am</span><span class="o">.</span><span class="n">_add_stretch_compress</span><span class="p">,</span>
-        <span class="p">}</span>
         <span class="k">for</span> <span class="n">aug_name</span><span class="p">,</span> <span class="n">aug_config</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">aug_name</span> <span class="ow">in</span> <span class="p">[</span>
                 <span class="s2">&quot;fs&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;random&quot;</span><span class="p">,</span>
             <span class="p">]:</span>
                 <span class="k">continue</span>
-            <span class="k">elif</span> <span class="n">aug_name</span> <span class="ow">in</span> <span class="n">_mapping</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">_mapping</span><span class="p">[</span><span class="n">aug_name</span><span class="p">](</span><span class="n">fs</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">aug_config</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">aug_name</span> <span class="ow">in</span> <span class="n">AUGMENTERS</span> <span class="ow">or</span> <span class="n">aug_name</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">AUGMENTERS</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
+            <span class="p">]:</span>
+                <span class="k">if</span> <span class="n">aug_config</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aug_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="c1"># add default fs from config if not specified in aug_config</span>
+                    <span class="k">if</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aug_config</span> <span class="ow">and</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                        <span class="n">aug_config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span>
+                    <span class="n">am</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">aug_name</span><span class="p">,</span> <span class="o">**</span><span class="n">aug_config</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">am</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">aug_name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># just ignore the other items</span>
                 <span class="k">pass</span>
@@ -630,9 +578,10 @@
                 <span class="s2">&quot;The augmenters are applied in random order, &quot;</span> <span class="s2">&quot;rearranging the augmenters will not take effect.&quot;</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
+        <span class="c1"># TODO: use a more robust way to map names to classes</span>
         <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># built-in augmenters</span>
             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]):</span> <span class="n">k</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress,cutmix&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;BaselineWanderAugmenter&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline_wander&quot;</span><span class="p">})</span>
         <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
@@ -644,7 +593,9 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)),</span> <span class="s2">&quot;Duplicate augmenter names.&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="p">),</span> <span class="s2">&quot;Number of augmenters mismatch.&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">aug</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span></div>
+        <span class="n">augs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span><span class="p">)</span>
+        <span class="n">augs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">aug</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">aug</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_augmenters</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">augs</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

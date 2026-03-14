@@ -392,6 +392,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Augmenter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">AUGMENTERS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Mixup&quot;</span><span class="p">,</span>
@@ -400,6 +401,8 @@
 
 <div class="viewcode-block" id="Mixup">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup">[docs]</a>
+<span class="nd">@AUGMENTERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mixup&quot;</span><span class="p">)</span>
+<span class="nd">@AUGMENTERS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Mixup</span><span class="p">(</span><span class="n">Augmenter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixup augmentor.</span>
 

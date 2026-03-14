@@ -410,6 +410,7 @@
     <span class="n">compute_sequential_output_shape</span><span class="p">,</span>
     <span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODELS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;ECG_UNET&quot;</span><span class="p">,</span>
@@ -758,6 +759,7 @@
 
 <div class="viewcode-block" id="ECG_UNET">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET">[docs]</a>
+<span class="nd">@MODELS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ECG_UNET</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    U-Net for (multi-lead) ECG wave delineation.</span>

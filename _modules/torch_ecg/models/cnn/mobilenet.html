@@ -403,6 +403,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">...models._nets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Conv_Bn_Activation</span><span class="p">,</span> <span class="n">Initializers</span><span class="p">,</span> <span class="n">MultiConv</span><span class="p">,</span> <span class="n">make_attention_layer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CitationMixin</span><span class="p">,</span> <span class="n">add_docstring</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils.utils_nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">compute_sequential_output_shape</span><span class="p">,</span> <span class="n">compute_sequential_output_shape_docstring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;MobileNetV1&quot;</span><span class="p">,</span>
@@ -575,6 +576,9 @@
 
 <div class="viewcode-block" id="MobileNetV1">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MobileNetV1.html#torch_ecg.models.MobileNetV1">[docs]</a>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobilenet_v1&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobile_net_v1&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MobileNetV1</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MobileNet V1.</span>
 
@@ -1028,6 +1032,9 @@
 
 <div class="viewcode-block" id="MobileNetV2">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MobileNetV2.html#torch_ecg.models.MobileNetV2">[docs]</a>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobilenet_v2&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobile_net_v2&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MobileNetV2</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MobileNet V2.</span>
 
@@ -1465,6 +1472,9 @@
 
 <div class="viewcode-block" id="MobileNetV3">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MobileNetV3.html#torch_ecg.models.MobileNetV3">[docs]</a>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobilenet_v3&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mobile_net_v3&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MobileNetV3</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MobileNet V3.</span>
 

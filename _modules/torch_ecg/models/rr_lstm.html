@@ -404,6 +404,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..models._nets</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">ExtendedCRF</span><span class="p">,</span> <span class="n">GlobalContextBlock</span><span class="p">,</span> <span class="n">NonLocalBlock</span><span class="p">,</span> <span class="n">SEBlock</span><span class="p">,</span> <span class="n">SelfAttention</span><span class="p">,</span> <span class="n">StackedLSTM</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CitationMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODELS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;RR_LSTM&quot;</span><span class="p">,</span>
@@ -412,6 +413,7 @@
 
 <div class="viewcode-block" id="RR_LSTM">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.RR_LSTM.html#torch_ecg.models.RR_LSTM">[docs]</a>
+<span class="nd">@MODELS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RR_LSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LSTM model for RR time series classification or sequence labeling.</span>
 

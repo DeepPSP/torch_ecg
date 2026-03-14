@@ -386,6 +386,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_signal_t</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span> <span class="k">as</span> <span class="n">resample_t</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PREPROCESSORS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Resample&quot;</span><span class="p">,</span>
@@ -394,6 +395,8 @@
 
 <div class="viewcode-block" id="Resample">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample">[docs]</a>
+<span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;resample&quot;</span><span class="p">)</span>
+<span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Resample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resample the signal into fixed sampling frequency or length.</span>
 

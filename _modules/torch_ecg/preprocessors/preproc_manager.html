@@ -383,16 +383,13 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReprMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.bandpass</span><span class="w"> </span><span class="kn">import</span> <span class="n">BandPass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.baseline_remove</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaselineRemove</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normalize</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.resample</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resample</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PREPROCESSORS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;PreprocManager&quot;</span><span class="p">,</span>
@@ -442,67 +439,37 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pps</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_bandpass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a bandpass filter to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        config : dict</span>
-<span class="sd">            The configuration of the bandpass filter.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BandPass</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_baseline_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a median filter for baseline removal to the manager.</span>
+<div class="viewcode-block" id="PreprocManager.add_">
+<a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a preprocessor to the manager.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        config : dict</span>
-<span class="sd">            The configuration of the median filter.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BaselineRemove</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a normalizer to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        config : dict</span>
-<span class="sd">            The configuration of the normalizer.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
+<span class="sd">        pp : torch.nn.Module or str or dict</span>
+<span class="sd">            The preprocessor to be added.</span>
+<span class="sd">            If it&#39;s a string or a dict, it will be built using the registry.</span>
+<span class="sd">        pos : int, default -1</span>
+<span class="sd">            The position to insert the preprocessor.</span>
+<span class="sd">            Should be &gt;= -1, with -1 being the indicator of the end.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional keyword arguments for building the preprocessor.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Normalize</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="n">PREPROCESSORS</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">p</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Preprocessor </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pos must be an integer &gt;= -1, but got </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">pp</span><span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a resampler to the manager.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        config : dict</span>
-<span class="sd">            The configuration of the resampler.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Resample</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
 
 <div class="viewcode-block" id="PreprocManager.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward">[docs]</a>
@@ -551,20 +518,25 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ppm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">random</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">inplace</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inplace&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
-        <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;bandpass&quot;</span><span class="p">:</span> <span class="n">ppm</span><span class="o">.</span><span class="n">_add_bandpass</span><span class="p">,</span>
-            <span class="s2">&quot;baseline_remove&quot;</span><span class="p">:</span> <span class="n">ppm</span><span class="o">.</span><span class="n">_add_baseline_remove</span><span class="p">,</span>
-            <span class="s2">&quot;normalize&quot;</span><span class="p">:</span> <span class="n">ppm</span><span class="o">.</span><span class="n">_add_normalize</span><span class="p">,</span>
-            <span class="s2">&quot;resample&quot;</span><span class="p">:</span> <span class="n">ppm</span><span class="o">.</span><span class="n">_add_resample</span><span class="p">,</span>
-        <span class="p">}</span>
         <span class="k">for</span> <span class="n">pp_name</span><span class="p">,</span> <span class="n">pp_config</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="p">[</span>
                 <span class="s2">&quot;random&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;inplace&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fs&quot;</span><span class="p">,</span>
             <span class="p">]:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="n">_mapping</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">_mapping</span><span class="p">[</span><span class="n">pp_name</span><span class="p">](</span><span class="o">**</span><span class="n">pp_config</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="n">PREPROCESSORS</span> <span class="ow">or</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">PREPROCESSORS</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
+            <span class="p">]:</span>
+                <span class="k">if</span> <span class="n">pp_config</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="c1"># add default fs from config if not specified in pp_config</span>
+                    <span class="k">if</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pp_config</span> <span class="ow">and</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                        <span class="n">pp_config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span>
+                    <span class="n">ppm</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">pp_name</span><span class="p">,</span> <span class="o">**</span><span class="n">pp_config</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ppm</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">pp_name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># just ignore the other items</span>
                 <span class="k">pass</span>
@@ -597,6 +569,7 @@
                 <span class="s2">&quot;The preprocessors are applied in random order, &quot;</span> <span class="s2">&quot;rearranging the preprocessors will not take effect.&quot;</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
+        <span class="c1"># TODO: use a more robust way to map names to classes</span>
         <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># built-in preprocessors</span>
             <span class="s2">&quot;Resample&quot;</span><span class="p">:</span> <span class="s2">&quot;resample&quot;</span><span class="p">,</span>
             <span class="s2">&quot;BandPass&quot;</span><span class="p">:</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span>
@@ -611,40 +584,13 @@
                 <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="p">})</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)),</span> <span class="s2">&quot;Duplicate preprocessor names.&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">),</span> <span class="s2">&quot;Number of preprocessors mismatch.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span></div>
-
-
-<div class="viewcode-block" id="PreprocManager.add_">
-<a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a (custom) preprocessor to the manager.</span>
-
-<span class="sd">        This method is preferred against directly manipulating</span>
-<span class="sd">        the internal list of preprocessors via</span>
-<span class="sd">        ``PreprocManager.preprocessors.append(pp)``.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pp : torch.nn.Module</span>
-<span class="sd">            The preprocessor to be added.</span>
-<span class="sd">        pos : int, default -1</span>
-<span class="sd">            The position to insert the preprocessor.</span>
-<span class="sd">            Should be &gt;= -1, with -1 being the indicator of the end.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="n">p</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Preprocessor </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pos must be an integer &gt;= -1, but got </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">pp</span><span class="p">)</span></div>
+        <span class="n">pps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">)</span>
+        <span class="n">pps</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span>
 
     <span class="nd">@property</span>
