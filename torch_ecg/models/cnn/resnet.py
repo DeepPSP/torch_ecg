@@ -16,6 +16,7 @@ from ...cfg import CFG
 from ...models._nets import Activations, Conv_Bn_Activation, DownSample, SpaceToDepth, ZeroPadding, make_attention_layer
 from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 
 __all__ = [
     "ResNet",
@@ -625,6 +626,9 @@ class ResNetStem(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
+@BACKBONES.register(name="resnet")
+@BACKBONES.register(name="resnext")
+@BACKBONES.register()
 class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     """ResNet model.
 

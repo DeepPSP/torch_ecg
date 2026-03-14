@@ -17,6 +17,7 @@ from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample
 from ...utils.misc import CitationMixin, add_docstring, list_sum
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 
 __all__ = [
     "MultiScopicCNN",
@@ -351,6 +352,9 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         return self.__in_channels
 
 
+@BACKBONES.register(name="multi_scopic")
+@BACKBONES.register(name="multi_scopic_cnn")
+@BACKBONES.register()
 class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
     """CNN part of the SOTA model from CPSC2019 challenge (entry 0416).
 

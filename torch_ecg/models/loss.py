@@ -31,6 +31,8 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
+from ..components.registry import LOSSES
+
 __all__ = [
     "WeightedBCELoss",
     "BCEWithLogitsWithClassWeightLoss",
@@ -99,6 +101,7 @@ def weighted_binary_cross_entropy(
         return loss.sum()
 
 
+@LOSSES.register()
 class WeightedBCELoss(nn.Module):
     """Weighted Binary Cross Entropy Loss class.
 
@@ -184,6 +187,7 @@ class WeightedBCELoss(nn.Module):
         )
 
 
+@LOSSES.register()
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
     """Class-weighted Binary Cross Entropy Loss class.
 
@@ -223,6 +227,7 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         return loss
 
 
+@LOSSES.register()
 class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
     """Masked Binary Cross Entropy Loss class.
 
@@ -290,6 +295,7 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
         return loss
 
 
+@LOSSES.register()
 class FocalLoss(nn.modules.loss._WeightedLoss):
     """Focal loss class.
 
@@ -409,6 +415,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         return fl
 
 
+@LOSSES.register()
 class AsymmetricLoss(nn.Module):
     """Asymmetric loss class.
 
@@ -646,17 +653,9 @@ def setup_criterion(name: str, **kwargs: Any) -> nn.Module:
         The criterion (loss function).
 
     """
-    if name == "WeightedBCELoss":
-        criterion = WeightedBCELoss(**kwargs)
-    elif name == "BCEWithLogitsWithClassWeightLoss":
-        criterion = BCEWithLogitsWithClassWeightLoss(**kwargs)
-    elif name == "MaskedBCEWithLogitsLoss":
-        criterion = MaskedBCEWithLogitsLoss(**kwargs)
-    elif name == "FocalLoss":
-        criterion = FocalLoss(**kwargs)
-    elif name == "AsymmetricLoss":
-        criterion = AsymmetricLoss(**kwargs)
-    elif name.startswith("nn."):
+    if name in LOSSES:
+        return LOSSES.build(name, **kwargs)
+    if name.startswith("nn."):
         criterion = eval(name)(**kwargs)
     elif name in nn.modules.loss.__all__:
         criterion = getattr(nn, name)(**kwargs)

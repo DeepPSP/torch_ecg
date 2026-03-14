@@ -11,12 +11,15 @@ from torch import Tensor
 
 from ..cfg import DEFAULTS
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "Mixup",
 ]
 
 
+@AUGMENTERS.register(name="mixup")
+@AUGMENTERS.register()
 class Mixup(Augmenter):
     """Mixup augmentor.
 

@@ -9,12 +9,15 @@ import torch
 from torch import Tensor
 
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "RandomMasking",
 ]
 
 
+@AUGMENTERS.register(name="random_masking")
+@AUGMENTERS.register()
 class RandomMasking(Augmenter):
     """Randomly mask ECGs with a probability.
 

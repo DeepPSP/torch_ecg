@@ -15,6 +15,7 @@ Augmenters are used to augment the training data.
     :toctree: generated/
     :recursive:
 
+    AUGMENTERS
     AugmenterManager
     Augmenter
     BaselineWanderAugmenter
@@ -38,9 +39,11 @@ from .mixup import Mixup
 from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
+from .registry import AUGMENTERS
 from .stretch_compress import StretchCompress, StretchCompressOffline
 
 __all__ = [
+    "AUGMENTERS",
     "Augmenter",
     "BaselineWanderAugmenter",
     "CutMix",

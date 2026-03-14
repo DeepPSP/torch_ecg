@@ -11,12 +11,15 @@ from torch import Tensor
 
 from ..cfg import DEFAULTS
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "CutMix",
 ]
 
 
+@AUGMENTERS.register(name="cutmix")
+@AUGMENTERS.register()
 class CutMix(Augmenter):
     """CutMix augmentation.
 

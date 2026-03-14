@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [pycodestyle>=2.11.0]
-        args: [--max-line-length=128, '--exclude=./.*,build,dist', '--ignore=E501,W503,E203,F841,E231,W604,E226', --count, --statistics, --show-source]
+        args: [--max-line-length=128, '--exclude=./.*,build,dist', '--ignore=E501,W503,E203,F841,E231,W604,E226,E225', --count, --statistics, --show-source]
   - repo: https://github.com/pycqa/isort
     rev: 8.0.1
     hooks:

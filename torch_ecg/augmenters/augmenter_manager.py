@@ -9,13 +9,7 @@ from torch import Tensor
 
 from ..utils.misc import add_docstring, default_class_repr
 from .base import Augmenter, _augmenter_forward_doc
-from .baseline_wander import BaselineWanderAugmenter
-from .label_smooth import LabelSmooth
-from .mixup import Mixup
-from .random_flip import RandomFlip
-from .random_masking import RandomMasking
-from .random_renormalize import RandomRenormalize
-from .stretch_compress import StretchCompress
+from .registry import AUGMENTERS
 
 __all__ = [
     "AugmenterManager",
@@ -65,84 +59,34 @@ class AugmenterManager(torch.nn.Module):
     def __init__(self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False) -> None:
         super().__init__()
         self.random = random
-        self._augmenters = list(augs)
+        self._augmenters = torch.nn.ModuleList(list(augs))
 
-    def _add_baseline_wander(self, **config: dict) -> None:
-        """Add the baseline wander augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the baseline wander augmenter.
-
-        """
-        self._augmenters.append(BaselineWanderAugmenter(**config))
-
-    def _add_label_smooth(self, **config: dict) -> None:
-        """Add the label smooth augmenter to the manager.
+    def add_(self, aug: Union[Augmenter, str, dict], pos: int = -1, **kwargs: Any) -> None:
+        """Add an augmenter to the manager.
 
         Parameters
         ----------
-        **config : dict
-            The configuration for the label smooth augmenter.
+        aug : Augmenter or str or dict
+            The augmenter to be added.
+            If it's a string or a dict, it will be built using the registry.
+        pos : int, default -1
+            The position to insert the augmenter.
+            Should be >= -1, with -1 being the indicator of the end.
+        **kwargs : Any
+            Additional keyword arguments for building the augmenter.
 
         """
-        self._augmenters.append(LabelSmooth(**config))
-
-    def _add_mixup(self, **config: dict) -> None:
-        """Add the mixup augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the mixup augmenter.
-
-        """
-        self._augmenters.append(Mixup(**config))
-
-    def _add_random_flip(self, **config: dict) -> None:
-        """Add the random flip augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the random flip augmenter.
-
-        """
-        self._augmenters.append(RandomFlip(**config))
-
-    def _add_random_masking(self, **config: dict) -> None:
-        """Add the random masking augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the random masking augmenter.
-
-        """
-        self._augmenters.append(RandomMasking(**config))
-
-    def _add_random_renormalize(self, **config: dict) -> None:
-        """Add the random renormalize augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the random renormalize augmenter.
-
-        """
-        self._augmenters.append(RandomRenormalize(**config))
-
-    def _add_stretch_compress(self, **config: dict) -> None:
-        """Add the stretch compress augmenter to the manager.
-
-        Parameters
-        ----------
-        **config : dict
-            The configuration for the stretch compress augmenter.
-
-        """
-        self._augmenters.append(StretchCompress(**config))
+        if isinstance(aug, (str, dict)):
+            aug = AUGMENTERS.build(aug, **kwargs)
+        assert isinstance(aug, Augmenter)
+        assert aug.__class__.__name__ not in [
+            a.__class__.__name__ for a in self.augmenters
+        ], f"Augmenter {aug.__class__.__name__} already exists."
+        assert isinstance(pos, int) and pos >= -1, f"pos must be an integer >= -1, but got {pos}."
+        if pos == -1:
+            self._augmenters.append(aug)
+        else:
+            self._augmenters.insert(pos, aug)
 
     @add_docstring(
         _augmenter_forward_doc.replace(
@@ -168,7 +112,7 @@ class AugmenterManager(torch.nn.Module):
         return (sig, label, *extra_tensors)
 
     @property
-    def augmenters(self) -> List[Augmenter]:
+    def augmenters(self) -> torch.nn.ModuleList:
         """The list of augmenters in the manager."""
         return self._augmenters
 
@@ -199,23 +143,24 @@ class AugmenterManager(torch.nn.Module):
 
         """
         am = cls(random=config.get("random", False))
-        _mapping = {
-            "baseline_wander": am._add_baseline_wander,
-            "label_smooth": am._add_label_smooth,
-            "mixup": am._add_mixup,
-            "random_flip": am._add_random_flip,
-            "random_masking": am._add_random_masking,
-            "random_renormalize": am._add_random_renormalize,
-            "stretch_compress": am._add_stretch_compress,
-        }
         for aug_name, aug_config in config.items():
             if aug_name in [
                 "fs",
                 "random",
             ]:
                 continue
-            elif aug_name in _mapping and isinstance(aug_config, dict):
-                _mapping[aug_name](fs=config["fs"], **aug_config)
+            if aug_name in AUGMENTERS or aug_name in [
+                "".join([w.capitalize() for w in k.split("_")]) for k in AUGMENTERS.list_all()
+            ]:
+                if aug_config is False:
+                    continue
+                if isinstance(aug_config, dict):
+                    # add default fs from config if not specified in aug_config
+                    if "fs" not in aug_config and "fs" in config:
+                        aug_config["fs"] = config["fs"]
+                    am.add_(aug_name, **aug_config)
+                else:
+                    am.add_(aug_name)
             else:
                 # just ignore the other items
                 pass
@@ -236,9 +181,10 @@ class AugmenterManager(torch.nn.Module):
                 "The augmenters are applied in random order, " "rearranging the augmenters will not take effect.",
                 RuntimeWarning,
             )
+        # TODO: use a more robust way to map names to classes
         _mapping = {  # built-in augmenters
             "".join([w.capitalize() for w in k.split("_")]): k
-            for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
+            for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress,cutmix".split(",")
         }
         _mapping.update({"BaselineWanderAugmenter": "baseline_wander"})
         _mapping.update({v: k for k, v in _mapping.items()})
@@ -250,4 +196,6 @@ class AugmenterManager(torch.nn.Module):
         assert len(new_ordering) == len(set(new_ordering)), "Duplicate augmenter names."
         assert len(new_ordering) == len(self._augmenters), "Number of augmenters mismatch."
 
-        self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__class__.__name__]))
+        augs = list(self._augmenters)
+        augs.sort(key=lambda aug: new_ordering.index(_mapping[aug.__class__.__name__]))
+        self._augmenters = torch.nn.ModuleList(augs)

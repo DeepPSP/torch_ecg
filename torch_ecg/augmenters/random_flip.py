@@ -8,12 +8,15 @@ import torch
 from torch import Tensor
 
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "RandomFlip",
 ]
 
 
+@AUGMENTERS.register(name="random_flip")
+@AUGMENTERS.register()
 class RandomFlip(Augmenter):
     """Randomly flip the ECGs along the voltage axis.
 

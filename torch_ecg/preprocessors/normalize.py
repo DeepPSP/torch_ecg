@@ -6,6 +6,7 @@ from typing import Any, Iterable, Literal, Union
 import torch
 
 from ..utils.utils_signal_t import normalize as normalize_t
+from .registry import PREPROCESSORS
 
 __all__ = [
     "Normalize",
@@ -15,6 +16,8 @@ __all__ = [
 ]
 
 
+@PREPROCESSORS.register(name="normalize")
+@PREPROCESSORS.register()
 class Normalize(torch.nn.Module):
     """Normalization preprocessor.
 
@@ -107,6 +110,8 @@ class Normalize(torch.nn.Module):
         return sig
 
 
+@PREPROCESSORS.register(name="min_max_normalize")
+@PREPROCESSORS.register()
 class MinMaxNormalize(Normalize):
     """Min-Max normalization.
 
@@ -131,6 +136,8 @@ class MinMaxNormalize(Normalize):
         super().__init__(method="min-max", per_channel=per_channel, inplace=inplace, **kwargs)
 
 
+@PREPROCESSORS.register(name="naive_normalize")
+@PREPROCESSORS.register()
 class NaiveNormalize(Normalize):
     """Naive normalization
 
@@ -172,6 +179,8 @@ class NaiveNormalize(Normalize):
         )
 
 
+@PREPROCESSORS.register(name="z_score_normalize")
+@PREPROCESSORS.register()
 class ZScoreNormalize(Normalize):
     """Z-score normalization.
 

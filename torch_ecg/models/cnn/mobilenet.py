@@ -22,6 +22,7 @@ from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, Initializers, MultiConv, make_attention_layer
 from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 
 __all__ = [
     "MobileNetV1",
@@ -192,6 +193,9 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
+@BACKBONES.register(name="mobilenet_v1")
+@BACKBONES.register(name="mobile_net_v1")
+@BACKBONES.register()
 class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     """MobileNet V1.
 
@@ -639,6 +643,9 @@ class InvertedResidual(nn.Module, SizeMixin):
         return output_shape
 
 
+@BACKBONES.register(name="mobilenet_v2")
+@BACKBONES.register(name="mobile_net_v2")
+@BACKBONES.register()
 class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
     """MobileNet V2.
 
@@ -1070,6 +1077,9 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
+@BACKBONES.register(name="mobilenet_v3")
+@BACKBONES.register(name="mobile_net_v3")
+@BACKBONES.register()
 class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
     """MobileNet V3.
 

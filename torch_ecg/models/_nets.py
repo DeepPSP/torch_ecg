@@ -27,6 +27,7 @@ from ..utils.utils_nn import (
     compute_maxpool_output_shape,
     compute_receptive_field,
 )
+from .registry import ATTN_LAYERS
 
 __all__ = [
     "Initializers",
@@ -2457,6 +2458,9 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
         )
 
 
+@ATTN_LAYERS.register(name="self_attention")
+@ATTN_LAYERS.register(name="sa")
+@ATTN_LAYERS.register()
 class SelfAttention(nn.Module, SizeMixin):
     """Self attention layer.
 
@@ -2561,6 +2565,8 @@ class SelfAttention(nn.Module, SizeMixin):
         return output_shape
 
 
+@ATTN_LAYERS.register(name="attentive_pooling")
+@ATTN_LAYERS.register()
 class AttentivePooling(nn.Module, SizeMixin):
     """Attentive pooling layer.
 
@@ -2919,6 +2925,9 @@ class MLP(SeqLin):
         )
 
 
+@ATTN_LAYERS.register(name="non_local")
+@ATTN_LAYERS.register(name="nl")
+@ATTN_LAYERS.register()
 class NonLocalBlock(nn.Module, SizeMixin):
     """Non-local Attention Block.
 
@@ -3045,6 +3054,9 @@ class NonLocalBlock(nn.Module, SizeMixin):
         return self.__in_channels
 
 
+@ATTN_LAYERS.register(name="se_block")
+@ATTN_LAYERS.register(name="se")
+@ATTN_LAYERS.register()
 class SEBlock(nn.Module, SizeMixin):
     """Squeeze-and-Excitation Block.
 
@@ -3183,6 +3195,9 @@ class SKBlock(nn.Module, SizeMixin):
         raise NotImplementedError
 
 
+@ATTN_LAYERS.register(name="global_context")
+@ATTN_LAYERS.register(name="gc")
+@ATTN_LAYERS.register()
 class GlobalContextBlock(nn.Module, SizeMixin):
     """Global Context Block.
 
@@ -3345,6 +3360,9 @@ class BAMBlock(nn.Module, SizeMixin):
         raise NotImplementedError
 
 
+@ATTN_LAYERS.register(name="cbam_block")
+@ATTN_LAYERS.register(name="cbam")
+@ATTN_LAYERS.register()
 class CBAMBlock(nn.Module, SizeMixin):
     """Convolutional Block Attention Module (ECCV2018).
 

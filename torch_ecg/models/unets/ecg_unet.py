@@ -29,6 +29,7 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
+from ..registry import MODELS
 
 __all__ = [
     "ECG_UNET",
@@ -375,6 +376,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
         return output_shape
 
 
+@MODELS.register()
 class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """
     U-Net for (multi-lead) ECG wave delineation.

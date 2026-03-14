@@ -156,6 +156,7 @@ Miscellaneous
     timeout
     np_topk
     select_k
+    Registry
 
 """
 
@@ -186,6 +187,7 @@ from .misc import (
     str2bool,
     timeout,
 )
+from .registry import Registry
 from .utils_data import (
     ECGWaveForm,
     ECGWaveFormNames,
@@ -277,6 +279,7 @@ __all__ = [
     "make_serializable",
     "np_topk",
     "select_k",
+    "Registry",
     "get_mask",
     "class_weight_to_sample_weight",
     "ensure_lead_fmt",

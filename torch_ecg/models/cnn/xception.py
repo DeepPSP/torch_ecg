@@ -16,6 +16,7 @@ from ...cfg import CFG
 from ...models._nets import DownSample, MultiConv
 from ...utils.misc import CitationMixin, add_docstring
 from ...utils.utils_nn import SizeMixin, compute_sequential_output_shape, compute_sequential_output_shape_docstring
+from ..registry import BACKBONES
 
 __all__ = [
     "Xception",
@@ -805,6 +806,8 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         return output_shape
 
 
+@BACKBONES.register(name="xception")
+@BACKBONES.register()
 class Xception(nn.Sequential, SizeMixin, CitationMixin):
     """Xception model.
 

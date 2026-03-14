@@ -15,6 +15,7 @@ This module contains the preprocessors for signals of torch Tensor format.
     :toctree: generated/
     :recursive:
 
+    PREPROCESSORS
     PreprocManager
     BandPass
     BaselineRemove
@@ -30,9 +31,11 @@ from .bandpass import BandPass
 from .baseline_remove import BaselineRemove
 from .normalize import MinMaxNormalize, NaiveNormalize, Normalize, ZScoreNormalize
 from .preproc_manager import PreprocManager
+from .registry import PREPROCESSORS
 from .resample import Resample
 
 __all__ = [
+    "PREPROCESSORS",
     "PreprocManager",
     "BandPass",
     "BaselineRemove",

@@ -9,12 +9,16 @@ from einops.layers.torch import Rearrange
 
 from ...utils.misc import get_kwargs
 from ...utils.utils_nn import SizeMixin
+from ..registry import ATTN_LAYERS
 
 __all__ = [
     "Transformer",
 ]
 
 
+@ATTN_LAYERS.register(name="transformer")
+@ATTN_LAYERS.register(name="transformer_encoder")
+@ATTN_LAYERS.register()
 class Transformer(nn.Module, SizeMixin):
     """Transformer feature extractor.
 

@@ -23,12 +23,14 @@ from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..models._nets import MLP, ExtendedCRF, GlobalContextBlock, NonLocalBlock, SEBlock, SelfAttention, StackedLSTM
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
+from .registry import MODELS
 
 __all__ = [
     "RR_LSTM",
 ]
 
 
+@MODELS.register()
 class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """LSTM model for RR time series classification or sequence labeling.
 

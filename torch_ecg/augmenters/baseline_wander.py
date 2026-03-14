@@ -13,12 +13,15 @@ from torch import Tensor
 from ..cfg import DEFAULTS
 from ..utils.utils_signal import get_ampl
 from .base import Augmenter
+from .registry import AUGMENTERS
 
 __all__ = [
     "BaselineWanderAugmenter",
 ]
 
 
+@AUGMENTERS.register(name="baseline_wander")
+@AUGMENTERS.register()
 class BaselineWanderAugmenter(Augmenter):
     """Generate baseline wander composed of
     sinusoidal and Gaussian noise.
