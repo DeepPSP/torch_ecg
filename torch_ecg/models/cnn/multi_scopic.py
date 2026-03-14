@@ -480,6 +480,44 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         output_shape = (batch_size, out_channels, _seq_len)
         return output_shape
 
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        Returns
+        -------
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        """
+        return self.forward(input)
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features.
+
+        Parameters
+        ----------
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
+
+        Returns
+        -------
+        output_shape : sequence
+            Output shape of the features.
+
+        """
+        return self.compute_output_shape(seq_len, batch_size)
+
     def assign_weights_lead_wise(self, other: "MultiScopicCNN", indices: Sequence[int]) -> None:
         """Assign weights to the `other` :class:`MultiScopicCNN`
         module in the lead-wise manner

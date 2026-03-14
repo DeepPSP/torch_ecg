@@ -414,6 +414,44 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
             _, _, _seq_len = output_shape
         return output_shape
 
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        Returns
+        -------
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        """
+        return self.forward(input)
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features.
+
+        Parameters
+        ----------
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
+
+        Returns
+        -------
+        output_shape : sequence
+            Output shape of the features.
+
+        """
+        return self.compute_output_shape(seq_len, batch_size)
+
     @property
     def in_channels(self) -> int:
         return self.__in_channels
@@ -828,6 +866,44 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
     ) -> Sequence[Union[int, None]]:
         """Compute the output shape of the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
+
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        Returns
+        -------
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        """
+        return self.forward(input)
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features.
+
+        Parameters
+        ----------
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
+
+        Returns
+        -------
+        output_shape : sequence
+            Output shape of the features.
+
+        """
+        return self.compute_output_shape(seq_len, batch_size)
 
     @property
     def in_channels(self) -> int:
@@ -1252,6 +1328,44 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
     ) -> Sequence[Union[int, None]]:
         """Compute the output shape of the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
+
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        Returns
+        -------
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``.
+
+        """
+        return self.forward(input)
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features.
+
+        Parameters
+        ----------
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
+
+        Returns
+        -------
+        output_shape : sequence
+            Output shape of the features.
+
+        """
+        return self.compute_output_shape(seq_len, batch_size)
 
     @property
     def in_channels(self) -> int:
