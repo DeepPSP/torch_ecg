@@ -1073,9 +1073,7 @@ class SizeMixin(object):
     def device_(self) -> str:
         return str(self.device)
 
-    def compute_features_output_shape(
-        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
-    ) -> Sequence[Union[int, None]]:
+    def compute_features_output_shape(self, *args: Any, **kwargs: Any) -> Sequence[Union[int, None]]:
         """Compute the output shape of the features.
 
         By default, this is the same as the output shape of the model.
@@ -1084,10 +1082,10 @@ class SizeMixin(object):
 
         Parameters
         ----------
-        seq_len : int, optional
-            Length of the input signal tensor.
-        batch_size : int, optional
-            Batch size of the input signal tensor.
+        *args : Any
+            Positional arguments passed to `compute_output_shape`.
+        **kwargs : Any
+            Keyword arguments passed to `compute_output_shape`.
 
         Returns
         -------
@@ -1095,7 +1093,7 @@ class SizeMixin(object):
             Output shape of the features.
 
         """
-        return self.compute_output_shape(seq_len, batch_size)
+        return self.compute_output_shape(*args, **kwargs)
 
 
 def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
