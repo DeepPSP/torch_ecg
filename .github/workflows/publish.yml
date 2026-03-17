@@ -87,9 +87,39 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Changelog
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v4
+        uses: mikepenz/release-changelog-builder-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          configurationJson: |
+            {
+              "template": "# Changelog\n\n{{CHANGELOG}}\n\n<details>\n<summary>📦 Other changes</summary>\n\n{{UNCATEGORIZED}}\n\n</details>",
+              "categories": [
+                {
+                  "title": "🚀 Features",
+                  "labels": ["feature","enhancement"]
+                },
+                {
+                  "title": "🐛 Bug Fixes",
+                  "labels": ["bug","fix"]
+                },
+                {
+                  "title": "📚 Documentation",
+                  "labels": ["documentation","docs"]
+                },
+                {
+                  "title": "⬆️ Dependencies",
+                  "labels": ["dependencies"]
+                },
+                {
+                  "title": "🧰 Maintenance",
+                  "labels": ["chore","ci"]
+                }
+              ],
+              "exclude_labels": [
+                "pre-commit"
+              ]
+            }
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
