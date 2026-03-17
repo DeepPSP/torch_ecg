@@ -158,6 +158,10 @@ omit = [
     "torch_ecg/models/grad_cam.py",
     # temporarily ignore torch_ecg/ssl since it's not implemented
     "torch_ecg/ssl/*",
+    # temporarily ignore models that are not implemented completely
+    "torch_ecg/models/cnn/darknet.py",
+    "torch_ecg/models/cnn/efficientnet.py",
+    "torch_ecg/models/cnn/ho_resnet.py",
 ]
 exclude_also = [
     "raise NotImplementedError",
