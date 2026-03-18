@@ -26,6 +26,26 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     open-pull-requests-limit: 5
+  - package-ecosystem: "pip"
+    # Documentation-specific Python dependencies are defined in `docs/requirements.txt`.
+    directory: "/docs" # Location of docs Python package manifests
+    schedule:
+      interval: "weekly"
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "pip"
+    # Test-specific Python dependencies are defined in `test/requirements.txt`.
+    directory: "/test" # Location of test Python package manifests
+    schedule:
+      interval: "weekly"
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 5
   - package-ecosystem: "devcontainers"
     directory: "/.devcontainer"
     schedule:
