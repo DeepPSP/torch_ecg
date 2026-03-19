@@ -534,14 +534,21 @@ def baseline_removal(
     ori_shape = sig.shape
     # Ensure 3D (batch, leads, siglen)
     sig = sig.view(-1, ori_shape[-2], ori_shape[-1])
+    siglen = ori_shape[-1]
 
     baseline = sig
     for window in [window1, window2]:
         if window is None:
             continue
         kernel_size = int(round(window * fs))
-        if kernel_size % 2 == 0:
-            kernel_size += 1
+        # Ensure kernel_size is within [1, siglen]
+        if kernel_size < 1:
+            kernel_size = 1
+        if kernel_size > siglen:
+            kernel_size = siglen
+        # Make kernel_size odd when possible without going below 1
+        if kernel_size % 2 == 0 and kernel_size > 1:
+            kernel_size -= 1
         padding = kernel_size // 2
         # Use avg_pool1d for fast sliding average
         baseline = torch.nn.functional.avg_pool1d(
