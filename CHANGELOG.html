@@ -396,10 +396,19 @@ Versioning</a>.</p>
 <h2><a class="reference external" href="https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Implement a generic <cite>Registry</cite> class and establish registries for backbones, models,
+attention layers, preprocessors, augmenters, optimizers, schedulers, and losses.</p></li>
+<li><p>Add <cite>forward_features</cite> and <cite>compute_features_output_shape</cite> methods to all CNN
+backbones to provide a standardized API for SSL and feature extraction.</p></li>
+</ul>
 </section>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Refactor <cite>ECG_CRNN</cite>, <cite>PreprocManager</cite>, <cite>AugmenterManager</cite>, and <cite>BaseTrainer</cite> to
+utilize the new registry system for dynamic component construction and decoupling.</p></li>
+<li><p>Enhance <cite>SizeMixin</cite> to support static shape inference for feature maps.</p></li>
 <li><p>Make the function <cite>remove_spikes_naive</cite> in <cite>torch_ecg.utils.utils_signal</cite>
 support 2D and 3D input signals.</p></li>
 <li><p>Use <cite>save_file</cite> and <cite>load_file</cite> from the <cite>safetensors</cite> package for saving
@@ -420,6 +429,13 @@ class in <cite>torch_ecg.utils.utils_nn</cite>.</p></li>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Robustly handle dimension inference and initialization in <cite>ECG_CRNN</cite> models,
+especially for cases with <cite>None</cite> or <cite>Identity</cite> modules.</p></li>
+<li><p>Address several compatibility issues for Python 3.13, including docstring
+indentation and <cite>NaN</cite> comparisons in dataclasses.</p></li>
+<li><p>Improve error handling and encoding robustness in <cite>CitationMixin</cite> when
+reading cache files.</p></li>
+<li><p>Resolve CodeQL warnings regarding incomplete URL substring sanitization in tests.</p></li>
 <li><p>Correctly update the <cite>_df_metadata</cite> attribute of the <cite>PTBXL</cite> database reader
 classes after filtering records.</p></li>
 <li><p>Enhance the <cite>save</cite> method of the <cite>torch_ecg.utils.utils_nn.CkptMixin</cite> class:
