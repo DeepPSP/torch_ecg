@@ -162,3 +162,5 @@ log
 *.safetensors
 
 tmp*
+
+.github/copilot-instructions.md

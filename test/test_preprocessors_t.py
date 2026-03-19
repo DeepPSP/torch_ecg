@@ -1,5 +1,6 @@
 """ """
 
+import numpy as np
 import pytest
 import torch
 
@@ -16,6 +17,7 @@ from torch_ecg.preprocessors import (
 )
 
 test_sig = torch.randn(2, 12, 8000)
+test_sig_np = test_sig.cpu().numpy()
 
 
 class DummyPreProcessor(torch.nn.Module):
@@ -40,8 +42,15 @@ def test_preproc_manager() -> None:
     ppm.add_(Normalize(method="min-max"))
     ppm.add_(Resample(fs=300, dst_fs=500), pos=0)
 
+    # Test with torch.Tensor
     sig = test_sig.clone()
     sig = ppm(sig)
+    assert isinstance(sig, torch.Tensor)
+
+    # Test with np.ndarray
+    sig_np = test_sig_np.copy()
+    sig_np = ppm(sig_np)
+    assert isinstance(sig_np, np.ndarray)
 
     config = CFG(
         random=False,
@@ -108,8 +117,14 @@ def test_preproc_manager() -> None:
 
 def test_bandpass() -> None:
     bp = BandPass(fs=500)
+    # Tensor
     sig = test_sig.clone()
     sig = bp(sig)
+    assert isinstance(sig, torch.Tensor)
+    # ndarray
+    sig_np = test_sig_np.copy()
+    sig_np = bp(sig_np)
+    assert isinstance(sig_np, np.ndarray)
 
     bp = BandPass(fs=500, lowcut=0, highcut=40)
     sig = test_sig.clone()
@@ -124,8 +139,14 @@ def test_bandpass() -> None:
 
 def test_baseline_remove() -> None:
     br = BaselineRemove(fs=500, inplace=False)
+    # Tensor
     sig = test_sig.clone()
     sig = br(sig)
+    assert isinstance(sig, torch.Tensor)
+    # ndarray
+    sig_np = test_sig_np.copy()
+    sig_np = br(sig_np)
+    assert isinstance(sig_np, np.ndarray)
 
     br = BaselineRemove(fs=500, window1=0.3, window2=0.7)
     sig = test_sig.clone()
@@ -139,8 +160,14 @@ def test_baseline_remove() -> None:
 
 def test_normalize() -> None:
     norm = Normalize(method="min-max", inplace=False)
+    # Tensor
     sig = test_sig.clone()
     sig = norm(sig)
+    assert isinstance(sig, torch.Tensor)
+    # ndarray
+    sig_np = test_sig_np.copy()
+    sig_np = norm(sig_np)
+    assert isinstance(sig_np, np.ndarray)
 
     norm = Normalize(method="z-score")
     sig = test_sig.clone()
@@ -159,3 +186,17 @@ def test_normalize() -> None:
     sig = norm(sig)
 
     del norm, sig
+
+
+def test_resample() -> None:
+    rsmp = Resample(fs=500, dst_fs=300)
+    # Tensor
+    sig = test_sig.clone()
+    sig = rsmp(sig)
+    assert isinstance(sig, torch.Tensor)
+    # ndarray
+    sig_np = test_sig_np.copy()
+    sig_np = rsmp(sig_np)
+    assert isinstance(sig_np, np.ndarray)
+
+    del rsmp, sig
