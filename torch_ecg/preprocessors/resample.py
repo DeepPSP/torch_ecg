@@ -73,7 +73,12 @@ class Resample(torch.nn.Module):
         Returns
         -------
         numpy.ndarray or torch.Tensor
-            The resampled signal, of same type as `sig`.
+            The resampled signal.
+
+            * If `sig` is a :class:`torch.Tensor`, the output is a tensor.
+            * If `sig` is a :class:`numpy.ndarray`, the output is a NumPy array
+              with floating dtype. When the input dtype is floating, the same
+              floating dtype is preserved; otherwise, ``float32`` is used.
 
         """
         if isinstance(sig, torch.Tensor):
@@ -93,4 +98,7 @@ class Resample(torch.nn.Module):
     def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
         _sig = torch.as_tensor(sig, dtype=torch.float32)
         _sig = self._forward_torch(_sig)
-        return _sig.cpu().numpy().astype(sig.dtype)
+        _out = _sig.cpu().numpy()
+        if np.issubdtype(sig.dtype, np.floating):
+            return _out.astype(sig.dtype)
+        return _out
