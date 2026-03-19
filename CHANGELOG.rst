@@ -34,6 +34,8 @@ Changed
   `torch_ecg.utils.download` module.
 - Add length verification in the `http_get` function in
   `torch_ecg.utils.download` module.
+- Enhance the pytorch `preprocessors` module: all preprocessors now have
+  pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
 
 Deprecated
 ~~~~~~~~~~

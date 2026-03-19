@@ -12,6 +12,8 @@ import torch
 __all__ = [
     "normalize",
     "resample",
+    "bandpass_filter",
+    "baseline_removal",
 ]
 
 
@@ -448,3 +450,104 @@ class Spectrogram(torch.nn.Module):
             self.onesided,
             self.return_complex,
         )
+
+
+def bandpass_filter(
+    sig: torch.Tensor,
+    fs: Real,
+    lowcut: Optional[Real] = None,
+    highcut: Optional[Real] = None,
+) -> torch.Tensor:
+    """Zero-phase bandpass filter using FFT.
+
+    Parameters
+    ----------
+    sig : torch.Tensor
+        Signal to be filtered, assumed to have shape ``(..., n_leads, siglen)``.
+    fs : numbers.Real
+        Sampling frequency of the signal.
+    lowcut : numbers.Real, optional
+        Low cutoff frequency.
+    highcut : numbers.Real, optional
+        High cutoff frequency.
+
+    Returns
+    -------
+    torch.Tensor
+        The filtered signal.
+
+    """
+    if lowcut is None and highcut is None:
+        return sig
+
+    n = sig.shape[-1]
+    # frequency bins
+    freqs = torch.fft.rfftfreq(n, d=1 / fs, device=sig.device)
+    # mask for bandpass
+    mask = torch.ones_like(freqs, dtype=sig.dtype)
+    if lowcut is not None:
+        mask[freqs < lowcut] = 0
+    if highcut is not None:
+        mask[freqs > highcut] = 0
+
+    # perform FFT
+    sig_fft = torch.fft.rfft(sig, dim=-1)
+    # apply mask
+    sig_fft = sig_fft * mask
+    # perform inverse FFT
+    sig_filtered = torch.fft.irfft(sig_fft, n=n, dim=-1)
+
+    return sig_filtered
+
+
+def baseline_removal(
+    sig: torch.Tensor,
+    fs: Real,
+    window1: Optional[Real] = 0.2,
+    window2: Optional[Real] = 0.6,
+) -> torch.Tensor:
+    """Remove baseline wander using sliding average (median filter alternative).
+
+    This is an implementation of the baseline removal method using two
+    sliding average windows, which is a fast alternative to median filtering.
+
+    Parameters
+    ----------
+    sig : torch.Tensor
+        Signal to be processed, assumed to have shape ``(..., n_leads, siglen)``.
+    fs : numbers.Real
+        Sampling frequency of the signal.
+    window1 : numbers.Real, default 0.2
+        The first window size in seconds.
+    window2 : numbers.Real, default 0.6
+        The second window size in seconds.
+
+    Returns
+    -------
+    torch.Tensor
+        The signal with baseline wander removed.
+
+    """
+    if window1 is None and window2 is None:
+        return sig
+
+    ori_shape = sig.shape
+    # Ensure 3D (batch, leads, siglen)
+    sig = sig.view(-1, ori_shape[-2], ori_shape[-1])
+
+    baseline = sig
+    for window in [window1, window2]:
+        if window is None:
+            continue
+        kernel_size = int(round(window * fs))
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+        padding = kernel_size // 2
+        # Use avg_pool1d for fast sliding average
+        baseline = torch.nn.functional.avg_pool1d(
+            torch.nn.functional.pad(baseline, (padding, padding), mode="reflect"),
+            kernel_size=kernel_size,
+            stride=1,
+        )
+
+    return (sig - baseline).view(ori_shape)
