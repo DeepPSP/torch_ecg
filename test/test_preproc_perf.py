@@ -79,7 +79,6 @@ def test_preproc_performance():
     seq_len = 5000
     fs = 500
     sig_torch = generate_test_signal(batch_size, n_leads, seq_len, fs).to(DEVICE)
-    sig_np = sig_torch.cpu().numpy()
 
     bp = BandPass(fs=fs, lowcut=0.5, highcut=45).to(DEVICE)
     br = BaselineRemove(fs=fs).to(DEVICE)
