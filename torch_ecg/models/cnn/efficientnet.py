@@ -9,16 +9,12 @@ References
 
 """
 
-from typing import List
+from typing import List, Optional, Sequence, Union
 
-from torch import nn
+from torch import Tensor, nn
 
 from ...models._nets import Conv_Bn_Activation, DownSample, GlobalContextBlock, NonLocalBlock, SEBlock  # noqa: F401
 from ...utils import CitationMixin, SizeMixin
-
-__all__ = [
-    "EfficientNet",
-]
 
 
 class EfficientNet(nn.Module, SizeMixin, CitationMixin):
@@ -38,10 +34,22 @@ class EfficientNet(nn.Module, SizeMixin, CitationMixin):
         super().__init__()
         raise NotImplementedError
 
-    def forward(self):
+    def forward(self, input: Tensor) -> Tensor:
         raise NotImplementedError
 
-    def compute_output_shape(self):
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        raise NotImplementedError
+
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features."""
+        raise NotImplementedError
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features."""
         raise NotImplementedError
 
     @property
@@ -67,8 +75,20 @@ class EfficientNetV2(nn.Module, SizeMixin):
         super().__init__()
         raise NotImplementedError
 
-    def forward(self):
+    def forward(self, input: Tensor) -> Tensor:
         raise NotImplementedError
 
-    def compute_output_shape(self):
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        raise NotImplementedError
+
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features."""
+        raise NotImplementedError
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features."""
         raise NotImplementedError

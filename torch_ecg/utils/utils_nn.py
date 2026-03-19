@@ -1073,6 +1073,28 @@ class SizeMixin(object):
     def device_(self) -> str:
         return str(self.device)
 
+    def compute_features_output_shape(self, *args: Any, **kwargs: Any) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features.
+
+        By default, this is the same as the output shape of the model.
+        For backbones with pooling and classification heads, this should be
+        overridden to return the shape of the features before global pooling.
+
+        Parameters
+        ----------
+        *args : Any
+            Positional arguments passed to `compute_output_shape`.
+        **kwargs : Any
+            Keyword arguments passed to `compute_output_shape`.
+
+        Returns
+        -------
+        output_shape : sequence
+            Output shape of the features.
+
+        """
+        return self.compute_output_shape(*args, **kwargs)
+
 
 def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
     """Make a dictionary or a dictionary-like object safe for serialization.

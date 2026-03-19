@@ -10,19 +10,15 @@ References
 5. Wang, C. Y., Bochkovskiy, A., & Liao, H. Y. M. (2020). Scaled-YOLOv4: Scaling Cross Stage Partial Network. arXiv preprint arXiv:2011.08036.
 """
 
-from typing import List
+from typing import List, Optional, Sequence, Union
 
-from torch import nn
+from torch import Tensor, nn
 
 from ...models._nets import Conv_Bn_Activation, DownSample, GlobalContextBlock, NonLocalBlock, SEBlock  # noqa: F401
 from ...utils import CitationMixin, SizeMixin
 
-__all__ = [
-    "DarkNet",
-]
 
-
-class DarkNet(nn.Sequential, SizeMixin, CitationMixin):
+class DarkNet(SizeMixin, nn.Sequential, CitationMixin):
     """ """
 
     __name__ = "DarkNet"
@@ -30,6 +26,22 @@ class DarkNet(nn.Sequential, SizeMixin, CitationMixin):
     def __init__(self, in_channels: int, **config) -> None:
         """ """
         super().__init__()
+        raise NotImplementedError
+
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the model."""
+        raise NotImplementedError
+
+    def forward_features(self, input: Tensor) -> Tensor:
+        """Forward pass of the model to extract features."""
+        raise NotImplementedError
+
+    def compute_features_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """Compute the output shape of the features."""
         raise NotImplementedError
 
     @property

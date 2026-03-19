@@ -14,9 +14,17 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 Added
 ~~~~~
 
+- Implement a generic `Registry` class and establish registries for backbones, models,
+  attention layers, preprocessors, augmenters, optimizers, schedulers, and losses.
+- Add `forward_features` and `compute_features_output_shape` methods to all CNN
+  backbones to provide a standardized API for SSL and feature extraction.
+
 Changed
 ~~~~~~~
 
+- Refactor `ECG_CRNN`, `PreprocManager`, `AugmenterManager`, and `BaseTrainer` to
+  utilize the new registry system for dynamic component construction and decoupling.
+- Enhance `SizeMixin` to support static shape inference for feature maps.
 - Make the function `remove_spikes_naive` in `torch_ecg.utils.utils_signal`
   support 2D and 3D input signals.
 - Use `save_file` and `load_file` from the `safetensors` package for saving
@@ -36,6 +44,13 @@ Removed
 Fixed
 ~~~~~
 
+- Robustly handle dimension inference and initialization in `ECG_CRNN` models,
+  especially for cases with `None` or `Identity` modules.
+- Address several compatibility issues for Python 3.13, including docstring
+  indentation and `NaN` comparisons in dataclasses.
+- Improve error handling and encoding robustness in `CitationMixin` when
+  reading cache files.
+- Resolve CodeQL warnings regarding incomplete URL substring sanitization in tests.
 - Correctly update the `_df_metadata` attribute of the `PTBXL` database reader
   classes after filtering records.
 - Enhance the `save` method of the `torch_ecg.utils.utils_nn.CkptMixin` class:
