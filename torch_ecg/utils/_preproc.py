@@ -20,8 +20,7 @@ References:
 
 import multiprocessing as mp
 from collections import Counter
-from numbers import Real
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 
@@ -64,10 +63,10 @@ PreprocCfg.beat_winR = 250
 
 def preprocess_multi_lead_signal(
     raw_sig: NDArray,
-    fs: Real,
+    fs: Union[int, float],
     sig_fmt: str = "channel_first",
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
 ) -> Dict[str, NDArray]:
@@ -79,18 +78,18 @@ def preprocess_multi_lead_signal(
     ----------
     raw_sig: ndarray,
         the raw ECG signal, with units in mV
-    fs: numbers.Real,
+    fs: int or float,
         sampling frequency of `raw_sig`
     sig_fmt: str, default "channel_first",
         format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first", original)
-    bl_win: list (of 2 numbers.Real), optional,
+    bl_win: list (of 2 int or float), optional,
         window (units in second) of baseline removal using `median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is [0.2, 0.6],
         if is None or empty, baseline removal will not be performed
-    band_fs: list (of 2 numbers.Real), optional,
+    band_fs: list (of 2 int or float), optional,
         frequency band of the bandpass filter,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
@@ -148,9 +147,9 @@ def preprocess_multi_lead_signal(
 
 def preprocess_single_lead_signal(
     raw_sig: NDArray,
-    fs: Real,
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    fs: Union[int, float],
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
 ) -> Dict[str, NDArray]:
@@ -162,14 +161,14 @@ def preprocess_single_lead_signal(
     ----------
     raw_sig: ndarray,
         the raw ECG signal, with units in mV
-    fs: numbers.Real,
+    fs: int or float,
         sampling frequency of `raw_sig`
-    bl_win: list (of 2 numbers.Real), optional,
+    bl_win: list (of 2 int or float), optional,
         window (units in second) of baseline removal using `median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is [0.2, 0.6],
         if is None or empty, baseline removal will not be performed
-    band_fs: list (of 2 numbers.Real), optional,
+    band_fs: list (of 2 int or float), optional,
         frequency band of the bandpass filter,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
@@ -227,7 +226,7 @@ def preprocess_single_lead_signal(
 
 def rpeaks_detect_multi_leads(
     sig: NDArray,
-    fs: Real,
+    fs: Union[int, float],
     sig_fmt: str = "channel_first",
     rpeak_fn: str = "xqrs",
     verbose: int = 0,
@@ -239,7 +238,7 @@ def rpeaks_detect_multi_leads(
     ----------
     sig: ndarray,
         the (better be filtered) ECG signal, with units in mV
-    fs: numbers.Real,
+    fs: int or float,
         sampling frequency of `sig`
     sig_fmt: str, default "channel_first",
         format of the multi-lead ECG signal,
@@ -274,7 +273,7 @@ def rpeaks_detect_multi_leads(
     return rpeaks
 
 
-def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: Real, verbose: int = 0) -> NDArray:
+def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: Union[int, float], verbose: int = 0) -> NDArray:
     """
     merge rpeaks that are detected from each lead of multi-lead signals (with units in mV),
     using certain criterion merging qrs masks from each lead
@@ -285,7 +284,7 @@ def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: Real, verbo
         each element (ndarray) is the array of indices of rpeaks of corr. lead
     sig: ndarray,
         the multi-lead ECG signal, with units in mV
-    fs: numbers.Real,
+    fs: int or float,
         sampling frequency of `sig`
     verbose: int, default 0,
         print verbosity

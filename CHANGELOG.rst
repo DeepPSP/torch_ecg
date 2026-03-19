@@ -36,6 +36,10 @@ Changed
   `torch_ecg.utils.download` module.
 - Enhance the pytorch `preprocessors` module: all preprocessors now have
   pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
+- Replace ``numbers.Real`` with ``Union[int, float]`` in all type annotations
+  across the codebase (35 files). Replace corresponding ``isinstance(x, Real)``
+  runtime checks with ``isinstance(x, (int, float))`` for full compatibility
+  with modern static type checkers (mypy, pyright).
 
 Deprecated
 ~~~~~~~~~~

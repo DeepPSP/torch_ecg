@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -60,7 +59,7 @@ class RandomFlip(Augmenter):
         self.per_channel = per_channel
         self.inplace = inplace
         self.prob = prob
-        if isinstance(self.prob, Real):
+        if isinstance(self.prob, (int, float)):
             self.prob = np.array([self.prob, self.prob])
         else:
             self.prob = np.array(self.prob)

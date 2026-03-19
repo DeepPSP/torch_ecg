@@ -72,5 +72,9 @@ The `torch_ecg/ssl/` module is an empty shell. `ssl/README.md` contains a survey
 ## Other Tasks
 
 - [ ] Improve test coverage, especially for the newly introduced SSL and Transformer modules.
+- [ ] **Documentation** (in progress): Sphinx is configured and API RST stubs exist under `docs/source/api/`,
+  but many pages are incomplete. Remaining work: fill in narrative documentation for all modules,
+  add usage examples, document the SSL module once implemented, and keep API references in sync
+  with newly refactored modules.
 - [ ] Optimize automated documentation generation.
 - [ ] Release more pre-trained weights for SOTA models from PhysioNet/CinC challenges.
