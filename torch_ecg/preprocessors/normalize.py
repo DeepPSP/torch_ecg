@@ -118,7 +118,10 @@ class Normalize(torch.nn.Module):
     def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
         _sig = torch.as_tensor(sig, dtype=torch.float32)
         _sig = self._forward_torch(_sig)
-        return _sig.cpu().numpy().astype(sig.dtype)
+        out = _sig.cpu().numpy()
+        if np.issubdtype(sig.dtype, np.floating):
+            out = out.astype(sig.dtype, copy=False)
+        return out
 
 
 @PREPROCESSORS.register(name="min_max_normalize")
