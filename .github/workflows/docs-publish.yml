@@ -118,7 +118,7 @@ jobs:
     - name: Publish to GitHub Pages
       # publish only when pushed to 'doc' and 'master' branches or manually triggered
       if: (github.event_name == 'push' && (contains(fromJson('["refs/heads/doc", "refs/heads/master"]'), github.ref))) || (github.event_name == 'workflow_dispatch')
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/build/html
