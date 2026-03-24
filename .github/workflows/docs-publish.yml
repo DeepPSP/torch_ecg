@@ -43,7 +43,7 @@ jobs:
         python-version: ["3.12"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Clear unnecessary system components
       run: |
         echo "Free space:"
