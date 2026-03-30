@@ -1,7 +1,8 @@
 """ """
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
+import numpy as np
 import torch
 
 from ..utils.utils_signal_t import resample as resample_t
@@ -60,27 +61,44 @@ class Resample(torch.nn.Module):
             assert self.fs is not None, "if `dst_fs` is set, `fs` should also be set"
             self.scale_factor = self.dst_fs / self.fs
 
-    def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """Apply the resampling to the signal tensor.
+    def forward(self, sig: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
+        """Apply the resampling to the signal.
 
         Parameters
         ----------
-        sig : torch.Tensor
-            The signal tensor to be resampled,
+        sig : numpy.ndarray or torch.Tensor
+            The signal to be resampled,
             of shape ``(..., n_leads, siglen)``.
 
         Returns
         -------
-        torch.Tensor
-            The resampled signal tensor,
-            of shape ``(..., n_leads, siglen)``.
+        numpy.ndarray or torch.Tensor
+            The resampled signal.
+
+            * If `sig` is a :class:`torch.Tensor`, the output is a tensor.
+            * If `sig` is a :class:`numpy.ndarray`, the output is a NumPy array
+              with floating dtype. When the input dtype is floating, the same
+              floating dtype is preserved; otherwise, ``float32`` is used.
 
         """
-        sig = resample_t(
+        if isinstance(sig, torch.Tensor):
+            return self._forward_torch(sig)
+        else:
+            return self._forward_numpy(sig)
+
+    def _forward_torch(self, sig: torch.Tensor) -> torch.Tensor:
+        return resample_t(
             sig=sig,
             fs=self.fs,
             dst_fs=self.dst_fs,
             siglen=self.siglen,
             inplace=self.inplace,
         )
-        return sig
+
+    def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
+        _sig = torch.as_tensor(sig, dtype=torch.float32)
+        _sig = self._forward_torch(_sig)
+        _out = _sig.cpu().numpy()
+        if np.issubdtype(sig.dtype, np.floating):
+            return _out.astype(sig.dtype)
+        return _out

@@ -1,11 +1,13 @@
 """ """
 
 from numbers import Real
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
+import numpy as np
 import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
+from ..utils.utils_signal_t import bandpass_filter
 from .registry import PREPROCESSORS
 
 __all__ = [
@@ -36,44 +38,55 @@ class BandPass(torch.nn.Module):
     __name__ = "BandPass"
 
     def __init__(
-        self, fs: Real, lowcut: Optional[Real] = 0.5, highcut: Optional[Real] = 45, inplace: bool = True, **kwargs: Any
+        self,
+        fs: Real,
+        lowcut: Optional[Real] = 0.5,
+        highcut: Optional[Real] = 45,
+        inplace: bool = True,
+        **kwargs: Any,
     ) -> None:
         super().__init__()
         self.fs = fs
         self.lowcut = lowcut
         self.highcut = highcut
         assert any([self.lowcut is not None, self.highcut is not None]), "At least one of lowcut and highcut should be set"
-        if not self.lowcut:
-            self.lowcut = 0
-        if not self.highcut:
-            self.highcut = float("inf")
         self.inplace = inplace
 
-    def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """Apply the preprocessor to the signal tensor.
+    def forward(self, sig: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
+        """Apply the preprocessor to the signal.
 
         Parameters
         ----------
-        sig : torch.Tensor
-            The ECG signal tensor,
-            of shape ``(batch, lead, siglen)``.
+        sig : numpy.ndarray or torch.Tensor
+            The ECG signal,
+            of shape ``(batch, lead, siglen)`` or ``(lead, siglen)``.
 
         Returns
         -------
-        torch.Tensor
-            The bandpass filtered ECG signal tensor,
-            of shape ``(batch, lead, siglen)``.
+        numpy.ndarray or torch.Tensor
+            The bandpass filtered ECG signal,
+            of same shape and type as `sig`.
 
         """
+        if isinstance(sig, torch.Tensor):
+            return self._forward_torch(sig)
+        else:
+            return self._forward_numpy(sig)
+
+    def _forward_torch(self, sig: torch.Tensor) -> torch.Tensor:
         if not self.inplace:
             sig = sig.clone()
-        sig = torch.as_tensor(
-            preprocess_multi_lead_signal(
-                raw_sig=sig.cpu().numpy(),
-                fs=self.fs,
-                band_fs=[self.lowcut, self.highcut],
-            ).copy(),
-            dtype=sig.dtype,
-            device=sig.device,
+        return bandpass_filter(
+            sig=sig,
+            fs=self.fs,
+            lowcut=self.lowcut,
+            highcut=self.highcut,
         )
-        return sig
+
+    def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
+        # original implementation for numpy arrays
+        return preprocess_multi_lead_signal(
+            raw_sig=sig,
+            fs=self.fs,
+            band_fs=[self.lowcut, self.highcut],
+        )

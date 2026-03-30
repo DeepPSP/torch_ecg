@@ -3,6 +3,7 @@
 from numbers import Real
 from typing import Any, Iterable, Literal, Union
 
+import numpy as np
 import torch
 
 from ..utils.utils_signal_t import normalize as normalize_t
@@ -84,22 +85,28 @@ class Normalize(torch.nn.Module):
         self.per_channel = per_channel
         self.inplace = inplace
 
-    def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """Apply the preprocessor to the signal tensor.
+    def forward(self, sig: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
+        """Apply the preprocessor to the signal.
 
         Parameters
         ----------
-        sig : torch.Tensor
-            The input signal tensor,
-            of shape ``(batch_size, num_leads, num_samples)``.
+        sig : numpy.ndarray or torch.Tensor
+            The input signal,
+            of shape ``(batch_size, num_leads, num_samples)`` or ``(num_leads, num_samples)``.
 
         Returns
         -------
-        torch.Tensor
-            The normalized signal tensor.
+        numpy.ndarray or torch.Tensor
+            The normalized signal, of same shape and type as `sig`.
 
         """
-        sig = normalize_t(
+        if isinstance(sig, torch.Tensor):
+            return self._forward_torch(sig)
+        else:
+            return self._forward_numpy(sig)
+
+    def _forward_torch(self, sig: torch.Tensor) -> torch.Tensor:
+        return normalize_t(
             sig=sig,
             method=self.method,
             mean=self.mean,
@@ -107,7 +114,14 @@ class Normalize(torch.nn.Module):
             per_channel=self.per_channel,
             inplace=self.inplace,
         )
-        return sig
+
+    def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
+        _sig = torch.as_tensor(sig, dtype=torch.float32)
+        _sig = self._forward_torch(_sig)
+        out = _sig.cpu().numpy()
+        if np.issubdtype(sig.dtype, np.floating):
+            out = out.astype(sig.dtype, copy=False)
+        return out
 
 
 @PREPROCESSORS.register(name="min_max_normalize")

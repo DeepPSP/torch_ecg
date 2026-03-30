@@ -2,11 +2,13 @@
 
 import warnings
 from numbers import Real
-from typing import Any
+from typing import Any, Union
 
+import numpy as np
 import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
+from ..utils.utils_signal_t import baseline_removal
 from .registry import PREPROCESSORS
 
 __all__ = [
@@ -17,18 +19,16 @@ __all__ = [
 @PREPROCESSORS.register(name="baseline_remove")
 @PREPROCESSORS.register()
 class BaselineRemove(torch.nn.Module):
-    """Baseline removal using median filtering.
+    """Baseline removal using sliding average (median filter alternative).
 
     Parameters
     ----------
     fs : numbers.Real
         Sampling frequency of the ECG signal to be filtered.
     window1 : float, default 0.2
-        The smaller window size of the median filter,
-        with units in seconds.
+        The smaller window size, with units in seconds.
     window2 : float, default 0.6
-        The larger window size of the median filter,
-        with units in seconds.
+        The larger window size, with units in seconds.
     inplace : bool, default True
         Whether to perform the filtering in-place.
     kwargs : dict, optional
@@ -48,31 +48,41 @@ class BaselineRemove(torch.nn.Module):
             warnings.warn("values of `window1` and `window2` are switched", RuntimeWarning)
         self.inplace = inplace
 
-    def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """Apply the preprocessor to the signal tensor.
+    def forward(self, sig: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
+        """Apply the preprocessor to the signal.
 
         Parameters
         ----------
-        sig : torch.Tensor
-            The ECG signal tensor,
-            of shape ``(batch, lead, siglen)``.
+        sig : numpy.ndarray or torch.Tensor
+            The ECG signal,
+            of shape ``(batch, lead, siglen)`` or ``(lead, siglen)``.
 
         Returns
         -------
-        torch.Tensor
-            The median filtered (hence baseline removed) ECG signals,
-            of shape ``(batch, lead, siglen)``.
+        numpy.ndarray or torch.Tensor
+            The baseline removed ECG signals,
+            of same shape and type as `sig`.
 
         """
+        if isinstance(sig, torch.Tensor):
+            return self._forward_torch(sig)
+        else:
+            return self._forward_numpy(sig)
+
+    def _forward_torch(self, sig: torch.Tensor) -> torch.Tensor:
         if not self.inplace:
             sig = sig.clone()
-        sig = torch.as_tensor(
-            preprocess_multi_lead_signal(
-                raw_sig=sig.cpu().numpy(),
-                fs=self.fs,
-                bl_win=[self.window1, self.window2],
-            ).copy(),
-            dtype=sig.dtype,
-            device=sig.device,
+        return baseline_removal(
+            sig=sig,
+            fs=self.fs,
+            window1=self.window1,
+            window2=self.window2,
         )
-        return sig
+
+    def _forward_numpy(self, sig: np.ndarray) -> np.ndarray:
+        # original implementation for numpy arrays
+        return preprocess_multi_lead_signal(
+            raw_sig=sig,
+            fs=self.fs,
+            bl_win=[self.window1, self.window2],
+        )
