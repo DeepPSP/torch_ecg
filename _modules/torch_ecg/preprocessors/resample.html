@@ -381,8 +381,9 @@
   <h1>Source code for torch_ecg.preprocessors.resample</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_signal_t</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span> <span class="k">as</span> <span class="n">resample_t</span>
@@ -445,31 +446,48 @@
 
 <div class="viewcode-block" id="Resample.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample.forward">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the resampling to the signal tensor.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the resampling to the signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig : torch.Tensor</span>
-<span class="sd">            The signal tensor to be resampled,</span>
+<span class="sd">        sig : numpy.ndarray or torch.Tensor</span>
+<span class="sd">            The signal to be resampled,</span>
 <span class="sd">            of shape ``(..., n_leads, siglen)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        torch.Tensor</span>
-<span class="sd">            The resampled signal tensor,</span>
-<span class="sd">            of shape ``(..., n_leads, siglen)``.</span>
+<span class="sd">        numpy.ndarray or torch.Tensor</span>
+<span class="sd">            The resampled signal.</span>
+
+<span class="sd">            * If `sig` is a :class:`torch.Tensor`, the output is a tensor.</span>
+<span class="sd">            * If `sig` is a :class:`numpy.ndarray`, the output is a NumPy array</span>
+<span class="sd">              with floating dtype. When the input dtype is floating, the same</span>
+<span class="sd">              floating dtype is preserved; otherwise, ``float32`` is used.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sig</span> <span class="o">=</span> <span class="n">resample_t</span><span class="p">(</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_torch</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_numpy</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forward_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">resample_t</span><span class="p">(</span>
             <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="p">,</span>
             <span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
             <span class="n">dst_fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_fs</span><span class="p">,</span>
             <span class="n">siglen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">siglen</span><span class="p">,</span>
             <span class="n">inplace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">sig</span></div>
-</div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forward_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">_sig</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">_sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_torch</span><span class="p">(</span><span class="n">_sig</span><span class="p">)</span>
+        <span class="n">_out</span> <span class="o">=</span> <span class="n">_sig</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_out</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_out</span></div>
 
 </pre></div>
 

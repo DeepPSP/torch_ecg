@@ -383,11 +383,13 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._preprocessors.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess_multi_lead_signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_signal_t</span><span class="w"> </span><span class="kn">import</span> <span class="n">baseline_removal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PREPROCESSORS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -400,18 +402,16 @@
 <span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;baseline_remove&quot;</span><span class="p">)</span>
 <span class="nd">@PREPROCESSORS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaselineRemove</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Baseline removal using median filtering.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Baseline removal using sliding average (median filter alternative).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fs : numbers.Real</span>
 <span class="sd">        Sampling frequency of the ECG signal to be filtered.</span>
 <span class="sd">    window1 : float, default 0.2</span>
-<span class="sd">        The smaller window size of the median filter,</span>
-<span class="sd">        with units in seconds.</span>
+<span class="sd">        The smaller window size, with units in seconds.</span>
 <span class="sd">    window2 : float, default 0.6</span>
-<span class="sd">        The larger window size of the median filter,</span>
-<span class="sd">        with units in seconds.</span>
+<span class="sd">        The larger window size, with units in seconds.</span>
 <span class="sd">    inplace : bool, default True</span>
 <span class="sd">        Whether to perform the filtering in-place.</span>
 <span class="sd">    kwargs : dict, optional</span>
@@ -433,35 +433,45 @@
 
 <div class="viewcode-block" id="BaselineRemove.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove.forward">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to the signal tensor.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to the signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig : torch.Tensor</span>
-<span class="sd">            The ECG signal tensor,</span>
-<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
+<span class="sd">        sig : numpy.ndarray or torch.Tensor</span>
+<span class="sd">            The ECG signal,</span>
+<span class="sd">            of shape ``(batch, lead, siglen)`` or ``(lead, siglen)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        torch.Tensor</span>
-<span class="sd">            The median filtered (hence baseline removed) ECG signals,</span>
-<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
+<span class="sd">        numpy.ndarray or torch.Tensor</span>
+<span class="sd">            The baseline removed ECG signals,</span>
+<span class="sd">            of same shape and type as `sig`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_torch</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_numpy</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forward_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="n">sig</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span>
-            <span class="n">preprocess_multi_lead_signal</span><span class="p">(</span>
-                <span class="n">raw_sig</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
-                <span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
-                <span class="n">bl_win</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">window1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window2</span><span class="p">],</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+        <span class="k">return</span> <span class="n">baseline_removal</span><span class="p">(</span>
+            <span class="n">sig</span><span class="o">=</span><span class="n">sig</span><span class="p">,</span>
+            <span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
+            <span class="n">window1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window1</span><span class="p">,</span>
+            <span class="n">window2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window2</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">sig</span></div>
-</div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_forward_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="c1"># original implementation for numpy arrays</span>
+        <span class="k">return</span> <span class="n">preprocess_multi_lead_signal</span><span class="p">(</span>
+            <span class="n">raw_sig</span><span class="o">=</span><span class="n">sig</span><span class="p">,</span>
+            <span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
+            <span class="n">bl_win</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">window1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window2</span><span class="p">],</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 
