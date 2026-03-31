@@ -5,7 +5,6 @@ References
 """
 
 import math
-from numbers import Real
 from typing import Sequence, Union
 
 import numpy as np
@@ -18,7 +17,7 @@ __all__ = [
 def compute_metrics(
     rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
     rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
-    fs: Real,
+    fs: int,
     thr: float = 0.075,
     verbose: int = 0,
 ) -> float:

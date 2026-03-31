@@ -5,7 +5,6 @@ import math
 import os
 import time
 import warnings
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -476,7 +475,7 @@ class CPSC2021(PhysioNetDataBase):
         sampto: Optional[int] = None,
         keep_original: bool = False,
         valid_only: bool = True,
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
     ) -> NDArray:
         """Load position (in terms of samples) of rpeaks.
 
@@ -499,7 +498,7 @@ class CPSC2021(PhysioNetDataBase):
             otherwise, all indices in the `sample` field of the annotation will be returned.
             Valid rpeaks are those with symbol in `WFDB_Beat_Annotations`.
             Symbols in `WFDB_Non_Beat_Annotations` are considered as invalid rpeaks
-        fs : numbers.Real, optional
+        fs : int, optional
             If not None, positions of the loaded rpeaks
             will be ajusted according to this sampling frequency.
 
@@ -539,7 +538,7 @@ class CPSC2021(PhysioNetDataBase):
         sampto: Optional[int] = None,
         keep_original: bool = False,
         valid_only: bool = True,
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
     ) -> NDArray:
         """alias of `self.load_rpeaks`"""
         return self.load_rpeaks(
@@ -559,7 +558,7 @@ class CPSC2021(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         fmt: Literal["intervals", "mask", "c_intervals"] = "intervals",
     ) -> Union[List[List[int]], NDArray]:
         """Load the episodes of atrial fibrillation,
@@ -582,7 +581,7 @@ class CPSC2021(PhysioNetDataBase):
             If True, indices will keep the same with the annotation file,
             otherwise subtract `sampfrom` if specified.
             Valid only when `fmt` is not "c_intervals".
-        fs : numbers.Real, optional
+        fs : int, optional
             If not None, positions of the loaded intervals
             or mask will be ajusted according to this sampling frequency.
             Otherwise, the sampling frequency of the record will be used.
@@ -991,7 +990,7 @@ class CPSC2021(PhysioNetDataBase):
             plt.subplots_adjust(hspace=0.2)
             plt.show()
 
-    def _round(self, n: Real) -> int:
+    def _round(self, n: Union[int, float]) -> int:
         """
         dealing with round(0.5) = 0,
         hence keeping accordance with output length of `resample_poly`

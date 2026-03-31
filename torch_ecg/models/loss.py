@@ -24,8 +24,7 @@ built-in loss functions in PyTorch.
 
 """
 
-from numbers import Real
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, Union
 
 import torch
 import torch.nn.functional as F
@@ -439,9 +438,9 @@ class AsymmetricLoss(nn.Module):
 
     Parameters
     ----------
-    gamma_neg : numbers.Real, default 4
+    gamma_neg : int or float, default 4
         Exponent of the multiplier to the negative loss.
-    gamma_pos : numbers.Real, default 1
+    gamma_pos : int or float, default 1
         Exponent of the multiplier to the positive loss.
     prob_margin : float, default 0.05
         The probability margin
@@ -475,8 +474,8 @@ class AsymmetricLoss(nn.Module):
 
     def __init__(
         self,
-        gamma_neg: Real = 4,
-        gamma_pos: Real = 1,
+        gamma_neg: Union[int, float] = 4,
+        gamma_pos: Union[int, float] = 1,
         prob_margin: float = 0.05,
         disable_torch_grad_focal_loss: bool = False,
         reduction: Literal["none", "mean", "sum"] = "mean",

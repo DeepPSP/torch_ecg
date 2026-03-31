@@ -1,7 +1,6 @@
 """ """
 
 import warnings
-from numbers import Real
 from typing import Any, Union
 
 import numpy as np
@@ -23,7 +22,7 @@ class BaselineRemove(torch.nn.Module):
 
     Parameters
     ----------
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the ECG signal to be filtered.
     window1 : float, default 0.2
         The smaller window size, with units in seconds.
@@ -38,7 +37,7 @@ class BaselineRemove(torch.nn.Module):
 
     __name__ = "BaselineRemove"
 
-    def __init__(self, fs: Real, window1: float = 0.2, window2: float = 0.6, inplace: bool = True, **kwargs: Any) -> None:
+    def __init__(self, fs: int, window1: float = 0.2, window2: float = 0.6, inplace: bool = True, **kwargs: Any) -> None:
         super().__init__()
         self.fs = fs
         self.window1 = window1

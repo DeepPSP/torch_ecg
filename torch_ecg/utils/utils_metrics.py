@@ -6,7 +6,6 @@ challenge (e.g. CinC, CPSC series) specific metrics are not included.
 """
 
 import warnings
-from numbers import Real
 from typing import Dict, Optional, Sequence, Tuple, Union
 
 import einops
@@ -610,7 +609,7 @@ def accuracy(
 def QRS_score(
     rpeaks_truths: Sequence[Union[NDArray, Sequence[int]]],
     rpeaks_preds: Sequence[Union[NDArray, Sequence[int]]],
-    fs: Real,
+    fs: int,
     thr: float = 0.075,
 ) -> float:
     """
@@ -624,7 +623,7 @@ def QRS_score(
     rpeaks_preds : array_like
         predictions of ground truths of rpeaks locations (indices)
         for multiple records.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of ECG signal
     thr : float, default 0.075
         Threshold for a prediction to be truth positive,
@@ -771,9 +770,9 @@ def compute_wave_delineation_metrics(
     truth_masks: Sequence[NDArray],
     pred_masks: Sequence[NDArray],
     class_map: Dict[str, int],
-    fs: Real,
+    fs: int,
     mask_format: str = "channel_first",
-    tol: Real = 0.15,
+    tol: float = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     f"""
     Compute metrics for the task of ECG wave delineation
@@ -794,7 +793,7 @@ def compute_wave_delineation_metrics(
     class_map : dict
         Class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
         and thus the error and standard deviations of errors.
@@ -836,8 +835,8 @@ def compute_wave_delineation_metrics(
 def compute_metrics_waveform(
     truth_waveforms: Sequence[Sequence[ECGWaveForm]],
     pred_waveforms: Sequence[Sequence[ECGWaveForm]],
-    fs: Real,
-    tol: Real = 0.15,
+    fs: int,
+    tol: float = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     """
     compute the sensitivity, precision, f1_score, mean error
@@ -852,7 +851,7 @@ def compute_metrics_waveform(
     pred_waveforms : Sequence[Sequence[ECGWaveForm]]
         The predictions corresponding to `truth_waveforms`,
         each element is a sequence of :class:`ECGWaveForm` from the same sample.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         and thus the error and standard deviations of errors.
@@ -911,8 +910,8 @@ def compute_metrics_waveform(
 def _compute_metrics_waveform(
     truths: Sequence[ECGWaveForm],
     preds: Sequence[ECGWaveForm],
-    fs: Real,
-    tol: Real = 0.15,
+    fs: int,
+    tol: float = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     """
     Compute the sensitivity, precision, f1_score, mean error
@@ -925,7 +924,7 @@ def _compute_metrics_waveform(
         The ground truth
     preds : Sequence[ECGWaveForm]
         The predictions corresponding to `truths`.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         and thus the error and standard deviations of errors.
@@ -994,16 +993,16 @@ def _compute_metrics_waveform(
     return scorings
 
 
-def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Real, tol: Real = 0.15) -> Dict[str, float]:
+def _compute_metrics_base(truths: Sequence[int], preds: Sequence[int], fs: int, tol: float = 0.15) -> Dict[str, float]:
     r"""Base function for computing the metrics of the onset and offset of a waveform.
 
     Parameters
     ----------
-    truths : Sequence[numbers.Real]
+    truths : Sequence[int]
         Ground truth of indices of corresponding critical points.
-    preds : Sequence[numbers.Real]
+    preds : Sequence[int]
         Predicted indices of corresponding critical points.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
         and thus the error and standard deviations of errors.
@@ -1060,4 +1059,4 @@ def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Rea
         f1_score,
         mean_error,
         standard_deviation,
-    )
+    )  # type: ignore

@@ -2,7 +2,6 @@
 
 import os
 from datetime import datetime
-from numbers import Real
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -198,10 +197,10 @@ class ApneaECG(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     @add_docstring(PhysioNetDataBase.load_data.__doc__)
@@ -211,10 +210,10 @@ class ApneaECG(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.ecg_records:
@@ -242,8 +241,8 @@ class ApneaECG(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
     ) -> NDArray:
         if rec not in self.rsp_records:

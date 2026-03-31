@@ -7,7 +7,6 @@ however seems not have been used in physiological signal processing tasks
 import textwrap
 from copy import deepcopy
 from itertools import repeat
-from numbers import Real
 from typing import List, Optional, Sequence, Union
 
 from torch import Tensor, nn
@@ -116,7 +115,7 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         assert self.__num_convs == len(self.__dilations), (
             f"the main stream has {self.__num_convs} convolutions, " f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (int, float, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             self.__dropouts = list(dropouts)
@@ -307,14 +306,14 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         assert self.__num_blocks == len(self.__dilations), (
             f"the entry flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (int, float, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
             f"the entry flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, (Real, dict)):
+        if isinstance(block_dropouts, (int, float, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
@@ -495,14 +494,14 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         assert self.__num_blocks == len(self.__dilations), (
             f"the middle flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (int, float, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
             f"the middle flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, (Real, dict)):
+        if isinstance(block_dropouts, (int, float, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
@@ -693,14 +692,14 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         assert self.__num_blocks == len(self.__dilations), (
             f"the exit flow has {self.__num_blocks} blocks, " f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (int, float, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
         assert self.__num_blocks == len(self.__dropouts), (
             f"the exit flow has {self.__num_blocks} blocks, " f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, (Real, dict)):
+        if isinstance(block_dropouts, (int, float, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks + len(final_num_filters)))
         else:
             self.__block_dropouts = list(block_dropouts)

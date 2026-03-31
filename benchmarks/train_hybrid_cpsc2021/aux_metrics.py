@@ -7,7 +7,6 @@ References
 """
 
 import multiprocessing as mp
-from numbers import Real
 from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
@@ -37,7 +36,7 @@ _MBCE = MaskedBCEWithLogitsLoss()
 def compute_rpeak_metric(
     rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
     rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
-    fs: Real,
+    fs: int,
     thr: float = 0.075,
     verbose: int = 0,
 ) -> Dict[str, float]:
@@ -49,7 +48,7 @@ def compute_rpeak_metric(
         sequence of ground truths of rpeaks locations (indices) from multiple records
     rpeaks_preds: sequence,
         predictions of ground truths of rpeaks locations (indices) for multiple records
-    fs: real number,
+    fs: int,
         sampling frequency of ECG signal
     thr: float, default 0.075,
         threshold for a prediction to be truth positive,
@@ -179,7 +178,7 @@ def compute_rr_metric(
 def compute_main_task_metric(
     mask_truths: Sequence[Union[np.ndarray, Sequence[int]]],
     mask_preds: Sequence[Union[np.ndarray, Sequence[int]]],
-    fs: Real,
+    fs: int,
     reduction: int,
     weight_masks: Optional[Sequence[Union[np.ndarray, Sequence[int]]]] = None,
     rpeaks: Optional[Sequence[Sequence[int]]] = None,
@@ -196,7 +195,7 @@ def compute_main_task_metric(
         sequences of AF labels on rr intervals, of shape (n_samples, seq_len)
     mask_preds: array_like,
         sequences of AF predictions on rr intervals, of shape (n_samples, seq_len)
-    fs: Real,
+    fs: int,
         sampling frequency of the model input ECGs,
         used when (indices of) `rpeaks` not privided
     reduction: int,
@@ -270,7 +269,7 @@ def compute_main_task_metric(
 #     """
 #     __name__ = "WeightedBoundaryLoss"
 
-#     def __init__(self, weight_map:Dict[int,Real], sigma:Real, w:Real) -> None:
+#     def __init__(self, weight_map:Dict[int, Union[int, float]], sigma:float, w:float) -> None:
 #         """
 #         """
 #         self.weight_map = weight_map

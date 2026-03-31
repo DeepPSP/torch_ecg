@@ -1,6 +1,5 @@
 """Normalization of the signals."""
 
-from numbers import Real
 from typing import Any, List, Literal, Tuple, Union
 
 from numpy.typing import NDArray
@@ -80,13 +79,13 @@ class Normalize(PreProcessor):
         self.mean = mean
         self.std = std
         self.per_channel = per_channel
-        if isinstance(std, Real):
+        if isinstance(std, (float, int)):
             assert std > 0, "standard deviation should be positive"
         else:
             assert (std > 0).all(), "standard deviations should all be positive"
         if not per_channel:
-            assert isinstance(mean, Real) and isinstance(
-                std, Real
+            assert isinstance(mean, (float, int)) and isinstance(
+                std, (float, int)
             ), "mean and std should be real numbers in the non per-channel setting"
 
     def apply(self, sig: NDArray, fs: Union[float, int]) -> Tuple[NDArray, Union[float, int]]:

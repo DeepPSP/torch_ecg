@@ -26,7 +26,6 @@ import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
-from numbers import Real
 from pathlib import Path
 from string import punctuation
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
@@ -625,9 +624,9 @@ class PhysioNetDataBase(_DataBase):
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
         units: Union[str, None] = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
@@ -651,7 +650,7 @@ class PhysioNetDataBase(_DataBase):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency;
             if None, `self.fs` will be used if available and not None;
@@ -666,7 +665,7 @@ class PhysioNetDataBase(_DataBase):
         data : numpy.ndarray
             The ECG data loaded from the record,
             with given `units` and `data_format`.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 

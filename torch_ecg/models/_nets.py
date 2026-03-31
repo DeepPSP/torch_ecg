@@ -7,7 +7,6 @@ from copy import deepcopy
 from inspect import isclass
 from itertools import repeat
 from math import sqrt
-from numbers import Real
 from typing import Any, Callable, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -270,7 +269,7 @@ _COMPUTE_RECEPTIVE_FIELD_DOC = """Compute the receptive field of the layer.
         ----------
         input_len : int, optional
             The length of the input.
-        fs : numbers.Real, optional
+        fs : int, optional
             The sampling frequency of the input signal.
             If is not ``None``, then the receptive field is returned in seconds.
 
@@ -369,7 +368,7 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[int] = None) -> Union[int, float]:
         return 1
 
 
@@ -751,7 +750,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[int] = None) -> Union[int, float]:
         return compute_receptive_field(
             kernel_sizes=self.__kernel_size,
             strides=self.__stride,
@@ -883,7 +882,7 @@ class MultiConv(nn.Sequential, SizeMixin):
             len(strides) == self.__num_convs
         ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_convs}"
 
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (float, dict)):
             _dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             _dropouts = list(dropouts)  # type: ignore
@@ -962,7 +961,7 @@ class MultiConv(nn.Sequential, SizeMixin):
         return output_shape  # type: ignore
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[int] = None) -> Union[int, float]:
         kernel_sizes, strides, dilations = [], [], []
         for module in self:
             if hasattr(module, "__name__") and module.__name__ == Conv_Bn_Activation.__name__:
@@ -1052,7 +1051,7 @@ class BranchedConv(nn.Module, SizeMixin):
             len(strides) == self.__num_branches
         ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_branches}"
 
-        if isinstance(dropouts, (Real, dict)):
+        if isinstance(dropouts, (float, dict)):
             _dropouts = list(repeat(dropouts, self.__num_branches))
         else:
             _dropouts = list(dropouts)  # type: ignore
@@ -1124,14 +1123,14 @@ class BranchedConv(nn.Module, SizeMixin):
             output_shapes.append(branch_output_shape)
         return output_shapes
 
-    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Tuple[Union[int, float]]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[int] = None) -> Tuple[Union[int, float]]:
         """Compute the receptive field of each branch.
 
         Parameters
         ----------
         input_len : int, optional
             Length of the input.
-        fs : numbers.Real, optional
+        fs : int, optional
             The sampling frequency of the input signal.
             If is not ``None``, then the receptive field is returned in seconds.
 
@@ -1317,7 +1316,7 @@ class SeparableConv(nn.Sequential, SizeMixin):
         return output_shape
 
     @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
-    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[Real] = None) -> Union[int, float]:
+    def compute_receptive_field(self, input_len: Optional[int] = None, fs: Optional[int] = None) -> Union[int, float]:
         return compute_receptive_field(
             kernel_sizes=[self.__kernel_size, 1],
             strides=[self.__stride, 1],
@@ -2781,7 +2780,7 @@ class SeqLin(nn.Sequential, SizeMixin):
         else:
             self.__kernel_initializer = None
         self.__bias = bias
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, float):
             if self.__num_layers > 1:
                 self.__dropouts = list(repeat(dropouts, self.__num_layers - 1)) + [0.0]
             else:

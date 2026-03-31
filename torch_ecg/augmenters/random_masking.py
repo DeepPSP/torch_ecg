@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from random import randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
@@ -8,6 +7,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from .base import Augmenter
 from .registry import AUGMENTERS
 
@@ -25,11 +25,11 @@ class RandomMasking(Augmenter):
     ----------
     fs : int
         Sampling frequency of the ECGs to be augmented.
-    mask_value : numbers.Real, default 0.0
+    mask_value : int or float, default 0.0
         Value to mask with.
-    mask_width : Sequence[numbers.Real], default ``[0.08, 0.18]``
+    mask_width : Sequence[int or float], default ``[0.08, 0.18]``
         Width range of the masking window, with units in seconds
-    prob : numbers.Real or Sequence[numbers.Real], default ``[0.3, 0.15]``
+    prob : float or Sequence[float], default ``[0.3, 0.15]``
         Probabilities of masking ECG signals,
         the first probality is for the batch dimension,
         the second probability is for the lead dimension.
@@ -55,19 +55,19 @@ class RandomMasking(Augmenter):
     def __init__(
         self,
         fs: int,
-        mask_value: Real = 0.0,
-        mask_width: Sequence[Real] = [0.08, 0.18],
-        prob: Union[Sequence[Real], Real] = [0.3, 0.15],
+        mask_value: Union[int, float] = 0.0,
+        mask_width: Sequence[Union[int, float]] = [0.08, 0.18],
+        prob: Union[Sequence[float], float] = [0.3, 0.15],
         inplace: bool = True,
         **kwargs: Any,
     ) -> None:
         super().__init__()
         self.fs = fs
         self.prob = prob
-        if isinstance(self.prob, Real):
-            self.prob = np.array([self.prob, self.prob])
+        if isinstance(self.prob, (float, int)):
+            self.prob = np.array([self.prob, self.prob], dtype=DEFAULTS.np_dtype)
         else:
-            self.prob = np.array(self.prob)
+            self.prob = np.array(self.prob, dtype=DEFAULTS.np_dtype)
         assert (self.prob >= 0).all() and (self.prob <= 1).all(), "Probability must be between 0 and 1"
         self.mask_value = mask_value
         self.mask_width = (np.array(mask_width) * self.fs).round().astype(int)

@@ -77,7 +77,6 @@ sig = ppm(sig)
 Here is another example for `numpy` version custom preprocessors
 
 ```python
-from numbers import Real
 from typing import Tuple
 
 import numpy as np
@@ -92,7 +91,7 @@ class DummyPreProcessor(PreProcessor):
     a dummy preprocessor that does nothing
     """
     __name__ = "DummyPreProcessor"
-    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig : np.ndarray, fs : int) -> Tuple[np.ndarray, int]:
         """
         """
         return sig, fs

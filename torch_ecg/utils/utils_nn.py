@@ -11,7 +11,6 @@ import warnings
 from copy import deepcopy
 from itertools import chain, repeat
 from math import floor
-from numbers import Real
 from pathlib import Path, PosixPath, WindowsPath
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -823,7 +822,7 @@ def compute_receptive_field(
         The sequence of strides for all the layers in the flow
     input_len : int, optional
         Length of the first feature map in the flow.
-    fs : numbers.Real, optional
+    fs : int, optional
         Sampling frequency of the input signal.
         If is not ``None``, then the receptive field is returned in seconds.
 
@@ -980,7 +979,7 @@ def _adjust_cnn_filter_lengths(
                     _adjust_cnn_filter_lengths({"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd)["filter_length"]
                     for fl in v
                 ]
-            elif isinstance(v, Real):
+            elif isinstance(v, (int, float)):
                 # DO NOT use `int`, which might not work for numpy array elements
                 if v > 1:  # type: ignore
                     config[k] = int(round(v * fs / config["fs"]))

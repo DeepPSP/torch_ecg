@@ -196,7 +196,7 @@ class SPH(_DataBase):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 

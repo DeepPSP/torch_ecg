@@ -2,7 +2,6 @@
 
 import json
 import os
-from numbers import Real
 from pathlib import Path
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
@@ -221,9 +220,9 @@ class CPSC2019(CPSCDataBase):
         rec: Union[int, str],
         data_format: str = "channel_first",
         units: str = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load the ECG data of the record `rec`.
 
         Parameters
@@ -237,7 +236,7 @@ class CPSC2019(CPSCDataBase):
             "flat" (alias "plain").
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (with aliases "uV", "muV").
-        fs : numbers.Real, optional
+        fs : int, optional
             If provided, the loaded data will be resampled to this frequency,
             otherwise the original sampling frequency will be used.
         return_fs : bool, default False
@@ -247,7 +246,7 @@ class CPSC2019(CPSCDataBase):
         -------
         data : numpy.ndarray,
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -400,7 +399,7 @@ class CPSC2019(CPSCDataBase):
 def compute_metrics(
     rpeaks_truths: Sequence[Union[NDArray, Sequence[int]]],
     rpeaks_preds: Sequence[Union[NDArray, Sequence[int]]],
-    fs: Real,
+    fs: int,
     thr: float = 0.075,
     verbose: int = 0,
 ) -> float:
@@ -413,7 +412,7 @@ def compute_metrics(
         Sequence of ground truths of rpeaks locations from multiple records.
     rpeaks_preds : sequence
         Predictions of ground truths of rpeaks locations for multiple records.
-    fs : numbers.Real
+    fs : int
         Sampling frequency of ECG signal.
     thr : float, default 0.075
         Threshold for a prediction to be truth positive,

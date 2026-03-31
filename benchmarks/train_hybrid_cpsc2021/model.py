@@ -10,7 +10,6 @@ Possible Solutions
 """
 
 from itertools import repeat
-from numbers import Real
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -733,7 +732,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
             episode_len_thr=episode_len_thr,
         )
         if rpeaks is not None:
-            if isinstance((rpeaks[0]), Real):
+            if isinstance((rpeaks[0]), (int, np.integer)):
                 _rpeaks = [rpeaks]
             else:
                 _rpeaks = rpeaks
@@ -791,7 +790,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
 
 def _qrs_detection_post_process(
     prob: np.ndarray,
-    fs: Real,
+    fs: int,
     reduction: int,
     bin_pred_thr: float = 0.5,
     skip_dist: int = 500,
@@ -805,7 +804,7 @@ def _qrs_detection_post_process(
     ----------
     prob: ndarray,
         array of predicted probability
-    fs: real number,
+    fs: int,
         sampling frequency of the ECG
     reduction: int,
         reduction (granularity) of `prob` w.r.t. the ECG
@@ -901,10 +900,10 @@ def _qrs_detection_post_process(
 
 def _main_task_post_process(
     prob: np.ndarray,
-    fs: Real,
+    fs: int,
     reduction: int,
     bin_pred_thr: float = 0.5,
-    rpeaks: Sequence[Sequence[int]] = None,
+    rpeaks: Optional[Sequence[Sequence[int]]] = None,
     siglens: Optional[Sequence[int]] = None,
     episode_len_thr: int = 5,
 ) -> Tuple[List[List[List[int]]], np.ndarray]:
@@ -917,7 +916,7 @@ def _main_task_post_process(
     ----------
     prob: ndarray,
         predicted af mask, of shape (batch_size, seq_len)
-    fs: real number,
+    fs: int,
         sampling frequency of the signal
     reduction: int,
         reduction ratio of the predicted af mask w.r.t. the signal

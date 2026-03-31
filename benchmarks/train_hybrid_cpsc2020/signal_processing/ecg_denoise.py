@@ -15,18 +15,9 @@ References
 to add
 """
 
-from numbers import Real
 from typing import List
 
 import numpy as np
-
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.utils_data import mask_to_intervals
@@ -36,7 +27,7 @@ __all__ = [
 ]
 
 
-def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: CFG) -> List[List[int]]:
+def ecg_denoise(filtered_sig: np.ndarray, fs: int, config: CFG) -> List[List[int]]:
     """
 
     a naive function removing non-ECG segments (flat and motion artefact)
@@ -45,7 +36,7 @@ def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: CFG) -> List[List[in
     ----------
     filtered_sig: ndarray,
         1d filtered (typically bandpassed) ECG signal,
-    fs: real number,
+    fs: int,
         sampling frequency of `filtered_sig`
     config: dict,
         configs of relavant parameters, like window, step, etc.

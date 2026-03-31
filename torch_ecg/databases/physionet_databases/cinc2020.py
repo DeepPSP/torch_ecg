@@ -8,7 +8,6 @@ import re
 import time
 from copy import deepcopy
 from datetime import datetime
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -500,9 +499,9 @@ class CINC2020(PhysioNetDataBase):
         data_format: Literal["channel_first", "lead_first", "channel_last", "lead_last"] = "channel_first",
         backend: Literal["wfdb", "scipy"] = "wfdb",
         units: Literal["mV", "μV", "uV", None] = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
@@ -522,7 +521,7 @@ class CINC2020(PhysioNetDataBase):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -533,7 +532,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         data : numpy.ndarray
             The ECG data of the record.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -890,7 +889,7 @@ class CINC2020(PhysioNetDataBase):
             labels = [self.label_trans_dict.get(item, item) for item in labels]
         return labels
 
-    def get_fs(self, rec: Union[str, int]) -> Real:
+    def get_fs(self, rec: Union[str, int]) -> int:
         """Get the sampling frequency of the record.
 
         Parameters
@@ -900,7 +899,7 @@ class CINC2020(PhysioNetDataBase):
 
         Returns
         -------
-        fs : numbers.Real
+        fs : int
             Sampling frequency of the record.
 
         """
@@ -1533,7 +1532,7 @@ def _compute_f_measure(labels: NDArray, outputs: NDArray) -> float:
     return macro_f_measure
 
 
-def _compute_beta_measures(labels: NDArray, outputs: NDArray, beta: Real) -> Tuple[float, float]:
+def _compute_beta_measures(labels: NDArray, outputs: NDArray, beta: float) -> Tuple[float, float]:
     """Compute F-beta and G-beta measures.
 
     Parameters

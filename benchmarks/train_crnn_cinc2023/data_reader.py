@@ -4,7 +4,6 @@ import os
 import re
 import warnings
 from ast import literal_eval
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -599,9 +598,9 @@ class CINC2023Reader(PhysioNetDataBase):
         return_channels: bool = False,
     ) -> Union[
         np.ndarray,
-        Tuple[np.ndarray, Real],
+        Tuple[np.ndarray, int],
         Tuple[np.ndarray, List[str]],
-        Tuple[np.ndarray, Real, List[str]],
+        Tuple[np.ndarray, int, List[str]],
     ]:
         """Load EEG data from the record.
 
@@ -640,7 +639,7 @@ class CINC2023Reader(PhysioNetDataBase):
         -------
         data : numpy.ndarray
             The loaded EEG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
         data_channels : list of str, optional
@@ -721,7 +720,7 @@ class CINC2023Reader(PhysioNetDataBase):
         units: Literal["mV", "uV", "muV", "μV", None] = "uV",
         fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+    ) -> Union[np.ndarray, Tuple[np.ndarray, int]]:
         """Load bipolar EEG data from the record.
 
         Bipolar EEG is the difference between two channels.
@@ -754,7 +753,7 @@ class CINC2023Reader(PhysioNetDataBase):
         -------
         data : numpy.ndarray
             The loaded EEG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
 
         """

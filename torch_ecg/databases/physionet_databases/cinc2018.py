@@ -2,7 +2,6 @@
 
 import os
 from collections import defaultdict
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -305,9 +304,9 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
         physical: bool = True,
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load PSG data of the record.
 
         Parameters
@@ -330,7 +329,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         physical : bool, default True
             If True, the data will be converted to physical units,
             otherwise, the data will be in digital units.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -341,7 +340,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         -------
         data : numpy.ndarray
             PSG data corr. to the given `channel` of the record.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
 
         """
@@ -403,10 +402,10 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load ECG data of the record.
 
         Parameters
@@ -428,7 +427,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -440,7 +439,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         data : numpy.ndarray
             The ECG data loaded from the record,
             with given `units` and `data_format`.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -475,10 +474,10 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """alias of `load_data`"""
         return self.load_data(
             rec=rec,

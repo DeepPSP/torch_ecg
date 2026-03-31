@@ -4,7 +4,6 @@ utilities for signal processing on PyTorch tensors
 """
 
 import warnings
-from numbers import Real
 from typing import Callable, Iterable, Literal, Optional, Union
 
 import torch
@@ -20,8 +19,8 @@ __all__ = [
 def normalize(
     sig: torch.Tensor,
     method: Literal["z-score", "naive", "min-max"] = "z-score",
-    mean: Union[Real, Iterable[Real]] = 0.0,
-    std: Union[Real, Iterable[Real]] = 1.0,
+    mean: Union[int, float, Iterable[Union[int, float]]] = 0.0,
+    std: Union[int, float, Iterable[Union[int, float]]] = 1.0,
     per_channel: bool = False,
     inplace: bool = True,
 ) -> torch.Tensor:
@@ -47,12 +46,12 @@ def normalize(
         Signal to be normalized, assumed to have shape ``(..., n_leads, siglen)``.
     method : {"z-score", "min-max", "naive"}, default "z-score"
         Normalization method, case insensitive.
-    mean : numbers.Real or array_like, default 0.0
+    mean : int or float or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal, if `method` is "z-score";
         mean values to be subtracted from the original signal, if `method` is "naive".
         Useless if `method` is "min-max".
-    std : numbers.Real or array_like, default 1.0
+    std : int or float or array_like, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal, if `method` is "z-score";
         or std to be divided from the original signal, if `method` is "naive".
@@ -114,7 +113,7 @@ def normalize(
     bs = sig.shape[0]
     device = sig.device
     dtype = sig.dtype
-    if isinstance(std, Real):
+    if isinstance(std, (int, float)):
         assert std > 0, "standard deviation should be positive"
         _std = torch.full((sig.shape[0], 1, 1), std, dtype=dtype, device=device)
     else:
@@ -128,7 +127,7 @@ def normalize(
             _std = _std.view((-1, sig.shape[1], 1))
         else:
             raise ValueError(f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch")
-    if isinstance(mean, Real):
+    if isinstance(mean, (int, float)):
         _mean = torch.full((sig.shape[0], 1, 1), mean, dtype=dtype, device=device)
     else:
         _mean = torch.as_tensor(mean, dtype=dtype, device=device)
@@ -454,9 +453,9 @@ class Spectrogram(torch.nn.Module):
 
 def bandpass_filter(
     sig: torch.Tensor,
-    fs: Real,
-    lowcut: Optional[Real] = None,
-    highcut: Optional[Real] = None,
+    fs: Union[int, float],
+    lowcut: Optional[Union[int, float]] = None,
+    highcut: Optional[Union[int, float]] = None,
 ) -> torch.Tensor:
     """Zero-phase bandpass filter using FFT.
 
@@ -464,11 +463,11 @@ def bandpass_filter(
     ----------
     sig : torch.Tensor
         Signal to be filtered, assumed to have shape ``(..., n_leads, siglen)``.
-    fs : numbers.Real
+    fs : int or float
         Sampling frequency of the signal.
-    lowcut : numbers.Real, optional
+    lowcut : int or float, optional
         Low cutoff frequency.
-    highcut : numbers.Real, optional
+    highcut : int or float, optional
         High cutoff frequency.
 
     Returns
@@ -477,7 +476,39 @@ def bandpass_filter(
         The filtered signal.
 
     """
-    if lowcut is None and highcut is None:
+    if not isinstance(fs, (int, float)) or fs <= 0:
+        raise ValueError(f"fs must be a positive real number, got {fs!r}")
+    nyquist = fs / 2.0
+    # normalize cutoff frequencies, clipping/disabling values at invalid boundaries
+    effective_lowcut = lowcut
+    effective_highcut = highcut
+    if effective_lowcut is not None:
+        if effective_lowcut <= 0:
+            warnings.warn(
+                "lowcut <= 0 in bandpass_filter; disabling high-pass side.",
+                RuntimeWarning,
+            )
+            effective_lowcut = None
+        elif effective_lowcut >= nyquist:
+            raise ValueError(
+                f"lowcut must be less than Nyquist frequency (fs/2={nyquist}), " f"got lowcut={effective_lowcut!r}"
+            )
+    if effective_highcut is not None:
+        if effective_highcut >= nyquist:
+            warnings.warn(
+                "highcut >= Nyquist frequency in bandpass_filter; disabling low-pass side.",
+                RuntimeWarning,
+            )
+            effective_highcut = None
+        elif effective_highcut <= 0:
+            raise ValueError(f"highcut must be positive, got highcut={effective_highcut!r}")
+    if effective_lowcut is not None and effective_highcut is not None:
+        if effective_lowcut >= effective_highcut:
+            raise ValueError(
+                f"lowcut must be less than highcut for bandpass_filter, "
+                f"got lowcut={effective_lowcut!r}, highcut={effective_highcut!r}"
+            )
+    if effective_lowcut is None and effective_highcut is None:
         return sig
 
     n = sig.shape[-1]
@@ -485,10 +516,10 @@ def bandpass_filter(
     freqs = torch.fft.rfftfreq(n, d=1 / fs, device=sig.device)
     # mask for bandpass
     mask = torch.ones_like(freqs, dtype=sig.dtype)
-    if lowcut is not None:
-        mask[freqs < lowcut] = 0
-    if highcut is not None:
-        mask[freqs > highcut] = 0
+    if effective_lowcut is not None:
+        mask[freqs < effective_lowcut] = 0
+    if effective_highcut is not None:
+        mask[freqs > effective_highcut] = 0
 
     # perform FFT
     sig_fft = torch.fft.rfft(sig, dim=-1)
@@ -502,9 +533,9 @@ def bandpass_filter(
 
 def baseline_removal(
     sig: torch.Tensor,
-    fs: Real,
-    window1: Optional[Real] = 0.2,
-    window2: Optional[Real] = 0.6,
+    fs: Union[int, float],
+    window1: Optional[Union[int, float]] = 0.2,
+    window2: Optional[Union[int, float]] = 0.6,
 ) -> torch.Tensor:
     """Remove baseline wander using sliding average (median filter alternative).
 
@@ -515,11 +546,11 @@ def baseline_removal(
     ----------
     sig : torch.Tensor
         Signal to be processed, assumed to have shape ``(..., n_leads, siglen)``.
-    fs : numbers.Real
+    fs : int or float
         Sampling frequency of the signal.
-    window1 : numbers.Real, default 0.2
+    window1 : int or float, default 0.2
         The first window size in seconds.
-    window2 : numbers.Real, default 0.6
+    window2 : int or float, default 0.6
         The second window size in seconds.
 
     Returns
@@ -533,8 +564,8 @@ def baseline_removal(
 
     ori_shape = sig.shape
     # Ensure 3D (batch, leads, siglen)
-    sig = sig.view(-1, ori_shape[-2], ori_shape[-1])
-    siglen = ori_shape[-1]
+    sig = sig.reshape(-1, ori_shape[-2], ori_shape[-1])
+    siglen = sig.shape[-1]
 
     baseline = sig
     for window in [window1, window2]:
@@ -557,4 +588,4 @@ def baseline_removal(
             stride=1,
         )
 
-    return (sig - baseline).view(ori_shape)
+    return (sig - baseline).reshape(ori_shape)

@@ -116,6 +116,8 @@ def test_preproc_manager() -> None:
 
 
 def test_bandpass() -> None:
+    from torch_ecg.utils.utils_signal_t import bandpass_filter
+
     bp = BandPass(fs=500)
     # Tensor
     sig = test_sig.clone()
@@ -126,13 +128,35 @@ def test_bandpass() -> None:
     sig_np = bp(sig_np)
     assert isinstance(sig_np, np.ndarray)
 
+    # lowcut=0 now warns and disables the high-pass side (treated as lowpass)
     bp = BandPass(fs=500, lowcut=0, highcut=40)
     sig = test_sig.clone()
-    sig = bp(sig)
+    with pytest.warns(RuntimeWarning, match="lowcut <= 0"):
+        sig = bp(sig)
 
     bp = BandPass(fs=500, lowcut=1.5, highcut=None, inplace=False)
     sig = test_sig.clone()
     sig = bp(sig)
+
+    # highcut >= nyquist warns and disables the low-pass side (treated as highpass)
+    with pytest.warns(RuntimeWarning, match="highcut >= Nyquist"):
+        bandpass_filter(test_sig.clone(), fs=500, lowcut=1.0, highcut=250.0)
+
+    # invalid fs
+    with pytest.raises(ValueError, match="fs must be a positive real number"):
+        bandpass_filter(test_sig.clone(), fs=-1)
+
+    # lowcut >= nyquist raises
+    with pytest.raises(ValueError, match="lowcut must be less than Nyquist"):
+        bandpass_filter(test_sig.clone(), fs=500, lowcut=300.0)
+
+    # highcut <= 0 raises
+    with pytest.raises(ValueError, match="highcut must be positive"):
+        bandpass_filter(test_sig.clone(), fs=500, highcut=-5.0)
+
+    # lowcut >= highcut raises
+    with pytest.raises(ValueError, match="lowcut must be less than highcut"):
+        bandpass_filter(test_sig.clone(), fs=500, lowcut=80.0, highcut=40.0)
 
     del bp, sig
 

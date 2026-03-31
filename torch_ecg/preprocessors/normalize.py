@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from typing import Any, Iterable, Literal, Union
 
 import numpy as np
@@ -41,14 +40,14 @@ class Normalize(torch.nn.Module):
     ----------
     method : {"naive", "min-max", "z-score"}, default "z-score",
         Normalization method, by default "z-score", case-insensitive.
-    mean : numbers.Real or array_like, default 0.0
+    mean : int or float or array_like, default 0.0
         If `method` is "z-score", then `mean is the mean value
         of the normalized signal,
         or mean values for each lead of the normalized signal.
         If `method` is "naive", then `mean` is the mean value
         to be subtracted from the original signal.
         Useless if `method` is ``"min-max"``.
-    std : numbers.Real or array_like, default 1.0
+    std : int or float or array_like, default 1.0
         If `method` is "z-score", then `std` is the standard deviation
         of the normalized signal,
         or standard deviations for each lead of the normalized signal.
@@ -67,8 +66,8 @@ class Normalize(torch.nn.Module):
     def __init__(
         self,
         method: Literal["naive", "min-max", "z-score"] = "z-score",
-        mean: Union[Real, Iterable[Real]] = 0.0,
-        std: Union[Real, Iterable[Real]] = 1.0,
+        mean: Union[int, float, Iterable[Union[int, float]]] = 0.0,
+        std: Union[int, float, Iterable[Union[int, float]]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
         **kwargs: Any,
@@ -163,9 +162,9 @@ class NaiveNormalize(Normalize):
 
     Parameters
     ----------
-    mean : numbers.Real or array_like, default 0.0
+    mean : int or float or array_like, default 0.0
         Value(s) to be subtracted.
-    std : numbers.Real or array_like, default 1.0
+    std : int or float or array_like, default 1.0
         Value(s) to be divided.
     per_channel : bool, default False
         Whether to perform the normalization per channel.
@@ -178,8 +177,8 @@ class NaiveNormalize(Normalize):
 
     def __init__(
         self,
-        mean: Union[Real, Iterable[Real]] = 0.0,
-        std: Union[Real, Iterable[Real]] = 1.0,
+        mean: Union[int, float, Iterable[Union[int, float]]] = 0.0,
+        std: Union[int, float, Iterable[Union[int, float]]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
         **kwargs: Any,
@@ -206,10 +205,10 @@ class ZScoreNormalize(Normalize):
 
     Parameters
     ----------
-    mean : numbers.Real or array_like, default 0.0
+    mean : int or float or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal.
-    std : numbers.Real or array_like, default 1.0
+    std : int or float or array_like, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal.
     per_channel : bool, default False
@@ -223,8 +222,8 @@ class ZScoreNormalize(Normalize):
 
     def __init__(
         self,
-        mean: Union[Real, Iterable[Real]] = 0.0,
-        std: Union[Real, Iterable[Real]] = 1.0,
+        mean: Union[int, float, Iterable[Union[int, float]]] = 0.0,
+        std: Union[int, float, Iterable[Union[int, float]]] = 1.0,
         per_channel: bool = False,
         inplace: bool = True,
         **kwargs: Any,

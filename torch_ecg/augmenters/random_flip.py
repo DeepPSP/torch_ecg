@@ -1,12 +1,12 @@
 """ """
 
-from numbers import Real
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from .base import Augmenter
 from .registry import AUGMENTERS
 
@@ -60,10 +60,10 @@ class RandomFlip(Augmenter):
         self.per_channel = per_channel
         self.inplace = inplace
         self.prob = prob
-        if isinstance(self.prob, Real):
-            self.prob = np.array([self.prob, self.prob])
+        if isinstance(self.prob, (float, int)):
+            self.prob = np.array([self.prob, self.prob], dtype=DEFAULTS.np_dtype)
         else:
-            self.prob = np.array(self.prob)
+            self.prob = np.array(self.prob, dtype=DEFAULTS.np_dtype)
         assert (self.prob >= 0).all() and (self.prob <= 1).all(), "Probability must be between 0 and 1"
 
     def forward(

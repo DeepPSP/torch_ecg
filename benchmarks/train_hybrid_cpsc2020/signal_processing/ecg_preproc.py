@@ -19,7 +19,6 @@ import multiprocessing as mp
 import os
 import time
 from copy import deepcopy
-from numbers import Real
 from typing import Dict, Optional
 
 import numpy as np
@@ -64,14 +63,14 @@ DL_QRS_DETECTORS = [
 ]
 
 
-def preprocess_signal(raw_sig: np.ndarray, fs: Real, config: Optional[CFG] = None) -> Dict[str, np.ndarray]:
+def preprocess_signal(raw_sig: np.ndarray, fs: int, config: Optional[CFG] = None) -> Dict[str, np.ndarray]:
     """
 
     Parameters
     ----------
     raw_sig: ndarray,
         the raw ecg signal
-    fs: real number,
+    fs: int,
         sampling frequency of `raw_sig`
     config: dict, optional,
         extra process configuration,
@@ -135,7 +134,7 @@ def preprocess_signal(raw_sig: np.ndarray, fs: Real, config: Optional[CFG] = Non
 
 def parallel_preprocess_signal(
     raw_sig: np.ndarray,
-    fs: Real,
+    fs: int,
     config: Optional[CFG] = None,
     save_dir: Optional[str] = None,
     save_fmt: str = "npy",
@@ -147,7 +146,7 @@ def parallel_preprocess_signal(
     ----------
     raw_sig: ndarray,
         the raw ecg signal
-    fs: real number,
+    fs: int,
         sampling frequency of `raw_sig`
     config: dict, optional,
         extra process configuration,

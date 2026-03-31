@@ -12,7 +12,6 @@ References
 import textwrap
 from copy import deepcopy
 from itertools import repeat
-from numbers import Real
 from typing import Any, List, Optional, Sequence, Union
 
 from deprecate_kwargs import deprecate_kwargs
@@ -972,7 +971,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
         self.__in_channels = in_channels
         self.__n_blocks = n_blocks
         self.__expansion = expansion
-        if isinstance(expansion, Real):
+        if isinstance(expansion, (float, int)):
             self.__expansion = list(repeat(expansion, self.n_blocks))
         else:
             self.__expansion = expansion

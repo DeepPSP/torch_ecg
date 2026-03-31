@@ -2279,16 +2279,16 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         """Convert a string to a real number.
 
         Some columns in the annotations might incorrectly
-        been converted from numbers.Real to string, using ``xmltodict``.
+        been converted from int or float to string, using ``xmltodict``.
 
         Parameters
         ----------
-        s : str or numbers.Real
+        s : str or int or float
             The string to be converted.
 
         Returns
         -------
-        numbers.Real
+        int or float
             The converted number.
 
         """
