@@ -584,6 +584,60 @@ def test_mixin_classes():
     assert inp is out
 
 
+def test_ckpt_decimal_suffix_path():
+    """Regression test for Bug A: CkptMixin.save() with a decimal-valued suffix.
+
+    Paths like ``…metric_0.91`` have ``.91`` as their pathlib suffix.
+    The old code did ``path.with_suffix(".safetensors")`` which silently
+    truncated the name to ``…metric_0.safetensors``.  The fix appends the
+    extension instead of replacing it, so the actual file is
+    ``…metric_0.91.safetensors``.
+    """
+    import shutil
+
+    tmp = Path(__file__).resolve().parents[1] / "tmp"
+    tmp.mkdir(exist_ok=True)
+
+    model = Model1D(12, CFG(out_channels=128))
+
+    # --- single-file safetensors (trainer default) ---
+    # Simulate the path that BaseTrainer generates for a checkpoint with a
+    # decimal metric value, e.g. "…_metric_0.91"
+    stem = tmp / "checkpoint_epoch1_metric_0.91"
+    expected = Path(str(stem) + ".safetensors")  # correct: append
+    wrong = stem.with_suffix(".safetensors")  # old bug: "…metric_0.safetensors"
+
+    actual = model.save(stem, CFG(n_leads=12))
+
+    assert actual == expected, f"Expected {expected}, got {actual}"
+    assert expected.is_file(), "Correct .safetensors file was not created"
+    assert not wrong.is_file(), "Buggy truncated path should NOT exist"
+
+    # Verify the saved file can be loaded back
+    loaded, _ = Model1D.from_checkpoint(expected)
+    assert repr(model) == repr(loaded)
+    expected.unlink()
+
+    # --- non-single-file safetensors (directory) ---
+    # The returned path should be the directory (stem without .safetensors)
+    stem_dir = tmp / "checkpoint_epoch1_metric_0.91"
+    actual_dir = model.save(stem_dir, CFG(n_leads=12), safetensors_single_file=False)
+    # After normalization: "…0.91.safetensors", then with_suffix("") → "…0.91" (dir)
+    expected_dir = Path(str(stem_dir))
+    assert actual_dir == expected_dir, f"Expected dir {expected_dir}, got {actual_dir}"
+    assert expected_dir.is_dir()
+    loaded, _ = Model1D.from_checkpoint(expected_dir)
+    assert repr(model) == repr(loaded)
+    shutil.rmtree(expected_dir)
+
+    # --- pth fallback (torch.save) ---
+    pth_path = tmp / "checkpoint_epoch1.pth"
+    actual_pth = model.save(pth_path, CFG(n_leads=12), use_safetensors=False)
+    assert actual_pth == pth_path
+    assert pth_path.is_file()
+    pth_path.unlink()
+
+
 def test_make_safe_globals():
     # CFG and dict
     cfg = CFG(a=1, b=None, c={"d": 2})

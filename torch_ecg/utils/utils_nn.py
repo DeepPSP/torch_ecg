@@ -1338,7 +1338,7 @@ class CkptMixin(object):
         extra_items: Optional[dict] = None,
         use_safetensors: Optional[bool] = None,
         safetensors_single_file: bool = True,
-    ) -> None:
+    ) -> Path:
         """Save the model to disk.
 
         .. note::
@@ -1375,7 +1375,9 @@ class CkptMixin(object):
 
         Returns
         -------
-        None
+        Path
+            The actual path the model was saved to (may differ from the input
+            ``path`` when the suffix is normalised, e.g. ``.pth`` → ``.safetensors``).
 
         """
         if isinstance(path, bytes):
@@ -1401,6 +1403,12 @@ class CkptMixin(object):
         elif path.suffix == ".safetensors":
             use_safetensors = True
 
+        if use_safetensors and path.suffix != ".safetensors":
+            # path has no recognised extension (or a non-standard one such as ".91"
+            # from a decimal metric value like "…metric_0.91").  path.with_suffix()
+            # would silently truncate the numeric part, so we append instead.
+            path = Path(str(path) + ".safetensors")
+
         if use_safetensors and safetensors_single_file:
             tensors = dict(self.state_dict())  # type: ignore
 
@@ -1422,8 +1430,8 @@ class CkptMixin(object):
                     continue
                 meta[f"{_SFT_META_EXTRA_JSON_PREFIX}{key}"] = json.dumps(make_serializable(val), ensure_ascii=False)
 
-            save_file(tensors, path.with_suffix(".safetensors"), metadata=meta)
-            return
+            save_file(tensors, path, metadata=meta)
+            return path
 
         if use_safetensors:  # not single file
             # save the model with safetensors with the same name as `path`
@@ -1442,7 +1450,7 @@ class CkptMixin(object):
                     save_file(val, path / f"{key}.safetensors")
                 else:
                     (path / f"{key}.json").write_text(json.dumps(make_serializable(val), ensure_ascii=False))
-            return
+            return path
 
         torch.save(
             {
@@ -1453,3 +1461,4 @@ class CkptMixin(object):
             },
             path,
         )
+        return path

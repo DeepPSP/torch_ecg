@@ -5,6 +5,7 @@ in order to replace the functions for classes in the training pipelines.
 
 import logging
 import os
+import shutil
 import textwrap
 from abc import ABC, abstractmethod
 from collections import OrderedDict, deque
@@ -250,13 +251,16 @@ class BaseTrainer(ReprMixin, ABC):
                 save_folder = f"{self.save_prefix}_epoch{self.epoch}_{get_date_str()}_{save_suffix}"
                 save_path = self.train_config.checkpoints / save_folder  # type: ignore
                 if self.train_config.keep_checkpoint_max != 0:  # type: ignore
-                    self.save_checkpoint(str(save_path))
-                    self.saved_models.append(save_path)
+                    actual_save_path = self.save_checkpoint(str(save_path))
+                    self.saved_models.append(actual_save_path if actual_save_path is not None else save_path)
                 # remove outdated models
                 if len(self.saved_models) > self.train_config.keep_checkpoint_max > 0:  # type: ignore
                     model_to_remove = self.saved_models.popleft()
                     try:
-                        os.remove(model_to_remove)
+                        if model_to_remove.is_dir():
+                            shutil.rmtree(model_to_remove)
+                        else:
+                            os.remove(model_to_remove)
                     except Exception:
                         self.log_manager.log_message(f"failed to remove {str(model_to_remove)}")  # type: ignore
 
@@ -764,7 +768,7 @@ class BaseTrainer(ReprMixin, ABC):
         self._setup_from_config(ckpt["train_config"])
         # TODO: resume optimizer, etc.
 
-    def save_checkpoint(self, path: str) -> None:
+    def save_checkpoint(self, path: str) -> Optional[Path]:
         """Save the current state of the trainer to a checkpoint.
 
         Parameters
@@ -772,10 +776,17 @@ class BaseTrainer(ReprMixin, ABC):
         path : str
             Path to save the checkpoint
 
+        Returns
+        -------
+        Path, optional
+            The actual path the checkpoint was saved to (suffix may differ
+            from ``path`` after normalisation, e.g. ``.safetensors``).
+            Returns ``None`` when the model does not implement ``save()``.
+
         """
         # if self._model has method `save`, then use it
         if hasattr(self._model, "save"):
-            self._model.save(
+            return self._model.save(
                 path=path,
                 train_config=self.train_config,
                 extra_items={
@@ -797,6 +808,7 @@ class BaseTrainer(ReprMixin, ABC):
                 },
                 path,
             )
+            return Path(path)
 
     def extra_repr_keys(self) -> List[str]:
         return [
