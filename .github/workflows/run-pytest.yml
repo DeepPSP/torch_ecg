@@ -111,7 +111,7 @@ jobs:
         SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
       if: ${{ matrix.python-version == env.PYTHON_PRIMARY_VERSION }}
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
