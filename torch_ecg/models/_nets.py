@@ -2780,7 +2780,7 @@ class SeqLin(nn.Sequential, SizeMixin):
         else:
             self.__kernel_initializer = None
         self.__bias = bias
-        if isinstance(dropouts, float):
+        if isinstance(dropouts, (int, float)):
             if self.__num_layers > 1:
                 self.__dropouts = list(repeat(dropouts, self.__num_layers - 1)) + [0.0]
             else:
