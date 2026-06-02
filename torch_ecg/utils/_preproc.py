@@ -20,8 +20,7 @@ References:
 
 import multiprocessing as mp
 from collections import Counter
-from numbers import Real
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 
@@ -64,10 +63,10 @@ PreprocCfg.beat_winR = 250
 
 def preprocess_multi_lead_signal(
     raw_sig: NDArray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
 ) -> Dict[str, NDArray]:
@@ -77,33 +76,36 @@ def preprocess_multi_lead_signal(
 
     Parameters
     ----------
-    raw_sig: ndarray,
-        the raw ECG signal, with units in mV
-    fs: numbers.Real,
-        sampling frequency of `raw_sig`
-    sig_fmt: str, default "channel_first",
-        format of the multi-lead ECG signal,
+    raw_sig : NDArray
+        The raw ECG signal, with units in mV.
+    fs : int
+        Sampling frequency of `raw_sig`.
+    sig_fmt : str, default "channel_first"
+        Format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first", original)
-    bl_win: list (of 2 numbers.Real), optional,
-        window (units in second) of baseline removal using `median_filter`,
+    bl_win : list (of 2 int or float), optional
+        Window (units in second) of baseline removal using `median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is [0.2, 0.6],
         if is None or empty, baseline removal will not be performed
-    band_fs: list (of 2 numbers.Real), optional,
-        frequency band of the bandpass filter,
+    band_fs : list (of 2 int or float), optional
+        Frequency band of the bandpass filter,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
-    rpeak_fn: str, optional,
-        name of the function detecting rpeaks,
+    rpeak_fn : str, optional
+        Name of the function detecting rpeaks,
         can be one of keys of `QRS_DETECTORS`, case insensitive
-    verbose: int, default 0,
-        print verbosity
+    verbose : int, default 0
+        Verbosity level.
+        If 1, print the rpeak candidates for each lead.
+        If 2, also print the split indices and corresponding intervals
+        when merging rpeaks.
 
     Returns
     -------
-    retval: dict,
+    retval : dict
         with items
         - "filtered_ecg": the array of the processed ECG signal
         - "rpeaks": the array of indices of rpeaks; empty if `rpeak_fn` is not given
@@ -148,9 +150,9 @@ def preprocess_multi_lead_signal(
 
 def preprocess_single_lead_signal(
     raw_sig: NDArray,
-    fs: Real,
-    bl_win: Optional[List[Real]] = None,
-    band_fs: Optional[List[Real]] = None,
+    fs: int,
+    bl_win: Optional[List[Union[int, float]]] = None,
+    band_fs: Optional[List[Union[int, float]]] = None,
     rpeak_fn: Optional[str] = None,
     verbose: int = 0,
 ) -> Dict[str, NDArray]:
@@ -160,29 +162,32 @@ def preprocess_single_lead_signal(
 
     Parameters
     ----------
-    raw_sig: ndarray,
-        the raw ECG signal, with units in mV
-    fs: numbers.Real,
-        sampling frequency of `raw_sig`
-    bl_win: list (of 2 numbers.Real), optional,
-        window (units in second) of baseline removal using `median_filter`,
+    raw_sig : NDArray
+        The raw ECG signal, with units in mV.
+    fs : int
+        Sampling frequency of `raw_sig`.
+    bl_win : list (of 2 int or float), optional
+        Window (units in second) of baseline removal using `median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is [0.2, 0.6],
         if is None or empty, baseline removal will not be performed
-    band_fs: list (of 2 numbers.Real), optional,
-        frequency band of the bandpass filter,
+    band_fs : list (of 2 int or float), optional
+        Frequency band of the bandpass filter,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
-    rpeak_fn: str, optional,
-        name of the function detecting rpeaks,
+    rpeak_fn : str, optional
+        Name of the function detecting rpeaks,
         can be one of keys of `QRS_DETECTORS`, case insensitive
-    verbose: int, default 0,
-        print verbosity
+    verbose : int, default 0,
+        Verbosity level.
+        If 1, print the rpeak candidates.
+        If 2, also print the split indices and corresponding intervals
+        when merging rpeaks.
 
     Returns
     -------
-    retval: dict,
+    retval : dict
         with items
         - "filtered_ecg": the array of the processed ECG signal
         - "rpeaks": the array of indices of rpeaks; empty if `rpeak_fn` is not given
@@ -227,7 +232,7 @@ def preprocess_single_lead_signal(
 
 def rpeaks_detect_multi_leads(
     sig: NDArray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     rpeak_fn: str = "xqrs",
     verbose: int = 0,
@@ -237,24 +242,27 @@ def rpeaks_detect_multi_leads(
 
     Parameters
     ----------
-    sig: ndarray,
-        the (better be filtered) ECG signal, with units in mV
-    fs: numbers.Real,
-        sampling frequency of `sig`
-    sig_fmt: str, default "channel_first",
-        format of the multi-lead ECG signal,
+    sig : NDArray
+        The (better be filtered) ECG signal, with units in mV.
+    fs : int
+        Sampling frequency of `sig`.
+    sig_fmt : str, default "channel_first"
+        Format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first", original)
-    rpeak_fn: str,
-        name of the function detecting rpeaks,
-        can be one of keys of `QRS_DETECTORS`, case insensitive
-    verbose: int, default 0,
-        print verbosity
+    rpeak_fn : str
+        Name of the function detecting rpeaks,
+        can be one of keys of `QRS_DETECTORS`, case insensitive.
+    verbose : int, default 0
+        Verbosity level.
+        If 1, print the rpeak candidates.
+        If 2, also print the split indices and corresponding intervals
+        when merging rpeaks.
 
     Returns
     -------
-    rpeaks: NDArray,
-        array of indices of the detected rpeaks of the multi-lead ECG signal
+    rpeaks : NDArray
+        Array of indices of the detected rpeaks of the multi-lead ECG signal.
 
     """
     assert sig_fmt.lower() in [
@@ -274,19 +282,19 @@ def rpeaks_detect_multi_leads(
     return rpeaks
 
 
-def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: Real, verbose: int = 0) -> NDArray:
+def merge_rpeaks(rpeaks_candidates: List[NDArray], sig: NDArray, fs: int, verbose: int = 0) -> NDArray:
     """
     merge rpeaks that are detected from each lead of multi-lead signals (with units in mV),
     using certain criterion merging qrs masks from each lead
 
     Parameters
     ----------
-    rpeaks_candidates: list of ndarray,
-        each element (ndarray) is the array of indices of rpeaks of corr. lead
-    sig: ndarray,
-        the multi-lead ECG signal, with units in mV
-    fs: numbers.Real,
-        sampling frequency of `sig`
+    rpeaks_candidates : list of ndarray
+        Each element (ndarray) is the array of indices of rpeaks of the corresponding lead.
+    sig : NDArray
+        The multi-lead ECG signal, with units in mV.
+    fs : int
+        Sampling frequency of `sig`.
     verbose: int, default 0,
         print verbosity
 

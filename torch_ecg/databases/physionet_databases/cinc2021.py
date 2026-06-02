@@ -9,7 +9,6 @@ import time
 import warnings
 from copy import deepcopy
 from datetime import datetime
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
@@ -670,9 +669,9 @@ class CINC2021(PhysioNetDataBase):
         data_format: str = "channel_first",
         backend: Literal["wfdb", "scipy"] = "wfdb",
         units: Literal["mV", "μV", "uV", "muV", None] = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load physical (converted from digital) ECG data.
 
         Parameters
@@ -690,7 +689,7 @@ class CINC2021(PhysioNetDataBase):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV").
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -701,7 +700,7 @@ class CINC2021(PhysioNetDataBase):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -1092,7 +1091,7 @@ class CINC2021(PhysioNetDataBase):
             labels = _labels
         return labels
 
-    def get_fs(self, rec: Union[str, int], from_hea: bool = True) -> Real:
+    def get_fs(self, rec: Union[str, int], from_hea: bool = True) -> int:
         """Get the sampling frequency of the record.
 
         Parameters
@@ -1106,7 +1105,7 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        fs : numbers.Real
+        fs : int
             Sampling frequency of the record.
 
         """
@@ -1974,7 +1973,7 @@ def _compute_f_measure(labels: NDArray, outputs: NDArray) -> Tuple[float, NDArra
     return macro_f_measure, f_measure
 
 
-def _compute_beta_measures(labels: NDArray, outputs: NDArray, beta: Real) -> Tuple[float, float]:
+def _compute_beta_measures(labels: NDArray, outputs: NDArray, beta: float) -> Tuple[float, float]:
     """Compute F-beta and G-beta measures.
 
     Parameters

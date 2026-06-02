@@ -11,7 +11,6 @@ import os
 import warnings
 from abc import ABC, abstractmethod
 from datetime import datetime
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -87,7 +86,7 @@ class BaseLogger(ReprMixin, ABC):
     @abstractmethod
     def log_metrics(
         self,
-        metrics: Dict[str, Union[Real, torch.Tensor]],
+        metrics: Dict[str, Union[int, float, torch.Tensor]],
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
@@ -178,7 +177,7 @@ class TxtLogger(BaseLogger):
     @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
-        metrics: Dict[str, Union[Real, torch.Tensor]],
+        metrics: Dict[str, Union[int, float, torch.Tensor]],
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
@@ -309,7 +308,7 @@ class CSVLogger(BaseLogger):
     @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
-        metrics: Dict[str, Union[Real, torch.Tensor]],
+        metrics: Dict[str, Union[int, float, torch.Tensor]],
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
@@ -408,7 +407,7 @@ class TensorBoardXLogger(BaseLogger):
     @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
-        metrics: Dict[str, Union[Real, torch.Tensor]],
+        metrics: Dict[str, Union[int, float, torch.Tensor]],
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
@@ -573,7 +572,7 @@ class LoggerManager(ReprMixin):
     @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
-        metrics: Dict[str, Union[Real, torch.Tensor]],
+        metrics: Dict[str, Union[int, float, torch.Tensor]],
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",

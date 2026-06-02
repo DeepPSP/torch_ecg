@@ -356,7 +356,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
 
         Parameters
         ----------
-        fs : numbers.Real
+        fs : int
             Sampling frequency of the signal corresponding to the masks,
             used to compute the duration of each waveform,
             and thus the error and standard deviations of errors.

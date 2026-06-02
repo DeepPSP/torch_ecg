@@ -2,18 +2,9 @@
 metrics from the official scoring repository
 """
 
-from numbers import Real
 from typing import List, Sequence, Tuple
 
 import numpy as np
-
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.databases.aux_data.cinc2020_aux_data import load_weights
 
@@ -168,7 +159,7 @@ def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
 
 
 # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
-def compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: Real) -> Tuple[float, float]:
+def compute_beta_measures(labels: np.ndarray, outputs: np.ndarray, beta: float) -> Tuple[float, float]:
     """checked,"""
     num_recordings, num_classes = np.shape(labels)
 

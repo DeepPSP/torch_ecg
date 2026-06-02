@@ -138,7 +138,7 @@ class BaseInput(ReprMixin, ABC):
     def device(self) -> torch.device:
         return self._device
 
-    def compute_input_shape(self, waveform_shape: Union[Sequence[int], torch.Size]) -> Tuple[Union[type(None), int], ...]:
+    def compute_input_shape(self, waveform_shape: Union[Sequence[int], torch.Size]) -> Tuple[Union[None, int], ...]:
         """
 
         computes the input shape of the model based on the input type and the waveform shape

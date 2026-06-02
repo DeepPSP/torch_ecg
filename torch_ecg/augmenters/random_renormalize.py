@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -55,18 +54,18 @@ class RandomRenormalize(Augmenter):
 
     def __init__(
         self,
-        mean: Iterable[Real] = [-0.05, 0.1],
-        std: Iterable[Real] = [0.08, 0.32],
+        mean: Iterable[float] = [-0.05, 0.1],
+        std: Iterable[float] = [0.08, 0.32],
         per_channel: bool = False,
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any,
     ) -> None:
         super().__init__()
-        self.mean = np.array(mean)
+        self.mean = np.array(mean, dtype=DEFAULTS.np_dtype)
         self.mean_mean = self.mean.mean(axis=-1, keepdims=True)
         self.mean_scale = (self.mean[..., -1] - self.mean_mean) * 0.3
-        self.std = np.array(std)
+        self.std = np.array(std, dtype=DEFAULTS.np_dtype)
         self.std_mean = self.std.mean(axis=-1, keepdims=True)
         self.std_scale = (self.std[..., -1] - self.std_mean) * 0.3
         self.per_channel = per_channel

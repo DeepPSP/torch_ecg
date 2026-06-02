@@ -16,7 +16,6 @@ TODO
 import time
 import warnings
 from copy import deepcopy
-from numbers import Real
 from typing import Any, List, Literal, Sequence, Tuple, Union
 
 import numpy as np
@@ -43,7 +42,7 @@ __all__ = [
 
 
 EMPTY_SET = []
-Interval = Union[Sequence[Real], type(EMPTY_SET)]
+Interval = Union[Sequence[Union[int, float]], type(EMPTY_SET)]
 GeneralizedInterval = Union[Sequence[Interval], type(EMPTY_SET)]
 
 
@@ -137,12 +136,12 @@ def validate_interval(
         return False, []
 
 
-def in_interval(val: Real, interval: Interval, left_closed: bool = True, right_closed: bool = False) -> bool:
+def in_interval(val: Union[int, float], interval: Interval, left_closed: bool = True, right_closed: bool = False) -> bool:
     """Check whether val is inside interval or not.
 
     Parameters
     ----------
-    val : numbers.Real
+    val : int or float
         The value to be checked.
     interval : Interval
         The interval to be checked.
@@ -185,7 +184,7 @@ def in_interval(val: Real, interval: Interval, left_closed: bool = True, right_c
 
 
 def in_generalized_interval(
-    val: Real,
+    val: Union[int, float],
     generalized_interval: GeneralizedInterval,
     left_closed: bool = True,
     right_closed: bool = False,
@@ -194,7 +193,7 @@ def in_generalized_interval(
 
     Parameters
     ----------
-    val : numbers.Real
+    val : int or float
         The value to be checked whether
         it is inside `generalized_interval` or not.
     generalized_interval : GeneralizedInterval
@@ -485,10 +484,10 @@ def generalized_interval_complement(total_interval: Interval, generalized_interv
 
 def get_optimal_covering(
     total_interval: Interval,
-    to_cover: List[Union[Real, Interval]],
-    min_len: Real,
-    split_threshold: Real,
-    isolated_point_dist_threshold: Real = 0,
+    to_cover: List[Union[int, float, Interval]],
+    min_len: Union[int, float],
+    split_threshold: Union[int, float],
+    isolated_point_dist_threshold: Union[int, float] = 0,
     traceback: bool = False,
     **kwargs: Any,
 ) -> Union[GeneralizedInterval, Tuple[GeneralizedInterval, list]]:
@@ -506,11 +505,11 @@ def get_optimal_covering(
         The total interval that the covering is picked from.
     to_cover : list
         A list of intervals or points to cover.
-    min_len : numbers.Real
+    min_len : int or float
         Minimun length (positive) of the intervals of the covering.
-    split_threshold : numbers.Real
+    split_threshold : int or float
         Minumun distance (positive) of intervals of the covering.
-    isolated_point_dist_threshold : numbers.Real, default 0.0
+    isolated_point_dist_threshold : int or float, default 0.0
         The minimum distance (non-negative) of isolated points
         in `to_cover` to the interval boundaries of the interval
         containing the point in the covering.
@@ -582,8 +581,8 @@ def get_optimal_covering(
     tmp = sorted(total_interval)
     tot_start, tot_end = tmp[0], tmp[-1]
 
-    if (tot_start > min([item if isinstance(item, Real) else item[0] for item in to_cover])) or (
-        tot_end < max([item if isinstance(item, Real) else item[-1] for item in to_cover])
+    if (tot_start > min([item if isinstance(item, (int, float)) else item[0] for item in to_cover])) or (
+        tot_end < max([item if isinstance(item, (int, float)) else item[-1] for item in to_cover])
     ):
         raise ValueError("some of the elements in `to_cover` exceeds the range of `total_interval`")
 
@@ -751,7 +750,7 @@ def get_optimal_covering(
     return covering
 
 
-def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
+def find_max_cont_len(sublist: Interval, tot_rng: Union[int, float]) -> dict:
     """Compute the maximum length of continuous (consecutive) sublists.
 
     This function computes the maximum length of continuous (consecutive)
@@ -763,7 +762,7 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
     ----------
     sublist : Interval
         The sublist.
-    tot_rng : numbers.Real
+    tot_rng : int or float
         The total range.
 
     Returns
@@ -796,7 +795,7 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
     return ret
 
 
-def interval_len(interval: Interval) -> Real:
+def interval_len(interval: Interval) -> Union[int, float]:
     """Compute the length of an interval.
 
     Parameters
@@ -806,7 +805,7 @@ def interval_len(interval: Interval) -> Real:
 
     Returns
     -------
-    numbers.Real
+    int or float
         The "length" of `interval`, 0 for the empty interval [].
 
     Examples
@@ -826,7 +825,7 @@ def interval_len(interval: Interval) -> Real:
     return itv_len
 
 
-def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
+def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Union[int, float]:
     """Compute the length of an interval.
 
     Parameters
@@ -836,7 +835,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
 
     Returns
     -------
-    numbers.Real
+    int or float
         The "length" of `generalized_interval`,
         0 for the empty interval [].
 

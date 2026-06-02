@@ -6,7 +6,6 @@ subsampling: accomplished
 
 import os
 import time
-from numbers import Real
 from pathlib import Path
 
 import numpy as np
@@ -86,20 +85,20 @@ class TestSHHS:
             assert isinstance(value, tuple)
             assert len(value) == 2
             assert isinstance(value[0], np.ndarray)
-            assert isinstance(value[1], Real) and value[1] > 0  # type: ignore
+            assert isinstance(value[1], (int, float)) and value[1] > 0  # type: ignore
         available_signals = reader.get_available_signals(0)
         for signal in available_signals:  # type: ignore
             psg_data = reader.load_psg_data(0, channel=signal, physical=True)
             assert isinstance(psg_data, tuple)
             assert len(psg_data) == 2
             assert isinstance(psg_data[0], np.ndarray)
-            assert isinstance(psg_data[1], Real) and psg_data[1] > 0  # type: ignore
+            assert isinstance(psg_data[1], (int, float)) and psg_data[1] > 0  # type: ignore
 
     def test_load_data(self):
         data, fs = reader.load_data(0)
         assert isinstance(data, np.ndarray)
         assert data.ndim == 2
-        assert isinstance(fs, Real) and fs > 0  # type: ignore
+        assert isinstance(fs, (int, float)) and fs > 0  # type: ignore
         data_1, fs_1 = reader.load_data(0, fs=500, data_format="flat")
         assert isinstance(data_1, np.ndarray)
         assert data_1.ndim == 1
@@ -509,11 +508,11 @@ class TestSHHS:
         available_signals = reader.get_available_signals(0)
         for sig in available_signals:  # type: ignore
             fs = reader.get_fs(0, sig)
-            assert isinstance(fs, Real) and fs > 0  # type: ignore
+            assert isinstance(fs, (int, float)) and fs > 0  # type: ignore
 
         rec = reader.rec_with_rpeaks_ann[0]
         fs = reader.get_fs(rec, "rpeak")
-        assert isinstance(fs, Real) and fs > 0  # type: ignore
+        assert isinstance(fs, (int, float)) and fs > 0  # type: ignore
 
         rec = "shhs2-200001"  # a record (both signal and ann. files) that does not exist
         fs = reader.get_fs(rec)

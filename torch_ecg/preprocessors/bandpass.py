@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from typing import Any, Optional, Union
 
 import numpy as np
@@ -22,11 +21,11 @@ class BandPass(torch.nn.Module):
 
     Parameters
     ----------
-    fs : numbers.Real
+    fs : int
         Sampling frequency of the ECG signal to be filtered.
-    lowcut : numbers.Real, optional
+    lowcut : float, optional
         Low cutoff frequency.
-    highcut : numbers.Real, optional
+    highcut : float, optional
         High cutoff frequency.
     inplace : bool, default True
         Whether to perform the filtering in-place.
@@ -39,9 +38,9 @@ class BandPass(torch.nn.Module):
 
     def __init__(
         self,
-        fs: Real,
-        lowcut: Optional[Real] = 0.5,
-        highcut: Optional[Real] = 45,
+        fs: int,
+        lowcut: Optional[float] = 0.5,
+        highcut: Optional[float] = 45,
         inplace: bool = True,
         **kwargs: Any,
     ) -> None:

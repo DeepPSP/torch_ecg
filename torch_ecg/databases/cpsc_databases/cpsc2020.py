@@ -2,7 +2,6 @@
 
 import math
 import os
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -379,9 +378,9 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
         units: str = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load the ECG data of the record `rec`.
 
         Parameters
@@ -400,7 +399,7 @@ class CPSC2020(CPSCDataBase):
         units : str or None, default "mV"
             Units of the output signal,
             can also be "μV" (with aliases "uV", "muV").
-        fs : numbers.Real, optional
+        fs : int, optional
             Frequency of the output signal.
             if not None, the loaded data will be resampled to this frequency;
             if None, the loaded data will be returned as is.
@@ -411,7 +410,7 @@ class CPSC2020(CPSCDataBase):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -531,7 +530,7 @@ class CPSC2020(CPSCDataBase):
         self,
         rec: Union[int, str],
         premature_type: Optional[str] = None,
-        window: Real = 10,
+        window: Union[int, float] = 10,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> List[List[int]]:
@@ -547,7 +546,7 @@ class CPSC2020(CPSCDataBase):
         premature_type : str, optional
             Premature beat type, can be one of "SPB", "PVC".
             If not specified, both SPBs and PVCs will be located.
-        window : numbers.Real, default 10
+        window : int or float, default 10
             Window length of each premature beat,
             with units in seconds.
         sampfrom : int, optional

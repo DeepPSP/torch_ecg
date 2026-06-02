@@ -5,7 +5,6 @@ from 3 files of the official evaluation repo:
 """
 
 from io import StringIO
-from numbers import Real
 from typing import Dict, Literal, Optional, Sequence, Union
 
 import pandas as pd
@@ -428,10 +427,10 @@ def get_class_weight(
     exclude_classes: Optional[Sequence[str]] = None,
     scored_only: bool = False,
     normalize: bool = True,
-    threshold: Optional[Real] = 0,
+    threshold: Optional[Union[int, float]] = 0,
     fmt: str = "a",
-    min_weight: Real = 0.5,
-) -> Dict[str, int]:
+    min_weight: Union[int, float] = 0.5,
+) -> Dict[str, Union[int, float]]:
     """Get the weight of each class in each tranche.
 
     Parameters
@@ -446,7 +445,7 @@ def get_class_weight(
     normalize : bool, default True
         Whether collapse equivalent classes into one or not,
         used only when `scored_only` is True.
-    threshold : numbers.Real, default 0
+    threshold : int or float, default 0
         Minimum ratio (0-1) or absolute number (>1) of a class to be counted.
     fmt : str, default "a"
         Format of the names of the classes in the returned dict,
@@ -454,7 +453,7 @@ def get_class_weight(
             - "a", abbreviations
             - "f", full names
             - "s", SNOMED CT Code
-    min_weight : numbers.Real, default 0.5
+    min_weight : int or float, default 0.5
         Minimum value of the weight of all classes,
         or equivalently the weight of the largest class.
 

@@ -8,7 +8,6 @@ References
 
 import math
 from itertools import repeat
-from numbers import Real
 from typing import Sequence, Union
 
 import biosppy.signals.ecg as BSE
@@ -34,7 +33,7 @@ __all__ = [
 CNN_MODEL, CRNN_MODEL = load_model("keras_ecg_seq_lab_net")
 
 
-def seq_lab_net_detect(sig: np.ndarray, fs: Real, correction: bool = False, **kwargs) -> np.ndarray:
+def seq_lab_net_detect(sig: np.ndarray, fs: int, correction: bool = False, **kwargs) -> np.ndarray:
     """
 
     use model of entry 0416 of CPSC2019,
@@ -46,7 +45,7 @@ def seq_lab_net_detect(sig: np.ndarray, fs: Real, correction: bool = False, **kw
     ----------
     sig: ndarray,
         the (raw) ECG signal of arbitrary length, with units in mV
-    fs: real number,
+    fs: int,
         sampling frequency of `sig`
     correction: bool, default False,
         if True, correct rpeaks to local maximum in a small nbh

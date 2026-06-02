@@ -4,8 +4,7 @@ Computes the respiratory rate from single-lead ECG signals.
 A python re-implementation of the `edr` function of physionet edr.c
 """
 
-from numbers import Real
-from typing import Sequence
+from typing import Sequence, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -19,8 +18,8 @@ def phs_edr(
     sig: Sequence,
     fs: int,
     rpeaks: Sequence,
-    winL_t: Real = 40,
-    winR_t: Real = 40,
+    winL_t: Union[int, float] = 40,
+    winR_t: Union[int, float] = 40,
     return_with_time: bool = True,
     mode: str = "complex",
     verbose: int = 0,
@@ -38,10 +37,10 @@ def phs_edr(
         sampling frequency of the signal
     rpeaks: array-like,
         indices of R peaks in the signal
-    winL_t: numbers.Real, default 40,
+    winL_t: int or float, default 40,
         left length of the window at R peaks for the computation of the area of a QRS complex,
         with units in milliseconds
-    winR_t: numbers.Real, default 40,
+    winR_t: int or float, default 40,
         right length of the window at R peaks for the computation of the area of a QRS complex,
         with units in milliseconds
     return_with_time: bool, default True,
@@ -124,6 +123,6 @@ def phs_edr(
         return ecg_der_rsp
 
 
-def _getxy(sig: Sequence, von: int, bis: int) -> Real:
+def _getxy(sig: Sequence, von: int, bis: int) -> float:
     """compute the integrand from `von` to `bis` of the signals with baseline removed"""
-    return (np.array(sig)[von : bis + 1]).sum()
+    return (np.array(sig)[von : bis + 1]).sum().item()

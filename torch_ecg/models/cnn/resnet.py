@@ -6,7 +6,6 @@ whose performance however seems exceeded by newer networks
 import textwrap
 from copy import deepcopy
 from itertools import repeat
-from numbers import Real
 from typing import List, Optional, Sequence, Union
 
 import torch.nn.functional as F
@@ -284,7 +283,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         For more details, ref. :class:`torch.nn.Conv1d`.
     dilation : int, default 1
         Dilation of the conv layers.
-    base_width : numbers.Real, default 12*4
+    base_width : int or float, default 12*4
         Number of filters per group for the neck conv layer.
         Usually number of filters of the initial conv layer
         of the whole ResNet model.
@@ -325,7 +324,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         subsample_length: int,
         groups: int = 1,
         dilation: int = 1,
-        base_width: Real = 12 * 4,
+        base_width: Union[int, float] = 12 * 4,
         base_groups: int = 1,
         base_filter_length: int = 1,
         attn: Optional[dict] = None,
@@ -785,7 +784,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
             f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, "
             f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         )
-        if isinstance(self.config.dropouts, (Real, dict)):
+        if isinstance(self.config.dropouts, (int, float, dict)):
             self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
         else:
             self.__dropouts = self.config.dropouts

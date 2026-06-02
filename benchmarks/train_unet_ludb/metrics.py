@@ -14,7 +14,6 @@ KEY points
 
 """
 
-from numbers import Real
 from typing import Dict, Sequence
 
 import numpy as np
@@ -44,7 +43,7 @@ def compute_metrics(
     truth_masks: Sequence[np.ndarray],
     pred_masks: Sequence[np.ndarray],
     class_map: Dict[str, int],
-    fs: Real,
+    fs: int,
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
     """
@@ -62,7 +61,7 @@ def compute_metrics(
     class_map: dict,
         class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain 'pwave', 'qrs', 'twave'
-    fs: real number,
+    fs: int,
         sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -101,7 +100,7 @@ def compute_metrics(
 def compute_metrics_waveform(
     truth_waveforms: Sequence[Sequence[ECGWaveForm]],
     pred_waveforms: Sequence[Sequence[ECGWaveForm]],
-    fs: Real,
+    fs: int,
 ) -> Dict[str, Dict[str, float]]:
     """
 
@@ -116,7 +115,7 @@ def compute_metrics_waveform(
     pred_waveforms: sequence of sequence of `ECGWaveForm`s,
         the predictions corresponding to `truth_waveforms`,
         each element is a sequence of `ECGWaveForm`s from the same sample
-    fs: real number,
+    fs: int,
         sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -213,7 +212,7 @@ def compute_metrics_waveform(
 
 
 def _compute_metrics_waveform(
-    truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Real
+    truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: int
 ) -> Dict[str, Dict[str, float]]:
     """
 
@@ -226,7 +225,7 @@ def _compute_metrics_waveform(
         the ground truth
     preds: sequence of `ECGWaveForm`s,
         the predictions corresponding to `truths`,
-    fs: real number,
+    fs: int,
         sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -295,7 +294,7 @@ def _compute_metrics_waveform(
     return scorings
 
 
-def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Real) -> Dict[str, float]:
+def _compute_metrics_base(truths: Sequence[int], preds: Sequence[int], fs: int) -> Dict[str, float]:
     """
 
     Parameters
@@ -304,7 +303,7 @@ def _compute_metrics_base(truths: Sequence[Real], preds: Sequence[Real], fs: Rea
         ground truth of indices of corresponding critical points
     preds: sequence of real numbers,
         predicted indices of corresponding critical points
-    fs: real number,
+    fs: int,
         sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors

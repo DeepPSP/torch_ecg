@@ -3,7 +3,6 @@
 import os
 import re
 import warnings
-from numbers import Real
 from pathlib import Path
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
@@ -265,7 +264,7 @@ class CPSC2018(CPSCDataBase):
         data_format="channel_first",
         units: str = "mV",
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load the ECG data of a record.
 
         Parameters
@@ -287,7 +286,7 @@ class CPSC2018(CPSCDataBase):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 

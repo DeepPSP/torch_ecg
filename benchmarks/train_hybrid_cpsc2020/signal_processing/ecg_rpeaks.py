@@ -13,8 +13,6 @@ References
 [1] Liu, Feifei, et al. "Performance analysis of ten common QRS detectors on different ECG application cases." Journal of healthcare engineering 2018 (2018).
 """
 
-from numbers import Real
-
 import biosppy.signals.ecg as BSE
 import numpy as np
 from wfdb.processing.qrs import GQRS, XQRS  # noqa: F401
@@ -34,7 +32,7 @@ __all__ = [
 
 # ---------------------------------------------------------------------
 # algorithms from wfdb
-def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def xqrs_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
     default kwargs:
         sampfrom=0, sampto='end', conf=None, learn=True, verbose=True
@@ -52,7 +50,7 @@ def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def gqrs_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
     default kwargs:
         d_sig=None, adc_gain=None, adc_zero=None,
@@ -90,7 +88,7 @@ def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 # ---------------------------------------------------------------------
 # algorithms from biosppy
-def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def hamilton_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
 
     References
@@ -110,7 +108,7 @@ def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def ssf_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
 
     Slope Sum Function (SSF)
@@ -138,7 +136,7 @@ def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def christov_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
 
     References
@@ -156,7 +154,7 @@ def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def engzee_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
 
     References
@@ -179,7 +177,7 @@ def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     return rpeaks
 
 
-def gamboa_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
+def gamboa_detect(sig: np.ndarray, fs: int, **kwargs) -> np.ndarray:
     """
 
     References

@@ -1,7 +1,6 @@
 """ """
 
 from copy import deepcopy
-from numbers import Real
 from random import shuffle
 from typing import Any, List, Optional, Sequence, Tuple
 
@@ -32,9 +31,9 @@ class Mixup(Augmenter):
     ----------
     fs : int, optional
         Sampling frequency of the ECGs to be augmented.
-    alpha : numbers.Real, default 0.5
+    alpha : float, default 0.5
         alpha parameter of the Beta distribution used in Mixup.
-    beta : numbers.Real, optional
+    beta : float, optional
         beta parameter of the Beta distribution used in Mixup,
         defaults to `alpha`.
     prob : float, default 0.5
@@ -67,8 +66,8 @@ class Mixup(Augmenter):
     def __init__(
         self,
         fs: Optional[int] = None,
-        alpha: Real = 0.5,
-        beta: Optional[Real] = None,
+        alpha: float = 0.5,
+        beta: Optional[float] = None,
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any,

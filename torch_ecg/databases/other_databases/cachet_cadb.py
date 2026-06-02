@@ -5,7 +5,6 @@ import re
 import warnings
 import xml.etree.ElementTree as ET
 from copy import deepcopy
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -347,10 +346,10 @@ class CACHET_CADB(_DataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: Union[str, type(None)] = "mV",
-        fs: Optional[Real] = None,
+        units: Union[str, None] = "mV",
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         """Load physical (converted from digital) ECG data,
         or load digital signal directly.
 
@@ -371,7 +370,7 @@ class CACHET_CADB(_DataBase):
         units : str or None, default "mV"
             Units of the output signal, can also be "μV" (aliases "uV", "muV");
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
@@ -382,7 +381,7 @@ class CACHET_CADB(_DataBase):
         -------
         data : numpy.ndarray
             The loaded ECG data.
-        data_fs : numbers.Real, optional
+        data_fs : int, optional
             Sampling frequency of the output signal.
             Returned if `return_fs` is True.
 
@@ -434,7 +433,7 @@ class CACHET_CADB(_DataBase):
         sampto: Optional[int] = None,
         channels: Optional[Union[str, int, List[str], List[int]]] = None,
         units: Optional[str] = None,
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
     ) -> Union[NDArray, pd.DataFrame]:
         """Load context data (e.g. accelerometer, heart rate, etc.).
 
@@ -457,7 +456,7 @@ class CACHET_CADB(_DataBase):
             Units of the output signal,
             currently can only be "default";
             None for digital data, without digital-to-physical conversion.
-        fs : numbers.Real, optional
+        fs : int, optional
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.

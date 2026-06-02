@@ -1,6 +1,5 @@
 """ """
 
-from numbers import Real
 from random import choice, randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
@@ -32,7 +31,7 @@ class StretchCompress(Augmenter):
 
     Parameters
     ----------
-    ratio : numbers.Real, default 6
+    ratio : int or float, default 6
         Mean ratio of the stretch or compress.
         If it is in the interval[1, 100],
         then it will be transformed to [0, 1].
@@ -59,7 +58,7 @@ class StretchCompress(Augmenter):
 
     __name__ = "StretchCompress"
 
-    def __init__(self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any) -> None:
+    def __init__(self, ratio: Union[int, float] = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any) -> None:
         super().__init__()
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
@@ -228,13 +227,13 @@ class StretchCompress(Augmenter):
 
 
 def _stretch_compress_one_batch_element(
-    ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
+    ratio: Union[int, float], sig: Tensor, *labels: Sequence[Tensor]
 ) -> Union[Tensor, Tuple[Tensor, ...]]:
     """Stretch or compress one batch element of the ECGs.
 
     Parameters
     ----------
-    ratio : numbers.Real
+    ratio : int or float
         Ratio of the stretch/compress.
     sig : torch.Tensor
         The ECGs to be stretched or compressed,
@@ -339,7 +338,7 @@ class StretchCompressOffline(ReprMixin):
 
     Parameters
     ----------
-    ratio : numbers.Real, default 6
+    ratio : int or float, default 6
         Mean ratio of the stretch or compress.
         If it is in the interval [1, 100],
         then it will be transformed to [0, 1].
@@ -368,7 +367,7 @@ class StretchCompressOffline(ReprMixin):
 
     def __init__(
         self,
-        ratio: Real = 6,
+        ratio: Union[int, float] = 6,
         prob: float = 0.5,
         overlap: float = 0.5,
         critical_overlap: float = 0.85,

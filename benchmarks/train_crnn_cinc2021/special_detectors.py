@@ -17,7 +17,6 @@ currently all are binary detectors, --> detectors producing a probability?
 """
 
 from itertools import repeat
-from numbers import Real
 from typing import Any, Optional, Sequence
 
 import numpy as np
@@ -54,7 +53,7 @@ __all__ = [
 
 def special_detectors(
     raw_sig: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
@@ -66,7 +65,7 @@ def special_detectors(
     ----------
     raw_sig: ndarray,
         the raw multi-lead ecg signal, with units in mV
-    fs: real number,
+    fs: int,
         sampling frequency of `sig`
     sig_fmt: str, default "channel_first",
         format of the multi-lead ecg signal,
@@ -133,19 +132,19 @@ def special_detectors(
 
 def pacing_rhythm_detector(
     raw_sig: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     ret_prob: bool = True,
     verbose: int = 0,
-) -> Real:
+) -> float:
     """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     Parameters
     ----------
     raw_sig: ndarray,
         the raw multi-lead ecg signal, with units in mV
-    fs: real number,
+    fs: int,
         sampling frequency of `sig`
     sig_fmt: str, default "channel_first",
         format of the multi-lead ecg signal,
@@ -238,7 +237,7 @@ def pacing_rhythm_detector(
 def electrical_axis_detector(
     filtered_sig: np.ndarray,
     rpeaks: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     method: Optional[str] = None,
@@ -255,7 +254,7 @@ def electrical_axis_detector(
         the filtered multi-lead ecg signal, with units in mV
     rpeaks: ndarray,
         array of indices of the R peaks
-    fs: real number,
+    fs: int,
         sampling frequency of `sig`
     sig_fmt: str, default "channel_first",
         format of the multi-lead ecg signal,
@@ -375,8 +374,8 @@ def electrical_axis_detector(
 
 def brady_tachy_detector(
     rpeaks: np.ndarray,
-    fs: Real,
-    normal_rr_range: Optional[Sequence[Real]] = None,
+    fs: int,
+    normal_rr_range: Optional[Sequence[int]] = None,
     verbose: int = 0,
 ) -> str:
     """to be improved (fine-tuning hyper-parameters in cfg.py),
@@ -391,7 +390,7 @@ def brady_tachy_detector(
     ----------
     rpeaks: ndarray,
         array of indices of the R peaks
-    fs: real number,
+    fs: int,
         sampling frequency of the ecg signal
     normal_rr_range: sequence of int, optional,
         the range of normal rr interval, with units in ms;
@@ -438,7 +437,7 @@ def brady_tachy_detector(
 def LQRSV_detector(
     filtered_sig: np.ndarray,
     rpeaks: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
@@ -451,7 +450,7 @@ def LQRSV_detector(
         the filtered multi-lead ecg signal, with units in mV
     rpeaks: ndarray,
         array of indices of the R peaks
-    fs: real number,
+    fs: int,
         sampling frequency of the ecg signal
     sig_fmt: str, default "channel_first",
         format of the 12 lead ecg signal,
@@ -511,7 +510,7 @@ def LQRSV_detector(
 def LQRSV_detector_backup(
     filtered_sig: np.ndarray,
     rpeaks: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
@@ -524,7 +523,7 @@ def LQRSV_detector_backup(
         the filtered 12-lead ecg signal, with units in mV
     rpeaks: ndarray,
         array of indices of the R peaks
-    fs: real number,
+    fs: int,
         sampling frequency of the ecg signal
     sig_fmt: str, default "channel_first",
         format of the 12 lead ecg signal,
@@ -608,7 +607,7 @@ def LQRSV_detector_backup(
 def PRWP_detector(
     filtered_sig: np.ndarray,
     rpeaks: np.ndarray,
-    fs: Real,
+    fs: int,
     sig_fmt: str = "channel_first",
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
@@ -621,7 +620,7 @@ def PRWP_detector(
         the filtered multi-lead ecg signal, with units in mV
     rpeaks: ndarray,
         array of indices of the R peaks
-    fs: real number,
+    fs: int,
         sampling frequency of the ecg signal
     sig_fmt: str, default "channel_first",
         format of the 12 lead ecg signal,

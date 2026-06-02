@@ -7,7 +7,6 @@ import textwrap
 import warnings
 from collections import Counter
 from itertools import repeat
-from numbers import Real
 from typing import List, Optional, Sequence, Union
 
 import torch
@@ -376,7 +375,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
                 f"`config.num_filters` indicates {len(self.__num_filters)} stages, "
                 f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
             )
-            if isinstance(self.config.dropouts, Real):
+            if isinstance(self.config.dropouts, (float, int)):
                 self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
             else:
                 self.__dropouts = self.config.dropouts
@@ -464,7 +463,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
             f"while there are {num_stages} computed from "
             "`config.w_a`, `config.w_0`, `config.w_m`, `config.tot_blocks`"
         )
-        if isinstance(self.config.dropouts, Real):
+        if isinstance(self.config.dropouts, (float, int)):
             self.__dropouts = list(repeat(self.config.dropouts, num_stages))
         else:
             self.__dropouts = self.config.dropouts

@@ -4,7 +4,6 @@ import json
 import math
 import os
 from copy import deepcopy
-from numbers import Real
 from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -159,9 +158,9 @@ class LTAFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         data_format: str = "channel_first",
         units: str = "mV",
-        fs: Optional[Real] = None,
+        fs: Optional[int] = None,
         return_fs: bool = False,
-    ) -> Union[NDArray, Tuple[NDArray, Real]]:
+    ) -> Union[NDArray, Tuple[NDArray, int]]:
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs, return_fs)
 
     def load_ann(

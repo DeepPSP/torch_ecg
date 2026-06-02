@@ -509,7 +509,7 @@ class WaveDelineationMetrics(Metrics):
         class_map : dict
             Class map, mapping names to waves to numbers from 0 to n_classes-1,
             the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
-        fs : numbers.Real
+        fs : int
             Sampling frequency of the signal corresponding to the masks,
             used to compute the duration of each waveform,
             and thus the error and standard deviations of errors.
