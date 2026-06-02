@@ -1051,7 +1051,7 @@ class BranchedConv(nn.Module, SizeMixin):
             len(strides) == self.__num_branches
         ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_branches}"
 
-        if isinstance(dropouts, (float, dict)):
+        if isinstance(dropouts, (int, float, dict)):
             _dropouts = list(repeat(dropouts, self.__num_branches))
         else:
             _dropouts = list(dropouts)  # type: ignore
