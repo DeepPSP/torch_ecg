@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/datasets/cpsc2019/cpsc2019_dataset';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -398,14 +417,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">....utils.utils_nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_collate_fn</span> <span class="k">as</span> <span class="n">collate_fn</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;CPSC2019Dataset&quot;</span><span class="p">,</span>
+    <span class="s2">"CPSC2019Dataset"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="CPSC2019Dataset">
 <a class="viewcode-back" href="../../../../../api/generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CPSC2019Dataset</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data generator for feeding data into pytorch models</span>
+<span class="w">    </span><span class="sd">"""Data generator for feeding data into pytorch models</span>
 <span class="sd">    using the :class:`~torch_ecg.databases.CPSC2019` database.</span>
 
 <span class="sd">    Parameters</span>
@@ -417,7 +436,7 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            &gt;&gt;&gt; config = deepcopy(CPSC2019TrainCfg)</span>
-<span class="sd">            &gt;&gt;&gt; config.db_dir = &quot;some/path/to/db&quot;</span>
+<span class="sd">            &gt;&gt;&gt; config.db_dir = "some/path/to/db"</span>
 <span class="sd">            &gt;&gt;&gt; dataset = CPSC2019Dataset(config, training=True, lazy=False)</span>
 
 <span class="sd">    training : bool, default True</span>
@@ -429,9 +448,9 @@
 <span class="sd">    **reader_kwargs : dict, optional</span>
 <span class="sd">        Keyword arguments for the database reader class.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CPSC2019Dataset&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"CPSC2019Dataset"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -442,8 +461,8 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;db_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`db_dir` is specified in both config and reader_kwargs&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"db_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"`db_dir` is specified in both config and reader_kwargs"</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">CR</span><span class="p">(</span><span class="n">db_dir</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">training</span>
@@ -478,12 +497,12 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdr</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load all data into memory.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Load all data into memory."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fdr</span><span class="p">,</span>
-            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;loading data&quot;</span><span class="p">,</span>
-            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">"loading data"</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">"record"</span><span class="p">,</span>
             <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
@@ -495,20 +514,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached signals, only available when `lazy=False`</span>
+<span class="w">        </span><span class="sd">"""Cached signals, only available when `lazy=False`</span>
 <span class="sd">        or preloading is performed manually.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached labels, only available when `lazy=False`</span>
+<span class="w">        </span><span class="sd">"""Cached labels, only available when `lazy=False`</span>
 <span class="sd">        or preloading is performed manually.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_train_test_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">force_recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform train-test split.</span>
+<span class="w">        </span><span class="sd">"""Perform train-test split.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -524,24 +543,24 @@
 <span class="sd">            List of the records split for training</span>
 <span class="sd">            or for testing (validation).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">train_ratio</span> <span class="o">&lt;</span> <span class="mi">100</span>
         <span class="n">_train_ratio</span> <span class="o">=</span> <span class="n">train_ratio</span> <span class="k">if</span> <span class="n">train_ratio</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">train_ratio</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="n">split_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;train_test_split_</span><span class="si">{</span><span class="n">_train_ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="n">split_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"train_test_split_</span><span class="si">{</span><span class="n">_train_ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.json"</span>
         <span class="k">if</span> <span class="n">split_fn</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_recompute</span><span class="p">:</span>
             <span class="n">split_res</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">split_fn</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">split_res</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">split_res</span><span class="p">[</span><span class="s2">"train"</span><span class="p">]</span>
                 <span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">split_res</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">split_res</span><span class="p">[</span><span class="s2">"test"</span><span class="p">]</span>
             <span class="k">return</span>
         <span class="n">records</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">all_records</span><span class="p">)</span>
         <span class="n">shuffle</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
         <span class="n">split_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_train_ratio</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">))</span>
         <span class="n">train</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">records</span><span class="p">[:</span><span class="n">split_num</span><span class="p">])</span>
         <span class="n">test</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="n">split_num</span><span class="p">:])</span>
-        <span class="n">split_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">train</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">test</span><span class="p">}</span>
+        <span class="n">split_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"train"</span><span class="p">:</span> <span class="n">train</span><span class="p">,</span> <span class="s2">"test"</span><span class="p">:</span> <span class="n">test</span><span class="p">}</span>
         <span class="n">split_fn</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">split_res</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">train</span>
@@ -553,15 +572,15 @@
 <a class="viewcode-back" href="../../../../../api/generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;training&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;reader&quot;</span><span class="p">,</span>
+            <span class="s2">"training"</span><span class="p">,</span>
+            <span class="s2">"reader"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_FastDataReader</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast data reader.</span>
+<span class="w">    </span><span class="sd">"""Fast data reader.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -574,7 +593,7 @@
 <span class="sd">    ppm : PreprocManager, optional</span>
 <span class="sd">        The preprocessor manager.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -597,9 +616,9 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">collate_fn</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">index</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))])</span>
         <span class="n">rec_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec_name</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;mV&quot;</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;flat&quot;</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec_name</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">"mV"</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">"flat"</span><span class="p">)</span>
         <span class="n">rpeaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="n">rec_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;recover_length&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"recover_length"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">reduction</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reduction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">reduction</span>
@@ -621,8 +640,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;reader&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ppm&quot;</span><span class="p">,</span>
+            <span class="s2">"reader"</span><span class="p">,</span>
+            <span class="s2">"ppm"</span><span class="p">,</span>
         <span class="p">]</span>
 </pre></div>
 
@@ -653,8 +672,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -688,7 +707,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

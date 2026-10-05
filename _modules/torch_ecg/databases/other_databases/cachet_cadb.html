@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/other_databases/cachet_cadb';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -386,7 +405,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -402,43 +420,43 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">_DataBase</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;CACHET_CADB&quot;</span><span class="p">,</span>
+    <span class="s2">"CACHET_CADB"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_CACHET_CADB_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>  <span class="c1"># NOT finished yet</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    CACHET-CADB: A Contextualized Ambulatory Electrocardiography Arrhythmia Dataset</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">    1. The database has 259 days of contextualized ECG recordings from 24 patients and 1,602 manually annotated 10 s heart-rhythm samples.</span>
 <span class="s2">    2. The length of the ECG records in the CACHET-CADB varies from 24 h to 3 weeks.</span>
-<span class="s2">    3. The patient&#39;s ambulatory context information (activities, movement acceleration, body position, etc.) is extracted for every 10 s interval cumulatively.</span>
+<span class="s2">    3. The patient's ambulatory context information (activities, movement acceleration, body position, etc.) is extracted for every 10 s interval cumulatively.</span>
 <span class="s2">    4. nearly 11</span><span class="si">% o</span><span class="s2">f the ECG data in the database is found to be noisy.</span>
 <span class="s2">    5. Webpages for downloading the database [1]_ and the short-format database [2]_, see also the GitHub repository [3]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;ECG arrhythmia detection&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Self-Supervised Learning&quot;</span><span class="p">,</span>
+        <span class="s2">"ECG arrhythmia detection"</span><span class="p">,</span>
+        <span class="s2">"Self-Supervised Learning"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;https://data.dtu.dk/articles/dataset/CACHET-CADB/14547264&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;https://data.dtu.dk/articles/dataset/CACHET-CADB_Short_Format/14547330&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;https://github.com/cph-cachet/cachet-ecg-db/&quot;</span><span class="p">,</span>
+        <span class="s2">"https://data.dtu.dk/articles/dataset/CACHET-CADB/14547264"</span><span class="p">,</span>
+        <span class="s2">"https://data.dtu.dk/articles/dataset/CACHET-CADB_Short_Format/14547330"</span><span class="p">,</span>
+        <span class="s2">"https://github.com/cph-cachet/cachet-ecg-db/"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;10.3389/fcvm.2022.893090&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.11583/DTU.14547264&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.11583/DTU.14547330&quot;</span><span class="p">,</span>
+        <span class="s2">"10.3389/fcvm.2022.893090"</span><span class="p">,</span>
+        <span class="s2">"10.11583/DTU.14547264"</span><span class="p">,</span>
+        <span class="s2">"10.11583/DTU.14547330"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="CACHET_CADB">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CACHET_CADB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CACHET_CADB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CACHET_CADB</span><span class="p">(</span><span class="n">_DataBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -451,9 +469,9 @@
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CACHET_CADB&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"CACHET_CADB"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -463,81 +481,81 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;CACHET-CADB&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"CACHET-CADB"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;ecg.bin&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">&quot;annotation.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">"ecg.bin"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">"annotation.csv"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;acc&quot;</span><span class="p">:</span> <span class="s2">&quot;acc.bin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;angularrate&quot;</span><span class="p">:</span> <span class="s2">&quot;angularrate.bin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;hr_live&quot;</span><span class="p">:</span> <span class="s2">&quot;hr_live.bin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;hrvrmssd_live&quot;</span><span class="p">:</span> <span class="s2">&quot;hrvrmssd_live.bin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="s2">&quot;marker.csv&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;movementacceleration_live&quot;</span><span class="p">:</span> <span class="s2">&quot;movementacceleration_live.bin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;press&quot;</span><span class="p">:</span> <span class="s2">&quot;press.bin&quot;</span><span class="p">,</span>
+            <span class="s2">"acc"</span><span class="p">:</span> <span class="s2">"acc.bin"</span><span class="p">,</span>
+            <span class="s2">"angularrate"</span><span class="p">:</span> <span class="s2">"angularrate.bin"</span><span class="p">,</span>
+            <span class="s2">"hr_live"</span><span class="p">:</span> <span class="s2">"hr_live.bin"</span><span class="p">,</span>
+            <span class="s2">"hrvrmssd_live"</span><span class="p">:</span> <span class="s2">"hrvrmssd_live.bin"</span><span class="p">,</span>
+            <span class="s2">"marker"</span><span class="p">:</span> <span class="s2">"marker.csv"</span><span class="p">,</span>
+            <span class="s2">"movementacceleration_live"</span><span class="p">:</span> <span class="s2">"movementacceleration_live.bin"</span><span class="p">,</span>
+            <span class="s2">"press"</span><span class="p">:</span> <span class="s2">"press.bin"</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header_ext</span> <span class="o">=</span> <span class="s2">&quot;unisens.xml&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_ext</span> <span class="o">=</span> <span class="s2">"unisens.xml"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header_keys</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;adcResolution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;baseline&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;contentClass&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;dataType&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lsbValue&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;sampleRate&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;unit&quot;</span><span class="p">,</span>
+            <span class="s2">"adcResolution"</span><span class="p">,</span>
+            <span class="s2">"baseline"</span><span class="p">,</span>
+            <span class="s2">"contentClass"</span><span class="p">,</span>
+            <span class="s2">"dataType"</span><span class="p">,</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"lsbValue"</span><span class="p">,</span>
+            <span class="s2">"sampleRate"</span><span class="p">,</span>
+            <span class="s2">"unit"</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">context_ann_ext</span> <span class="o">=</span> <span class="s2">&quot;context.xlsx&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context_ann_ext</span> <span class="o">=</span> <span class="s2">"context.xlsx"</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">class_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;AF&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;NSR&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Noise&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Others&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">"AF"</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">"NSR"</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">"Noise"</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">"Others"</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">body_position_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
-            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;lying supine&quot;</span><span class="p">,</span>
-            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;lying left&quot;</span><span class="p">,</span>
-            <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;lying prone&quot;</span><span class="p">,</span>
-            <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;lying right&quot;</span><span class="p">,</span>
-            <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;upright&quot;</span><span class="p">,</span>
-            <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;sitting/lying&quot;</span><span class="p">,</span>
-            <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;standing&quot;</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">"unknown"</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">"lying supine"</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">"lying left"</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s2">"lying prone"</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="s2">"lying right"</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="s2">"upright"</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="s2">"sitting/lying"</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="s2">"standing"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activity_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
-            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;lying&quot;</span><span class="p">,</span>
-            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;sitting/standing&quot;</span><span class="p">,</span>
-            <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;cycling&quot;</span><span class="p">,</span>
-            <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;slope up&quot;</span><span class="p">,</span>
-            <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;jogging&quot;</span><span class="p">,</span>
-            <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;slope down&quot;</span><span class="p">,</span>
-            <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;walking&quot;</span><span class="p">,</span>
-            <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;sitting/lying&quot;</span><span class="p">,</span>
-            <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;standing&quot;</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">"unknown"</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">"lying"</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">"sitting/standing"</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s2">"cycling"</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="s2">"slope up"</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="s2">"jogging"</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="s2">"slope down"</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="s2">"walking"</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="s2">"sitting/lying"</span><span class="p">,</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="s2">"standing"</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wear_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;wear&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;non-wear&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wear_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">"wear"</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">"non-wear"</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1024</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="s2">&quot;v1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="s2">"v1"</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_subject_pattern</span> <span class="o">=</span> <span class="s2">&quot;^P[</span><span class="se">\\</span><span class="s2">d]{1,2}|PNSR</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d$&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subject_pattern</span> <span class="o">=</span> <span class="s2">"^P[</span><span class="se">\\</span><span class="s2">d]{1,2}|PNSR</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d$"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;age&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;gender&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;weight&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;height&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;comment&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;duration&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;measurementId&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;timestampStart&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;sensorLocation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;sensorVersion&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;sensorType&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;personId&quot;</span><span class="p">,</span>
+            <span class="s2">"age"</span><span class="p">,</span>
+            <span class="s2">"gender"</span><span class="p">,</span>
+            <span class="s2">"weight"</span><span class="p">,</span>
+            <span class="s2">"height"</span><span class="p">,</span>
+            <span class="s2">"comment"</span><span class="p">,</span>
+            <span class="s2">"duration"</span><span class="p">,</span>
+            <span class="s2">"measurementId"</span><span class="p">,</span>
+            <span class="s2">"timestampStart"</span><span class="p">,</span>
+            <span class="s2">"version"</span><span class="p">,</span>
+            <span class="s2">"sensorLocation"</span><span class="p">,</span>
+            <span class="s2">"sensorVersion"</span><span class="p">,</span>
+            <span class="s2">"sensorType"</span><span class="p">,</span>
+            <span class="s2">"personId"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span> <span class="o">=</span> <span class="kc">None</span>
@@ -550,32 +568,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="w">        </span><span class="sd">"""Find all records in the database directory</span>
 <span class="sd">        and store them (path, metadata, etc.) in some private attributes.</span>
 
 <span class="sd">        TODO: impelement subsampling for the long format data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># short format file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.hdf5&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"*.hdf5"</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_ann</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"signal"</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_ann</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"labels"</span><span class="p">][:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># the whole database</span>
-        <span class="n">candidate_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">))</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subject_pattern</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">candidate_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"*"</span><span class="p">))</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subject_pattern</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">candidate_folders</span><span class="p">]))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>  <span class="c1"># no record found</span>
         <span class="k">assert</span> <span class="nb">set</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">candidate_folders</span><span class="p">])</span> <span class="o">==</span> <span class="p">{</span>
-            <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;signal&quot;</span><span class="p">,</span>
-        <span class="p">},</span> <span class="s2">&quot;invalid folder structure&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">=</span> <span class="n">candidate_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;signal&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">=</span> <span class="n">candidate_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;annotations&quot;</span>
+            <span class="s2">"annotations"</span><span class="p">,</span>
+            <span class="s2">"signal"</span><span class="p">,</span>
+        <span class="p">},</span> <span class="s2">"invalid folder structure"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">=</span> <span class="n">candidate_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="s2">"signal"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">=</span> <span class="n">candidate_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="s2">"annotations"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span><span class="p">:</span>
@@ -583,81 +601,81 @@
             <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">ann_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="p">):</span>
                 <span class="n">segment</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">measurement_id</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">measurement_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">measurement_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;data_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;ann_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;context_ann_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">context_ann_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"data_path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"ann_path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"context_ann_path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_ann_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">context_ann_ext</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">context_name</span><span class="p">,</span> <span class="n">context_ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;context_</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">context_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="sa">f</span><span class="s2">"context_</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">_path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">context_ext</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;header_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">header_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"header_path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">header_ext</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_subject_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">)[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">sorted</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subject_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"subject"</span><span class="p">)[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">sorted</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"record"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># self._subject_records = {</span>
-        <span class="c1">#     subject: sorted(self._df_records[self._df_records[&quot;subject&quot;] == subject].index) for subject in self._all_subjects</span>
+        <span class="c1">#     subject: sorted(self._df_records[self._df_records["subject"] == subject].index) for subject in self._all_subjects</span>
         <span class="c1"># }</span>
 
         <span class="c1"># the table of metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_record_metadata</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"record"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span><span class="p">]</span>
 
 <div class="viewcode-block" id="CACHET_CADB.get_absolute_path">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.get_absolute_path">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;signal-ecg&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the absolute path of the signal folder of the record.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"signal-ecg"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the absolute path of the signal folder of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
-<span class="sd">        extension: str, default &quot;signal-ecg&quot;</span>
+<span class="sd">        extension: str, default "signal-ecg"</span>
 <span class="sd">            Extension of the file, can be one of</span>
-<span class="sd">            &quot;header&quot;, &quot;annotation&quot;, &quot;signal&quot;,</span>
-<span class="sd">            &quot;annotation-context&quot;,</span>
-<span class="sd">            &quot;signal-ecg&quot;, &quot;signal-acc&quot;, &quot;signal-angularrate&quot;,</span>
-<span class="sd">            &quot;signal-hr_live&quot;, &quot;signal-hrvrmssd_live&quot;, etc.</span>
+<span class="sd">            "header", "annotation", "signal",</span>
+<span class="sd">            "annotation-context",</span>
+<span class="sd">            "signal-ecg", "signal-acc", "signal-angularrate",</span>
+<span class="sd">            "signal-hr_live", "signal-hrvrmssd_live", etc.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pathlib.Path</span>
 <span class="sd">            Absolute path of the file.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span>
-        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;ann_path&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;annotation-context&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;context_ann_path&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;signal&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;data_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span>
-        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;header&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;header_path&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span>
+        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">"annotation"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"ann_path"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">"annotation-context"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"context_ann_path"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">"signal"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"data_path"</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">"header"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"header_path"</span><span class="p">]</span>
 
-        <span class="n">ext1</span><span class="p">,</span> <span class="n">ext2</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">ext1</span> <span class="o">==</span> <span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;extension `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">` not supported&quot;</span>
-        <span class="k">assert</span> <span class="n">ext2</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;ecg&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;extension `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">` not supported&quot;</span>
-        <span class="k">if</span> <span class="n">ext2</span> <span class="o">==</span> <span class="s2">&quot;ecg&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;data_path&quot;</span><span class="p">]</span>
+        <span class="n">ext1</span><span class="p">,</span> <span class="n">ext2</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ext1</span> <span class="o">==</span> <span class="s2">"signal"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"extension `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">` not supported"</span>
+        <span class="k">assert</span> <span class="n">ext2</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"ecg"</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"extension `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">` not supported"</span>
+        <span class="k">if</span> <span class="n">ext2</span> <span class="o">==</span> <span class="s2">"ecg"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"data_path"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;context_</span><span class="si">{</span><span class="n">ext2</span><span class="si">}</span><span class="s2">_path&quot;</span><span class="p">]</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"context_</span><span class="si">{</span><span class="n">ext2</span><span class="si">}</span><span class="s2">_path"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CACHET_CADB.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -669,15 +687,15 @@
 <span class="sd">        sid : str</span>
 <span class="sd">            Subject ID attached to the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` not found&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">]</span></div>
+        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` not found"</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_rdheader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read header file of the record.</span>
+<span class="w">        </span><span class="sd">"""Read header file of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -685,8 +703,8 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        key : str, optional</span>
 <span class="sd">            Key of the header to be read, can be one of</span>
-<span class="sd">            &quot;acc&quot;, &quot;angularrate&quot;, &quot;hr_live&quot;, &quot;hrvrmssd_live&quot;,</span>
-<span class="sd">            &quot;movementacceleration_live&quot;, &quot;press&quot;, &quot;ecg&quot;, &quot;customAttributes&quot;.</span>
+<span class="sd">            "acc", "angularrate", "hr_live", "hrvrmssd_live",</span>
+<span class="sd">            "movementacceleration_live", "press", "ecg", "customAttributes".</span>
 <span class="sd">            If is None, read all keys.</span>
 <span class="sd">        raw : bool, default False</span>
 <span class="sd">            If True, return the raw header file,</span>
@@ -698,10 +716,10 @@
 <span class="sd">            Header information, or raw header file,</span>
 <span class="sd">            depending on the value of `raw`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="n">header_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;header&quot;</span><span class="p">)</span>
+        <span class="n">header_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"header"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">header_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">header_path</span><span class="p">)</span>
@@ -709,23 +727,23 @@
         <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
         <span class="n">header</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">root</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;customAttributes&quot;</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
-                <span class="n">header</span><span class="p">[</span><span class="s2">&quot;customAttributes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span><span class="p">}</span>
+            <span class="k">if</span> <span class="s2">"customAttributes"</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                <span class="n">header</span><span class="p">[</span><span class="s2">"customAttributes"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">child2</span> <span class="ow">in</span> <span class="n">child</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span><span class="p">:</span>
-                        <span class="n">header</span><span class="p">[</span><span class="s2">&quot;customAttributes&quot;</span><span class="p">][</span><span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="s2">&quot;signalEntry&quot;</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
-                <span class="n">sig_key</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">"key"</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_cols</span><span class="p">:</span>
+                        <span class="n">header</span><span class="p">[</span><span class="s2">"customAttributes"</span><span class="p">][</span><span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">"key"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">"signalEntry"</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                <span class="n">sig_key</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">child2</span> <span class="ow">in</span> <span class="n">child</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">in</span> <span class="n">child2</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s2">&quot;channel&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">]:</span>
-                            <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">][</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                        <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">][</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="s2">"channel"</span> <span class="ow">in</span> <span class="n">child2</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">"channel"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">]:</span>
+                            <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">][</span><span class="s2">"channel"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">header</span><span class="p">[</span><span class="n">sig_key</span><span class="p">][</span><span class="s2">"channel"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child2</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;key `</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">` not found in header, available keys: `</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">`. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Perhaps record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have this type of data?&quot;</span>
+                <span class="sa">f</span><span class="s2">"key `</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">` not found in header, available keys: `</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">`. "</span>
+                <span class="sa">f</span><span class="s2">"Perhaps record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have this type of data?"</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">header</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">header</span>
@@ -737,32 +755,32 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load physical (converted from digital) ECG data,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Load physical (converted from digital) ECG data,</span>
 <span class="sd">        or load digital signal directly.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`,</span>
-<span class="sd">            or &quot;short_format&quot; (-1) to load data from the short format file.</span>
+<span class="sd">            or "short_format" (-1) to load data from the short format file.</span>
 <span class="sd">        sampfrom : int, optional</span>
 <span class="sd">            Start index of the data to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the data to be loaded.</span>
-<span class="sd">        data_format : str, default &quot;channel_first&quot;</span>
+<span class="sd">        data_format : str, default "channel_first"</span>
 <span class="sd">            Format of the ECG data,</span>
-<span class="sd">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">            &quot;channel_first&quot; (alias &quot;lead_first&quot;), or</span>
-<span class="sd">            &quot;flat&quot; (alias &quot;plain&quot;).</span>
-<span class="sd">        units : str or None, default &quot;mV&quot;</span>
-<span class="sd">            Units of the output signal, can also be &quot;μV&quot; (aliases &quot;uV&quot;, &quot;muV&quot;);</span>
+<span class="sd">            "channel_last" (alias "lead_last"), or</span>
+<span class="sd">            "channel_first" (alias "lead_first"), or</span>
+<span class="sd">            "flat" (alias "plain").</span>
+<span class="sd">        units : str or None, default "mV"</span>
+<span class="sd">            Units of the output signal, can also be "μV" (aliases "uV", "muV");</span>
 <span class="sd">            None for digital data, without digital-to-physical conversion.</span>
-<span class="sd">        fs : numbers.Real, optional</span>
+<span class="sd">        fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            If not None, the loaded data will be resampled to this frequency,</span>
 <span class="sd">            otherwise, the original sampling frequency will be used.</span>
@@ -773,39 +791,39 @@
 <span class="sd">        -------</span>
 <span class="sd">        data : numpy.ndarray</span>
 <span class="sd">            The loaded ECG data.</span>
-<span class="sd">        data_fs : numbers.Real, optional</span>
+<span class="sd">        data_fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            Returned if `return_fs` is True.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">rec</span> <span class="o">=</span> <span class="s2">&quot;short_format&quot;</span>
+                <span class="n">rec</span> <span class="o">=</span> <span class="s2">"short_format"</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="s2">&quot;short_format&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="s2">"short_format"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Short format file not found&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Short format file not found"</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_data</span>
         <span class="k">elif</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-        <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;data_path&quot;</span><span class="p">]</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;ecg&quot;</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;dataType&quot;</span><span class="p">])[</span><span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"data_path"</span><span class="p">]</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"ecg"</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">"dataType"</span><span class="p">])[</span><span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># digital to analog conversion using the field `lsbValue` in the header</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;baseline&quot;</span><span class="p">]))</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;lsbValue&quot;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">"baseline"</span><span class="p">]))</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">"lsbValue"</span><span class="p">])</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;μv&quot;</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"μv"</span><span class="p">,</span> <span class="s2">"uv"</span><span class="p">]:</span>
                 <span class="n">data</span> <span class="o">*=</span> <span class="mf">1e3</span>
-            <span class="k">elif</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;mv&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid `units`: </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">data_format</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"mv"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid `units`: </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_format</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">data_format</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">data_format</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_first"</span><span class="p">,</span> <span class="s2">"lead_first"</span><span class="p">]:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="k">elif</span> <span class="n">data_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid `data_format`: </span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">data_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"flat"</span><span class="p">,</span> <span class="s2">"plain"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid `data_format`: </span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">resample_poly</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -828,9 +846,9 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">units</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load context data (e.g. accelerometer, heart rate, etc.).</span>
+<span class="w">        </span><span class="sd">"""Load context data (e.g. accelerometer, heart rate, etc.).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -838,8 +856,8 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        context_name : str</span>
 <span class="sd">            Context name, can be one of</span>
-<span class="sd">            &quot;acc&quot;, &quot;angularrate&quot;, &quot;hr_live&quot;, &quot;hrvrmssd_live&quot;,</span>
-<span class="sd">            &quot;movementacceleration_live&quot;, &quot;press&quot;, &quot;marker&quot;.</span>
+<span class="sd">            "acc", "angularrate", "hr_live", "hrvrmssd_live",</span>
+<span class="sd">            "movementacceleration_live", "press", "marker".</span>
 <span class="sd">        sampfrom : int, optional</span>
 <span class="sd">            Start index of the data to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
@@ -849,9 +867,9 @@
 <span class="sd">            If is None, all channels will be loaded.</span>
 <span class="sd">        units : str, optional</span>
 <span class="sd">            Units of the output signal,</span>
-<span class="sd">            currently can only be &quot;default&quot;;</span>
+<span class="sd">            currently can only be "default";</span>
 <span class="sd">            None for digital data, without digital-to-physical conversion.</span>
-<span class="sd">        fs : numbers.Real, optional</span>
+<span class="sd">        fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            If not None, the loaded data will be resampled to this frequency,</span>
 <span class="sd">            otherwise, the original sampling frequency will be used.</span>
@@ -859,27 +877,27 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        context_data : numpy.ndarray or pandas.DataFrame</span>
-<span class="sd">            Context data in the &quot;channel_first&quot; format.</span>
+<span class="sd">            Context data in the "channel_first" format.</span>
 
 <span class="sd">        NOTE</span>
 <span class="sd">        ----</span>
 <span class="sd">        If the record does not have the specified context data,</span>
 <span class="sd">        empty array or DataFrame will be returned.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">context_name</span> <span class="o">==</span> <span class="s2">&quot;ecg&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Call `load_data` to load ECG data&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">context_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;Invalid `context_name`: `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`&quot;</span>
-        <span class="n">context_data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;context_</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">_path&quot;</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">context_name</span> <span class="o">==</span> <span class="s2">"ecg"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Call `load_data` to load ECG data"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">context_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_data_ext</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"Invalid `context_name`: `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`"</span>
+        <span class="n">context_data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"context_</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">_path"</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">context_data_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">context_data_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".csv"</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">context_data_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have context data `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have context data `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`"</span><span class="p">,</span>
                     <span class="ne">RuntimeWarning</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
@@ -887,53 +905,53 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">context_data_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have context data `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have context data `</span><span class="si">{</span><span class="n">context_name</span><span class="si">}</span><span class="s2">`"</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
 
         <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">context_name</span><span class="p">)</span>
-        <span class="n">context_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">context_data_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;dataType&quot;</span><span class="p">])[</span><span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">context_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">context_data_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s2">"dataType"</span><span class="p">])[</span><span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]],</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`units` should be `default` or `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`. &quot;</span>
-                <span class="s2">&quot;Currently, units conversion is not supported.&quot;</span>
+            <span class="k">assert</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"default"</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]],</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"`units` should be `default` or `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">'unit'</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`. "</span>
+                <span class="s2">"Currently, units conversion is not supported."</span>
             <span class="p">)</span>
             <span class="c1"># digital to analog conversion using the field `lsbValue` in the header</span>
-            <span class="n">context_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">context_data</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;baseline&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;lsbValue&quot;</span><span class="p">])</span>
+            <span class="n">context_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">context_data</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"baseline"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">"lsbValue"</span><span class="p">])</span>
             <span class="n">context_data</span> <span class="o">=</span> <span class="n">context_data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)</span>
 
-        <span class="c1"># convert to &quot;channel_first&quot; format</span>
-        <span class="n">context_data</span> <span class="o">=</span> <span class="n">context_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># convert to "channel_first" format</span>
+        <span class="n">context_data</span> <span class="o">=</span> <span class="n">context_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
 
         <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">context_data</span>
         <span class="n">_input_channels</span> <span class="o">=</span> <span class="n">channels</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">channels</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
-            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`channels` should be a subset of `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">`&quot;</span>
-            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">channels</span><span class="p">)]</span>
+                <span class="n">channels</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">"`channels` should be a subset of `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">'channel'</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">`"</span>
+            <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">channels</span><span class="p">)]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">assert</span> <span class="n">channels</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span>
-                <span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
-            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`channels` should be less than `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">`&quot;</span>
+                <span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">"`channels` should be less than `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s1">'channel'</span><span class="p">])</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">`"</span>
             <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channels</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">ch</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]))</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
-            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`channels` should be a subset of `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">_input_channels</span><span class="si">}</span><span class="s2">`&quot;</span>
-            <span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+                <span class="p">[</span><span class="n">ch</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]))</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">"`channels` should be a subset of `</span><span class="si">{</span><span class="n">header</span><span class="p">[</span><span class="s1">'channel'</span><span class="p">]</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">_input_channels</span><span class="si">}</span><span class="s2">`"</span>
+            <span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
             <span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">_channels</span><span class="p">))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_channels</span><span class="p">):</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;duplicate `channels` are removed, </span><span class="si">{</span><span class="n">_input_channels</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"duplicate `channels` are removed, </span><span class="si">{</span><span class="n">_input_channels</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="ne">RuntimeWarning</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="n">context_data</span> <span class="o">=</span> <span class="n">context_data</span><span class="p">[</span><span class="n">channels</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fs</span> <span class="o">!=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;sampleRate&quot;</span><span class="p">]:</span>
-            <span class="n">context_data</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">resample_poly</span><span class="p">(</span><span class="n">context_data</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;sampleRate&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">context_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fs</span> <span class="o">!=</span> <span class="n">header</span><span class="p">[</span><span class="s2">"sampleRate"</span><span class="p">]:</span>
+            <span class="n">context_data</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">resample_poly</span><span class="p">(</span><span class="n">context_data</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="s2">"sampleRate"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">context_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">context_data</span></div>
 
@@ -941,44 +959,44 @@
 <div class="viewcode-block" id="CACHET_CADB.load_ann">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.load_ann">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_ann</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pd&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"pd"</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotation from the metadata file.</span>
+<span class="w">        </span><span class="sd">"""Load annotation from the metadata file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
-<span class="sd">        ann_format : str, default &quot;pd&quot;</span>
+<span class="sd">        ann_format : str, default "pd"</span>
 <span class="sd">            Format of the annotation,</span>
-<span class="sd">            currently only &quot;pd&quot; is supported.</span>
+<span class="sd">            currently only "pd" is supported.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ann : pandas.DataFrame or numpy.ndarray or dict</span>
 <span class="sd">            The annotation of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">rec</span> <span class="o">=</span> <span class="s2">&quot;short_format&quot;</span>
+                <span class="n">rec</span> <span class="o">=</span> <span class="s2">"short_format"</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="s2">&quot;short_format&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="s2">"short_format"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_short_format_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Short format file not found&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Short format file not found"</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__short_format_ann</span>
         <span class="k">elif</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;ann_path&quot;</span><span class="p">])</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"ann_path"</span><span class="p">])</span>
         <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">:</span>
-            <span class="n">ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Start&quot;</span><span class="p">,</span> <span class="s2">&quot;End&quot;</span><span class="p">,</span> <span class="s2">&quot;Class&quot;</span><span class="p">])</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Start"</span><span class="p">,</span> <span class="s2">"End"</span><span class="p">,</span> <span class="s2">"Class"</span><span class="p">])</span>
         <span class="c1"># TODO: adjust return format according to `ann_format`</span>
-        <span class="k">if</span> <span class="n">ann_format</span> <span class="o">==</span> <span class="s2">&quot;pd&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ann_format</span> <span class="o">==</span> <span class="s2">"pd"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ann</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`ann_format`: `</span><span class="si">{</span><span class="n">ann_format</span><span class="si">}</span><span class="s2">` not supported&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`ann_format`: `</span><span class="si">{</span><span class="n">ann_format</span><span class="si">}</span><span class="s2">` not supported"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CACHET_CADB.load_context_ann">
@@ -986,7 +1004,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">load_context_ann</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">sheet_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load context annotation.</span>
+<span class="w">        </span><span class="sd">"""Load context annotation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -994,7 +1012,7 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        sheet_name : str, optional</span>
 <span class="sd">            Sheet name of the context annotation file, can be one of</span>
-<span class="sd">            &quot;movisens DataAnalyzer Parameter&quot;, &quot;movisens DataAnalyzer Results&quot;.</span>
+<span class="sd">            "movisens DataAnalyzer Parameter", "movisens DataAnalyzer Results".</span>
 <span class="sd">            If is None, all sheets will be loaded.</span>
 
 <span class="sd">        Returns</span>
@@ -1002,41 +1020,41 @@
 <span class="sd">        context_ann : pandas.DataFrame or dict</span>
 <span class="sd">            Context annotations of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-        <span class="n">context_ann_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;context_ann_path&quot;</span><span class="p">]</span>
-        <span class="n">context_ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">context_ann_path</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openpyxl&quot;</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet_name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
+        <span class="n">context_ann_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"context_ann_path"</span><span class="p">]</span>
+        <span class="n">context_ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">context_ann_path</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">"openpyxl"</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">context_ann</span></div>
 
 
 <div class="viewcode-block" id="CACHET_CADB.get_record_metadata">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.get_record_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_record_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata of the record.</span>
+<span class="w">        </span><span class="sd">"""Get metadata of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`,</span>
-<span class="sd">            or &quot;short_format&quot; (-1) to load data from the short format file.</span>
+<span class="sd">            or "short_format" (-1) to load data from the short format file.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        metadata : dict</span>
 <span class="sd">            Metadata of the record</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;customAttributes&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"customAttributes"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">metadata</span></div>
 
 
 <div class="viewcode-block" id="CACHET_CADB.get_subject_info">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.get_subject_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_or_sid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read auxiliary information of a subject (a record)</span>
+<span class="w">        </span><span class="sd">"""Read auxiliary information of a subject (a record)</span>
 <span class="sd">        stored in the header files.</span>
 
 <span class="sd">        Parameters</span>
@@ -1045,26 +1063,26 @@
 <span class="sd">            Record name, or index of the record in :attr:`all_records`,</span>
 <span class="sd">            or the subject ID.</span>
 <span class="sd">        items : List[str], optional</span>
-<span class="sd">            Items of the subject&quot;s information (e.g. sex, age, etc.).</span>
+<span class="sd">            Items of the subject"s information (e.g. sex, age, etc.).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        subject_info : dict</span>
 <span class="sd">            Information about the subject, including</span>
-<span class="sd">            &quot;age&quot;, &quot;gender&quot;, &quot;height&quot;, &quot;weight&quot;.</span>
+<span class="sd">            "age", "gender", "height", "weight".</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">subject_info_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="n">subject_info_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span> <span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"height"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">rec_or_sid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subjects</span><span class="p">:</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_records</span><span class="p">[</span><span class="n">rec_or_sid</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_or_sid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec_or_sid</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="n">rec_or_sid</span>
-        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`&quot;</span>
-        <span class="n">subject_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;customAttributes&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_records</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"invalid record name: `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">`"</span>
+        <span class="n">subject_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdheader</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"customAttributes"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">subject_info</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">&quot;invalid items: `</span><span class="si">{</span><span class="n">items</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">subject_info</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">"invalid items: `</span><span class="si">{</span><span class="n">items</span><span class="si">}</span><span class="s2">`"</span>
             <span class="n">subject_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">subject_info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">items</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subject_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">subject_info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">subject_info_items</span><span class="p">}</span>
@@ -1073,49 +1091,49 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of all subject IDs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of all subject IDs."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_subjects</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">subject_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dict of subject IDs and their corresponding records.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Dict of subject IDs and their corresponding records."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subject_records</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">df_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The table of metadata of the records.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The table of metadata of the records."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_metadata</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;CACHET-CADB.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://data.dtu.dk/ndownloader/files/27928830&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cachet-cadb_short_format_without_context.hdf5.zip&quot;</span><span class="p">:</span> <span class="s2">&quot;https://data.dtu.dk/ndownloader/files/27917358&quot;</span><span class="p">,</span>
+            <span class="s2">"CACHET-CADB.zip"</span><span class="p">:</span> <span class="s2">"https://data.dtu.dk/ndownloader/files/27928830"</span><span class="p">,</span>
+            <span class="s2">"cachet-cadb_short_format_without_context.hdf5.zip"</span><span class="p">:</span> <span class="s2">"https://data.dtu.dk/ndownloader/files/27917358"</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="CACHET_CADB.download">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB.download">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the database from the DTU website.</span>
+<span class="w">        </span><span class="sd">"""Download the database from the DTU website.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        files : str or Sequence[str], optional</span>
 <span class="sd">            Files to download, can be subset of</span>
-<span class="sd">            &quot;CACHET-CADB.zip&quot;, &quot;cachet-cadb_short_format_without_context.hdf5.zip&quot;.</span>
+<span class="sd">            "CACHET-CADB.zip", "cachet-cadb_short_format_without_context.hdf5.zip".</span>
 <span class="sd">            If is None, all files will be downloaded.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The files are large, and the connections are unstable. &quot;</span>
-            <span class="s2">&quot;One might need some downloading tools (e.g. Xunlei) to download the files.&quot;</span><span class="p">,</span>
+            <span class="s2">"The files are large, and the connections are unstable. "</span>
+            <span class="s2">"One might need some downloading tools (e.g. Xunlei) to download the files."</span><span class="p">,</span>
             <span class="ne">RuntimeWarning</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">files</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`files` should be a subset of `</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"`files` should be a subset of `</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span><span class="si">}</span><span class="s2">`"</span>
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -1130,7 +1148,7 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Not implemented.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Not implemented."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -1167,8 +1185,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1202,7 +1220,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/components/trainer';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,13 +398,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.components.trainer</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Abstract base class for trainers,</span>
 <span class="sd">in order to replace the functions for classes in the training pipelines.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">deque</span>
@@ -408,14 +428,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPTIMIZERS</span><span class="p">,</span> <span class="n">SCHEDULERS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;BaseTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">"BaseTrainer"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="BaseTrainer">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTrainer</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for trainers.</span>
+<span class="w">    </span><span class="sd">"""Abstract base class for trainers.</span>
 
 <span class="sd">    A trainer is a class that contains the training pipeline,</span>
 <span class="sd">    and is responsible for training a model.</span>
@@ -436,18 +456,18 @@
 <span class="sd">        including configurations for the data loader, for the optimization, etc.</span>
 <span class="sd">        Will also be recorded in the checkpoints.</span>
 <span class="sd">        `train_config` should at least contain the following keys:</span>
-<span class="sd">        - &quot;monitor&quot;: str</span>
-<span class="sd">        - &quot;loss&quot;: str</span>
-<span class="sd">        - &quot;n_epochs&quot;: int</span>
-<span class="sd">        - &quot;batch_size&quot;: int</span>
-<span class="sd">        - &quot;learning_rate&quot;: float</span>
-<span class="sd">        - &quot;lr_scheduler&quot;: str</span>
-<span class="sd">          - &quot;lr_step_size&quot;: int, optional, depending on the scheduler</span>
-<span class="sd">          - &quot;lr_gamma&quot;: float, optional, depending on the scheduler</span>
-<span class="sd">          - &quot;max_lr&quot;: float, optional, depending on the scheduler</span>
-<span class="sd">        - &quot;optimizer&quot;: str</span>
-<span class="sd">          - &quot;decay&quot;: float, optional, depending on the optimizer</span>
-<span class="sd">          - &quot;momentum&quot;: float, optional, depending on the optimizer</span>
+<span class="sd">        - "monitor": str</span>
+<span class="sd">        - "loss": str</span>
+<span class="sd">        - "n_epochs": int</span>
+<span class="sd">        - "batch_size": int</span>
+<span class="sd">        - "learning_rate": float</span>
+<span class="sd">        - "lr_scheduler": str</span>
+<span class="sd">          - "lr_step_size": int, optional, depending on the scheduler</span>
+<span class="sd">          - "lr_gamma": float, optional, depending on the scheduler</span>
+<span class="sd">          - "max_lr": float, optional, depending on the scheduler</span>
+<span class="sd">        - "optimizer": str</span>
+<span class="sd">          - "decay": float, optional, depending on the optimizer</span>
+<span class="sd">          - "momentum": float, optional, depending on the optimizer</span>
 <span class="sd">    collate_fn : callable, optional</span>
 <span class="sd">        The collate function for the data loader,</span>
 <span class="sd">        defaults to :meth:`default_collate_fn`.</span>
@@ -458,15 +478,15 @@
 <span class="sd">    lazy : bool, default False</span>
 <span class="sd">        Whether to initialize the data loader lazily.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BaseTrainer&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"BaseTrainer"</span>
     <span class="n">__DEFATULT_CONFIGS__</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;final_model_name&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;log_step&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="s2">&quot;flooding_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;early_stopping&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"debug"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">"final_model_name"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"log_step"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"flooding_level"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"early_stopping"</span><span class="p">:</span> <span class="p">{},</span>
     <span class="p">}</span>
     <span class="n">__DEFATULT_CONFIGS__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">))</span>
 
@@ -482,9 +502,9 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;DataParallel&quot;</span><span class="p">,</span>
+            <span class="s2">"DataParallel"</span><span class="p">,</span>
         <span class="p">]:</span>
-            <span class="c1"># TODO: further consider &quot;DistributedDataParallel&quot;</span>
+            <span class="c1"># TODO: further consider "DistributedDataParallel"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">module</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
@@ -521,14 +541,14 @@
 <div class="viewcode-block" id="BaseTrainer.train">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.train">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the model.</span>
+<span class="w">        </span><span class="sd">"""Train the model.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        best_state_dict : OrderedDict</span>
 <span class="sd">            The state dict of the best model.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_optimizer</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_scheduler</span><span class="p">()</span>
@@ -542,14 +562,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
                     <span class="p">(</span>
-                        <span class="s2">&quot;No separate validation set is provided, while monitor is set. &quot;</span>
-                        <span class="s2">&quot;The training set will be used for validation, &quot;</span>
-                        <span class="s2">&quot;and the best model will be selected based on the metrics on the training set&quot;</span>
+                        <span class="s2">"No separate validation set is provided, while monitor is set. "</span>
+                        <span class="s2">"The training set will be used for validation, "</span>
+                        <span class="s2">"and the best model will be selected based on the metrics on the training set"</span>
                     <span class="p">),</span>
                     <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
                 <span class="p">)</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">            Starting training:</span>
 <span class="s2">            ------------------</span>
 <span class="s2">            Epochs:          </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="si">}</span>
@@ -561,7 +581,7 @@
 <span class="s2">            Optimizer:       </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span>
 <span class="s2">            Dataset classes: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">classes</span><span class="si">}</span>
 <span class="s2">            -----------------------------------------</span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">            """</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">start_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>
@@ -571,8 +591,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
                 <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_train</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;signals&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">"signals"</span><span class="p">,</span>
                 <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
@@ -587,7 +607,7 @@
                         <span class="n">metrics</span><span class="o">=</span><span class="n">eval_train_res</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                         <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_step</span><span class="p">,</span>
                         <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
-                        <span class="n">part</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+                        <span class="n">part</span><span class="o">=</span><span class="s2">"train"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">eval_train_res</span> <span class="o">=</span> <span class="p">{}</span>
@@ -598,7 +618,7 @@
                         <span class="n">metrics</span><span class="o">=</span><span class="n">eval_res</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                         <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_step</span><span class="p">,</span>
                         <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
-                        <span class="n">part</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
+                        <span class="n">part</span><span class="o">=</span><span class="s2">"val"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_train_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># if no separate val set, use the metrics on the train set</span>
@@ -618,35 +638,38 @@
                         <span class="k">if</span> <span class="n">eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_metric</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">min_delta</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_best_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>
                         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_best_epoch</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">patience</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-                            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;early stopping is triggered at epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"early stopping is triggered at epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">"</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
                             <span class="k">break</span>
 
-                    <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                        best metric = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_metric</span><span class="si">}</span><span class="s2">,</span>
 <span class="s2">                        obtained at epoch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_epoch</span><span class="si">}</span>
-<span class="s2">                    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">                    """</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
                     <span class="c1"># save checkpoint</span>
-                    <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;epochloss_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_loss</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">_metric_</span><span class="si">{</span><span class="n">eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"epochloss_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_loss</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">_metric_</span><span class="si">{</span><span class="n">eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># type: ignore</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;epochloss_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_loss</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}</span><span class="s2">_epoch</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"epochloss_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_loss</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}</span><span class="s2">_epoch</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">"</span>
                 <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">checkpoints</span> <span class="o">/</span> <span class="n">save_folder</span>  <span class="c1"># type: ignore</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">saved_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+                    <span class="n">actual_save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">saved_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">actual_save_path</span> <span class="k">if</span> <span class="n">actual_save_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">save_path</span><span class="p">)</span>
                 <span class="c1"># remove outdated models</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saved_models</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                     <span class="n">model_to_remove</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saved_models</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">model_to_remove</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">model_to_remove</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">model_to_remove</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">model_to_remove</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;failed to remove </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">model_to_remove</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">"failed to remove </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">model_to_remove</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
                 <span class="c1"># update learning rate using lr_scheduler</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;plateau&quot;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"plateau"</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_update_lr</span><span class="p">(</span><span class="n">eval_res</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
@@ -658,23 +681,23 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">final_model_name</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                 <span class="n">save_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">final_model_name</span>  <span class="c1"># type: ignore</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;metric_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore</span>
-                <span class="c1"># save_filename = f&quot;BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar&quot;</span>
-                <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">save_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"metric_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># type: ignore</span>
+                <span class="c1"># save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"</span>
+                <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">save_folder</span>  <span class="c1"># type: ignore</span>
             <span class="c1"># self.save_checkpoint(path=str(save_path))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;best model is saved at </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">"best model is saved at </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">&quot;no monitor is set, the last model is selected and saved as the best model&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="s2">"no monitor is set, the last model is selected and saved as the best model"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">best_state_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
-            <span class="c1"># save_filename = f&quot;BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar&quot;</span>
-            <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="c1"># save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"</span>
+            <span class="n">save_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"BestModel_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_prefix</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">save_folder</span>  <span class="c1"># type: ignore</span>
             <span class="c1"># self.save_checkpoint(path=str(save_path))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No best model found!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No best model found!"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
@@ -689,14 +712,14 @@
 <div class="viewcode-block" id="BaseTrainer.train_one_epoch">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.train_one_epoch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_one_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="n">tqdm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train one epoch, and update the progress bar</span>
+<span class="w">        </span><span class="sd">"""Train one epoch, and update the progress bar</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pbar : tqdm</span>
 <span class="sd">            The progress bar for training.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">epoch_step</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">global_step</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="c1"># data is assumed to be a tuple of tensors, of the following order:</span>
@@ -718,28 +741,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_lr</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">log_step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-                <span class="n">train_step_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()}</span>
+                <span class="n">train_step_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"loss"</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()}</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">:</span>
-                    <span class="n">train_step_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">]})</span>
+                    <span class="n">train_step_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"lr"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">]})</span>
                     <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span>
                         <span class="o">**</span><span class="p">{</span>
-                            <span class="s2">&quot;loss (batch)&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
-                            <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="s2">"loss (batch)"</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                            <span class="s2">"lr"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span>
                         <span class="o">**</span><span class="p">{</span>
-                            <span class="s2">&quot;loss (batch)&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                            <span class="s2">"loss (batch)"</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">flooding_level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-                    <span class="n">train_step_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;flood&quot;</span><span class="p">:</span> <span class="n">flood</span><span class="o">.</span><span class="n">item</span><span class="p">()})</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">train_step_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"flood"</span><span class="p">:</span> <span class="n">flood</span><span class="o">.</span><span class="n">item</span><span class="p">()})</span>  <span class="c1"># type: ignore</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
                     <span class="n">metrics</span><span class="o">=</span><span class="n">train_step_metrics</span><span class="p">,</span>
                     <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_step</span><span class="p">,</span>
                     <span class="n">epoch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
-                    <span class="n">part</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+                    <span class="n">part</span><span class="o">=</span><span class="s2">"train"</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_dim</span><span class="p">])</span></div>
 
@@ -747,46 +770,46 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">batch_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The batch dimension</span>
+<span class="w">        </span><span class="sd">"""The batch dimension</span>
 
 <span class="sd">        Usually 0, but can be 1 for some models, e.g. :class:`~torch_ecg.models.RR_LSTM`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_required_train_config_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extra required fields in `train_config`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Extra required fields in `train_config`."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">required_train_config_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Required fields in `train_config`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Required fields in `train_config`."""</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;classes&quot;</span><span class="p">,</span>
-            <span class="c1"># &quot;monitor&quot;,  # can be None</span>
-            <span class="s2">&quot;n_epochs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;batch_size&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;log_step&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;optimizer&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;learning_rate&quot;</span><span class="p">,</span>
+            <span class="s2">"classes"</span><span class="p">,</span>
+            <span class="c1"># "monitor",  # can be None</span>
+            <span class="s2">"n_epochs"</span><span class="p">,</span>
+            <span class="s2">"batch_size"</span><span class="p">,</span>
+            <span class="s2">"log_step"</span><span class="p">,</span>
+            <span class="s2">"optimizer"</span><span class="p">,</span>
+            <span class="s2">"lr_scheduler"</span><span class="p">,</span>
+            <span class="s2">"learning_rate"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_required_train_config_fields</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_train_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the `train_config`.</span>
+<span class="w">        </span><span class="sd">"""Validate the `train_config`.</span>
 
 <span class="sd">        Check if all required fields are present.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_train_config_fields</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is missing in train_config!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is missing in train_config!"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The prefix of the saved model name.&quot;&quot;&quot;</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_epoch&quot;</span>
+<span class="w">        </span><span class="sd">"""The prefix of the saved model name."""</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_epoch"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFG</span><span class="p">:</span>
@@ -796,7 +819,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.run_one_step">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_one_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run one step of training on one batch of data.</span>
+<span class="w">        </span><span class="sd">"""Run one step of training on one batch of data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -816,7 +839,7 @@
 <span class="sd">            but tensors before fed into :meth:`~torch.sigmoid`</span>
 <span class="sd">            or :meth:`~torch.softmax` to get the logits.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -825,7 +848,7 @@
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_loader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do evaluation on the given data loader.</span>
+<span class="w">        </span><span class="sd">"""Do evaluation on the given data loader.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -837,12 +860,12 @@
 <span class="sd">        dict</span>
 <span class="sd">            The evaluation results (metrics).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_res</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update learning rate using lr_scheduler,</span>
+<span class="w">        </span><span class="sd">"""Update learning rate using lr_scheduler,</span>
 <span class="sd">        perhaps based on the `eval_res`.</span>
 
 <span class="sd">        Parameters</span>
@@ -850,33 +873,33 @@
 <span class="sd">        eval_res : dict, optional</span>
 <span class="sd">            The evaluation results (metrics).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;plateau&quot;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"plateau"</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="n">eval_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">metrics</span> <span class="o">=</span> <span class="n">eval_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
                 <span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"step"</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>  <span class="c1"># type: ignore</span>
-            <span class="s2">&quot;one_cycle&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;onecycle&quot;</span><span class="p">,</span>
+            <span class="s2">"one_cycle"</span><span class="p">,</span>
+            <span class="s2">"onecycle"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_from_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the trainer from the training configuration.</span>
+<span class="w">        </span><span class="sd">"""Setup the trainer from the training configuration.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        train_config : dict</span>
 <span class="sd">            The training configuration.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_default_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFATULT_CONFIGS__</span><span class="p">))</span>
         <span class="n">_default_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_default_config</span><span class="p">))</span>
@@ -891,7 +914,7 @@
 
         <span class="c1"># setup log manager first</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_log_manager</span><span class="p">()</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;training configurations are as follows:</span><span class="se">\n</span><span class="si">{</span><span class="n">dict_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"training configurations are as follows:</span><span class="se">\n</span><span class="si">{</span><span class="n">dict_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
         <span class="c1"># setup directories</span>
@@ -910,47 +933,47 @@
 <div class="viewcode-block" id="BaseTrainer.extra_log_suffix">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.extra_log_suffix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_log_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extra suffix for the log file name.&quot;&quot;&quot;</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">_LR_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2">_BS_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore</span></div>
+<span class="w">        </span><span class="sd">"""Extra suffix for the log file name."""</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">_LR_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s2">_BS_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># type: ignore</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_log_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the log manager.&quot;&quot;&quot;</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_suffix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_log_suffix</span><span class="p">()}</span>
+<span class="w">        </span><span class="sd">"""Setup the log manager."""</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"log_suffix"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_log_suffix</span><span class="p">()}</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span> <span class="o">=</span> <span class="n">LoggerManager</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the directories for saving checkpoints and logs.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Setup the directories for saving checkpoints and logs."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">checkpoints</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">checkpoints</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">model_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the callbacks.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monitor&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Setup the callbacks."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"monitor"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">monitor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="k">assert</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;plateau&quot;</span>  <span class="c1"># type: ignore</span>
-            <span class="p">),</span> <span class="s2">&quot;monitor is not specified, lr_scheduler should not be ReduceLROnPlateau&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keep_checkpoint_max&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"plateau"</span>  <span class="c1"># type: ignore</span>
+            <span class="p">),</span> <span class="s2">"monitor is not specified, lr_scheduler should not be ReduceLROnPlateau"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"keep_checkpoint_max"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;keep_checkpoint_max is set to -1, all checkpoints will be kept&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">"keep_checkpoint_max is set to -1, all checkpoints will be kept"</span><span class="p">,</span>
                 <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span><span class="o">.</span><span class="n">keep_checkpoint_max</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_manager</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;keep_checkpoint_max is set to 0, no checkpoint will be kept&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">"keep_checkpoint_max is set to 0, no checkpoint will be kept"</span><span class="p">,</span>
                 <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_augmenter_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the augmenter manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setup the augmenter manager."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmenter_manager</span> <span class="o">=</span> <span class="n">AugmenterManager</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
@@ -959,7 +982,7 @@
         <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the dataloaders for training and validation.</span>
+<span class="w">        </span><span class="sd">"""Setup the dataloaders for training and validation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -996,7 +1019,7 @@
 <span class="sd">                collate_fn=self.collate_fn,</span>
 <span class="sd">            )</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
@@ -1012,13 +1035,13 @@
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setup the optimizer."""</span>
         <span class="n">opt_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">opt_name</span> <span class="o">==</span> <span class="s2">&quot;adamw_amsgrad&quot;</span><span class="p">:</span>
-            <span class="n">opt_name</span> <span class="o">=</span> <span class="s2">&quot;adamw&quot;</span>
+        <span class="k">if</span> <span class="n">opt_name</span> <span class="o">==</span> <span class="s2">"adamw_amsgrad"</span><span class="p">:</span>
+            <span class="n">opt_name</span> <span class="o">=</span> <span class="s2">"adamw"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">amsgrad</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">opt_name</span> <span class="o">==</span> <span class="s2">&quot;adam_amsgrad&quot;</span><span class="p">:</span>
-            <span class="n">opt_name</span> <span class="o">=</span> <span class="s2">&quot;adam&quot;</span>
+        <span class="k">elif</span> <span class="n">opt_name</span> <span class="o">==</span> <span class="s2">"adam_amsgrad"</span><span class="p">:</span>
+            <span class="n">opt_name</span> <span class="o">=</span> <span class="s2">"adam"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">amsgrad</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">opt_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OPTIMIZERS</span><span class="p">:</span>
@@ -1039,45 +1062,45 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;optimizer `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">` not implemented! &quot;</span>
-                <span class="s2">&quot;Please use one of the optimizers in `torch.optim`, &quot;</span>
-                <span class="s2">&quot;or override this method to setup your own optimizer.&quot;</span>
+                <span class="sa">f</span><span class="s2">"optimizer `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">` not implemented! "</span>
+                <span class="s2">"Please use one of the optimizers in `torch.optim`, "</span>
+                <span class="s2">"or override this method to setup your own optimizer."</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the learning rate scheduler.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+<span class="w">        </span><span class="sd">"""Setup the learning rate scheduler."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="o">=</span> <span class="s2">"none"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
 
         <span class="n">lrs_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">&quot;onecycle&quot;</span><span class="p">:</span>
-            <span class="n">lrs_name</span> <span class="o">=</span> <span class="s2">&quot;one_cycle&quot;</span>
+        <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">"onecycle"</span><span class="p">:</span>
+            <span class="n">lrs_name</span> <span class="o">=</span> <span class="s2">"one_cycle"</span>
 
         <span class="k">if</span> <span class="n">lrs_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SCHEDULERS</span><span class="p">:</span>
             <span class="c1"># try to find in torch.optim.lr_scheduler</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">lrs_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">lrs_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
                     <span class="n">SCHEDULERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">lrs_name</span><span class="p">)(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
                     <span class="k">break</span>
             <span class="c1"># special case for OneCycleLR</span>
-            <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">&quot;one_cycle&quot;</span> <span class="ow">and</span> <span class="s2">&quot;OneCycleLR&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">):</span>
-                <span class="n">SCHEDULERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;one_cycle&quot;</span><span class="p">)(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">OneCycleLR</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">"one_cycle"</span> <span class="ow">and</span> <span class="s2">"OneCycleLR"</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">):</span>
+                <span class="n">SCHEDULERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"one_cycle"</span><span class="p">)(</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">OneCycleLR</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">&quot;plateau&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">"plateau"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ReduceLROnPlateau</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
-                <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+                <span class="s2">"max"</span><span class="p">,</span>
                 <span class="n">patience</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">"step"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">StepLR</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_step_size</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_gamma</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">&quot;one_cycle&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">lrs_name</span> <span class="o">==</span> <span class="s2">"one_cycle"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">OneCycleLR</span><span class="p">(</span>
                 <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span>
                 <span class="n">max_lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">max_lr</span><span class="p">,</span>
@@ -1091,14 +1114,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">lrs_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="o">**</span><span class="n">lrs_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;lr scheduler `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="si">}</span><span class="s2">` not implemented for training! &quot;</span>
-                <span class="s2">&quot;Please use one of the schedulers in `torch.optim.lr_scheduler`, &quot;</span>
-                <span class="s2">&quot;or override this method to setup your own lr scheduler.&quot;</span>
+                <span class="sa">f</span><span class="s2">"lr scheduler `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="si">}</span><span class="s2">` not implemented for training! "</span>
+                <span class="s2">"Please use one of the schedulers in `torch.optim.lr_scheduler`, "</span>
+                <span class="s2">"or override this method to setup your own lr scheduler."</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the loss function.&quot;&quot;&quot;</span>
-        <span class="n">loss_kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loss_kw&quot;</span><span class="p">,</span> <span class="p">{})</span>
+<span class="w">        </span><span class="sd">"""Setup the loss function."""</span>
+        <span class="n">loss_kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"loss_kw"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loss_kw</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
                 <span class="n">loss_kw</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -1106,7 +1129,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_model_config_compatability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if `model_config` is compatible with the current model configuration.</span>
+<span class="w">        </span><span class="sd">"""Check if `model_config` is compatible with the current model configuration.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1119,13 +1142,13 @@
 <span class="sd">        bool</span>
 <span class="sd">            True if compatible, False otherwise</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">dicts_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">,</span> <span class="n">model_config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseTrainer.resume_from_checkpoint">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.resume_from_checkpoint">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">resume_from_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resume a training process from a checkpoint.</span>
+<span class="w">        </span><span class="sd">"""Resume a training process from a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1133,80 +1156,88 @@
 <span class="sd">            If it is str, then it is the path of the checkpoint,</span>
 <span class="sd">            which is a ``.pth.tar`` file containing a dict.</span>
 <span class="sd">            `checkpoint` should contain at least</span>
-<span class="sd">            &quot;model_state_dict&quot;, &quot;optimizer_state_dict&quot;,</span>
-<span class="sd">            &quot;model_config&quot;, &quot;train_config&quot;, &quot;epoch&quot;</span>
+<span class="sd">            "model_state_dict", "optimizer_state_dict",</span>
+<span class="sd">            "model_config", "train_config", "epoch"</span>
 <span class="sd">            to resume a training process.</span>
 
 <span class="sd">        .. note::</span>
 
 <span class="sd">            NOT finished, NOT tested.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">ckpt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ckpt</span> <span class="o">=</span> <span class="n">checkpoint</span>
-        <span class="n">insufficient_msg</span> <span class="o">=</span> <span class="s2">&quot;this checkpoint has no sufficient data to resume training&quot;</span>
+        <span class="n">insufficient_msg</span> <span class="o">=</span> <span class="s2">"this checkpoint has no sufficient data to resume training"</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ckpt</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="n">insufficient_msg</span>
         <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;model_state_dict&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;model_config&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;train_config&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
+                <span class="s2">"model_state_dict"</span><span class="p">,</span>
+                <span class="s2">"optimizer_state_dict"</span><span class="p">,</span>
+                <span class="s2">"model_config"</span><span class="p">,</span>
+                <span class="s2">"train_config"</span><span class="p">,</span>
+                <span class="s2">"epoch"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">ckpt</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">insufficient_msg</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_model_config_compatability</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_config&quot;</span><span class="p">]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model config of the checkpoint is not compatible with the config of the current model&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_from_config</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">&quot;train_config&quot;</span><span class="p">])</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_model_config_compatability</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">"model_config"</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"model config of the checkpoint is not compatible with the config of the current model"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">"model_state_dict"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="n">ckpt</span><span class="p">[</span><span class="s2">"epoch"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_from_config</span><span class="p">(</span><span class="n">ckpt</span><span class="p">[</span><span class="s2">"train_config"</span><span class="p">])</span></div>
 
         <span class="c1"># TODO: resume optimizer, etc.</span>
 
 <div class="viewcode-block" id="BaseTrainer.save_checkpoint">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.save_checkpoint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current state of the trainer to a checkpoint.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Save the current state of the trainer to a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path : str</span>
 <span class="sd">            Path to save the checkpoint</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Path, optional</span>
+<span class="sd">            The actual path the checkpoint was saved to (suffix may differ</span>
+<span class="sd">            from ``path`` after normalisation, e.g. ``.safetensors``).</span>
+<span class="sd">            Returns ``None`` when the model does not implement ``save()``.</span>
+
+<span class="sd">        """</span>
         <span class="c1"># if self._model has method `save`, then use it</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;save&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">"save"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
                 <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
                 <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">,</span>
                 <span class="n">extra_items</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
-                    <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+                    <span class="s2">"optimizer_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">"epoch"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pth.tar&quot;</span><span class="p">):</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.pth.tar&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".pth.tar"</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".pth.tar"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;model_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
-                    <span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
-                    <span class="s2">&quot;model_config&quot;</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">),</span>
-                    <span class="s2">&quot;train_config&quot;</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">),</span>
-                    <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+                    <span class="s2">"model_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">"optimizer_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">"model_config"</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">),</span>
+                    <span class="s2">"train_config"</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">),</span>
+                    <span class="s2">"epoch"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="n">path</span><span class="p">,</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseTrainer.extra_repr_keys">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;train_config&quot;</span><span class="p">,</span>
+            <span class="s2">"train_config"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
@@ -1239,8 +1270,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1274,7 +1305,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

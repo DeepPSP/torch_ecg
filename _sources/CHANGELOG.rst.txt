@@ -72,6 +72,17 @@ Fixed
 - Fix bugs in utility function `torch_ecg.utils.make_serializable`: the previous implementation
   does not drop some types of unserializable items correctly. Two additional parameters
   `drop_unserializable` and `drop_paths` are added.
+- Fix ``CkptMixin.save()`` silently truncating checkpoint filenames that contain
+  decimal values (e.g. ``…metric_0.91``): ``pathlib.Path.with_suffix(".safetensors")``
+  treated ``.91`` as the existing suffix and replaced it, producing
+  ``…metric_0.safetensors`` instead of the correct ``…metric_0.91.safetensors``.
+  The method now appends ``.safetensors`` for paths without a recognised
+  extension, and returns the final ``Path`` used so callers can track it.
+- Fix ``BaseTrainer`` checkpoint cleanup permanently failing: ``saved_models``
+  stored the raw stem path while the actual file on disk had a ``.safetensors``
+  suffix, causing every ``os.remove()`` call to raise ``FileNotFoundError``.
+  The trainer now stores the path returned by ``save_checkpoint()``, and handles
+  both single-file (``os.remove``) and directory (``shutil.rmtree``) checkpoints.
 
 Security
 ~~~~~~~~

@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/components/loggers';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,12 +398,12 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.components.loggers</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">loggers, including (planned) CSVLogger, TensorBoardXLogger, WandbLogger</span>
 
 <span class="sd">with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -392,7 +411,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -404,16 +422,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">get_date_str</span><span class="p">,</span> <span class="n">init_logger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;BaseLogger&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TxtLogger&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CSVLogger&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TensorBoardXLogger&quot;</span><span class="p">,</span>
-    <span class="c1"># &quot;WandbLogger&quot;,</span>
-    <span class="s2">&quot;LoggerManager&quot;</span><span class="p">,</span>
+    <span class="s2">"BaseLogger"</span><span class="p">,</span>
+    <span class="s2">"TxtLogger"</span><span class="p">,</span>
+    <span class="s2">"CSVLogger"</span><span class="p">,</span>
+    <span class="s2">"TensorBoardXLogger"</span><span class="p">,</span>
+    <span class="c1"># "WandbLogger",</span>
+    <span class="s2">"LoggerManager"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="n">_log_metrics_doc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Log metrics.</span>
+<span class="n">_log_metrics_doc</span> <span class="o">=</span> <span class="s2">"""Log metrics.</span>
 
 <span class="s2">        Parameters</span>
 <span class="s2">        ----------</span>
@@ -425,11 +443,11 @@
 <span class="s2">            The epoch number of training.</span>
 <span class="s2">        part : str, optional</span>
 <span class="s2">            The part of the training data the metrics computed from,</span>
-<span class="s2">            can be &quot;train&quot; or &quot;val&quot; or &quot;test&quot;, etc.</span>
+<span class="s2">            can be "train" or "val" or "test", etc.</span>
 
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
 
-<span class="n">_log_message_doc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Log a message.</span>
+<span class="n">_log_message_doc</span> <span class="o">=</span> <span class="s2">"""Log a message.</span>
 
 <span class="s2">        Parameters</span>
 <span class="s2">        ----------</span>
@@ -438,40 +456,40 @@
 <span class="s2">        level : {logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL}, optional</span>
 <span class="s2">            The level of the message.</span>
 
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
 
-<span class="n">_epoch_start_doc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Message logged at the start of each epoch.</span>
-
-<span class="s2">        Parameters</span>
-<span class="s2">        ----------</span>
-<span class="s2">        epoch : int</span>
-<span class="s2">            The number of the epoch.</span>
-
-<span class="s2">        &quot;&quot;&quot;</span>
-
-<span class="n">_epoch_end_doc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Actions to be performed at the end of each epoch.</span>
+<span class="n">_epoch_start_doc</span> <span class="o">=</span> <span class="s2">"""Message logged at the start of each epoch.</span>
 
 <span class="s2">        Parameters</span>
 <span class="s2">        ----------</span>
 <span class="s2">        epoch : int</span>
 <span class="s2">            The number of the epoch.</span>
 
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
+
+<span class="n">_epoch_end_doc</span> <span class="o">=</span> <span class="s2">"""Actions to be performed at the end of each epoch.</span>
+
+<span class="s2">        Parameters</span>
+<span class="s2">        ----------</span>
+<span class="s2">        epoch : int</span>
+<span class="s2">            The number of the epoch.</span>
+
+<span class="s2">        """</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseLogger</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The abstract base class of all loggers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The abstract base class of all loggers."""</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BaseLogger&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"BaseLogger"</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_log_metrics_doc</span><span class="p">)</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"train"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -482,18 +500,18 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flush the logger.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Flush the logger."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the logger.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the logger."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the logger from a config dict.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize the logger from a config dict."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_epoch_start_doc</span><span class="p">)</span>
@@ -506,23 +524,23 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Directory to save the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Directory to save the log file."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filename of the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Filename of the log file."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+            <span class="s2">"filename"</span><span class="p">,</span>
         <span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TxtLogger</span><span class="p">(</span><span class="n">BaseLogger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger that logs to a text file.</span>
+<span class="w">    </span><span class="sd">"""Logger that logs to a text file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -531,9 +549,9 @@
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;TxtLogger&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"TxtLogger"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -545,24 +563,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable.&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable."</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>  <span class="c1"># do not create the logger if the directory is not writable</span>
         <span class="k">if</span> <span class="n">log_suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">log_suffix</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">log_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">.txt&quot;</span>
+            <span class="n">log_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">.txt"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_log_metrics_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"train"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
@@ -570,15 +588,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: &quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: "</span>
         <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">_metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> Metrics:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">short_sep</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">part</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="p">(</span><span class="n">spaces</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="si">}{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">short_sep</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> Metrics:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">short_sep</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">part</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="s1">' '</span><span class="o">*</span><span class="p">(</span><span class="n">spaces</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="si">}{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">short_sep</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -590,34 +608,34 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">long_sep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">110</span>
+        <span class="k">return</span> <span class="s2">"-"</span> <span class="o">*</span> <span class="mi">110</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">short_sep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span>
+        <span class="k">return</span> <span class="s2">"-"</span> <span class="o">*</span> <span class="mi">50</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_epoch_start_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Train epoch_</span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">long_sep</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Train epoch_</span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">long_sep</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_epoch_end_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">long_sep</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">long_sep</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flush the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Flush the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s2">&quot;flush&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s2">"flush"</span><span class="p">):</span>
                 <span class="n">h</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
             <span class="k">return</span>
@@ -627,8 +645,8 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;TxtLogger&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a logger from a config.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"TxtLogger"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a logger from a config.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -640,19 +658,19 @@
 <span class="sd">        TxtLogger</span>
 <span class="sd">            The instance of the created logger.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_suffix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_suffix"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filename of the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Filename of the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="s2">""</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CSVLogger</span><span class="p">(</span><span class="n">BaseLogger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger that logs to a CSV file.</span>
+<span class="w">    </span><span class="sd">"""Logger that logs to a CSV file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -661,9 +679,9 @@
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CSVLogger&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"CSVLogger"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -675,14 +693,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable.&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable."</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">log_suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">log_suffix</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">log_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+            <span class="n">log_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">get_date_str</span><span class="p">()</span><span class="si">}{</span><span class="n">log_suffix</span><span class="si">}</span><span class="s2">.csv"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flushed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -690,10 +708,10 @@
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_log_metrics_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"train"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
@@ -701,9 +719,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="s2">&quot;part&quot;</span><span class="p">:</span> <span class="n">part</span><span class="p">}</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"step"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="s2">"part"</span><span class="p">:</span> <span class="n">part</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">})</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"epoch"</span><span class="p">:</span> <span class="n">epoch</span><span class="p">})</span>
         <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="c1"># self.logger = self.logger.append(row, ignore_index=True)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -714,7 +732,7 @@
         <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flush the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Flush the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_flushed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span>
@@ -723,7 +741,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_flushed</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the log file."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -731,8 +749,8 @@
         <span class="k">del</span> <span class="bp">self</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;CSVLogger&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a logger from a config.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"CSVLogger"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a logger from a config.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -744,19 +762,19 @@
 <span class="sd">        CSVLogger</span>
 <span class="sd">            The instance of the created logger.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_suffix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_suffix"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filename of the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Filename of the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="s2">""</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TensorBoardXLogger</span><span class="p">(</span><span class="n">BaseLogger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger that logs to a TensorBoardX file.</span>
+<span class="w">    </span><span class="sd">"""Logger that logs to a TensorBoardX file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -765,9 +783,9 @@
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;TensorBoardXLogger&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"TensorBoardXLogger"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -779,20 +797,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable.&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="si">}</span><span class="s2"> is not writable."</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">tensorboardX</span><span class="o">.</span><span class="n">SummaryWriter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">),</span> <span class="n">filename_suffix</span><span class="o">=</span><span class="n">log_suffix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">tensorboardX</span><span class="o">.</span><span class="n">SummaryWriter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">),</span> <span class="n">filename_suffix</span><span class="o">=</span><span class="n">log_suffix</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">file_writer</span><span class="o">.</span><span class="n">event_writer</span><span class="o">.</span><span class="n">_ev_writer</span><span class="o">.</span><span class="n">_file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_log_metrics_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"train"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
@@ -803,26 +821,26 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">log_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flush the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Flush the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the log file."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W_OK</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;TensorBoardXLogger&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a logger from a config.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"TensorBoardXLogger"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a logger from a config.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -834,19 +852,19 @@
 <span class="sd">        TensorBoardXLogger</span>
 <span class="sd">            The instance of the created logger.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_suffix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_suffix"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filename of the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Filename of the log file."""</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
 
 
 <span class="c1"># class WandbLogger(BaseLogger):</span>
-<span class="c1">#     &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#     """ """</span>
 
-<span class="c1">#     __name__ = &quot;WandbLogger&quot;</span>
+<span class="c1">#     __name__ = "WandbLogger"</span>
 
 <span class="c1">#     def __init__(</span>
 <span class="c1">#         self,</span>
@@ -856,10 +874,10 @@
 <span class="c1">#         entity: Optional[str] = None,</span>
 <span class="c1">#         hyperparameters: Optional[dict] = None,</span>
 <span class="c1">#     ) -&gt; None:</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         """</span>
 <span class="c1">#         to write docstring</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         self.__wandb = importlib.import_module(&quot;wandb&quot;)</span>
+<span class="c1">#         """</span>
+<span class="c1">#         self.__wandb = importlib.import_module("wandb")</span>
 <span class="c1">#         self._log_dir = Path(log_dir or DEFAULTS.log_dir)</span>
 <span class="c1">#         self._log_dir.mkdir(parents=True, exist_ok=True)</span>
 <span class="c1">#         self._log_suffix = log_suffix</span>
@@ -877,41 +895,41 @@
 <span class="c1">#     def log_metrics(</span>
 <span class="c1">#         self, metrics: Dict[str, float], step: Optional[int] = None</span>
 <span class="c1">#     ) -&gt; None:</span>
-<span class="c1">#         &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#         """ """</span>
 <span class="c1">#         self.__wandb.log(metrics, step=step)</span>
 
 <span class="c1">#     def log_message(self, msg: str, level: int = logging.INFO) -&gt; None:</span>
 <span class="c1">#         pass</span>
 
 <span class="c1">#     def flush(self) -&gt; None:</span>
-<span class="c1">#         &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#         """ """</span>
 <span class="c1">#         pass</span>
 
 <span class="c1">#     def close(self) -&gt; None:</span>
-<span class="c1">#         &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#         """ """</span>
 <span class="c1">#         self.__wandb.finish()</span>
 
 <span class="c1">#     @classmethod</span>
-<span class="c1">#     def from_config(cls, config: Dict[str, Any]) -&gt; &quot;WandbLogger&quot;:</span>
-<span class="c1">#         &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#     def from_config(cls, config: Dict[str, Any]) -&gt; "WandbLogger":</span>
+<span class="c1">#         """ """</span>
 <span class="c1">#         return cls(</span>
-<span class="c1">#             config.get(&quot;log_dir&quot;, None),</span>
-<span class="c1">#             config.get(&quot;log_suffix&quot;, None),</span>
-<span class="c1">#             config.get(&quot;project&quot;, None),</span>
-<span class="c1">#             config.get(&quot;entity&quot;, None),</span>
-<span class="c1">#             config.get(&quot;hyperparameters&quot;, None),</span>
+<span class="c1">#             config.get("log_dir", None),</span>
+<span class="c1">#             config.get("log_suffix", None),</span>
+<span class="c1">#             config.get("project", None),</span>
+<span class="c1">#             config.get("entity", None),</span>
+<span class="c1">#             config.get("hyperparameters", None),</span>
 <span class="c1">#         )</span>
 
 <span class="c1">#     @property</span>
 <span class="c1">#     def filename(self) -&gt; str:</span>
-<span class="c1">#         &quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="c1">#         """ """</span>
 <span class="c1">#         return self.__wandb.run.dir</span>
 
 
 <div class="viewcode-block" id="LoggerManager">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LoggerManager</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manager of loggers.</span>
+<span class="w">    </span><span class="sd">"""Manager of loggers.</span>
 
 <span class="sd">    This class manages multiple loggers and provides a unified interface to</span>
 <span class="sd">    log metrics and messages.</span>
@@ -923,9 +941,9 @@
 <span class="sd">    log_suffix : str, optional</span>
 <span class="sd">        The suffix of the log file.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;LoggerManager&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"LoggerManager"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -937,20 +955,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_txt_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a text logger to the manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add a text logger to the manager."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TxtLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_suffix</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_csv_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a csv logger to the manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add a csv logger to the manager."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CSVLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_suffix</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_tensorboardx_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a tensorboardx logger to the manager.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add a tensorboardx logger to the manager."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TensorBoardXLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_suffix</span><span class="p">))</span>
 
     <span class="c1"># def _add_wandb_logger(self, **kwargs: dict) -&gt; None:</span>
-    <span class="c1">#     &quot;&quot;&quot; &quot;&quot;&quot;</span>
-    <span class="c1">#     raise NotImplementedError(&quot;NOT tested yet!&quot;)</span>
+    <span class="c1">#     """ """</span>
+    <span class="c1">#     raise NotImplementedError("NOT tested yet!")</span>
     <span class="c1"># self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))</span>
 
 <div class="viewcode-block" id="LoggerManager.log_metrics">
@@ -958,10 +976,10 @@
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_log_metrics_doc</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"train"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">lgs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
             <span class="n">lgs</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span></div>
@@ -994,7 +1012,7 @@
 <div class="viewcode-block" id="LoggerManager.flush">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager.flush">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flush the loggers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Flush the loggers."""</span>
         <span class="k">for</span> <span class="n">lgs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
             <span class="n">lgs</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
@@ -1002,31 +1020,31 @@
 <div class="viewcode-block" id="LoggerManager.close">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the loggers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the loggers."""</span>
         <span class="k">for</span> <span class="n">lgs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
             <span class="n">lgs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">loggers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseLogger</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of loggers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List of loggers."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Directory to save the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Directory to save the log file."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_dir</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Suffix of the log file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Suffix of the log file."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_suffix</span>
 
 <div class="viewcode-block" id="LoggerManager.from_config">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;LoggerManager&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a logger manager from a configuration.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"LoggerManager"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a logger manager from a configuration.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1038,16 +1056,16 @@
 <span class="sd">        LoggerManager</span>
 <span class="sd">            The instance of the created logger manager.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">lm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_suffix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;txt_logger&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+<span class="sd">        """</span>
+        <span class="n">lm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_dir"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"log_suffix"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"txt_logger"</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
             <span class="n">lm</span><span class="o">.</span><span class="n">_add_txt_logger</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;csv_logger&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"csv_logger"</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
             <span class="n">lm</span><span class="o">.</span><span class="n">_add_csv_logger</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tensorboardx_logger&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tensorboardx_logger"</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
             <span class="n">lm</span><span class="o">.</span><span class="n">_add_tensorboardx_logger</span><span class="p">()</span>
-        <span class="c1"># if config.get(&quot;wandb_logger&quot;, False):</span>
-        <span class="c1">#     kwargs = config.get(&quot;wandb_logger&quot;, {})</span>
+        <span class="c1"># if config.get("wandb_logger", False):</span>
+        <span class="c1">#     kwargs = config.get("wandb_logger", {})</span>
         <span class="c1">#     lm._add_wandb_logger(**kwargs)</span>
         <span class="k">return</span> <span class="n">lm</span></div>
 
@@ -1056,7 +1074,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="s2">&quot;loggers&quot;</span><span class="p">,</span>
+            <span class="s2">"loggers"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
@@ -1089,8 +1107,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1124,7 +1142,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

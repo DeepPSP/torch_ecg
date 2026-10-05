@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/cpsc_databases/cpsc2018';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -384,7 +403,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -399,17 +417,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_FIG_SIZE_PER_SEC</span><span class="p">,</span> <span class="n">CPSCDataBase</span><span class="p">,</span> <span class="n">DataBaseInfo</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;CPSC2018&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;compute_metrics&quot;</span><span class="p">,</span>
+    <span class="s2">"CPSC2018"</span><span class="p">,</span>
+    <span class="s2">"compute_metrics"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_CPSC2018_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    The China Physiological Signal Challenge 2018:</span>
 <span class="s2">    Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. training set contains 6,877 (female: 3178; male: 3699) 12 leads ECG recordings lasting from 6 s to just 60 s.</span>
 <span class="s2">    2. ECG recordings were sampled as 500 Hz.</span>
 <span class="s2">    3. the training data can be downloaded using links in [1]_, but the link in [2]_ is recommended. File structure will be assumed to follow [2]_.</span>
@@ -442,33 +460,33 @@
 
 <span class="s2">        .. code-block:: python</span>
 
-<span class="s2">            [&quot;I&quot;, &quot;II&quot;, &quot;III&quot;, &quot;aVR&quot;, &quot;aVL&quot;, &quot;aVF&quot;, &quot;V1&quot;, &quot;V2&quot;, &quot;V3&quot;, &quot;V4&quot;, &quot;V5&quot;, &quot;V6&quot;]</span>
+<span class="s2">            ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]</span>
 
 <span class="s2">    7. meanings in the .hea files: **to write**</span>
 <span class="s2">    8. knowledge about the abnormal rhythms: ref. :meth:`get_disease_knowledge`.</span>
 <span class="s2">    9. Challenge official website [1]_, see also [2]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">note</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    1. Ages of records A0608, A1549, A1876, A2299, A5990 are &quot;NaN&quot;.</span>
-<span class="s2">    2. CINC2020 (ref. [2]_) released totally 3453 unused training data of CPSC2018, whose filenames start with &quot;Q&quot;.</span>
-<span class="s2">       These file names are not &quot;continuous&quot;. The last record is &quot;Q3581&quot;.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">note</span><span class="o">=</span><span class="s2">"""</span>
+<span class="s2">    1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN".</span>
+<span class="s2">    2. CINC2020 (ref. [2]_) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".</span>
+<span class="s2">       These file names are not "continuous". The last record is "Q3581".</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;ECG arrythmia detection&quot;</span><span class="p">,</span>
+        <span class="s2">"ECG arrythmia detection"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;http://2018.icbeb.org/&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;https://moody-challenge.physionet.org/2020/&quot;</span><span class="p">,</span>
+        <span class="s2">"http://2018.icbeb.org/"</span><span class="p">,</span>
+        <span class="s2">"https://moody-challenge.physionet.org/2020/"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.1166/jmihi.2018.2442&quot;</span><span class="p">,</span>
+    <span class="n">doi</span><span class="o">=</span><span class="s2">"10.1166/jmihi.2018.2442"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="CPSC2018">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CPSC2018_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CPSC2018_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CPSC2018</span><span class="p">(</span><span class="n">CPSCDataBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -481,9 +499,9 @@
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CPSC2018&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"CPSC2018"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -493,7 +511,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;cpsc2018&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"cpsc2018"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
@@ -502,124 +520,124 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">500</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span> <span class="o">=</span> <span class="s2">&quot;mat&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">&quot;mat&quot;</span>  <span class="c1"># the same file as the record</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span> <span class="o">=</span> <span class="s2">"mat"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">"mat"</span>  <span class="c1"># the same file as the record</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">nb_records</span> <span class="o">=</span> <span class="mi">6877</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;I&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;II&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;III&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;aVR&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;aVL&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;aVF&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V4&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V5&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V6&quot;</span><span class="p">,</span>
+            <span class="s2">"I"</span><span class="p">,</span>
+            <span class="s2">"II"</span><span class="p">,</span>
+            <span class="s2">"III"</span><span class="p">,</span>
+            <span class="s2">"aVR"</span><span class="p">,</span>
+            <span class="s2">"aVL"</span><span class="p">,</span>
+            <span class="s2">"aVF"</span><span class="p">,</span>
+            <span class="s2">"V1"</span><span class="p">,</span>
+            <span class="s2">"V2"</span><span class="p">,</span>
+            <span class="s2">"V3"</span><span class="p">,</span>
+            <span class="s2">"V4"</span><span class="p">,</span>
+            <span class="s2">"V5"</span><span class="p">,</span>
+            <span class="s2">"V6"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_diagnosis</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;N&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;AF&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I-AVB&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;LBBB&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;RBBB&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;PAC&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;PVC&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;STD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;STE&quot;</span><span class="p">,</span>
+            <span class="s2">"N"</span><span class="p">,</span>
+            <span class="s2">"AF"</span><span class="p">,</span>
+            <span class="s2">"I-AVB"</span><span class="p">,</span>
+            <span class="s2">"LBBB"</span><span class="p">,</span>
+            <span class="s2">"RBBB"</span><span class="p">,</span>
+            <span class="s2">"PAC"</span><span class="p">,</span>
+            <span class="s2">"PVC"</span><span class="p">,</span>
+            <span class="s2">"STD"</span><span class="p">,</span>
+            <span class="s2">"STE"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_diagnosis_original</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;AF&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;I-AVB&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;LBBB&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;RBBB&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;PAC&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;PVC&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;STD&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;STE&quot;</span><span class="p">,</span>
+                <span class="s2">"Normal"</span><span class="p">,</span>
+                <span class="s2">"AF"</span><span class="p">,</span>
+                <span class="s2">"I-AVB"</span><span class="p">,</span>
+                <span class="s2">"LBBB"</span><span class="p">,</span>
+                <span class="s2">"RBBB"</span><span class="p">,</span>
+                <span class="s2">"PAC"</span><span class="p">,</span>
+                <span class="s2">"PVC"</span><span class="p">,</span>
+                <span class="s2">"STD"</span><span class="p">,</span>
+                <span class="s2">"STE"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis_abbr_to_full</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;AF&quot;</span><span class="p">:</span> <span class="s2">&quot;Atrial fibrillation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;I-AVB&quot;</span><span class="p">:</span> <span class="s2">&quot;First-degree atrioventricular block&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;LBBB&quot;</span><span class="p">:</span> <span class="s2">&quot;Left bundle brunch block&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;RBBB&quot;</span><span class="p">:</span> <span class="s2">&quot;Right bundle brunch block&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;PAC&quot;</span><span class="p">:</span> <span class="s2">&quot;Premature atrial contraction&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;PVC&quot;</span><span class="p">:</span> <span class="s2">&quot;Premature ventricular contraction&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;STD&quot;</span><span class="p">:</span> <span class="s2">&quot;ST-segment depression&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;STE&quot;</span><span class="p">:</span> <span class="s2">&quot;ST-segment elevated&quot;</span><span class="p">,</span>
+            <span class="s2">"N"</span><span class="p">:</span> <span class="s2">"Normal"</span><span class="p">,</span>
+            <span class="s2">"AF"</span><span class="p">:</span> <span class="s2">"Atrial fibrillation"</span><span class="p">,</span>
+            <span class="s2">"I-AVB"</span><span class="p">:</span> <span class="s2">"First-degree atrioventricular block"</span><span class="p">,</span>
+            <span class="s2">"LBBB"</span><span class="p">:</span> <span class="s2">"Left bundle brunch block"</span><span class="p">,</span>
+            <span class="s2">"RBBB"</span><span class="p">:</span> <span class="s2">"Right bundle brunch block"</span><span class="p">,</span>
+            <span class="s2">"PAC"</span><span class="p">:</span> <span class="s2">"Premature atrial contraction"</span><span class="p">,</span>
+            <span class="s2">"PVC"</span><span class="p">:</span> <span class="s2">"Premature ventricular contraction"</span><span class="p">,</span>
+            <span class="s2">"STD"</span><span class="p">:</span> <span class="s2">"ST-segment depression"</span><span class="p">,</span>
+            <span class="s2">"STE"</span><span class="p">:</span> <span class="s2">"ST-segment elevated"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis_num_to_abbr</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
-            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;AF&quot;</span><span class="p">,</span>
-            <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;I-AVB&quot;</span><span class="p">,</span>
-            <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;LBBB&quot;</span><span class="p">,</span>
-            <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;RBBB&quot;</span><span class="p">,</span>
-            <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;PAC&quot;</span><span class="p">,</span>
-            <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;PVC&quot;</span><span class="p">,</span>
-            <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;STD&quot;</span><span class="p">,</span>
-            <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;STE&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">"N"</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">"AF"</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s2">"I-AVB"</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="s2">"LBBB"</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="s2">"RBBB"</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="s2">"PAC"</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="s2">"PVC"</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="s2">"STD"</span><span class="p">,</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="s2">"STE"</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="w">        </span><span class="sd">"""Find all records in the database directory</span>
 <span class="sd">        and store them (path, metadata, etc.) in some private attributes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_record_list_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_record_list_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
                 <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">),</span>
                 <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">)))),</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SEED</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"record"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># find and load the annotation csv file</span>
-        <span class="n">ann_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;REFERENCE.csv&quot;</span><span class="p">))</span>
+        <span class="n">ann_file</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"REFERENCE.csv"</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ann_file</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Annotation file not found. Please call method `_download_labels`, &quot;</span> <span class="s2">&quot;and call method `_ls_rec` again.&quot;</span><span class="p">,</span>
+                <span class="s2">"Annotation file not found. Please call method `_download_labels`, "</span> <span class="s2">"and call method `_ls_rec` again."</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;labels_n&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_a&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_f&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"labels_n"</span><span class="p">,</span> <span class="s2">"labels_a"</span><span class="p">,</span> <span class="s2">"labels_f"</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">df_ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ann_file</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">label_mat</span> <span class="o">=</span> <span class="n">df_ann</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span><span class="o">.</span><span class="n">values</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">label_mat</span><span class="p">)</span>
             <span class="n">label_mat</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">label_mat</span><span class="p">)]</span>
-            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;labels_n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">label_mat</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;labels_a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">"labels_n"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">label_mat</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">"labels_a"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis_num_to_abbr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">labels_n</span><span class="p">],</span>
                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;labels_f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="n">df_ann</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">"labels_f"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis_abbr_to_full</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">labels_a</span><span class="p">],</span>
                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">df_ann</span> <span class="o">=</span> <span class="n">df_ann</span><span class="p">[[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;labels_n&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_a&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_f&quot;</span><span class="p">]]</span>
-            <span class="n">df_ann</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_n&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_a&quot;</span><span class="p">,</span> <span class="s2">&quot;labels_f&quot;</span><span class="p">]</span>
-            <span class="n">df_ann</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">df_ann</span> <span class="o">=</span> <span class="n">df_ann</span><span class="p">[[</span><span class="n">df_ann</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"labels_n"</span><span class="p">,</span> <span class="s2">"labels_a"</span><span class="p">,</span> <span class="s2">"labels_f"</span><span class="p">]]</span>
+            <span class="n">df_ann</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"record"</span><span class="p">,</span> <span class="s2">"labels_n"</span><span class="p">,</span> <span class="s2">"labels_a"</span><span class="p">,</span> <span class="s2">"labels_f"</span><span class="p">]</span>
+            <span class="n">df_ann</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"record"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># merge `df_ann` and `self._df_records`</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_ann</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_ann</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CPSC2018.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -631,16 +649,16 @@
 <span class="sd">        int</span>
 <span class="sd">            Subject ID associated with the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">s2d</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;11&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span>
+            <span class="s2">"A"</span><span class="p">:</span> <span class="s2">"11"</span><span class="p">,</span>
+            <span class="s2">"B"</span><span class="p">:</span> <span class="s2">"12"</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">,</span> <span class="n">rec</span><span class="p">))</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">sid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">s2d</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span><span class="si">}{</span><span class="s1">&#39;0&#39;</span><span class="o">*</span><span class="p">(</span><span class="mi">8</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="si">}{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[A-Z]"</span><span class="p">,</span> <span class="n">rec</span><span class="p">))</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">sid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">s2d</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span><span class="si">}{</span><span class="s1">'0'</span><span class="o">*</span><span class="p">(</span><span class="mi">8</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="si">}{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sid</span></div>
 
 
@@ -650,11 +668,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="o">=</span><span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the ECG data of a record.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Load the ECG data of a record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -662,11 +680,11 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        leads : str or int or Sequence[str] or Sequence[int], optional</span>
 <span class="sd">            The leads to load,</span>
-<span class="sd">            None or &quot;all&quot; for all leads.</span>
-<span class="sd">        data_format : str, default &quot;channel_first&quot;</span>
-<span class="sd">            Format of the ECG data, &quot;channel_last&quot; or &quot;channel_first&quot; (original)</span>
-<span class="sd">        units : str, default &quot;mV&quot;</span>
-<span class="sd">            Units of the output signal, can also be &quot;μV&quot; (with an alias &quot;uV&quot;),</span>
+<span class="sd">            None or "all" for all leads.</span>
+<span class="sd">        data_format : str, default "channel_first"</span>
+<span class="sd">            Format of the ECG data, "channel_last" or "channel_first" (original)</span>
+<span class="sd">        units : str, default "mV"</span>
+<span class="sd">            Units of the output signal, can also be "μV" (with an alias "uV"),</span>
 <span class="sd">            case insensitive.</span>
 <span class="sd">        return_fs : bool, default False</span>
 <span class="sd">            Whether to return the sampling frequency of the output signal.</span>
@@ -675,37 +693,37 @@
 <span class="sd">        -------</span>
 <span class="sd">        data : numpy.ndarray</span>
 <span class="sd">            The loaded ECG data.</span>
-<span class="sd">        data_fs : numbers.Real, optional</span>
+<span class="sd">        data_fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            Returned if `return_fs` is True.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">rec_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span><span class="p">)</span>
         <span class="n">_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_leads</span><span class="p">(</span><span class="n">leads</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">allowed_data_format</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
+            <span class="s2">"channel_first"</span><span class="p">,</span>
+            <span class="s2">"lead_first"</span><span class="p">,</span>
+            <span class="s2">"channel_last"</span><span class="p">,</span>
+            <span class="s2">"lead_last"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">allowed_data_format</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`data_format` should be one of `</span><span class="si">{</span><span class="n">allowed_data_format</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"`data_format` should be one of `</span><span class="si">{</span><span class="n">allowed_data_format</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`"</span>
 
-        <span class="n">allowed_units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;μv&quot;</span><span class="p">,</span> <span class="s2">&quot;muv&quot;</span><span class="p">]</span>
+        <span class="n">allowed_units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mv"</span><span class="p">,</span> <span class="s2">"uv"</span><span class="p">,</span> <span class="s2">"μv"</span><span class="p">,</span> <span class="s2">"muv"</span><span class="p">]</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">allowed_units</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`units` should be one of `</span><span class="si">{</span><span class="n">allowed_units</span><span class="si">}</span><span class="s2">` or None, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"`units` should be one of `</span><span class="si">{</span><span class="n">allowed_units</span><span class="si">}</span><span class="s2">` or None, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`"</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_fp</span><span class="p">))</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ECG&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)[</span><span class="n">_leads</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="k">if</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"ECG"</span><span class="p">][</span><span class="s2">"data"</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">NP</span><span class="p">)[</span><span class="n">_leads</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span>
-        <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mv&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;mV&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"mv"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"mV"</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">/=</span> <span class="mi">1000</span>
-        <span class="k">elif</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;μv&quot;</span><span class="p">,</span> <span class="s2">&quot;muv&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;μV&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"uv"</span><span class="p">,</span> <span class="s2">"μv"</span><span class="p">,</span> <span class="s2">"muv"</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"μV"</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">*=</span> <span class="mi">1000</span>
 
         <span class="k">if</span> <span class="n">return_fs</span><span class="p">:</span>
@@ -715,35 +733,35 @@
 
 <div class="viewcode-block" id="CPSC2018.load_ann">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018.load_ann">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;n&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load labels (diagnoses or arrhythmias) of a record.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"n"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Load labels (diagnoses or arrhythmias) of a record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rec : str or int</span>
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
-<span class="sd">        ann_format : str, default &quot;n&quot;</span>
+<span class="sd">        ann_format : str, default "n"</span>
 <span class="sd">            Format of labels, one of the following (case insensitive):</span>
-<span class="sd">            - &quot;a&quot;, abbreviations</span>
-<span class="sd">            - &quot;f&quot;, full names</span>
-<span class="sd">            - &quot;n&quot;, numeric codes</span>
+<span class="sd">            - "a", abbreviations</span>
+<span class="sd">            - "f", full names</span>
+<span class="sd">            - "n", numeric codes</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        labels : List[str]</span>
 <span class="sd">            The list of labels.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">col</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;labels_a&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="s2">&quot;labels_f&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;labels_n&quot;</span><span class="p">,</span>
+                <span class="s2">"a"</span><span class="p">:</span> <span class="s2">"labels_a"</span><span class="p">,</span>
+                <span class="s2">"f"</span><span class="p">:</span> <span class="s2">"labels_f"</span><span class="p">,</span>
+                <span class="s2">"n"</span><span class="p">:</span> <span class="s2">"labels_n"</span><span class="p">,</span>
             <span class="p">}[</span><span class="n">ann_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`ann_format` should be one of `[&#39;a&#39;, &#39;f&#39;, &#39;n&#39;]`, but got `</span><span class="si">{</span><span class="n">ann_format</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`ann_format` should be one of `['a', 'f', 'n']`, but got `</span><span class="si">{</span><span class="n">ann_format</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">labels</span></div>
 
@@ -751,15 +769,15 @@
 <div class="viewcode-block" id="CPSC2018.get_labels">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018.get_labels">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">load_ann</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;n&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of `load_ann`&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"n"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""alias of `load_ann`"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_format</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CPSC2018.get_subject_info">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018.get_subject_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get subject information (e.g sex, age, etc.).</span>
+<span class="w">        </span><span class="sd">"""Get subject information (e.g sex, age, etc.).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -773,19 +791,19 @@
 <span class="sd">        subject_info : dict</span>
 <span class="sd">            The subject information.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">items</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">info_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">]</span>
+            <span class="n">info_items</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span> <span class="s2">"sex"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">info_items</span> <span class="o">=</span> <span class="n">items</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">rec_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_fp</span><span class="p">))[</span><span class="s2">&quot;ECG&quot;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_fp</span><span class="p">))[</span><span class="s2">"ECG"</span><span class="p">]</span>
         <span class="n">subject_info</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-            <span class="s2">&quot;sex&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"age"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"age"</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"sex"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"sex"</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="n">subject_info</span></div>
@@ -800,7 +818,7 @@
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the ECG data of a record.</span>
+<span class="w">        </span><span class="sd">"""Plot the ECG data of a record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -814,18 +832,18 @@
 <span class="sd">        kwargs : dict, optional</span>
 <span class="sd">            Auxilliary key word arguments to pass to :func:`matplotlib.pyplot.subplots`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">"plt"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
         <span class="n">leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_leads</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;μV&quot;</span><span class="p">,</span> <span class="n">leads</span><span class="o">=</span><span class="n">leads</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">data_format</span><span class="o">=</span><span class="s2">"channel_first"</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">"μV"</span><span class="p">,</span> <span class="n">leads</span><span class="o">=</span><span class="n">leads</span><span class="p">)</span>
         <span class="n">y_ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">100</span>
 
-        <span class="n">diag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_format</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="n">diag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_format</span><span class="o">=</span><span class="s2">"f"</span><span class="p">)</span>
 
         <span class="n">nb_leads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span>
 
@@ -838,28 +856,28 @@
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                 <span class="n">t</span><span class="p">,</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
-                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
-                <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;lead - </span><span class="si">{</span><span class="n">leads</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="s2">"2.0"</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"lead - </span><span class="si">{</span><span class="n">leads</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;labels - </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diag</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">"minor"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"labels - </span><span class="si">{</span><span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diag</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Voltage [μV]&quot;</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Time [s]"</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Voltage [μV]"</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;save_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;save_path&quot;</span><span class="p">],</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"save_path"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">"save_path"</span><span class="p">],</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
@@ -867,9 +885,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet1.zip&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet2.zip&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet3.zip&quot;</span><span class="p">,</span>
+            <span class="s2">"http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet1.zip"</span><span class="p">,</span>
+            <span class="s2">"http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet2.zip"</span><span class="p">,</span>
+            <span class="s2">"http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet3.zip"</span><span class="p">,</span>
         <span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -878,16 +896,16 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">webpage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;http://2018.icbeb.org/Challenge.html&quot;</span>
+        <span class="k">return</span> <span class="s2">"http://2018.icbeb.org/Challenge.html"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_download_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">label_url</span> <span class="o">=</span> <span class="s2">&quot;http://2018.icbeb.org/file/REFERENCE.csv&quot;</span>
+        <span class="n">label_url</span> <span class="o">=</span> <span class="s2">"http://2018.icbeb.org/file/REFERENCE.csv"</span>
         <span class="n">http_get</span><span class="p">(</span><span class="n">label_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CPSC2018.download">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018.download">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the database from :attr:`self.url`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Download the database from :attr:`self.url`."""</span>
         <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
             <span class="n">http_get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_download_labels</span><span class="p">()</span>
@@ -897,7 +915,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_metrics</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" """</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </pre></div>
 
@@ -928,8 +946,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -963,7 +981,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

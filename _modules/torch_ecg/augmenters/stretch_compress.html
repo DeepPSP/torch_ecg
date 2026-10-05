@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/augmenters/stretch_compress';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,9 +398,8 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.augmenters.stretch_compress</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span></span><span class="sd">""" """</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -398,24 +416,24 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">AUGMENTERS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;StretchCompress&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;StretchCompressOffline&quot;</span><span class="p">,</span>
+    <span class="s2">"StretchCompress"</span><span class="p">,</span>
+    <span class="s2">"StretchCompressOffline"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="StretchCompress">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress">[docs]</a>
-<span class="nd">@AUGMENTERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;stretch_compress&quot;</span><span class="p">)</span>
+<span class="nd">@AUGMENTERS</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"stretch_compress"</span><span class="p">)</span>
 <span class="nd">@AUGMENTERS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StretchCompress</span><span class="p">(</span><span class="n">Augmenter</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stretch-or-compress augmenter on ECG tensors.</span>
+<span class="w">    </span><span class="sd">"""Stretch-or-compress augmenter on ECG tensors.</span>
 
 <span class="sd">    Rescaling the ECGs by a factor sampled from a normal distribution</span>
 <span class="sd">    along the time axis.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio : numbers.Real, default 6</span>
+<span class="sd">    ratio : int or float, default 6</span>
 <span class="sd">        Mean ratio of the stretch or compress.</span>
 <span class="sd">        If it is in the interval[1, 100],</span>
 <span class="sd">        then it will be transformed to [0, 1].</span>
@@ -438,24 +456,24 @@
 <span class="sd">        mask = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)</span>
 <span class="sd">        sig, label, mask = sc(sig, label, mask)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;StretchCompress&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"StretchCompress"</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratio</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Probability must be between 0 and 1&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Probability must be between 0 and 1"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span> <span class="o">=</span> <span class="n">inplace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">ratio</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ratio must be between 0 and 1, or between 0 and 100&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Ratio must be between 0 and 1, or between 0 and 100"</span>
 
 <div class="viewcode-block" id="StretchCompress.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method of the augmenter.</span>
+<span class="w">        </span><span class="sd">"""Forward method of the augmenter.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -477,7 +495,7 @@
 <span class="sd">        labels : Sequence[torch.Tensor], optional</span>
 <span class="sd">            The stretched or compressed label tensors.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -493,12 +511,12 @@
             <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (batch, label_len, n_classes) -&gt; (batch, n_classes, label_len)</span>
             <span class="n">ll</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">ll</span> <span class="o">!=</span> <span class="n">siglen</span><span class="p">:</span>
-                <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">siglen</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">siglen</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">label_len</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">batch_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_indices</span><span class="p">(</span><span class="n">prob</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="n">batch</span><span class="p">):</span>
             <span class="n">sign</span> <span class="o">=</span> <span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
             <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_ratio</span><span class="p">()</span>
-            <span class="c1"># print(f&quot;batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}&quot;)</span>
+            <span class="c1"># print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")</span>
             <span class="n">new_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">siglen</span><span class="p">))</span>
             <span class="n">diff_len</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_len</span> <span class="o">-</span> <span class="n">siglen</span><span class="p">)</span>
             <span class="n">half_diff_len</span> <span class="o">=</span> <span class="n">diff_len</span> <span class="o">//</span> <span class="mi">2</span>
@@ -506,7 +524,7 @@
                 <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                     <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                     <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                     <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">half_diff_len</span> <span class="p">:</span> <span class="n">siglen</span> <span class="o">+</span> <span class="n">half_diff_len</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">):</span>
@@ -515,7 +533,7 @@
                     <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                         <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                         <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                         <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">half_diff_len</span> <span class="p">:</span> <span class="n">siglen</span> <span class="o">+</span> <span class="n">half_diff_len</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># compress and pad</span>
@@ -523,11 +541,11 @@
                     <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                         <span class="n">sig</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                         <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                         <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="p">),</span>
                     <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="n">half_diff_len</span><span class="p">,</span> <span class="n">diff_len</span> <span class="o">-</span> <span class="n">half_diff_len</span><span class="p">),</span>
-                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">"constant"</span><span class="p">,</span>
                     <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">):</span>
@@ -537,28 +555,28 @@
                         <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                             <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">batch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                             <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                             <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="p">),</span>
                         <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="n">half_diff_len</span><span class="p">,</span> <span class="n">diff_len</span> <span class="o">-</span> <span class="n">half_diff_len</span><span class="p">),</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">"constant"</span><span class="p">,</span>
                         <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">ll</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">label_len</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">ll</span> <span class="o">!=</span> <span class="n">siglen</span><span class="p">:</span>
-                <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">ll</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">ll</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (batch, n_classes, label_len) -&gt; (batch, label_len, n_classes)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_sample_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample the ratio of stretching or compressing.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sample the ratio of stretching or compressing."""</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">,</span> <span class="mf">0.382</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Tensor</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;NOT finished, NOT checked,</span>
+<span class="w">        </span><span class="sd">"""NOT finished, NOT checked,</span>
 
 <span class="sd">        parallel version of `self.generate`, NOT tested yet!</span>
 
@@ -580,7 +598,7 @@
 <span class="sd">        labels : Sequence[torch.Tensor], optional</span>
 <span class="sd">            The stretched or compressed label tensors.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -609,22 +627,22 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;ratio&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;prob&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;inplace&quot;</span><span class="p">,</span>
+            <span class="s2">"ratio"</span><span class="p">,</span>
+            <span class="s2">"prob"</span><span class="p">,</span>
+            <span class="s2">"inplace"</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span></div>
 </div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_stretch_compress_one_batch_element</span><span class="p">(</span>
-    <span class="n">ratio</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
+    <span class="n">ratio</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">sig</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stretch or compress one batch element of the ECGs.</span>
+<span class="w">    </span><span class="sd">"""Stretch or compress one batch element of the ECGs.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio : numbers.Real</span>
+<span class="sd">    ratio : int or float</span>
 <span class="sd">        Ratio of the stretch/compress.</span>
 <span class="sd">    sig : torch.Tensor</span>
 <span class="sd">        The ECGs to be stretched or compressed,</span>
@@ -644,7 +662,7 @@
 <span class="sd">        The stretched or compressed label tensors,</span>
 <span class="sd">        of shapes ``(label_len, channels)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
     <span class="n">label_len</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">n_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -656,11 +674,11 @@
         <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (1, label_len, n_classes) -&gt; (1, n_classes, label_len)</span>
         <span class="n">ll</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">ll</span> <span class="o">!=</span> <span class="n">siglen</span><span class="p">:</span>
-            <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">siglen</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">siglen</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">label_len</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="mf">0.382</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span>
-    <span class="c1"># print(f&quot;batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}&quot;)</span>
+    <span class="c1"># print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")</span>
     <span class="n">new_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">siglen</span><span class="p">))</span>
     <span class="n">diff_len</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_len</span> <span class="o">-</span> <span class="n">siglen</span><span class="p">)</span>
     <span class="n">half_diff_len</span> <span class="o">=</span> <span class="n">diff_len</span> <span class="o">//</span> <span class="mi">2</span>
@@ -668,7 +686,7 @@
         <span class="n">sig</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
             <span class="n">sig</span><span class="p">,</span>
             <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
             <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)[</span>
             <span class="o">...</span><span class="p">,</span> <span class="n">half_diff_len</span> <span class="p">:</span> <span class="n">siglen</span> <span class="o">+</span> <span class="n">half_diff_len</span>
@@ -679,7 +697,7 @@
             <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                 <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                 <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                 <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">half_diff_len</span> <span class="p">:</span> <span class="n">siglen</span> <span class="o">+</span> <span class="n">half_diff_len</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># compress and pad</span>
@@ -687,11 +705,11 @@
             <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                 <span class="n">sig</span><span class="p">,</span>
                 <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                 <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="n">half_diff_len</span><span class="p">,</span> <span class="n">diff_len</span> <span class="o">-</span> <span class="n">half_diff_len</span><span class="p">),</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">"constant"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">):</span>
@@ -701,11 +719,11 @@
                 <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                     <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                     <span class="n">size</span><span class="o">=</span><span class="n">new_len</span><span class="p">,</span>
-                    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
                     <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="n">half_diff_len</span><span class="p">,</span> <span class="n">diff_len</span> <span class="o">-</span> <span class="n">half_diff_len</span><span class="p">),</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"constant"</span><span class="p">,</span>
                 <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="p">)</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">ll</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">label_len</span><span class="p">)):</span>
@@ -713,7 +731,7 @@
             <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">ll</span> <span class="o">!=</span> <span class="n">siglen</span><span class="p">:</span>
-            <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">ll</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">ll</span><span class="p">,),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># (n_classes, label_len) -&gt; (label_len, n_classes)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="o">*</span><span class="n">labels</span><span class="p">)</span>
@@ -723,7 +741,7 @@
 <div class="viewcode-block" id="StretchCompressOffline">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StretchCompressOffline</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Offline stretch-or-compress augmenter.</span>
+<span class="w">    </span><span class="sd">"""Offline stretch-or-compress augmenter.</span>
 
 <span class="sd">    Stretch-or-compress augmenter on</span>
 <span class="sd">    orginal length-varying ECG signals (in the form of numpy arrays),</span>
@@ -731,7 +749,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ratio : numbers.Real, default 6</span>
+<span class="sd">    ratio : int or float, default 6</span>
 <span class="sd">        Mean ratio of the stretch or compress.</span>
 <span class="sd">        If it is in the interval [1, 100],</span>
 <span class="sd">        then it will be transformed to [0, 1].</span>
@@ -754,27 +772,27 @@
 <span class="sd">        masks = torch.ones((60000, 1)).numpy().astype(int)</span>
 <span class="sd">        segments = sco(600, sig, labels, masks, critical_points=[10000,30000])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;StretchCompressOffline&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"StretchCompressOffline"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ratio</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="n">ratio</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
         <span class="n">prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">critical_overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.85</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Probability must be between 0 and 1&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Probability must be between 0 and 1"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">ratio</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ratio must be between 0 and 1, or between 0 and 100&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Ratio must be between 0 and 1, or between 0 and 100"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Overlap ratio must be between 0 and 1 (1 not included)&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Overlap ratio must be between 0 and 1 (1 not included)"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">critical_overlap</span> <span class="o">=</span> <span class="n">critical_overlap</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_overlap</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Critical overlap ratio must be between 0 and 1 (1 not included)&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_overlap</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Critical overlap ratio must be between 0 and 1 (1 not included)"</span>
 
 <div class="viewcode-block" id="StretchCompressOffline.generate">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.generate">[docs]</a>
@@ -785,7 +803,7 @@
         <span class="o">*</span><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span>
         <span class="n">critical_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate stretched or compressed segments from the ECGs.</span>
+<span class="w">        </span><span class="sd">"""Generate stretched or compressed segments from the ECGs.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -810,7 +828,7 @@
 <span class="sd">            consisting segments of the form</span>
 <span class="sd">            ``(seg, label1, label2, ..., start_idx, end_idx)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">forward_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">seglen</span> <span class="o">-</span> <span class="n">seglen</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span><span class="p">))</span>
         <span class="n">critical_forward_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">seglen</span> <span class="o">-</span> <span class="n">seglen</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_overlap</span><span class="p">))</span>
@@ -869,7 +887,7 @@
         <span class="n">start_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">end_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal function to generate a stretched or compressed segment.</span>
+<span class="w">        </span><span class="sd">"""Internal function to generate a stretched or compressed segment.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -897,8 +915,8 @@
 <span class="sd">            consisting of segments of the form</span>
 <span class="sd">            ``(seg, label1, label2, ..., start_idx, end_idx)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">start_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]),</span> <span class="s2">&quot;at least one of `start_idx` and `end_idx` should be set&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">start_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]),</span> <span class="s2">"at least one of `start_idx` and `end_idx` should be set"</span>
 
         <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_ratio</span><span class="p">()</span>
@@ -924,7 +942,7 @@
                     <span class="n">F</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                         <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">lb</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                         <span class="n">size</span><span class="o">=</span><span class="n">seglen</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
@@ -949,7 +967,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">aug_seg</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">aug_labels</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_sample_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample the ratio of stretching or compressing.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sample the ratio of stretching or compressing."""</span>
         <span class="k">if</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
@@ -973,10 +991,10 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="s2">&quot;ratio&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;prob&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;overlap&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;critical_overlap&quot;</span><span class="p">,</span>
+            <span class="s2">"ratio"</span><span class="p">,</span>
+            <span class="s2">"prob"</span><span class="p">,</span>
+            <span class="s2">"overlap"</span><span class="p">,</span>
+            <span class="s2">"critical_overlap"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
@@ -1009,8 +1027,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1044,7 +1062,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

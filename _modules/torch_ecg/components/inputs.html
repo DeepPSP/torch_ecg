@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/components/inputs';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.components.inputs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span></span><span class="sd">""" """</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
@@ -398,21 +417,21 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.utils_signal_t</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;InputConfig&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;WaveformInput&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;FFTInput&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SpectrogramInput&quot;</span><span class="p">,</span>
+    <span class="s2">"InputConfig"</span><span class="p">,</span>
+    <span class="s2">"WaveformInput"</span><span class="p">,</span>
+    <span class="s2">"FFTInput"</span><span class="p">,</span>
+    <span class="s2">"SpectrogramInput"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="InputConfig">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.InputConfig.html#torch_ecg.components.InputConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InputConfig</span><span class="p">(</span><span class="n">CFG</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Class to store the configuration of the input.</span>
+<span class="w">    </span><span class="sd">"""A Class to store the configuration of the input.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input_type : {&quot;waveform&quot;, &quot;fft&quot;, &quot;spectrogram&quot;}</span>
+<span class="sd">    input_type : {"waveform", "fft", "spectrogram"}</span>
 <span class="sd">        Type of the input.</span>
 <span class="sd">    n_channels : int</span>
 <span class="sd">        Number of channels of the input.</span>
@@ -428,19 +447,19 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        input_config = InputConfig(</span>
-<span class="sd">            input_type=&quot;waveform&quot;,</span>
+<span class="sd">            input_type="waveform",</span>
 <span class="sd">            n_channels=12,</span>
 <span class="sd">            n_samples=5000,</span>
 <span class="sd">        )</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;InputConfig&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"InputConfig"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">CFG</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
-        <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;waveform&quot;</span><span class="p">,</span> <span class="s2">&quot;fft&quot;</span><span class="p">,</span> <span class="s2">&quot;spectrogram&quot;</span><span class="p">],</span>
+        <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"waveform"</span><span class="p">,</span> <span class="s2">"fft"</span><span class="p">,</span> <span class="s2">"spectrogram"</span><span class="p">],</span>
         <span class="n">n_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">ensure_batch_dim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -454,47 +473,47 @@
             <span class="n">ensure_batch_dim</span><span class="o">=</span><span class="n">ensure_batch_dim</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;n_channels&quot;</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`n_channels` must be positive, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">assert</span> <span class="s2">&quot;n_samples&quot;</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="k">assert</span> <span class="s2">"n_channels"</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`n_channels` must be positive, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">assert</span> <span class="s2">"n_samples"</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`n_samples` must be positive or -1, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">assert</span> <span class="s2">&quot;input_type&quot;</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;waveform&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;fft&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`input_type` must be one of [&#39;waveform&#39;, &#39;fft&#39;, &#39;spectrogram&#39;], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"`n_samples` must be positive or -1, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">assert</span> <span class="s2">"input_type"</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">"waveform"</span><span class="p">,</span>
+            <span class="s2">"fft"</span><span class="p">,</span>
+            <span class="s2">"spectrogram"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"`input_type` must be one of ['waveform', 'fft', 'spectrogram'], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
+            <span class="s2">"spectrogram"</span><span class="p">,</span>
         <span class="p">]:</span>
-            <span class="k">assert</span> <span class="s2">&quot;n_bins&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`n_bins` must be specified for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2"> input&quot;</span>
-            <span class="k">assert</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">or</span> <span class="s2">&quot;sample_rate&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`fs` or `sample_rate` must be specified for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2"> input&quot;</span></div>
+            <span class="k">assert</span> <span class="s2">"n_bins"</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`n_bins` must be specified for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2"> input"</span>
+            <span class="k">assert</span> <span class="s2">"fs"</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">or</span> <span class="s2">"sample_rate"</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`fs` or `sample_rate` must be specified for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2"> input"</span></div>
 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseInput</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all input classes.</span>
+<span class="w">    </span><span class="sd">"""Base class for all input classes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    config : InputConfig</span>
 <span class="sd">        The configuration of the input.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BaseInput&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"BaseInput"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">InputConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">InputConfig</span><span class="p">),</span> <span class="s2">&quot;`config` must be an instance of `InputConfig`&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">InputConfig</span><span class="p">),</span> <span class="s2">"`config` must be an instance of `InputConfig`"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">TORCH</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dtype"</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DTYPE</span><span class="o">.</span><span class="n">TORCH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_init</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to transform the waveform to the input tensor.</span>
+<span class="w">        </span><span class="sd">"""Method to transform the waveform to the input tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -506,16 +525,16 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The transformed waveform.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal method to convert the waveform to the input tensor."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the waveform to the input tensor.</span>
+<span class="w">        </span><span class="sd">"""Transform the waveform to the input tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -527,13 +546,13 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The transformed waveform.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">waveform</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span>
         <span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`waveform` shape must be `(batch_size, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">)` &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;or `(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">)`, got `</span><span class="si">{</span><span class="n">waveform</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="sa">f</span><span class="s2">"`waveform` shape must be `(batch_size, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">)` "</span>
+            <span class="sa">f</span><span class="s2">"or `(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">)`, got `</span><span class="si">{</span><span class="n">waveform</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">`"</span>
         <span class="p">)</span>
         <span class="n">input_tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">waveform</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">ensure_batch_dim</span><span class="p">:</span>
@@ -542,7 +561,7 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to be called after initialization&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Method to be called after initialization"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
@@ -560,9 +579,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">channel_dim</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;waveform&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
-            <span class="s2">&quot;fft&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
-            <span class="c1"># &quot;spectrogram&quot;: -3,  # implemented in `SpectrogramInput`</span>
+            <span class="s2">"waveform"</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+            <span class="s2">"fft"</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+            <span class="c1"># "spectrogram": -3,  # implemented in `SpectrogramInput`</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">channel_dim</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="p">]]</span>
@@ -586,8 +605,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the input shape of the model based on</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Computes the input shape of the model based on</span>
 <span class="sd">        the input type and the waveform shape.</span>
 
 <span class="sd">        Parameters</span>
@@ -600,16 +619,16 @@
 <span class="sd">        Tuple[int] or None</span>
 <span class="sd">            The input shape of the model.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;waveform&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">"waveform"</span><span class="p">:</span>
             <span class="n">input_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">waveform_shape</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">"fft"</span><span class="p">:</span>
             <span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="ow">or</span> <span class="n">waveform_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">seq_len</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">nfft</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_dc</span><span class="p">:</span>
                 <span class="n">seq_len</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">waveform_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">waveform_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">seq_len</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;spectrogram&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">"spectrogram"</span><span class="p">:</span>
             <span class="n">n_samples</span> <span class="o">=</span> <span class="n">compute_conv_output_shape</span><span class="p">(</span>
                 <span class="n">waveform_shape</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">waveform_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">waveform_shape</span><span class="p">),</span>
                 <span class="n">kernel_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">win_length</span><span class="p">,</span>
@@ -630,13 +649,13 @@
         <span class="k">return</span> <span class="n">input_shape</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;input_type&quot;</span><span class="p">,</span> <span class="s2">&quot;n_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;n_samples&quot;</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"input_type"</span><span class="p">,</span> <span class="s2">"n_channels"</span><span class="p">,</span> <span class="s2">"n_samples"</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">,</span> <span class="s2">"device"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="WaveformInput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveformInput.html#torch_ecg.components.WaveformInput">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveformInput</span><span class="p">(</span><span class="n">BaseInput</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Waveform input.</span>
+<span class="w">    </span><span class="sd">"""Waveform input.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -645,7 +664,7 @@
 <span class="sd">    &gt;&gt;&gt; N_CHANNELS = 12</span>
 <span class="sd">    &gt;&gt;&gt; N_SAMPLES = 5000</span>
 <span class="sd">    &gt;&gt;&gt; input_config = InputConfig(</span>
-<span class="sd">    ...     input_type=&quot;waveform&quot;,</span>
+<span class="sd">    ...     input_type="waveform",</span>
 <span class="sd">    ...     n_channels=N_CHANNELS,</span>
 <span class="sd">    ...     n_samples=N_SAMPLES,</span>
 <span class="sd">    ... )</span>
@@ -657,7 +676,7 @@
 <span class="sd">    &gt;&gt;&gt; inputer(waveform).shape</span>
 <span class="sd">    torch.Size([1, 12, 5000])</span>
 <span class="sd">    &gt;&gt;&gt; input_config = InputConfig(</span>
-<span class="sd">    ...     input_type=&quot;waveform&quot;,</span>
+<span class="sd">    ...     input_type="waveform",</span>
 <span class="sd">    ...     n_channels=N_CHANNELS,</span>
 <span class="sd">    ...     n_samples=N_SAMPLES,</span>
 <span class="sd">    ...     ensure_batch_dim=False,</span>
@@ -667,23 +686,23 @@
 <span class="sd">    &gt;&gt;&gt; inputer(waveform).shape</span>
 <span class="sd">    torch.Size([12, 5000])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;WaveformInput&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"WaveformInput"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure the input type is `waveform`.&quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;waveform&quot;</span><span class="p">,</span> <span class="s2">&quot;`input_type` must be `waveform`&quot;</span>
+<span class="w">        </span><span class="sd">"""Make sure the input type is `waveform`."""</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">"waveform"</span><span class="p">,</span> <span class="s2">"`input_type` must be `waveform`"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal method to convert the waveform to the input tensor."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span>
 
 <div class="viewcode-block" id="WaveformInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveformInput.html#torch_ecg.components.WaveformInput.from_waveform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
+<span class="w">        </span><span class="sd">"""Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor`.</span>
 
 <span class="sd">        Parameters</span>
@@ -704,13 +723,13 @@
 <span class="sd">        If the input is a 2D tensor,</span>
 <span class="sd">        then the batch dimension is added (batch_size = 1).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">from_waveform</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
 
@@ -718,7 +737,7 @@
 <div class="viewcode-block" id="FFTInput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FFTInput</span><span class="p">(</span><span class="n">BaseInput</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inputs from the FFT, via concatenating the amplitudes and the phases.</span>
+<span class="w">    </span><span class="sd">"""Inputs from the FFT, via concatenating the amplitudes and the phases.</span>
 
 <span class="sd">    One can set the following optional parameters for initialization:</span>
 
@@ -730,9 +749,9 @@
 <span class="sd">    - norm: str, optional</span>
 <span class="sd">        The normalization of the FFT, can be</span>
 
-<span class="sd">        - &quot;forward&quot;</span>
-<span class="sd">        - &quot;backward&quot;</span>
-<span class="sd">        - &quot;ortho&quot;</span>
+<span class="sd">        - "forward"</span>
+<span class="sd">        - "backward"</span>
+<span class="sd">        - "ortho"</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -741,12 +760,12 @@
 <span class="sd">    &gt;&gt;&gt; N_CHANNELS = 12</span>
 <span class="sd">    &gt;&gt;&gt; N_SAMPLES = 5000</span>
 <span class="sd">    &gt;&gt;&gt; input_config = InputConfig(</span>
-<span class="sd">    ...     input_type=&quot;fft&quot;,</span>
+<span class="sd">    ...     input_type="fft",</span>
 <span class="sd">    ...     n_channels=N_CHANNELS,</span>
 <span class="sd">    ...     n_samples=N_SAMPLES,</span>
 <span class="sd">    ...     n_fft=200,</span>
 <span class="sd">    ...     drop_dc=True,</span>
-<span class="sd">    ...     norm=&quot;ortho&quot;,</span>
+<span class="sd">    ...     norm="ortho",</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; inputer = FFTInput(input_config)</span>
 <span class="sd">    &gt;&gt;&gt; waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)</span>
@@ -760,12 +779,12 @@
 <span class="sd">    &gt;&gt;&gt; inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)</span>
 <span class="sd">    True</span>
 <span class="sd">    &gt;&gt;&gt; input_config = InputConfig(</span>
-<span class="sd">    ...     input_type=&quot;fft&quot;,</span>
+<span class="sd">    ...     input_type="fft",</span>
 <span class="sd">    ...     n_channels=N_CHANNELS,</span>
 <span class="sd">    ...     n_samples=N_SAMPLES,</span>
 <span class="sd">    ...     n_fft=None,</span>
 <span class="sd">    ...     drop_dc=False,</span>
-<span class="sd">    ...     norm=&quot;forward&quot;,</span>
+<span class="sd">    ...     norm="forward",</span>
 <span class="sd">    ...     ensure_batch_dim=False,</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; inputer = FFTInput(input_config)</span>
@@ -775,27 +794,27 @@
 <span class="sd">    &gt;&gt;&gt; inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)</span>
 <span class="sd">    True</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;FFTInput&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"FFTInput"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure the input type is `fft` and set the parameters.&quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">,</span> <span class="s2">&quot;`input_type` must be `fft`&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nfft&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Make sure the input type is `fft` and set the parameters."""</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s2">"fft"</span><span class="p">,</span> <span class="s2">"`input_type` must be `fft`"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nfft"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">drop_dc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drop_dc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;norm&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_dc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"drop_dc"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"norm"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;forward&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;backward&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;ortho&quot;</span><span class="p">,</span>
-            <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`norm` must be one of [`forward`, `backward`, `ortho`], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">"forward"</span><span class="p">,</span>
+                <span class="s2">"backward"</span><span class="p">,</span>
+                <span class="s2">"ortho"</span><span class="p">,</span>
+            <span class="p">],</span> <span class="sa">f</span><span class="s2">"`norm` must be one of [`forward`, `backward`, `ortho`], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal method to convert the waveform to the input tensor."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
             <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nfft</span><span class="p">,</span>
@@ -810,7 +829,7 @@
 <div class="viewcode-block" id="FFTInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput.from_waveform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
+<span class="w">        </span><span class="sd">"""Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor` of FFTs.</span>
 
 <span class="sd">        Parameters</span>
@@ -833,7 +852,7 @@
 <span class="sd">        If the input is a 2D tensor,</span>
 <span class="sd">        then the batch dimension is added (batch_size = 1).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
 
@@ -844,13 +863,13 @@
 <div class="viewcode-block" id="FFTInput.extra_repr_keys">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;nfft&quot;</span><span class="p">,</span> <span class="s2">&quot;drop_dc&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"nfft"</span><span class="p">,</span> <span class="s2">"drop_dc"</span><span class="p">,</span> <span class="s2">"norm"</span><span class="p">]</span></div>
 </div>
 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_SpectralInput</span><span class="p">(</span><span class="n">BaseInput</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inputs from the spectro-temporal domain.</span>
+<span class="w">    </span><span class="sd">"""Inputs from the spectro-temporal domain.</span>
 
 <span class="sd">    One has to set the following parameters for initialization:</span>
 
@@ -871,27 +890,27 @@
 <span class="sd">      Whether to convert the features to 1D.</span>
 <span class="sd">      NOTE that if `to1d` is True,</span>
 <span class="sd">      then if the convolutions with ``groups=1`` applied to the `input`</span>
-<span class="sd">      acts on all the bins, which is &quot;global&quot;</span>
+<span class="sd">      acts on all the bins, which is "global"</span>
 <span class="sd">      w.r.t. the `bins` dimension of the corresponding 2d input.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;_SpectralInput&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"_SpectralInput"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure the input type is `spectral` and set the parameters.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">to1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;to1d&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_rate&quot;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">feature_fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feature_fs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;window_size&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Make sure the input type is `spectral` and set the parameters."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"to1d"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"fs"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sample_rate"</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"feature_fs"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"window_size"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">20</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`window_size` must be in (0, 0.2), got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;overlap_size&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`window_size` must be in (0, 0.2), got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="s2">"overlap_size"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">overlap_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">40</span>
         <span class="c1"># TODO: consider negative overlap_size, i.e. positive gaps between windows</span>
         <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">overlap_size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`overlap_size` must be in `(0, window_size)` = </span><span class="si">{</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">overlap_size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`overlap_size` must be in `(0, window_size)` = </span><span class="si">{</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">overlap_size</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -931,19 +950,19 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="s2">&quot;n_bins&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;win_length&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;hop_length&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;fs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;feature_fs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;to1d&quot;</span><span class="p">,</span>
+            <span class="s2">"n_bins"</span><span class="p">,</span>
+            <span class="s2">"win_length"</span><span class="p">,</span>
+            <span class="s2">"hop_length"</span><span class="p">,</span>
+            <span class="s2">"fs"</span><span class="p">,</span>
+            <span class="s2">"feature_fs"</span><span class="p">,</span>
+            <span class="s2">"to1d"</span><span class="p">,</span>
         <span class="p">]</span>
 
 
 <div class="viewcode-block" id="SpectrogramInput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrogramInput</span><span class="p">(</span><span class="n">_SpectralInput</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_SpectralInput</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_SpectralInput</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="s2">"""</span>
 
 <span class="s2">    Examples</span>
 <span class="s2">    --------</span>
@@ -952,7 +971,7 @@
 <span class="s2">    &gt;&gt;&gt; N_CHANNELS = 12</span>
 <span class="s2">    &gt;&gt;&gt; N_SAMPLES = 5000</span>
 <span class="s2">    &gt;&gt;&gt; input_config = InputConfig(</span>
-<span class="s2">    ...     name=&quot;spectrogram&quot;,</span>
+<span class="s2">    ...     name="spectrogram",</span>
 <span class="s2">    ...     n_channels=N_CHANNELS,</span>
 <span class="s2">    ...     n_samples=N_SAMPLES,</span>
 <span class="s2">    ...     n_bins=128,</span>
@@ -968,30 +987,30 @@
 <span class="s2">    &gt;&gt;&gt; spectrogram.shape == inputer.compute_input_shape(waveform.shape)</span>
 <span class="s2">    True</span>
 
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;SpectrogramInput&quot;</span>
+<span class="s2">    """</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"SpectrogramInput"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure the input type is `spectrogram` and set the parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Make sure the input type is `spectrogram` and set the parameters."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_post_init</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`input_type` must be one of [`spectrogram`], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"spectrogram"</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"`input_type` must be one of [`spectrogram`], got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_type</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">Spectrogram</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span><span class="o">.</span><span class="n">args</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;n_fft&quot;</span><span class="p">,</span> <span class="s2">&quot;win_length&quot;</span><span class="p">,</span> <span class="s2">&quot;hop_length&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"self"</span><span class="p">,</span> <span class="s2">"n_fft"</span><span class="p">,</span> <span class="s2">"win_length"</span><span class="p">,</span> <span class="s2">"hop_length"</span><span class="p">]:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">}</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n_fft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;win_length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_length</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;hop_length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop_length</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"n_fft"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"win_length"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_length</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"hop_length"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">"spectrogram"</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">to1d</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="s2">&quot;to1d&quot;</span><span class="p">,</span>
-                <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;... channel n_bins time -&gt; ... (channel n_bins) time&quot;</span><span class="p">),</span>
+                <span class="s2">"to1d"</span><span class="p">,</span>
+                <span class="n">Rearrange</span><span class="p">(</span><span class="s2">"... channel n_bins time -&gt; ... (channel n_bins) time"</span><span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method to convert the waveform to the input tensor.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal method to convert the waveform to the input tensor."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># self.values.ndim can be 2, 3, or 4</span>
@@ -1009,7 +1028,7 @@
 <div class="viewcode-block" id="SpectrogramInput.from_waveform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput.from_waveform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Converts the input :class:`~numpy.ndarray` or</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Converts the input :class:`~numpy.ndarray` or</span>
 <span class="sd">        :class:`~torch.Tensor` waveform to a :class:`~torch.Tensor` of spectrograms.</span>
 
 <span class="sd">        Parameters</span>
@@ -1034,7 +1053,7 @@
 <span class="sd">        If the input is a 2D tensor,</span>
 <span class="sd">        then the batch dimension is added (batch_size = 1).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_waveform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
 
 
@@ -1071,8 +1090,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1106,7 +1125,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

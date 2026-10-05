@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/multi_scopic';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,10 +398,10 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.cnn.multi_scopic</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">The core part of the SOTA model of CPSC2019,</span>
 <span class="sd">branched, and has different scope (in terms of dilation) in each branch.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -401,18 +420,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;MultiScopicCNN&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MultiScopicBasicBlock&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MultiScopicBranch&quot;</span><span class="p">,</span>
+    <span class="s2">"MultiScopicCNN"</span><span class="p">,</span>
+    <span class="s2">"MultiScopicBasicBlock"</span><span class="p">,</span>
+    <span class="s2">"MultiScopicBranch"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">&quot;Dropout1d&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">"Dropout1d"</span><span class="p">):</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span>  <span class="c1"># added in pytorch 1.12</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiScopicBasicBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic building block of the CNN part of the SOTA model</span>
+<span class="w">    </span><span class="sd">"""Basic building block of the CNN part of the SOTA model</span>
 <span class="sd">    from CPSC2019 challenge (entry 0416).</span>
 
 <span class="sd">    (conv -&gt; activation) * N --&gt; bn --&gt; down_sample</span>
@@ -430,9 +449,9 @@
 <span class="sd">    subsample_length : int</span>
 <span class="sd">        Subsample length (ratio) at the last layer of the block.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;MultiScopicBasicBlock&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"MultiScopicBasicBlock"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -453,16 +472,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="n">num_filters</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutional layers, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;while `num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutional layers, "</span>
+                <span class="sa">f</span><span class="s2">"while `num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="n">filter_lengths</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutional layers, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutional layers, "</span>
+                <span class="sa">f</span><span class="s2">"while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_length</span> <span class="o">=</span> <span class="n">subsample_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
@@ -471,7 +490,7 @@
         <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;ca_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"ca_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">conv_in_channels</span><span class="p">,</span>
                     <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -479,7 +498,7 @@
                     <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                     <span class="n">dilation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__scopes</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                     <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__groups</span><span class="p">,</span>
-                    <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;norm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;batch_norm&quot;</span><span class="p">)),</span>
+                    <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"norm"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"batch_norm"</span><span class="p">)),</span>
                     <span class="c1"># kw_bn=self.config.kw_bn,</span>
                     <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
                     <span class="n">kw_activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">,</span>
@@ -489,9 +508,9 @@
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;bn&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">"bn"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;down&quot;</span><span class="p">,</span>
+            <span class="s2">"down"</span><span class="p">,</span>
             <span class="n">DownSample</span><span class="p">(</span>
                 <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_length</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
@@ -502,27 +521,27 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                    <span class="s2">&quot;dropout&quot;</span><span class="p">,</span>
+                    <span class="s2">"dropout"</span><span class="p">,</span>
                     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span>
                         <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
-                        <span class="n">inplace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inplace&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                        <span class="n">inplace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inplace"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
                     <span class="p">),</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                    <span class="s2">&quot;dropout&quot;</span><span class="p">,</span>
+                    <span class="s2">"dropout"</span><span class="p">,</span>
                     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span>
                         <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
-                        <span class="n">inplace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inplace&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                        <span class="n">inplace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inplace"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
                     <span class="p">),</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;dropout&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">"dropout"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -536,14 +555,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the block.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -557,7 +576,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the block.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">)):</span>
@@ -566,16 +585,16 @@
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">output_shape</span>
         <span class="k">return</span> <span class="n">output_shape</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;MultiScopicBasicBlock&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign weights lead-wise.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">"MultiScopicBasicBlock"</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assign weights lead-wise.</span>
 
 <span class="sd">        This method is used to assign weights from a model with</span>
-<span class="sd">        a superset of the current model&#39;s leads to the current model.</span>
+<span class="sd">        a superset of the current model's leads to the current model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        other : MultiScopicBasicBlock</span>
-<span class="sd">            The model with a superset of the current model&#39;s leads.</span>
+<span class="sd">            The model with a superset of the current model's leads.</span>
 <span class="sd">        indices : Sequence[int]</span>
 <span class="sd">            The indices of the leads of the current model in the</span>
 <span class="sd">            superset model.</span>
@@ -584,15 +603,15 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
             <span class="p">[</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">other</span><span class="p">]</span>
-        <span class="p">),</span> <span class="s2">&quot;Lead-wise assignment of weights is not supported for the existence of `LayerNorm` layers&quot;</span>
+        <span class="p">),</span> <span class="s2">"Lead-wise assignment of weights is not supported for the existence of `LayerNorm` layers"</span>
         <span class="k">for</span> <span class="n">blk</span><span class="p">,</span> <span class="n">o_blk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">blk</span><span class="p">,</span> <span class="n">Conv_Bn_Activation</span><span class="p">):</span>
                 <span class="n">blk</span><span class="o">.</span><span class="n">_assign_weights_lead_wise</span><span class="p">(</span><span class="n">o_blk</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">blk</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">GroupNorm</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">InstanceNorm1d</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blk</span><span class="p">,</span> <span class="s2">&quot;num_features&quot;</span><span class="p">):</span>  <span class="c1"># batch norm and instance norm</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">blk</span><span class="p">,</span> <span class="s2">"num_features"</span><span class="p">):</span>  <span class="c1"># batch norm and instance norm</span>
                     <span class="n">out_channels</span> <span class="o">=</span> <span class="n">blk</span><span class="o">.</span><span class="n">num_features</span>
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># group norm</span>
                     <span class="n">out_channels</span> <span class="o">=</span> <span class="n">blk</span><span class="o">.</span><span class="n">num_channels</span>
@@ -612,7 +631,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiScopicBranch</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Branch path of the CNN part of the SOTA model</span>
+<span class="w">    </span><span class="sd">"""Branch path of the CNN part of the SOTA model</span>
 <span class="sd">    from CPSC2019 challenge (entry 0416).</span>
 
 <span class="sd">    Parameters</span>
@@ -640,9 +659,9 @@
 <span class="sd">        Other hyper-parameters, including</span>
 <span class="sd">        dropout, activation choices, weight initializer, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;MultiScopicBranch&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"MultiScopicBranch"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -660,21 +679,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__scopes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span> <span class="o">=</span> <span class="n">num_filters</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, "</span>
+            <span class="sa">f</span><span class="s2">"while `num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="n">filter_lengths</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, "</span>
+            <span class="sa">f</span><span class="s2">"while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="n">filter_lengths</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`scopes` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> `MultiScopicBasicBlock`s, "</span>
+                <span class="sa">f</span><span class="s2">"while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
@@ -682,7 +701,7 @@
         <span class="n">block_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">MultiScopicBasicBlock</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                     <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__scopes</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -697,25 +716,25 @@
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the branch.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the branch."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;MultiScopicBranch&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign weights lead-wise.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">"MultiScopicBranch"</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assign weights lead-wise.</span>
 
 <span class="sd">        This method is used to assign weights from a model with</span>
-<span class="sd">        a superset of the current model&#39;s leads to the current model.</span>
+<span class="sd">        a superset of the current model's leads to the current model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        other : MultiScopicBranch</span>
-<span class="sd">            The model with a superset of the current model&#39;s leads.</span>
+<span class="sd">            The model with a superset of the current model's leads.</span>
 <span class="sd">        indices : Sequence[int]</span>
 <span class="sd">            The indices of the leads of the current model in the</span>
 <span class="sd">            superset model.</span>
@@ -724,7 +743,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">blk</span><span class="p">,</span> <span class="n">o_blk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
             <span class="n">blk</span><span class="o">.</span><span class="n">_assign_weights_lead_wise</span><span class="p">(</span><span class="n">o_blk</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
 
@@ -735,11 +754,11 @@
 
 <div class="viewcode-block" id="MultiScopicCNN">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN">[docs]</a>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;multi_scopic&quot;</span><span class="p">)</span>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;multi_scopic_cnn&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"multi_scopic"</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"multi_scopic_cnn"</span><span class="p">)</span>
 <span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiScopicCNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;CNN part of the SOTA model from CPSC2019 challenge (entry 0416).</span>
+<span class="w">    </span><span class="sd">"""CNN part of the SOTA model from CPSC2019 challenge (entry 0416).</span>
 
 <span class="sd">    This architecture is a multi-branch CNN with multi-scopic convolutions,</span>
 <span class="sd">    proposed by the winning team of the CPSC2019 challenge and described in</span>
@@ -783,9 +802,9 @@
 
 <span class="sd">    .. footbibliography::</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;MultiScopicCNN&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"MultiScopicCNN"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -796,7 +815,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">branches</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_branches</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MultiScopicBranch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">MultiScopicBranch</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__scopes</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                 <span class="n">num_filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_filters</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -810,7 +829,7 @@
 <div class="viewcode-block" id="MultiScopicCNN.forward">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -824,17 +843,17 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">branch_out</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_branches</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">branch_out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="c1"># NOTE: ideally, for lead-wise manner, output of each branch should be</span>
         <span class="c1"># split into `self.config.groups` groups,</span>
         <span class="c1"># channels from the same group from different branches should be first concatenated,</span>
         <span class="c1"># and then concatenate the concatenated groups.</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">branch_out</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_branches</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">branch_out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_branches</span><span class="p">)],</span>
             <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># along channels</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
@@ -845,7 +864,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the Module.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the Module.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -859,10 +878,10 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the Module.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out_channels</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_branches</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_branch_oc</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">out_channels</span> <span class="o">+=</span> <span class="n">_branch_oc</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">_seq_len</span><span class="p">)</span>
@@ -872,7 +891,7 @@
 <div class="viewcode-block" id="MultiScopicCNN.forward_features">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN.forward_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model to extract features.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model to extract features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -886,7 +905,7 @@
 <span class="sd">            Feature map tensor,</span>
 <span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 
 
@@ -895,7 +914,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_features_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the features.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -909,14 +928,14 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the features.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MultiScopicCNN.assign_weights_lead_wise">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN.assign_weights_lead_wise">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;MultiScopicCNN&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign weights to the `other` :class:`MultiScopicCNN`</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign_weights_lead_wise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">"MultiScopicCNN"</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assign weights to the `other` :class:`MultiScopicCNN`</span>
 <span class="sd">        module in the lead-wise manner</span>
 
 <span class="sd">        Parameters</span>
@@ -937,9 +956,9 @@
 <span class="sd">        &gt;&gt;&gt; indices = [0, 1, 2, 3, 4, 10]  # chosen randomly, no special meaning</span>
 <span class="sd">        &gt;&gt;&gt; # chose the lead-wise models</span>
 <span class="sd">        &gt;&gt;&gt; lead_12_config = deepcopy(ECG_CRNN_CONFIG)</span>
-<span class="sd">        &gt;&gt;&gt; lead_12_config.cnn.name = &quot;multi_scopic_leadwise&quot;</span>
+<span class="sd">        &gt;&gt;&gt; lead_12_config.cnn.name = "multi_scopic_leadwise"</span>
 <span class="sd">        &gt;&gt;&gt; lead_6_config = deepcopy(ECG_CRNN_CONFIG)</span>
-<span class="sd">        &gt;&gt;&gt; lead_6_config.cnn.name = &quot;multi_scopic_leadwise&quot;</span>
+<span class="sd">        &gt;&gt;&gt; lead_6_config.cnn.name = "multi_scopic_leadwise"</span>
 <span class="sd">        &gt;&gt;&gt; # adjust groups and numbers of filters</span>
 <span class="sd">        &gt;&gt;&gt; lead_6_config.cnn.multi_scopic_leadwise.groups = 6</span>
 <span class="sd">        &gt;&gt;&gt; # numbers of filters should be proportional to numbers of groups</span>
@@ -947,8 +966,8 @@
 <span class="sd">                np.array([[192, 384, 768], [192, 384, 768], [192, 384, 768]]) / 2</span>
 <span class="sd">            ).astype(int).tolist()</span>
 <span class="sd">        &gt;&gt;&gt; # we assume that model12 is a trained model on 12-lead ECGs</span>
-<span class="sd">        &gt;&gt;&gt; model12 = ECG_CRNN([&quot;AF&quot;, &quot;PVC&quot;, &quot;NSR&quot;], 12, lead_12_config)</span>
-<span class="sd">        &gt;&gt;&gt; model6 = ECG_CRNN([&quot;AF&quot;, &quot;PVC&quot;, &quot;NSR&quot;], 6, lead_6_config)</span>
+<span class="sd">        &gt;&gt;&gt; model12 = ECG_CRNN(["AF", "PVC", "NSR"], 12, lead_12_config)</span>
+<span class="sd">        &gt;&gt;&gt; model6 = ECG_CRNN(["AF", "PVC", "NSR"], 6, lead_6_config)</span>
 <span class="sd">        &gt;&gt;&gt; model12.eval()</span>
 <span class="sd">        &gt;&gt;&gt; model6.eval()</span>
 <span class="sd">        &gt;&gt;&gt; # we create tensor12, tensor6 to check the correctness of the assignment of the weights</span>
@@ -956,7 +975,7 @@
 <span class="sd">        &gt;&gt;&gt; tensor6 = torch.randn(1, 6, 200)</span>
 <span class="sd">        &gt;&gt;&gt; # we make tensor12 has identical values as tensor6 at the given leads, and let the other leads have zero values</span>
 <span class="sd">        &gt;&gt;&gt; tensor12[:, indices, :] = tensor6</span>
-<span class="sd">        &gt;&gt;&gt; b = &quot;branch_0&quot;  # similarly for other branches</span>
+<span class="sd">        &gt;&gt;&gt; b = "branch_0"  # similarly for other branches</span>
 <span class="sd">        &gt;&gt;&gt; _, output_shape_12, _ = model12.cnn.branches[b].compute_output_shape()</span>
 <span class="sd">        &gt;&gt;&gt; _, output_shape_6, _ = model6.cnn.branches[b].compute_output_shape()</span>
 <span class="sd">        &gt;&gt;&gt; units = output_shape_12 // 12</span>
@@ -968,15 +987,15 @@
 <span class="sd">        &gt;&gt;&gt; (model6.cnn.branches[b](tensor6) == model12.cnn.branches[b](tensor12)[:, out_indices, :]).all()</span>
 <span class="sd">        tensor(True)  # identical feature maps</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">&quot;the current model is not lead-wise&quot;</span>
-        <span class="k">assert</span> <span class="n">other</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">&quot;the other model is not lead-wise&quot;</span>
-        <span class="k">assert</span> <span class="n">other</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">),</span> <span class="s2">&quot;the length of indices should match the number of channels of the other model&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">"the current model is not lead-wise"</span>
+        <span class="k">assert</span> <span class="n">other</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">"the other model is not lead-wise"</span>
+        <span class="k">assert</span> <span class="n">other</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">),</span> <span class="s2">"the length of indices should match the number of channels of the other model"</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_filters</span><span class="p">)</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_filters</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;the number of filters of the two models should be proportional to the number of channels of the other model&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">"the number of filters of the two models should be proportional to the number of channels of the other model"</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_branches</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">ob</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">other</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">ob</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">other</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="sa">f</span><span class="s2">"branch_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">]):</span>
                 <span class="n">b</span><span class="o">.</span><span class="n">_assign_weights_lead_wise</span><span class="p">(</span><span class="n">ob</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span></div>
 
 
@@ -990,7 +1009,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">doi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;10.1109/access.2020.2997473&quot;</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"doi"</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"10.1109/access.2020.2997473"</span><span class="p">]))</span></div>
 
 </pre></div>
 
@@ -1021,8 +1040,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1056,7 +1075,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/resnet';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,15 +398,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.cnn.resnet</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">The most frequently used (can serve as baseline) CNN family of physiological signal processing,</span>
 <span class="sd">whose performance however seems exceeded by newer networks</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
@@ -400,29 +418,29 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;ResNet&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ResNetBasicBlock&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ResNetBottleNeck&quot;</span><span class="p">,</span>
+    <span class="s2">"ResNet"</span><span class="p">,</span>
+    <span class="s2">"ResNetBasicBlock"</span><span class="p">,</span>
+    <span class="s2">"ResNetBottleNeck"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">&quot;Dropout1d&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">"Dropout1d"</span><span class="p">):</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span>  <span class="c1"># added in pytorch 1.12</span>
 
 
 <span class="n">_DEFAULT_BLOCK_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;increase_channels_method&quot;</span><span class="p">:</span> <span class="s2">&quot;conv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;subsample_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;conv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;activation&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;kw_activation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-    <span class="s2">&quot;kernel_initializer&quot;</span><span class="p">:</span> <span class="s2">&quot;he_normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;kw_initializer&quot;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s2">&quot;bias&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"increase_channels_method"</span><span class="p">:</span> <span class="s2">"conv"</span><span class="p">,</span>
+    <span class="s2">"subsample_mode"</span><span class="p">:</span> <span class="s2">"conv"</span><span class="p">,</span>
+    <span class="s2">"activation"</span><span class="p">:</span> <span class="s2">"relu"</span><span class="p">,</span>
+    <span class="s2">"kw_activation"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="s2">"kernel_initializer"</span><span class="p">:</span> <span class="s2">"he_normal"</span><span class="p">,</span>
+    <span class="s2">"kw_initializer"</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">"bias"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ResNetBasicBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Building blocks for :class:`ResNet`.</span>
+<span class="w">    </span><span class="sd">"""Building blocks for :class:`ResNet`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -446,7 +464,7 @@
 <span class="sd">        keys:</span>
 
 <span class="sd">        - name: str,</span>
-<span class="sd">          can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">          can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.</span>
 <span class="sd">        - pos: int,</span>
 <span class="sd">          position of the attention mechanism.</span>
 
@@ -456,9 +474,9 @@
 <span class="sd">        increase channel method, subsample method, dropouts,</span>
 <span class="sd">        activation choices, weight initializer, and short cut patterns, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ResNetBasicBlock&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ResNetBasicBlock"</span>
     <span class="n">expansion</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># not used</span>
     <span class="n">__DEFAULT_BASE_WIDTH__</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># not used</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">_DEFAULT_BLOCK_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -476,7 +494,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">dilation</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dilation &gt; 1 not supported in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dilation &gt; 1 not supported in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="n">num_filters</span>
@@ -487,8 +505,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;zero_padding&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;zero padding for increasing channels can not be used with groups != 1&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"zero_padding"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"zero padding for increasing channels can not be used with groups != 1"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="o">=</span> <span class="n">attn</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">:</span>
@@ -499,16 +517,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
         <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
-        <span class="n">dropout_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dropout&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dropout_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dropout"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">):</span>
             <span class="n">conv_activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
                     <span class="n">make_attention_layer</span><span class="p">(</span><span class="n">conv_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;cba_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"cba_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">conv_in_channels</span><span class="p">,</span>
                     <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span>
@@ -521,21 +539,21 @@
                     <span class="n">kernel_initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
                     <span class="n">kw_initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_initializer</span><span class="p">,</span>
                     <span class="n">bias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span>
-                    <span class="n">conv_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conv_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">conv_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"conv_type"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]))</span>
-                    <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]))</span>
+                    <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]))</span>
+                    <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]))</span>
                 <span class="k">elif</span> <span class="n">dropout_config</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># float</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">))</span>
             <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
                 <span class="n">make_attention_layer</span><span class="p">(</span><span class="n">conv_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">),</span>
             <span class="p">)</span>
 
@@ -545,19 +563,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">out_activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">dropout_config</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># float</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_shortcut_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make shortcut layer for residual connection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Make shortcut layer for residual connection."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__increase_channels</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;conv&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"conv"</span><span class="p">:</span>
                 <span class="n">shortcut</span> <span class="o">=</span> <span class="n">DownSample</span><span class="p">(</span>
                     <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span><span class="p">,</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -565,10 +583,10 @@
                     <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__groups</span><span class="p">,</span>
                     <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="p">,</span>
-                    <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filt_size&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
+                    <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"filt_size"</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;zero_padding&quot;</span><span class="p">:</span>
-                <span class="n">batch_norm</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;conv&quot;</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"zero_padding"</span><span class="p">:</span>
+                <span class="n">batch_norm</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"conv"</span> <span class="k">else</span> <span class="kc">True</span>
                 <span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
                     <span class="n">DownSample</span><span class="p">(</span>
                         <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span><span class="p">,</span>
@@ -576,7 +594,7 @@
                         <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                         <span class="n">norm</span><span class="o">=</span><span class="n">batch_norm</span><span class="p">,</span>
                         <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="p">,</span>
-                        <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filt_size&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
+                        <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"filt_size"</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
                     <span class="p">),</span>
                     <span class="n">ZeroPadding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">),</span>
                 <span class="p">)</span>
@@ -585,7 +603,7 @@
         <span class="k">return</span> <span class="n">shortcut</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the block.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -599,14 +617,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">identity</span> <span class="o">=</span> <span class="nb">input</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="n">identity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">identity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="c1"># downsampling using &quot;avg&quot; or &quot;max&quot; adopts no padding</span>
+            <span class="c1"># downsampling using "avg" or "max" adopts no padding</span>
             <span class="c1"># hence shape[-1] of identity might be smaller by 1 than shape[-1] of out</span>
             <span class="n">diff_sig_len</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">identity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">identity</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">identity</span><span class="p">,</span> <span class="p">[</span><span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">diff_sig_len</span> <span class="o">-</span> <span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">])</span>
@@ -620,7 +638,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the block.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -634,7 +652,7 @@
 <span class="sd">        output_shape : sequenc</span>
 <span class="sd">            Output shape of the block.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">)):</span>
@@ -645,9 +663,9 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ResNetBottleNeck</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bottleneck blocks for :class:`ResNet`.</span>
+<span class="w">    </span><span class="sd">"""Bottleneck blocks for :class:`ResNet`.</span>
 
-<span class="sd">    As for 1D ECG, should be of the &quot;baby-giant-baby&quot; pattern?</span>
+<span class="sd">    As for 1D ECG, should be of the "baby-giant-baby" pattern?</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -665,7 +683,7 @@
 <span class="sd">        For more details, ref. :class:`torch.nn.Conv1d`.</span>
 <span class="sd">    dilation : int, default 1</span>
 <span class="sd">        Dilation of the conv layers.</span>
-<span class="sd">    base_width : numbers.Real, default 12*4</span>
+<span class="sd">    base_width : int or float, default 12*4</span>
 <span class="sd">        Number of filters per group for the neck conv layer.</span>
 <span class="sd">        Usually number of filters of the initial conv layer</span>
 <span class="sd">        of the whole ResNet model.</span>
@@ -680,7 +698,7 @@
 <span class="sd">        Keys:</span>
 
 <span class="sd">        - name: str,</span>
-<span class="sd">          can be &quot;se&quot;, &quot;gc&quot;, &quot;nl&quot; (alias &quot;nonlocal&quot;, &quot;non-local&quot;), etc.</span>
+<span class="sd">          can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.</span>
 <span class="sd">        - pos: int,</span>
 <span class="sd">          position of the attention mechanism.</span>
 
@@ -690,13 +708,13 @@
 <span class="sd">        increase channel method, subsample method, dropout,</span>
 <span class="sd">        activation choices, weight initializer, and short cut patterns, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ResNetBottleNeck&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ResNetBottleNeck"</span>
     <span class="n">expansion</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">__DEFAULT_BASE_WIDTH__</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mi">4</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">_DEFAULT_BLOCK_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">__DEFAULT_CONFIG__</span><span class="p">[</span><span class="s2">&quot;subsample_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">__DEFAULT_CONFIG__</span><span class="p">[</span><span class="s2">"subsample_at"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -706,7 +724,7 @@
         <span class="n">subsample_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">dilation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">base_width</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">base_width</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">base_groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">base_filter_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">attn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -716,11 +734,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">expansion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expansion&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expansion</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expansion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expansion"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expansion</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="c1"># update denominator of computing neck_num_filters by init_num_filters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_BASE_WIDTH__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;init_num_filters&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_BASE_WIDTH__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_BASE_WIDTH__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"init_num_filters"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_BASE_WIDTH__</span><span class="p">)</span>
         <span class="n">neck_num_filters</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_filters</span> <span class="o">*</span> <span class="p">(</span><span class="n">base_width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_BASE_WIDTH__</span><span class="p">))</span> <span class="o">*</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">neck_num_filters</span><span class="p">,</span>
@@ -736,7 +754,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span> <span class="o">=</span> <span class="n">subsample_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__stride</span> <span class="o">=</span> <span class="n">subsample_length</span>
         <span class="k">if</span> <span class="n">groups</span> <span class="o">%</span> <span class="n">base_groups</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`groups` should be divisible by `base_groups`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`groups` should be divisible by `base_groups`"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__base_groups</span> <span class="o">=</span> <span class="n">base_groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">base_groups</span><span class="p">,</span>
@@ -747,30 +765,30 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;zero_padding&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;zero padding for increasing channels can not be used with groups != 1&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"zero_padding"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"zero padding for increasing channels can not be used with groups != 1"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__increase_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_shortcut_layer</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
         <span class="n">conv_names</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;cba_head&quot;</span><span class="p">,</span>
-            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;cba_neck&quot;</span><span class="p">,</span>
-            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;cba_tail&quot;</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">"cba_head"</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">"cba_neck"</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">"cba_tail"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
-        <span class="n">dropout_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dropout&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dropout_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dropout"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
                     <span class="n">make_attention_layer</span><span class="p">(</span><span class="n">conv_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="n">conv_activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">conv_out_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">conv_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conv_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__kernel_size</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">conv_type</span> <span class="o">==</span> <span class="s2">&quot;separable&quot;</span><span class="p">:</span>
+            <span class="n">conv_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"conv_type"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__kernel_size</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">conv_type</span> <span class="o">==</span> <span class="s2">"separable"</span><span class="p">:</span>
                 <span class="n">conv_type</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                 <span class="n">conv_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
@@ -791,16 +809,16 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]))</span>
-                    <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]))</span>
+                    <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]))</span>
+                    <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]))</span>
                 <span class="k">elif</span> <span class="n">dropout_config</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># float</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dropout_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">))</span>
             <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="n">conv_out_channels</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
                 <span class="n">make_attention_layer</span><span class="p">(</span><span class="n">conv_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__attn</span><span class="p">),</span>
             <span class="p">)</span>
 
@@ -810,19 +828,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">out_activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout_config</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">dropout_config</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># float</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_shortcut_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make shortcut layer for residual connection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Make shortcut layer for residual connection."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__increase_channels</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;conv&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"conv"</span><span class="p">:</span>
                 <span class="n">shortcut</span> <span class="o">=</span> <span class="n">DownSample</span><span class="p">(</span>
                     <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span><span class="p">,</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -830,10 +848,10 @@
                     <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_groups</span><span class="p">,</span>
                     <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="p">,</span>
-                    <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filt_size&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
+                    <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"filt_size"</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
                 <span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;zero_padding&quot;</span><span class="p">:</span>
-                <span class="n">batch_norm</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;conv&quot;</span> <span class="k">else</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">increase_channels_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"zero_padding"</span><span class="p">:</span>
+                <span class="n">batch_norm</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"conv"</span> <span class="k">else</span> <span class="kc">True</span>
                 <span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
                     <span class="n">DownSample</span><span class="p">(</span>
                         <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span><span class="p">,</span>
@@ -841,7 +859,7 @@
                         <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                         <span class="n">norm</span><span class="o">=</span><span class="n">batch_norm</span><span class="p">,</span>
                         <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_mode</span><span class="p">,</span>
-                        <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filt_size&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
+                        <span class="n">filt_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"filt_size"</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># for blur pool</span>
                     <span class="p">),</span>
                     <span class="n">ZeroPadding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="p">)</span>
@@ -850,7 +868,7 @@
         <span class="k">return</span> <span class="n">shortcut</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the block.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -864,14 +882,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">identity</span> <span class="o">=</span> <span class="nb">input</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="n">identity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">identity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="c1"># downsampling using &quot;avg&quot; or &quot;max&quot; adopts no padding</span>
+            <span class="c1"># downsampling using "avg" or "max" adopts no padding</span>
             <span class="c1"># hence shape[-1] of identity might be smaller by 1 than shape[-1] of out</span>
             <span class="n">diff_sig_len</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">identity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">identity</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">identity</span><span class="p">,</span> <span class="p">[</span><span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">diff_sig_len</span> <span class="o">-</span> <span class="n">diff_sig_len</span> <span class="o">//</span> <span class="mi">2</span><span class="p">])</span>
@@ -885,7 +903,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the block.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -899,7 +917,7 @@
 <span class="sd">        output_shape : sequenc</span>
 <span class="sd">            Output shape of the block.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
@@ -910,7 +928,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ResNetStem</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The input stem of ResNet.</span>
+<span class="w">    </span><span class="sd">"""The input stem of ResNet.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -930,15 +948,15 @@
 <span class="sd">    subsample_mode : str</span>
 <span class="sd">        Mode of subsampling, can be one of</span>
 <span class="sd">        {:class:`DownSample`.__MODES__},</span>
-<span class="sd">        or &quot;s2d&quot; (with aliases &quot;space_to_depth&quot;, &quot;SpaceToDepth&quot;).</span>
+<span class="sd">        or "s2d" (with aliases "space_to_depth", "SpaceToDepth").</span>
 <span class="sd">    groups : int</span>
 <span class="sd">        Number of groups for the convolution</span>
 <span class="sd">    config : dict</span>
 <span class="sd">        Other configs for convolution and pooling.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ResNetStem&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ResNetStem"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -948,7 +966,7 @@
         <span class="n">conv_stride</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">pool_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">pool_stride</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">subsample_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+        <span class="n">subsample_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"max"</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -956,10 +974,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="n">filter_lengths</span>
-        <span class="k">if</span> <span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;s2d&quot;</span><span class="p">,</span> <span class="s2">&quot;space_to_depth&quot;</span><span class="p">,</span> <span class="s2">&quot;SpaceToDepth&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">subsample_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"s2d"</span><span class="p">,</span> <span class="s2">"space_to_depth"</span><span class="p">,</span> <span class="s2">"SpaceToDepth"</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="s2">&quot;s2d&quot;</span><span class="p">,</span>
-                <span class="n">SpaceToDepth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;block_size&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>
+                <span class="s2">"s2d"</span><span class="p">,</span>
+                <span class="n">SpaceToDepth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"block_size"</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -971,7 +989,7 @@
         <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;conv_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"conv_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
                     <span class="n">conv_in_channels</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -984,7 +1002,7 @@
             <span class="n">conv_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">pool_stride</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="s2">&quot;pool&quot;</span><span class="p">,</span>
+                <span class="s2">"pool"</span><span class="p">,</span>
                 <span class="n">DownSample</span><span class="p">(</span>
                     <span class="n">pool_stride</span><span class="p">,</span>
                     <span class="n">conv_in_channels</span><span class="p">,</span>
@@ -997,23 +1015,23 @@
             <span class="p">)</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the stem.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the stem."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ResNet">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ResNet.html#torch_ecg.models.ResNet">[docs]</a>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;resnet&quot;</span><span class="p">)</span>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;resnext&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"resnet"</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"resnext"</span><span class="p">)</span>
 <span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;ResNet model.</span>
+<span class="w">    </span><span class="sd">"""ResNet model.</span>
 
 <span class="sd">    The ResNet model is used for ECG classification by a team from</span>
 <span class="sd">    the Stanford University [1]_, from which the application of</span>
@@ -1063,14 +1081,14 @@
 <span class="sd">       especially :class:`~torch.nn.Mish`, etc.</span>
 <span class="sd">    2. Add functionality of `replace_stride_with_dilation`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ResNet&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ResNet"</span>
     <span class="n">building_block</span> <span class="o">=</span> <span class="n">ResNetBasicBlock</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-        <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">&quot;he_normal&quot;</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">"he_normal"</span><span class="p">,</span>
         <span class="n">kw_initializer</span><span class="o">=</span><span class="p">{},</span>
         <span class="n">base_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">dropouts</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -1081,14 +1099,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;building_block&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"building_block"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># for those architectures that have multiple type of building blocks</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">additional_kw</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">building_block</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="s2">&quot;bottleneck&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;bottle_neck&quot;</span><span class="p">,</span>
+                    <span class="s2">"bottleneck"</span><span class="p">,</span>
+                    <span class="s2">"bottle_neck"</span><span class="p">,</span>
                 <span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ResNetBottleNeck</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">additional_kw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1096,9 +1114,9 @@
                             <span class="p">{</span>
                                 <span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-                                    <span class="s2">&quot;base_width&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;base_groups&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;base_filter_length&quot;</span><span class="p">,</span>
+                                    <span class="s2">"base_width"</span><span class="p">,</span>
+                                    <span class="s2">"base_groups"</span><span class="p">,</span>
+                                    <span class="s2">"base_filter_length"</span><span class="p">,</span>
                                 <span class="p">]</span>
                                 <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                             <span class="p">}</span>
@@ -1110,9 +1128,9 @@
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">block</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">block</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">building_block</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;building_block&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;bottleneck&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bottle_neck&quot;</span><span class="p">,</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"building_block"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">"bottleneck"</span><span class="p">,</span>
+            <span class="s2">"bottle_neck"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span> <span class="o">=</span> <span class="n">ResNetBottleNeck</span>
             <span class="c1"># additional parameters for bottleneck</span>
@@ -1120,9 +1138,9 @@
                 <span class="p">{</span>
                     <span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-                        <span class="s2">&quot;base_width&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;base_groups&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;base_filter_length&quot;</span><span class="p">,</span>
+                        <span class="s2">"base_width"</span><span class="p">,</span>
+                        <span class="s2">"base_groups"</span><span class="p">,</span>
+                        <span class="s2">"base_filter_length"</span><span class="p">,</span>
                     <span class="p">]</span>
                     <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                 <span class="p">}</span>
@@ -1131,14 +1149,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">additional_kw</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">()</span>
 
         <span class="n">stem_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
-        <span class="n">stem_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;num_filters&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">stem_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"num_filters"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;input_stem&quot;</span><span class="p">,</span>
+            <span class="s2">"input_stem"</span><span class="p">,</span>
             <span class="n">ResNetStem</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">num_filters</span><span class="p">,</span>
-                <span class="c1"># bottleneck use &quot;base_groups&quot;</span>
-                <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;base_groups&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">),</span>
+                <span class="c1"># bottleneck use "base_groups"</span>
+                <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"base_groups"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">),</span>
                 <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">stem_config</span><span class="p">,</span>
             <span class="p">),</span>
@@ -1149,32 +1167,32 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`config.filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`config.filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`config.subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`config.subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;num_filters&quot;</span><span class="p">,</span>
+            <span class="s2">"num_filters"</span><span class="p">,</span>
             <span class="p">[(</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_stem</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">))],</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`config.num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`config.num_filters` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropouts</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dropouts</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`config.dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`config.dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `config.num_blocks` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_blocks</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="c1"># grouped resnet (basic) blocks,</span>
@@ -1191,8 +1209,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">block_filter_lengths</span> <span class="o">=</span> <span class="n">macro_filter_lengths</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">block_filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="n">nb</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;at the </span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">-th macro block, `macro_subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">macro_subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;building blocks, while `config.num_blocks[</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">]` indicates </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"at the </span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">-th macro block, `macro_subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">macro_subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"building blocks, while `config.num_blocks[</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">]` indicates </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">macro_subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="c1"># subsample at the first building block</span>
@@ -1201,8 +1219,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">block_subsample_lengths</span> <span class="o">=</span> <span class="n">macro_subsample_lengths</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">block_subsample_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="n">nb</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;at the </span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">-th macro block, `macro_subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">macro_subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;building blocks, while `config.num_blocks[</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">]` indicates </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"at the </span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">-th macro block, `macro_subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">macro_subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"building blocks, while `config.num_blocks[</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">]` indicates </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">building_block</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="n">bb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span><span class="p">[</span><span class="n">macro_idx</span><span class="p">]</span>
@@ -1213,9 +1231,9 @@
                 <span class="n">bb_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">block</span>
                 <span class="n">bb_kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_kw</span>
             <span class="k">for</span> <span class="n">block_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb</span><span class="p">):</span>
-                <span class="n">dropout</span> <span class="o">=</span> <span class="n">bb_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dropout&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">[</span><span class="n">macro_idx</span><span class="p">])</span>
+                <span class="n">dropout</span> <span class="o">=</span> <span class="n">bb_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"dropout"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">[</span><span class="n">macro_idx</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bb</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">block_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bb</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">macro_idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">block_idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">bb</span><span class="p">(</span>
                         <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                         <span class="n">num_filters</span><span class="o">=</span><span class="n">block_num_filters</span><span class="p">,</span>
@@ -1234,20 +1252,20 @@
 <div class="viewcode-block" id="ResNet.compute_output_shape">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ResNet.html#torch_ecg.models.ResNet.compute_output_shape">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the model."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ResNet.forward_features">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ResNet.html#torch_ecg.models.ResNet.forward_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model to extract features.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model to extract features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1261,7 +1279,7 @@
 <span class="sd">            Feature map tensor,</span>
 <span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 
 
@@ -1270,7 +1288,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_features_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the features.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1284,7 +1302,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the features.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
@@ -1296,12 +1314,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">doi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"doi"</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="o">+</span> <span class="p">[</span>
-                    <span class="s2">&quot;10.1109/cvpr.2016.90&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;10.1038/s41591-018-0268-3&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;10.1038/s41467-020-15432-4&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;10.1088/1361-6579/ac6aa3&quot;</span><span class="p">,</span>
+                    <span class="s2">"10.1109/cvpr.2016.90"</span><span class="p">,</span>
+                    <span class="s2">"10.1038/s41591-018-0268-3"</span><span class="p">,</span>
+                    <span class="s2">"10.1038/s41467-020-15432-4"</span><span class="p">,</span>
+                    <span class="s2">"10.1088/1361-6579/ac6aa3"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
@@ -1335,8 +1353,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1370,7 +1388,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

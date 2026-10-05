@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/unets/ecg_unet';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,16 +398,16 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.unets.ecg_unet</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">UNet structure models,</span>
 <span class="sd">mainly for ECG wave delineation</span>
 
 <span class="sd">References</span>
 <span class="sd">----------</span>
-<span class="sd">1. Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. &quot;Deep Learning for ECG Segmentation.&quot; International Conference on Neuroinformatics. Springer, Cham, 2019.</span>
+<span class="sd">1. Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.</span>
 <span class="sd">2. https://github.com/milesial/Pytorch-UNet/</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -413,12 +432,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODELS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;ECG_UNET&quot;</span><span class="p">,</span>
+    <span class="s2">"ECG_UNET"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DoubleConv</span><span class="p">(</span><span class="n">MultiConv</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Buildings blocks for UNet.</span>
+<span class="w">    </span><span class="sd">"""Buildings blocks for UNet.</span>
 
 <span class="sd">    2 convolutions (conv --&gt; conv) with the same number of channels.</span>
 
@@ -447,9 +466,9 @@
 <span class="sd">        activation choices, weight initializer, batch normalization choices, etc.</span>
 <span class="sd">        for the convolutional layers.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DoubleConv&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DoubleConv"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -479,7 +498,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DownDoubleConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Downsampling block for the U-Net architecture.</span>
+<span class="w">    </span><span class="sd">"""Downsampling block for the U-Net architecture.</span>
 
 <span class="sd">    Downscaling with maxpool then double conv</span>
 <span class="sd">    down sample (maxpool) --&gt; double conv (conv --&gt; conv)</span>
@@ -503,7 +522,7 @@
 <span class="sd">    mid_channels : int, optional</span>
 <span class="sd">        Number of channels produced by the first convolutional layer,</span>
 <span class="sd">        defaults to `out_channels`.</span>
-<span class="sd">    mode : str, default &quot;max&quot;</span>
+<span class="sd">    mode : str, default "max"</span>
 <span class="sd">        Mode for down sampling,</span>
 <span class="sd">        can be one of {:class:`DownSample`.__MODES__}.</span>
 <span class="sd">    config : dict</span>
@@ -511,9 +530,9 @@
 <span class="sd">        activation choices, weight initializer, batch normalization choices, etc.</span>
 <span class="sd">        for the convolutional layers.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DownDoubleConv&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DownDoubleConv"</span>
     <span class="n">__MODES__</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">DownSample</span><span class="o">.</span><span class="n">__MODES__</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -525,7 +544,7 @@
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mid_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"max"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -538,7 +557,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;down_sample&quot;</span><span class="p">,</span>
+            <span class="s2">"down_sample"</span><span class="p">,</span>
             <span class="n">DownSample</span><span class="p">(</span>
                 <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__down_scale</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -547,7 +566,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;double_conv&quot;</span><span class="p">,</span>
+            <span class="s2">"double_conv"</span><span class="p">,</span>
             <span class="n">DoubleConv</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span>
@@ -561,7 +580,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the down sampling block.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the down sampling block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -575,23 +594,23 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the down sampling block.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the down sampling block."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UpDoubleConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upsampling block of the U-Net architecture.</span>
+<span class="w">    </span><span class="sd">"""Upsampling block of the U-Net architecture.</span>
 
 <span class="sd">    Upscaling then double conv, with input of corr. down layer concatenated</span>
 <span class="sd">    up sampling --&gt; conv (conv --&gt; conv)</span>
@@ -613,16 +632,16 @@
 <span class="sd">        Length(s) of the filters (kernel size) of the convolutional layers.</span>
 <span class="sd">    deconv_filter_length : int, optional</span>
 <span class="sd">        Length(s) of the filters (kernel size) of the</span>
-<span class="sd">        deconvolutional upsampling layer, used only when `mode` is &quot;deconv&quot;.</span>
+<span class="sd">        deconvolutional upsampling layer, used only when `mode` is "deconv".</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
 <span class="sd">        Not used currently.</span>
 <span class="sd">    deconv_groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the deconvolutional upsampling layer,</span>
-<span class="sd">        used only when `mode` is &quot;deconv&quot;.</span>
+<span class="sd">        used only when `mode` is "deconv".</span>
 <span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
-<span class="sd">    mode : str, default &quot;deconv&quot;</span>
+<span class="sd">    mode : str, default "deconv"</span>
 <span class="sd">        Mode for up sampling, can be one of {:class:`UpSample`.__MODES__}.</span>
 <span class="sd">    mid_channels : int, optional</span>
 <span class="sd">        Number of channels produced by the first deconvolutional layer,</span>
@@ -632,14 +651,14 @@
 <span class="sd">        activation choices, weight initializer, batch normalization choices, etc.</span>
 <span class="sd">        for the deconvolutional layers.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;UpDoubleConv&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"UpDoubleConv"</span>
     <span class="n">__MODES__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;area&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;deconv&quot;</span><span class="p">,</span>
+        <span class="s2">"nearest"</span><span class="p">,</span>
+        <span class="s2">"linear"</span><span class="p">,</span>
+        <span class="s2">"area"</span><span class="p">,</span>
+        <span class="s2">"deconv"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -652,7 +671,7 @@
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">deconv_groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deconv&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"deconv"</span><span class="p">,</span>
         <span class="n">mid_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -668,7 +687,7 @@
 
         <span class="c1"># the following has to be checked</span>
         <span class="c1"># if bilinear, use the normal convolutions to reduce the number of channels</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">==</span> <span class="s2">&quot;deconv&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">==</span> <span class="s2">"deconv"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__deconv_padding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__deconv_filter_length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__up_scale</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose1d</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -694,7 +713,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">down_output</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the up sampling block.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the up sampling block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -703,15 +722,15 @@
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 <span class="sd">        down_output : torch.Tensor</span>
 <span class="sd">            Input tensor of the last layer of corr. down sampling block,</span>
-<span class="sd">            of shape ``(batch_size, n_channels&#39;, seq_len&#39;)``.</span>
+<span class="sd">            of shape ``(batch_size, n_channels', seq_len')``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        output : torch.Tensor</span>
 <span class="sd">            Output tensor of the up sampling block,</span>
-<span class="sd">            of shape ``(batch_size, n_channels&#39;&#39;, seq_len&#39;)``.</span>
+<span class="sd">            of shape ``(batch_size, n_channels'', seq_len')``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
         <span class="n">diff_sig_len</span> <span class="o">=</span> <span class="n">down_output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -726,7 +745,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the up sampling block.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the up sampling block.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -740,9 +759,9 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the up sampling block.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_sep_len</span> <span class="o">=</span> <span class="n">seq_len</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">==</span> <span class="s2">&quot;deconv&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mode</span> <span class="o">==</span> <span class="s2">"deconv"</span><span class="p">:</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="n">compute_deconv_output_shape</span><span class="p">(</span>
                 <span class="n">input_shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span> <span class="n">_sep_len</span><span class="p">],</span>
                 <span class="n">num_filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -761,7 +780,7 @@
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET">[docs]</a>
 <span class="nd">@MODELS</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ECG_UNET</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    U-Net for (multi-lead) ECG wave delineation.</span>
 
 <span class="sd">    The U-Net is a fully convolutional network originally</span>
@@ -783,15 +802,15 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox.</span>
-<span class="sd">           &quot;U-net: Convolutional networks for biomedical image segmentation.&quot;</span>
+<span class="sd">           "U-net: Convolutional networks for biomedical image segmentation."</span>
 <span class="sd">           International Conference on Medical image computing and computer-assisted intervention. Springer, 2015.</span>
 <span class="sd">    .. [2] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov.</span>
-<span class="sd">           &quot;Deep Learning for ECG Segmentation.&quot; International Conference on Neuroinformatics. Springer, Cham, 2019.</span>
+<span class="sd">           "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.</span>
 <span class="sd">    .. [3] https://github.com/milesial/Pytorch-UNet/</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ECG_UNET&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ECG_UNET"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -806,7 +825,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">n_leads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ECG_UNET_VANILLA_CONFIG</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No config is provided, using default config.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"No config is provided, using default config."</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_conv</span> <span class="o">=</span> <span class="n">DoubleConv</span><span class="p">(</span>
@@ -825,7 +844,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">down_blocks</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
         <span class="n">in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">init_num_filters</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_up_block_num</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">down_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;down_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DownDoubleConv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">down_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">"down_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">DownDoubleConv</span><span class="p">(</span>
                 <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_num_filters</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -839,7 +858,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">up_blocks</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
         <span class="n">in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_num_filters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_up_block_num</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">up_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;up_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UpDoubleConv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">up_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">"up_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">UpDoubleConv</span><span class="p">(</span>
                 <span class="n">up_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">up_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">up_num_filters</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -857,7 +876,7 @@
             <span class="n">kernel_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">out_filter_length</span><span class="p">,</span>
             <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span>
-            <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;out_norm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;out_batch_norm&quot;</span><span class="p">)),</span>
+            <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"out_norm"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"out_batch_norm"</span><span class="p">)),</span>
             <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">kernel_initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
             <span class="n">kw_initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_initializer</span><span class="p">,</span>
@@ -872,7 +891,7 @@
 <div class="viewcode-block" id="ECG_UNET.forward">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -886,14 +905,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">to_concat</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">init_conv</span><span class="p">(</span><span class="nb">input</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_up_block_num</span><span class="p">):</span>
-            <span class="n">to_concat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">down_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;down_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">](</span><span class="n">to_concat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">to_concat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">down_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">"down_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">](</span><span class="n">to_concat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
         <span class="n">up_input</span> <span class="o">=</span> <span class="n">to_concat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">to_concat</span> <span class="o">=</span> <span class="n">to_concat</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">down_up_block_num</span><span class="p">):</span>
-            <span class="n">up_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;up_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">](</span><span class="n">up_input</span><span class="p">,</span> <span class="n">to_concat</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">up_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_blocks</span><span class="p">[</span><span class="sa">f</span><span class="s2">"up_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">](</span><span class="n">up_input</span><span class="p">,</span> <span class="n">to_concat</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
             <span class="n">up_input</span> <span class="o">=</span> <span class="n">up_output</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_conv</span><span class="p">(</span><span class="n">up_output</span><span class="p">)</span>
 
@@ -910,8 +929,8 @@
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET.inference">[docs]</a>
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">bin_pred_thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method for making inference on a single input.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement a task-specific inference method.&quot;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">"""Method for making inference on a single input."""</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Implement a task-specific inference method."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ECG_UNET.compute_output_shape">
@@ -919,7 +938,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the model.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -933,14 +952,14 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the model.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_shape</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">doi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;10.1007/978-3-030-30425-6_29&quot;</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"doi"</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"10.1007/978-3-030-30425-6_29"</span><span class="p">]))</span></div>
 
 </pre></div>
 
@@ -971,8 +990,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1006,7 +1025,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

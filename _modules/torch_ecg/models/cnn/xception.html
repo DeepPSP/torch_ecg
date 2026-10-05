@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/xception';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,16 +398,15 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.cnn.xception</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">famous for its use of separable convolutions,</span>
 <span class="sd">usually the SOTA image classifier,</span>
 <span class="sd">however seems not have been used in physiological signal processing tasks</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
@@ -400,32 +418,32 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Xception&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;XceptionEntryFlow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;XceptionMiddleFlow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;XceptionExitFlow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;XceptionMultiConv&quot;</span><span class="p">,</span>
+    <span class="s2">"Xception"</span><span class="p">,</span>
+    <span class="s2">"XceptionEntryFlow"</span><span class="p">,</span>
+    <span class="s2">"XceptionMiddleFlow"</span><span class="p">,</span>
+    <span class="s2">"XceptionExitFlow"</span><span class="p">,</span>
+    <span class="s2">"XceptionMultiConv"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">&quot;Dropout1d&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">"Dropout1d"</span><span class="p">):</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span>  <span class="c1"># added in pytorch 1.12</span>
 
 
 <span class="n">_DEFAULT_CONV_CONFIGS</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-    <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;acb&quot;</span><span class="p">,</span>
-    <span class="n">conv_type</span><span class="o">=</span><span class="s2">&quot;separable&quot;</span><span class="p">,</span>
+    <span class="n">ordering</span><span class="o">=</span><span class="s2">"acb"</span><span class="p">,</span>
+    <span class="n">conv_type</span><span class="o">=</span><span class="s2">"separable"</span><span class="p">,</span>
     <span class="n">batch_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">subsample_mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>
-    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-    <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">&quot;he_normal&quot;</span><span class="p">,</span>
+    <span class="n">subsample_mode</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+    <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">"he_normal"</span><span class="p">,</span>
     <span class="n">kw_initializer</span><span class="o">=</span><span class="p">{},</span>
 <span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">XceptionMultiConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Xception multi-convolutional block.</span>
+<span class="w">    </span><span class="sd">"""Xception multi-convolutional block.</span>
 
 <span class="sd">    -&gt; n(2 or 3) x (activation -&gt; norm -&gt; sep_conv) (-&gt; optional sub-sample) -&gt;</span>
 <span class="sd">    |-------------------------------- shortcut ------------------------------|</span>
@@ -449,9 +467,9 @@
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
 <span class="sd">    dropouts : float or dict or Sequence[float] or Sequence[dict], default 0.0</span>
-<span class="sd">        If is dictionary, it should contain the keys ``&quot;p&quot;`` and ``&quot;type&quot;``,</span>
-<span class="sd">        where ``&quot;p&quot;`` is the dropout rate and ``&quot;type&quot;`` is the type of dropout,</span>
-<span class="sd">        which can be either ``&quot;1d&quot;`` (:class:`torch.nn.Dropout1d`) or</span>
+<span class="sd">        If is dictionary, it should contain the keys ``"p"`` and ``"type"``,</span>
+<span class="sd">        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,</span>
+<span class="sd">        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or</span>
 <span class="sd">        ``None`` (:class:`torch.nn.Dropout`).</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Other parameters, including</span>
@@ -459,9 +477,9 @@
 <span class="sd">        for the convolutional layers,</span>
 <span class="sd">        and subsampling modes for subsampling layers, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;XceptionMultiConv&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"XceptionMultiConv"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -484,8 +502,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, "</span>
+            <span class="sa">f</span><span class="s2">"while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_length</span> <span class="o">=</span> <span class="n">subsample_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernel</span> <span class="o">=</span> <span class="n">subsample_kernel</span> <span class="ow">or</span> <span class="n">subsample_length</span>
@@ -495,14 +513,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, "</span> <span class="sa">f</span><span class="s2">"while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, "</span> <span class="sa">f</span><span class="s2">"while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_DEFAULT_CONV_CONFIGS</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
@@ -532,15 +550,15 @@
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                 <span class="n">groups</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__groups</span><span class="p">,</span>
                 <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;norm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;batch_norm&quot;</span><span class="p">)),</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;conv&quot;</span><span class="p">,</span>
+                <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"norm"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"batch_norm"</span><span class="p">)),</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"conv"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -554,7 +572,7 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">main_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream_conv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="n">main_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">(</span><span class="n">main_out</span><span class="p">)</span>
         <span class="n">residue</span> <span class="o">=</span> <span class="nb">input</span>
@@ -565,7 +583,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the module.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the module.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -579,7 +597,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the module.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream_conv</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">):</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">output_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -587,7 +605,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">XceptionEntryFlow</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry flow of the Xception model.</span>
+<span class="w">    </span><span class="sd">"""Entry flow of the Xception model.</span>
 
 <span class="sd">    The entry flow is consisting of</span>
 <span class="sd">    2 initial convolutions which subsamples at the first one,</span>
@@ -627,9 +645,9 @@
 <span class="sd">        for the convolutional layers,</span>
 <span class="sd">        and subsampling modes for subsampling layers, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;XceptionEntryFlow&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"XceptionEntryFlow"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -661,15 +679,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">subsample_kernels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span>
@@ -678,37 +696,37 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">subsample_kernels</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `subsample_kernels` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `subsample_kernels` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, except the initial convolutions, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, except the initial convolutions, "</span>
+            <span class="sa">f</span><span class="s2">"while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_DEFAULT_CONV_CONFIGS</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;init_convs&quot;</span><span class="p">,</span>
+            <span class="s2">"init_convs"</span><span class="p">,</span>
             <span class="n">MultiConv</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="n">init_num_filters</span><span class="p">,</span>
@@ -721,7 +739,7 @@
 
         <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">init_num_filters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">nf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_filters</span><span class="p">):</span>
-            <span class="c1"># in the case of ordering of &quot;acb&quot;,</span>
+            <span class="c1"># in the case of ordering of "acb",</span>
             <span class="c1"># `out_activation` is indeed `in_activation`</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">out_activation</span> <span class="o">=</span> <span class="kc">False</span>
@@ -733,7 +751,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">block_out_channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nf</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;entry_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"entry_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">XceptionMultiConv</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                     <span class="n">num_filters</span><span class="o">=</span><span class="n">block_out_channels</span><span class="p">,</span>
@@ -749,21 +767,21 @@
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the entry flow.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the entry flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -777,14 +795,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the entry flow.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the entry flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -798,7 +816,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the entry flow.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
@@ -809,7 +827,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">XceptionMiddleFlow</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Middle flow of the Xception model.</span>
+<span class="w">    </span><span class="sd">"""Middle flow of the Xception model.</span>
 
 <span class="sd">    Middle flow consists of several Xception blocks of 3 convolutions</span>
 <span class="sd">    and without sub-sampling.</span>
@@ -838,9 +856,9 @@
 <span class="sd">        for the convolutional layers,</span>
 <span class="sd">        and subsampling modes for subsampling layers, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;XceptionMiddleFlow&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"XceptionMiddleFlow"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -867,28 +885,28 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_DEFAULT_CONV_CONFIGS</span><span class="p">))</span>
@@ -902,7 +920,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">block_out_channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nf</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;middle_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"middle_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">XceptionMultiConv</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                     <span class="n">num_filters</span><span class="o">=</span><span class="n">block_out_channels</span><span class="p">,</span>
@@ -915,21 +933,21 @@
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the middle flow.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the middle flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -943,14 +961,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the middle flow.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the middle flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -964,7 +982,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the middle flow.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
@@ -975,7 +993,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">XceptionExitFlow</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exit flow of the Xception model.</span>
+<span class="w">    </span><span class="sd">"""Exit flow of the Xception model.</span>
 
 <span class="sd">    Exit flow consists of several Xception blocks of 2 convolutions,</span>
 <span class="sd">    followed by several separable convolutions.</span>
@@ -1014,9 +1032,9 @@
 <span class="sd">        for the convolutional layers,</span>
 <span class="sd">        and subsampling modes for subsampling layers, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;XceptionExitFlow&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"XceptionExitFlow"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1048,14 +1066,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filter_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, while `filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">subsample_lengths</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">subsample_kernels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span>
@@ -1064,30 +1082,30 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">subsample_kernels</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `subsample_kernels` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `subsample_kernels` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_kernels</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dilations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dilations</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span> <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, "</span> <span class="sa">f</span><span class="s2">"while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_num_filters</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_num_filters</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">final_num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;including the final convolutions, while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">final_num_filters</span><span class="p">)</span><span class="si">}</span><span class="s2"> blocks, "</span>
+            <span class="sa">f</span><span class="s2">"including the final convolutions, while `block_dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_DEFAULT_CONV_CONFIGS</span><span class="p">))</span>
@@ -1101,7 +1119,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">block_out_channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nf</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;exit_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"exit_flow_conv_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">XceptionMultiConv</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                     <span class="n">num_filters</span><span class="o">=</span><span class="n">block_out_channels</span><span class="p">,</span>
@@ -1116,33 +1134,33 @@
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                        <span class="sa">f</span><span class="s2">"exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"p"</span><span class="p">]),</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;final_convs&quot;</span><span class="p">,</span>
+            <span class="s2">"final_convs"</span><span class="p">,</span>
             <span class="n">MultiConv</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">block_in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="n">final_num_filters</span><span class="p">,</span>
                 <span class="n">filter_lengths</span><span class="o">=</span><span class="n">final_filter_lengths</span><span class="p">,</span>
                 <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
-                <span class="n">conv_type</span><span class="o">=</span><span class="s2">&quot;separable&quot;</span><span class="p">,</span>
+                <span class="n">conv_type</span><span class="o">=</span><span class="s2">"separable"</span><span class="p">,</span>
                 <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the exit flow.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the exit flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1156,14 +1174,14 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the exit flow.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the exit flow.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1177,7 +1195,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the exit flow.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
@@ -1189,10 +1207,10 @@
 
 <div class="viewcode-block" id="Xception">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception">[docs]</a>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;xception&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"xception"</span><span class="p">)</span>
 <span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Xception</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Xception model.</span>
+<span class="w">    </span><span class="sd">"""Xception model.</span>
 
 <span class="sd">    Xception is an architecture that uses depthwise separable convolutions</span>
 <span class="sd">    to build light-weight deep neural networks, as described in [1]_.</span>
@@ -1208,19 +1226,19 @@
 <span class="sd">    config : dict</span>
 <span class="sd">        Other hyper-parameters of the Module, ref. corr. config file.</span>
 <span class="sd">        For keyword arguments that must be set in 3 sub-dict,</span>
-<span class="sd">        namely in &quot;entry_flow&quot;, &quot;middle_flow&quot;, and &quot;exit_flow&quot;,</span>
+<span class="sd">        namely in "entry_flow", "middle_flow", and "exit_flow",</span>
 <span class="sd">        refer to corr. docstring of each class.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [1] Chollet, François. &quot;Xception: Deep learning with depthwise separable convolutions.&quot;</span>
+<span class="sd">    .. [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions."</span>
 <span class="sd">           Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.</span>
 <span class="sd">    .. [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py</span>
 <span class="sd">    .. [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;Xception&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"Xception"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1229,23 +1247,23 @@
 
         <span class="n">entry_flow_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span>
         <span class="n">entry_flow</span> <span class="o">=</span> <span class="n">XceptionEntryFlow</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">entry_flow_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">entry_flow</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;entry_flow&quot;</span><span class="p">,</span> <span class="n">entry_flow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">"entry_flow"</span><span class="p">,</span> <span class="n">entry_flow</span><span class="p">)</span>
 
         <span class="n">_</span><span class="p">,</span> <span class="n">middle_flow_in_channels</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">entry_flow</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">()</span>
         <span class="n">middle_flow</span> <span class="o">=</span> <span class="n">XceptionMiddleFlow</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">middle_flow_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middle_flow</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">&quot;middle_flow&quot;</span><span class="p">,</span> <span class="n">middle_flow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s2">"middle_flow"</span><span class="p">,</span> <span class="n">middle_flow</span><span class="p">)</span>
 
         <span class="n">_</span><span class="p">,</span> <span class="n">exit_flow_in_channels</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">middle_flow</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">()</span>
         <span class="n">exit_flow</span> <span class="o">=</span> <span class="n">XceptionExitFlow</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">exit_flow_in_channels</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exit_flow</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;exit_flow&quot;</span><span class="p">,</span>
+            <span class="s2">"exit_flow"</span><span class="p">,</span>
             <span class="n">exit_flow</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Xception.forward">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1259,7 +1277,7 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
@@ -1267,20 +1285,20 @@
 <div class="viewcode-block" id="Xception.compute_output_shape">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception.compute_output_shape">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape the model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape the model."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Xception.forward_features">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception.forward_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model to extract features.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model to extract features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1294,7 +1312,7 @@
 <span class="sd">            Feature map tensor,</span>
 <span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 
 
@@ -1303,7 +1321,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_features_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the features.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1317,7 +1335,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the features.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
@@ -1327,7 +1345,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">doi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;10.1109/cvpr.2017.195&quot;</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"doi"</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"10.1109/cvpr.2017.195"</span><span class="p">]))</span></div>
 
 </pre></div>
 
@@ -1358,8 +1376,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1393,7 +1411,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

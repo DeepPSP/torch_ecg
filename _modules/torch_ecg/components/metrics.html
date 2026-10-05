@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/components/metrics';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.components.metrics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span></span><span class="sd">""" """</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
@@ -401,30 +420,30 @@
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Metrics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ClassificationMetrics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;RPeaksDetectionMetrics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;WaveDelineationMetrics&quot;</span><span class="p">,</span>
+    <span class="s2">"Metrics"</span><span class="p">,</span>
+    <span class="s2">"ClassificationMetrics"</span><span class="p">,</span>
+    <span class="s2">"RPeaksDetectionMetrics"</span><span class="p">,</span>
+    <span class="s2">"WaveDelineationMetrics"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Metrics</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for metrics.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for metrics."""</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;Metrics&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"Metrics"</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Metrics&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Metrics"</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Metrics&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Metrics"</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
 <div class="viewcode-block" id="ClassificationMetrics">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ClassificationMetrics</span><span class="p">(</span><span class="n">Metrics</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metrics for the task of classification.</span>
+<span class="w">    </span><span class="sd">"""Metrics for the task of classification.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -445,9 +464,9 @@
 <span class="sd">                weights : Optional[NDArray]=None</span>
 <span class="sd">            ) -&gt; dict</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ClassificationMetrics&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ClassificationMetrics"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -462,69 +481,69 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;sens&quot;</span><span class="p">,</span>  <span class="c1"># sensitivity, recall, hit rate, or true positive rate</span>
-                <span class="s2">&quot;spec&quot;</span><span class="p">,</span>  <span class="c1"># specificity, selectivity, or true negative rate</span>
-                <span class="s2">&quot;prec&quot;</span><span class="p">,</span>  <span class="c1"># precision, or positive predictive value</span>
-                <span class="s2">&quot;npv&quot;</span><span class="p">,</span>  <span class="c1"># negative predictive value</span>
-                <span class="s2">&quot;jac&quot;</span><span class="p">,</span>  <span class="c1"># jaccard index, threat score, or critical success index</span>
-                <span class="s2">&quot;acc&quot;</span><span class="p">,</span>  <span class="c1"># accuracy</span>
-                <span class="s2">&quot;phi&quot;</span><span class="p">,</span>  <span class="c1"># phi coefficient, or matthews correlation coefficient</span>
-                <span class="s2">&quot;fnr&quot;</span><span class="p">,</span>  <span class="c1"># false negative rate, or miss rate</span>
-                <span class="s2">&quot;fpr&quot;</span><span class="p">,</span>  <span class="c1"># false positive rate, or fall-out</span>
-                <span class="s2">&quot;fdr&quot;</span><span class="p">,</span>  <span class="c1"># false discovery rate</span>
-                <span class="s2">&quot;for&quot;</span><span class="p">,</span>  <span class="c1"># false omission rate</span>
-                <span class="s2">&quot;plr&quot;</span><span class="p">,</span>  <span class="c1"># positive likelihood ratio</span>
-                <span class="s2">&quot;nlr&quot;</span><span class="p">,</span>  <span class="c1"># negative likelihood ratio</span>
-                <span class="s2">&quot;pt&quot;</span><span class="p">,</span>  <span class="c1"># prevalence threshold</span>
-                <span class="s2">&quot;ba&quot;</span><span class="p">,</span>  <span class="c1"># balanced accuracy</span>
-                <span class="s2">&quot;f1&quot;</span><span class="p">,</span>  <span class="c1"># f1-measure</span>
-                <span class="s2">&quot;fm&quot;</span><span class="p">,</span>  <span class="c1"># fowlkes-mallows index</span>
-                <span class="s2">&quot;bm&quot;</span><span class="p">,</span>  <span class="c1"># bookmaker informedness</span>
-                <span class="s2">&quot;mk&quot;</span><span class="p">,</span>  <span class="c1"># markedness</span>
-                <span class="s2">&quot;dor&quot;</span><span class="p">,</span>  <span class="c1"># diagnostic odds ratio</span>
-                <span class="s2">&quot;auroc&quot;</span><span class="p">,</span>  <span class="c1"># area under the receiver-operater characteristic curve (ROC AUC)</span>
-                <span class="s2">&quot;auprc&quot;</span><span class="p">,</span>  <span class="c1"># area under the precision-recall curve</span>
+                <span class="s2">"sens"</span><span class="p">,</span>  <span class="c1"># sensitivity, recall, hit rate, or true positive rate</span>
+                <span class="s2">"spec"</span><span class="p">,</span>  <span class="c1"># specificity, selectivity, or true negative rate</span>
+                <span class="s2">"prec"</span><span class="p">,</span>  <span class="c1"># precision, or positive predictive value</span>
+                <span class="s2">"npv"</span><span class="p">,</span>  <span class="c1"># negative predictive value</span>
+                <span class="s2">"jac"</span><span class="p">,</span>  <span class="c1"># jaccard index, threat score, or critical success index</span>
+                <span class="s2">"acc"</span><span class="p">,</span>  <span class="c1"># accuracy</span>
+                <span class="s2">"phi"</span><span class="p">,</span>  <span class="c1"># phi coefficient, or matthews correlation coefficient</span>
+                <span class="s2">"fnr"</span><span class="p">,</span>  <span class="c1"># false negative rate, or miss rate</span>
+                <span class="s2">"fpr"</span><span class="p">,</span>  <span class="c1"># false positive rate, or fall-out</span>
+                <span class="s2">"fdr"</span><span class="p">,</span>  <span class="c1"># false discovery rate</span>
+                <span class="s2">"for"</span><span class="p">,</span>  <span class="c1"># false omission rate</span>
+                <span class="s2">"plr"</span><span class="p">,</span>  <span class="c1"># positive likelihood ratio</span>
+                <span class="s2">"nlr"</span><span class="p">,</span>  <span class="c1"># negative likelihood ratio</span>
+                <span class="s2">"pt"</span><span class="p">,</span>  <span class="c1"># prevalence threshold</span>
+                <span class="s2">"ba"</span><span class="p">,</span>  <span class="c1"># balanced accuracy</span>
+                <span class="s2">"f1"</span><span class="p">,</span>  <span class="c1"># f1-measure</span>
+                <span class="s2">"fm"</span><span class="p">,</span>  <span class="c1"># fowlkes-mallows index</span>
+                <span class="s2">"bm"</span><span class="p">,</span>  <span class="c1"># bookmaker informedness</span>
+                <span class="s2">"mk"</span><span class="p">,</span>  <span class="c1"># markedness</span>
+                <span class="s2">"dor"</span><span class="p">,</span>  <span class="c1"># diagnostic odds ratio</span>
+                <span class="s2">"auroc"</span><span class="p">,</span>  <span class="c1"># area under the receiver-operater characteristic curve (ROC AUC)</span>
+                <span class="s2">"auprc"</span><span class="p">,</span>  <span class="c1"># area under the precision-recall curve</span>
             <span class="p">]</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;macro_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">"macro_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cm</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cm_ovr</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ClassificationMetrics.set_macro">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics.set_macro">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_macro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macro</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set whether to use macro-averaged metrics.</span>
+<span class="w">        </span><span class="sd">"""Set whether to use macro-averaged metrics.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        macro : bool</span>
 <span class="sd">            Whether to use macro-averaged metrics.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">macro</span> <span class="o">=</span> <span class="n">macro</span>
         <span class="k">if</span> <span class="n">macro</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">&quot;macro_&quot;</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">"macro_"</span></div>
 
 
 <div class="viewcode-block" id="ClassificationMetrics.compute">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics.compute">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">metrics_from_confusion_matrix</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;metrics : dict&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;self : </span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">)</span>
+        <span class="n">metrics_from_confusion_matrix</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"metrics : dict"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"self : </span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">,"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;Metrics computed from the one-vs-rest confusion matrix.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;The metrics object itself with the computed metrics.&quot;</span><span class="p">,</span>
+            <span class="s2">"Metrics computed from the one-vs-rest confusion matrix."</span><span class="p">,</span>
+            <span class="s2">"The metrics object itself with the computed metrics."</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;metrics = metrics_from_confusion_matrix(labels, outputs)&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;metrics = ClassificationMetrics()</span>
+            <span class="s2">"metrics = metrics_from_confusion_matrix(labels, outputs)"</span><span class="p">,</span>
+<span class="w">            </span><span class="sd">"""metrics = ClassificationMetrics()</span>
 <span class="sd">    &gt;&gt;&gt; metrics = metrics.compute(labels, outputs)</span>
 <span class="sd">    &gt;&gt;&gt; metrics.fl_measure</span>
 <span class="sd">    0.5062821146226457</span>
 <span class="sd">    &gt;&gt;&gt; metrics.set_macro(False)</span>
 <span class="sd">    &gt;&gt;&gt; metrics.fl_measure</span>
 <span class="sd">    array([0.46938776, 0.4742268 , 0.4375    , 0.52941176, 0.58      ,</span>
-<span class="sd">       0.57692308, 0.55769231, 0.48351648, 0.55855856, 0.3956044 ])&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="sd">       0.57692308, 0.55769231, 0.48351648, 0.55855856, 0.3956044 ])"""</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
@@ -534,7 +553,7 @@
         <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ClassificationMetrics&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ClassificationMetrics"</span><span class="p">:</span>
         <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
         <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
         <span class="c1"># probability outputs to binary outputs</span>
@@ -559,157 +578,157 @@
         <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NDArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ClassificationMetrics&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ClassificationMetrics"</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sensitivity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">recall</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hit_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">true_positive_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sens"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">specificity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">selectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">true_negative_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">spec"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">prec&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">prec"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">positive_predictive_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">prec&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">prec"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">negative_predictive_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">npv&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">npv"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jaccard_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">threat_score</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">critical_success_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jac"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">acc&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">acc"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">phi_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">phi&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">phi"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">matthews_correlation_coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">phi&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">phi"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">false_negative_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fnr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fnr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">miss_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fnr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fnr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">false_positive_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fpr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fpr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fall_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fpr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fpr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">false_discovery_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fdr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fdr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">false_omission_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">for&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">for"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">positive_likelihood_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">plr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">plr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">negative_likelihood_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">nlr&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">nlr"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">prevalence_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">pt&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">pt"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">balanced_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">ba&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">ba"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">f1_measure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">f1&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">f1"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fowlkes_mallows_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fm&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">fm"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">bookmaker_informedness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">bm&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">bm"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">markedness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">mk&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">mk"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">diagnostic_odds_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">dor&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">dor"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">area_under_the_receiver_operater_characteristic_curve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auroc&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auroc"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">auroc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auroc&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auroc"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">area_under_the_precision_recall_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auprc&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auprc"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">auprc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auprc&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">auprc"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">classification_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">==</span> <span class="s2">&quot;macro_&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;macro_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;macro_&quot;</span><span class="p">)}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">==</span> <span class="s2">"macro_"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"macro_"</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"macro_"</span><span class="p">)}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;macro_&quot;</span><span class="p">)}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"macro_"</span><span class="p">)}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -719,8 +738,8 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;multi_label&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;macro&quot;</span><span class="p">,</span>
+            <span class="s2">"multi_label"</span><span class="p">,</span>
+            <span class="s2">"macro"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
@@ -729,7 +748,7 @@
 <div class="viewcode-block" id="RPeaksDetectionMetrics">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.RPeaksDetectionMetrics.html#torch_ecg.components.RPeaksDetectionMetrics">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RPeaksDetectionMetrics</span><span class="p">(</span><span class="n">Metrics</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metrics for the task of R peaks detection,</span>
+<span class="w">    </span><span class="sd">"""Metrics for the task of R peaks detection,</span>
 <span class="sd">    as proposed in CPSC2019.</span>
 
 <span class="sd">    Parameters</span>
@@ -749,9 +768,9 @@
 <span class="sd">                fs : int</span>
 <span class="sd">            ) -&gt; dict</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;RPeaksDetectionMetrics&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"RPeaksDetectionMetrics"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -761,24 +780,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">thr</span> <span class="o">=</span> <span class="n">thr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_extra_metrics</span> <span class="o">=</span> <span class="n">extra_metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_em</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;qrs_score&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"qrs_score"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">}</span>
 
 <div class="viewcode-block" id="RPeaksDetectionMetrics.compute">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.RPeaksDetectionMetrics.html#torch_ecg.components.RPeaksDetectionMetrics.compute">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">QRS_score</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rpeaks_truths&quot;</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rpeaks_preds&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+        <span class="n">QRS_score</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rpeaks_truths"</span><span class="p">,</span> <span class="s2">"labels"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rpeaks_preds"</span><span class="p">,</span> <span class="s2">"outputs"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;thr : float, default 0.075&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;thr : float, optional, defaults to `self.thr`&quot;</span><span class="p">,</span>
+            <span class="s2">"thr : float, default 0.075"</span><span class="p">,</span>
+            <span class="s2">"thr : float, optional, defaults to `self.thr`"</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rec_acc : float&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;self : </span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rec_acc : float"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"self : </span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;Accuracy of predictions.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;The metrics object itself with the computed metrics.&quot;</span><span class="p">,</span>
+            <span class="s2">"Accuracy of predictions."</span><span class="p">,</span>
+            <span class="s2">"The metrics object itself with the computed metrics."</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+        <span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">" </span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">"""</span>
 
 <span class="s2">        Examples</span>
 <span class="s2">        --------</span>
@@ -789,7 +808,7 @@
 <span class="s2">        &gt;&gt;&gt; metrics.qrs_score</span>
 <span class="s2">        0.7</span>
 
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -797,8 +816,8 @@
         <span class="n">outputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]],</span>
         <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">thr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RPeaksDetectionMetrics&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">&quot;qrs_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QRS_score</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">thr</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thr</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"RPeaksDetectionMetrics"</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">"qrs_score"</span><span class="p">]</span> <span class="o">=</span> <span class="n">QRS_score</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">thr</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thr</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extra_metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_em</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extra_metrics</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_em</span><span class="p">)</span>
@@ -813,12 +832,12 @@
         <span class="n">outputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]],</span>
         <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">thr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RPeaksDetectionMetrics&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"RPeaksDetectionMetrics"</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">thr</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">qrs_score</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">&quot;qrs_score&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">"qrs_score"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -827,7 +846,7 @@
 <div class="viewcode-block" id="RPeaksDetectionMetrics.extra_repr_keys">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.RPeaksDetectionMetrics.html#torch_ecg.components.RPeaksDetectionMetrics.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;thr&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"thr"</span><span class="p">]</span></div>
 </div>
 
 
@@ -835,7 +854,7 @@
 <div class="viewcode-block" id="WaveDelineationMetrics">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveDelineationMetrics</span><span class="p">(</span><span class="n">Metrics</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metrics for the task of ECG wave delineation.</span>
+<span class="w">    </span><span class="sd">"""Metrics for the task of ECG wave delineation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -856,9 +875,9 @@
 <span class="sd">                fs: int</span>
 <span class="sd">            ) -&gt; dict</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;WaveDelineationMetrics&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"WaveDelineationMetrics"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -873,36 +892,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;sensitivity&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;f1_score&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;mean_error&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;standard_deviation&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;jaccard&quot;</span><span class="p">,</span>
+                <span class="s2">"sensitivity"</span><span class="p">,</span>
+                <span class="s2">"precision"</span><span class="p">,</span>
+                <span class="s2">"f1_score"</span><span class="p">,</span>
+                <span class="s2">"mean_error"</span><span class="p">,</span>
+                <span class="s2">"standard_deviation"</span><span class="p">,</span>
+                <span class="s2">"jaccard"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;macro_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s2">"macro_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">})</span>
 
 <div class="viewcode-block" id="WaveDelineationMetrics.set_macro">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics.set_macro">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_macro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macro</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set whether to use macro-averaged metrics or not.</span>
+<span class="w">        </span><span class="sd">"""Set whether to use macro-averaged metrics or not.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        macro : bool</span>
 <span class="sd">            Shether to use macro-averaged metrics.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">macro</span> <span class="o">=</span> <span class="n">macro</span>
         <span class="k">if</span> <span class="n">macro</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">&quot;macro_&quot;</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span> <span class="o">=</span> <span class="s2">"macro_"</span></div>
 
 
 <div class="viewcode-block" id="WaveDelineationMetrics.compute">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics.compute">[docs]</a>
-    <span class="nd">@add_docstring</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="nd">@add_docstring</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">        Compute metrics for the task of ECG wave delineation</span>
 <span class="s2">        (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)</span>
 <span class="s2">        for multiple evaluations.</span>
@@ -917,15 +936,15 @@
 <span class="s2">            of the same shape.</span>
 <span class="s2">        class_map : dict</span>
 <span class="s2">            Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
-<span class="s2">            the keys should contain </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ECGWaveFormNames</span><span class="p">])</span><span class="si">}</span><span class="s2">.</span>
-<span class="s2">        fs : numbers.Real</span>
+<span class="s2">            the keys should contain </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">"'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ECGWaveFormNames</span><span class="p">])</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">        fs : int</span>
 <span class="s2">            Sampling frequency of the signal corresponding to the masks,</span>
 <span class="s2">            used to compute the duration of each waveform,</span>
 <span class="s2">            and thus the error and standard deviations of errors.</span>
-<span class="s2">        mask_format : str, default &quot;channel_first&quot;</span>
+<span class="s2">        mask_format : str, default "channel_first"</span>
 <span class="s2">            Format of the mask, one of the following:</span>
-<span class="s2">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="s2">            &quot;channel_first&quot; (alias &quot;lead_first&quot;).</span>
+<span class="s2">            "channel_last" (alias "lead_last"), or</span>
+<span class="s2">            "channel_first" (alias "lead_first").</span>
 <span class="s2">        tol : float, optional</span>
 <span class="s2">            Tolerance for the duration of the waveform,</span>
 <span class="s2">            with units in seconds.</span>
@@ -936,62 +955,62 @@
 <span class="s2">        self : WaveDelineationMetrics</span>
 <span class="s2">            The metrics object itself with the computed metrics.</span>
 
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">        """</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
         <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
         <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;WaveDelineationMetrics&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"WaveDelineationMetrics"</span><span class="p">:</span>
         <span class="c1"># wave delineation specific metrics</span>
         <span class="n">truth_masks</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">labels</span>
         <span class="n">pred_masks</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">outputs</span>
         <span class="n">raw_metrics</span> <span class="o">=</span> <span class="n">compute_wave_delineation_metrics</span><span class="p">(</span><span class="n">truth_masks</span><span class="p">,</span> <span class="n">pred_masks</span><span class="p">,</span> <span class="n">class_map</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">mask_format</span><span class="p">,</span> <span class="n">tol</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">metric</span><span class="p">:</span> <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">raw_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">metric</span><span class="p">]</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">raw_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">"</span><span class="p">][</span><span class="n">metric</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">wf</span> <span class="ow">in</span> <span class="n">class_map</span>
                 <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="s2">&quot;onset&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;offset&quot;</span><span class="p">,</span>
+                    <span class="s2">"onset"</span><span class="p">,</span>
+                    <span class="s2">"offset"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">}</span>
             <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;sensitivity&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;f1_score&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;mean_error&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;standard_deviation&quot;</span><span class="p">,</span>
+                <span class="s2">"sensitivity"</span><span class="p">,</span>
+                <span class="s2">"precision"</span><span class="p">,</span>
+                <span class="s2">"f1_score"</span><span class="p">,</span>
+                <span class="s2">"mean_error"</span><span class="p">,</span>
+                <span class="s2">"standard_deviation"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;macro_</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="sa">f</span><span class="s2">"macro_</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
                 <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="s2">&quot;sensitivity&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;f1_score&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;mean_error&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;standard_deviation&quot;</span><span class="p">,</span>
+                    <span class="s2">"sensitivity"</span><span class="p">,</span>
+                    <span class="s2">"precision"</span><span class="p">,</span>
+                    <span class="s2">"f1_score"</span><span class="p">,</span>
+                    <span class="s2">"mean_error"</span><span class="p">,</span>
+                    <span class="s2">"standard_deviation"</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="c1"># sample-wise metrics</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
         <span class="n">clf_mtx</span> <span class="o">=</span> <span class="n">ClassificationMetrics</span><span class="p">()</span>
         <span class="n">swm</span> <span class="o">=</span> <span class="n">clf_mtx</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
             <span class="n">truth_masks</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
             <span class="n">pred_masks</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
             <span class="nb">max</span><span class="p">(</span><span class="n">class_map</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"default"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;jaccard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">swm</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">&quot;jac&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">class_map</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-                <span class="s2">&quot;macro_jaccard&quot;</span><span class="p">:</span> <span class="n">swm</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">&quot;macro_jac&quot;</span><span class="p">],</span>
+                <span class="s2">"jaccard"</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">swm</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">"jac"</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">class_map</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+                <span class="s2">"macro_jaccard"</span><span class="p">:</span> <span class="n">swm</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="s2">"macro_jac"</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -1005,34 +1024,34 @@
         <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
         <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;WaveDelineationMetrics&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"WaveDelineationMetrics"</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">class_map</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">mask_format</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sensitivity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sensitivity&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">sensitivity"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">precision&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">precision"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">f1_score</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">f1_score&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">f1_score"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">mean_error&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">mean_error"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">standard_deviation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">standard_deviation&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">standard_deviation"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jaccard_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jaccard&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__prefix</span><span class="si">}</span><span class="s2">jaccard"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -1041,7 +1060,7 @@
 <div class="viewcode-block" id="WaveDelineationMetrics.extra_repr_keys">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;tol&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"tol"</span><span class="p">]</span></div>
 </div>
 
 </pre></div>
@@ -1073,8 +1092,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1108,7 +1127,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

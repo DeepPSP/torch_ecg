@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/_preprocessors/base';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg._preprocessors.base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Base class for preprocessors.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Base class for preprocessors."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
@@ -399,62 +418,62 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;PreProcessor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;preprocess_multi_lead_signal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;preprocess_single_lead_signal&quot;</span><span class="p">,</span>
+    <span class="s2">"PreProcessor"</span><span class="p">,</span>
+    <span class="s2">"preprocess_multi_lead_signal"</span><span class="p">,</span>
+    <span class="s2">"preprocess_single_lead_signal"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="PreProcessor">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PreProcessor</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for preprocessors.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for preprocessors."""</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;PreProcessor&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"PreProcessor"</span>
 
 <div class="viewcode-block" id="PreProcessor.apply">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor.apply">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to `sig`.</span>
+<span class="w">        </span><span class="sd">"""Apply the preprocessor to `sig`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sig : numpy.ndarray</span>
 <span class="sd">            The ECG signal, can be</span>
 <span class="sd">            - 1d array, which is a single-lead ECG;</span>
-<span class="sd">            - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
+<span class="sd">            - 2d array, which is a multi-lead ECG of "lead_first" format;</span>
 <span class="sd">            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
 <span class="sd">        fs : int or float</span>
 <span class="sd">            Sampling frequency of the ECG signal.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
     <span class="nd">@add_docstring</span><span class="p">(</span><span class="n">apply</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of :meth:`self.apply`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""alias of :meth:`self.apply`."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_sig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check validity of the signal.</span>
+<span class="w">        </span><span class="sd">"""Check validity of the signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sig : numpy.ndarray</span>
 <span class="sd">            The ECG signal, can be</span>
 <span class="sd">            - 1d array, which is a single-lead ECG;</span>
-<span class="sd">            - 2d array, which is a multi-lead ECG of &quot;lead_first&quot; format;</span>
+<span class="sd">            - 2d array, which is a multi-lead ECG of "lead_first" format;</span>
 <span class="sd">            - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Invalid input ECG signal. Should be&quot;</span>
-                <span class="s2">&quot;1d array, which is a single-lead ECG;&quot;</span>
-                <span class="s2">&quot;or 2d array, which is a multi-lead ECG of `lead_first` format;&quot;</span>
-                <span class="s2">&quot;or 3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen).&quot;</span>
+                <span class="s2">"Invalid input ECG signal. Should be"</span>
+                <span class="s2">"1d array, which is a single-lead ECG;"</span>
+                <span class="s2">"or 2d array, which is a multi-lead ECG of `lead_first` format;"</span>
+                <span class="s2">"or 3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)."</span>
             <span class="p">)</span></div>
 
 
@@ -464,16 +483,16 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_multi_lead_signal</span><span class="p">(</span>
     <span class="n">raw_sig</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-    <span class="n">sig_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+    <span class="n">sig_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"channel_first"</span><span class="p">,</span> <span class="s2">"lead_first"</span><span class="p">,</span> <span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
     <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
+    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"butter"</span><span class="p">,</span> <span class="s2">"fir"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"butter"</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for multi-lead ECG signal (with units in mV).</span>
+<span class="w">    </span><span class="sd">"""Perform preprocessing for multi-lead ECG signal (with units in mV).</span>
 
 <span class="sd">    preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.</span>
-<span class="sd">    Also works for single-lead ECG signal (setting ``sig_fmt=&quot;channel_first&quot;``).</span>
+<span class="sd">    Also works for single-lead ECG signal (setting ``sig_fmt="channel_first"``).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -481,10 +500,10 @@
 <span class="sd">        The raw ECG signal, with units in mV.</span>
 <span class="sd">    fs : int or float</span>
 <span class="sd">        Sampling frequency of `raw_sig`.</span>
-<span class="sd">    sig_fmt : str, default &quot;channel_first&quot;</span>
+<span class="sd">    sig_fmt : str, default "channel_first"</span>
 <span class="sd">        Format of the multi-lead ECG signal,</span>
-<span class="sd">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;).</span>
+<span class="sd">        "channel_last" (alias "lead_last"), or</span>
+<span class="sd">        "channel_first" (alias "lead_first").</span>
 <span class="sd">    bl_win : List[Union[int, float]], optional</span>
 <span class="sd">        Window (units in second) of baseline removal</span>
 <span class="sd">        using :meth:`~scipy.ndimage.median_filter`,</span>
@@ -496,7 +515,7 @@
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
 <span class="sd">        If is None or empty, bandpass filtering will not be performed.</span>
-<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, default &quot;butter&quot;</span>
+<span class="sd">    filter_type : {"butter", "fir"}, default "butter"</span>
 <span class="sd">        Type of the bandpass filter.</span>
 <span class="sd">    filter_order : int, optional</span>
 <span class="sd">        Order of the bandpass filter.</span>
@@ -508,16 +527,16 @@
 <span class="sd">        The format of the signal is kept the same with the original signal,</span>
 <span class="sd">        i.e. `sig_fmt`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">raw_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">raw_sig</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;multi-lead signal should be 2d or 3d array&quot;</span>
+    <span class="k">assert</span> <span class="n">raw_sig</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">"multi-lead signal should be 2d or 3d array"</span>
     <span class="k">assert</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
-    <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;multi-lead signal format `</span><span class="si">{</span><span class="n">sig_fmt</span><span class="si">}</span><span class="s2">` not supported&quot;</span>
-    <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+        <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="s2">"lead_first"</span><span class="p">,</span>
+        <span class="s2">"channel_last"</span><span class="p">,</span>
+        <span class="s2">"lead_last"</span><span class="p">,</span>
+    <span class="p">],</span> <span class="sa">f</span><span class="s2">"multi-lead signal format `</span><span class="si">{</span><span class="n">sig_fmt</span><span class="si">}</span><span class="s2">` not supported"</span>
+    <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
         <span class="c1"># might have a batch dimension at the first axis</span>
         <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
@@ -528,36 +547,36 @@
         <span class="n">window1</span><span class="p">,</span> <span class="n">window2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="n">window1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bl_win</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># window size must be odd</span>
         <span class="n">window2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bl_win</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">filtered_ecg</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">filtered_ecg</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)</span>
         <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">filtered_ecg</span> <span class="o">-</span> <span class="n">baseline</span>
 
     <span class="c1"># filter signal</span>
     <span class="k">if</span> <span class="n">band_fs</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Invalid frequency band&quot;</span>
+        <span class="k">assert</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"Invalid frequency band"</span>
         <span class="n">nyq</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">fs</span>
         <span class="k">if</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nyq</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;lowpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"lowpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">nyq</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;highpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"highpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nyq</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;bandpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"bandpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Invalid frequency band&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fir&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"Invalid frequency band"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"fir"</span><span class="p">:</span>
             <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">filter_signal</span><span class="p">(</span>
                 <span class="n">signal</span><span class="o">=</span><span class="n">filtered_ecg</span><span class="p">,</span>
-                <span class="n">ftype</span><span class="o">=</span><span class="s2">&quot;FIR&quot;</span><span class="p">,</span>
-                <span class="c1"># ftype=&quot;butter&quot;,</span>
+                <span class="n">ftype</span><span class="o">=</span><span class="s2">"FIR"</span><span class="p">,</span>
+                <span class="c1"># ftype="butter",</span>
                 <span class="n">band</span><span class="o">=</span><span class="n">band</span><span class="p">,</span>
                 <span class="n">order</span><span class="o">=</span><span class="n">filter_order</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
                 <span class="n">sampling_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
                 <span class="n">frequency</span><span class="o">=</span><span class="n">frequency</span><span class="p">,</span>
-            <span class="p">)[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;butter&quot;</span><span class="p">:</span>
+            <span class="p">)[</span><span class="s2">"signal"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"butter"</span><span class="p">:</span>
             <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">butter_bandpass_filter</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">filtered_ecg</span><span class="p">,</span>
                 <span class="n">lowcut</span><span class="o">=</span><span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -566,9 +585,9 @@
                 <span class="n">order</span><span class="o">=</span><span class="n">filter_order</span> <span class="ow">or</span> <span class="nb">round</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>  <span class="c1"># better be determined by the `buttord`</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported filter type `</span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported filter type `</span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">sig_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
         <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">T</span>
 
     <span class="k">return</span> <span class="n">filtered_ecg</span></div>
@@ -582,10 +601,10 @@
     <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">bl_win</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">band_fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span>
+    <span class="n">filter_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"butter"</span><span class="p">,</span> <span class="s2">"fir"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"butter"</span><span class="p">,</span>
     <span class="n">filter_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform preprocessing for single lead ECG signal (with units in mV).</span>
+<span class="w">    </span><span class="sd">"""Perform preprocessing for single lead ECG signal (with units in mV).</span>
 
 <span class="sd">    Preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.</span>
 
@@ -606,7 +625,7 @@
 <span class="sd">        a typical pair is ``[0.5, 45]``.</span>
 <span class="sd">        Be careful when detecting paced rhythm.</span>
 <span class="sd">        If is None or empty, bandpass filtering will not be performed.</span>
-<span class="sd">    filter_type : {&quot;butter&quot;, &quot;fir&quot;}, default &quot;butter&quot;</span>
+<span class="sd">    filter_type : {"butter", "fir"}, default "butter"</span>
 <span class="sd">        Type of the bandpass filter.</span>
 <span class="sd">    filter_order : int, optional</span>
 <span class="sd">        Order of the bandpass filter.</span>
@@ -621,44 +640,44 @@
 <span class="sd">    Bandpass filter uses FIR filters, an alternative can be Butterworth filter,</span>
 <span class="sd">    e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw_sig</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="k">assert</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;single-lead signal should be 1d array&quot;</span>
+    <span class="k">assert</span> <span class="n">filtered_ecg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"single-lead signal should be 1d array"</span>
 
     <span class="c1"># remove baseline</span>
     <span class="k">if</span> <span class="n">bl_win</span><span class="p">:</span>
         <span class="n">window1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bl_win</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># window size must be odd</span>
         <span class="n">window2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bl_win</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">filtered_ecg</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">filtered_ecg</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)</span>
         <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">filtered_ecg</span> <span class="o">-</span> <span class="n">baseline</span>
 
     <span class="c1"># filter signal</span>
     <span class="k">if</span> <span class="n">band_fs</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Invalid frequency band&quot;</span>
+        <span class="k">assert</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"Invalid frequency band"</span>
         <span class="n">nyq</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">fs</span>
         <span class="k">if</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nyq</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;lowpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"lowpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">nyq</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;highpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"highpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">band_fs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nyq</span><span class="p">:</span>
-            <span class="n">band</span> <span class="o">=</span> <span class="s2">&quot;bandpass&quot;</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="s2">"bandpass"</span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">band_fs</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Invalid frequency band&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fir&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"Invalid frequency band"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"fir"</span><span class="p">:</span>
             <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">filter_signal</span><span class="p">(</span>
                 <span class="n">signal</span><span class="o">=</span><span class="n">filtered_ecg</span><span class="p">,</span>
-                <span class="n">ftype</span><span class="o">=</span><span class="s2">&quot;FIR&quot;</span><span class="p">,</span>
-                <span class="c1"># ftype=&quot;butter&quot;,</span>
+                <span class="n">ftype</span><span class="o">=</span><span class="s2">"FIR"</span><span class="p">,</span>
+                <span class="c1"># ftype="butter",</span>
                 <span class="n">band</span><span class="o">=</span><span class="n">band</span><span class="p">,</span>
                 <span class="n">order</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
                 <span class="n">sampling_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
                 <span class="n">frequency</span><span class="o">=</span><span class="n">frequency</span><span class="p">,</span>
-            <span class="p">)[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;butter&quot;</span><span class="p">:</span>
+            <span class="p">)[</span><span class="s2">"signal"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">filter_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"butter"</span><span class="p">:</span>
             <span class="n">filtered_ecg</span> <span class="o">=</span> <span class="n">butter_bandpass_filter</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">filtered_ecg</span><span class="p">,</span>
                 <span class="n">lowcut</span><span class="o">=</span><span class="n">band_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -667,7 +686,7 @@
                 <span class="n">order</span><span class="o">=</span><span class="n">filter_order</span> <span class="ow">or</span> <span class="nb">round</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>  <span class="c1"># better be determined by the `buttord`</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported filter type `</span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported filter type `</span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">filtered_ecg</span></div>
 
@@ -700,8 +719,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -735,7 +754,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

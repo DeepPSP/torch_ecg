@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/utils_data';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,9 +398,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.utils.utils_data</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Utilities for convertions of data, labels, masks, etc.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -404,19 +423,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_docstring</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;get_mask&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;class_weight_to_sample_weight&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rdheader&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ensure_lead_fmt&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ensure_siglen&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ECGWaveForm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ECGWaveFormNames&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;masks_to_waveforms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mask_to_intervals&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stratified_train_test_split&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;one_hot_encode&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;generate_weight_mask&quot;</span><span class="p">,</span>
+    <span class="s2">"get_mask"</span><span class="p">,</span>
+    <span class="s2">"class_weight_to_sample_weight"</span><span class="p">,</span>
+    <span class="s2">"rdheader"</span><span class="p">,</span>
+    <span class="s2">"ensure_lead_fmt"</span><span class="p">,</span>
+    <span class="s2">"ensure_siglen"</span><span class="p">,</span>
+    <span class="s2">"ECGWaveForm"</span><span class="p">,</span>
+    <span class="s2">"ECGWaveFormNames"</span><span class="p">,</span>
+    <span class="s2">"masks_to_waveforms"</span><span class="p">,</span>
+    <span class="s2">"mask_to_intervals"</span><span class="p">,</span>
+    <span class="s2">"uniform"</span><span class="p">,</span>
+    <span class="s2">"stratified_train_test_split"</span><span class="p">,</span>
+    <span class="s2">"one_hot_encode"</span><span class="p">,</span>
+    <span class="s2">"generate_weight_mask"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -427,9 +446,9 @@
     <span class="n">critical_points</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">left_bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">right_bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">return_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;intervals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
+    <span class="n">return_fmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"mask"</span><span class="p">,</span> <span class="s2">"intervals"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mask"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mask around the given critical points.</span>
+<span class="w">    </span><span class="sd">"""Get the mask around the given critical points.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -444,10 +463,10 @@
 <span class="sd">    right_bias : int</span>
 <span class="sd">        Bias to the right of the critical points for the mask,</span>
 <span class="sd">        non-negative.</span>
-<span class="sd">    return_fmt : {&quot;mask&quot;, &quot;intervals&quot;}</span>
-<span class="sd">        Format of the return values, by default &quot;mask&quot;.</span>
-<span class="sd">        &quot;mask&quot; stands for the usual mask, while</span>
-<span class="sd">        &quot;intervals&quot; means a list of intervals of the</span>
+<span class="sd">    return_fmt : {"mask", "intervals"}</span>
+<span class="sd">        Format of the return values, by default "mask".</span>
+<span class="sd">        "mask" stands for the usual mask, while</span>
+<span class="sd">        "intervals" means a list of intervals of the</span>
 <span class="sd">        form ``[start, end]``.</span>
 
 <span class="sd">    Returns</span>
@@ -462,22 +481,22 @@
 <span class="sd">    (12, 5000)</span>
 <span class="sd">    &gt;&gt;&gt; mask.sum(axis=1)</span>
 <span class="sd">    array([1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200])</span>
-<span class="sd">    &gt;&gt;&gt; intervals = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt=&quot;intervals&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; intervals = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="intervals")</span>
 <span class="sd">    &gt;&gt;&gt; intervals</span>
 <span class="sd">    [[200, 300], [600, 700], [1000, 1100], [1400, 1500], [1800, 1900], [2200, 2300], [2600, 2700], [3000, 3100], [3400, 3500], [3800, 3900], [4200, 4300], [4600, 4700]]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">,)</span>
     <span class="n">l_itv</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cp</span> <span class="o">-</span> <span class="n">left_bias</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cp</span> <span class="o">+</span> <span class="n">right_bias</span><span class="p">)]</span> <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="n">critical_points</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">return_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mask&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">return_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"mask"</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">l_itv</span><span class="p">:</span>
             <span class="n">mask</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">elif</span> <span class="n">return_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;intervals&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">return_fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"intervals"</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">l_itv</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown return_fmt. Expected &#39;mask&#39; or &#39;intervals&#39;, but got </span><span class="si">{</span><span class="n">return_fmt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown return_fmt. Expected 'mask' or 'intervals', but got </span><span class="si">{</span><span class="n">return_fmt</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mask</span></div>
 
 
@@ -485,17 +504,17 @@
 <div class="viewcode-block" id="class_weight_to_sample_weight">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">class_weight_to_sample_weight</span><span class="p">(</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"balanced"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform class weight to sample weight.</span>
+<span class="w">    </span><span class="sd">"""Transform class weight to sample weight.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    y : numpy.ndarray or Sequence</span>
 <span class="sd">        The label (class) of each sample.</span>
-<span class="sd">    class_weight : str or dict or List[float] or numpy.ndarray or None, default &quot;balanced&quot;</span>
+<span class="sd">    class_weight : str or dict or List[float] or numpy.ndarray or None, default "balanced"</span>
 <span class="sd">        The weight for each sample class.</span>
-<span class="sd">        If is &quot;balanced&quot;, the class weight will automatically be given by</span>
+<span class="sd">        If is "balanced", the class weight will automatically be given by</span>
 <span class="sd">        the inverse of the class frequency.</span>
 <span class="sd">        If `y` is of string `dtype`, then `class_weight` should be a :class:`dict`.</span>
 <span class="sd">        if `y` is of numeric `dtype`, and `class_weight` is array_like,</span>
@@ -509,19 +528,19 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; y = np.array([0, 0, 0, 0, 1, 1, 1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight=&quot;balanced&quot;).tolist()</span>
+<span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight="balanced").tolist()</span>
 <span class="sd">    [0.25, 0.25, 0.25, 0.25, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]</span>
 <span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight=[1, 1, 3]).tolist()</span>
 <span class="sd">    [0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]</span>
 <span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight={0: 2, 1: 1, 2: 3}).tolist()</span>
 <span class="sd">    [0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]</span>
-<span class="sd">    &gt;&gt;&gt; y = [&quot;dog&quot;, &quot;dog&quot;, &quot;cat&quot;, &quot;dog&quot;, &quot;cattle&quot;, &quot;cat&quot;, &quot;dog&quot;, &quot;cat&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight={&quot;dog&quot;: 1, &quot;cat&quot;: 2, &quot;cattle&quot;: 3}).tolist()</span>
+<span class="sd">    &gt;&gt;&gt; y = ["dog", "dog", "cat", "dog", "cattle", "cat", "dog", "cat"]</span>
+<span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight={"dog": 1, "cat": 2, "cattle": 3}).tolist()</span>
 <span class="sd">    [0.3333333333333333, 0.3333333333333333, 0.6666666666666666, 0.3333333333333333, 1.0, 0.6666666666666666, 0.3333333333333333, 0.6666666666666666]</span>
 <span class="sd">    &gt;&gt;&gt; class_weight_to_sample_weight(y, class_weight=[1, 2, 3])</span>
-<span class="sd">    AssertionError: if `y` are of type str, then class_weight should be &quot;balanced&quot; or a dict</span>
+<span class="sd">    AssertionError: if `y` are of type str, then class_weight should be "balanced" or a dict</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">class_weight</span><span class="p">:</span>
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">np_dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample_weight</span>
@@ -532,12 +551,12 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weight</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weight</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">class_weight</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;balanced&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;if `y` are of type str, then class_weight should be </span><span class="se">\042</span><span class="s2">balanced</span><span class="se">\042</span><span class="s2"> or a dict&quot;</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weight</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">class_weight</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"balanced"</span>
+        <span class="p">),</span> <span class="s2">"if `y` are of type str, then class_weight should be </span><span class="se">\042</span><span class="s2">balanced</span><span class="se">\042</span><span class="s2"> or a dict"</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weight</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">class_weight</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;balanced&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weight</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">class_weight</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"balanced"</span><span class="p">:</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="n">cw</span> <span class="o">=</span> <span class="n">compute_class_weight</span><span class="p">(</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">classes</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">cw</span> <span class="o">=</span> <span class="n">compute_class_weight</span><span class="p">(</span><span class="s2">"balanced"</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">classes</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">cw</span><span class="p">[</span><span class="n">classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">)])(</span><span class="n">sample_weight</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">class_weight</span><span class="p">[</span><span class="n">s</span><span class="p">])(</span><span class="n">sample_weight</span><span class="p">)</span>
@@ -547,7 +566,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">rdheader</span><span class="p">(</span><span class="n">header_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Record</span><span class="p">,</span> <span class="n">MultiRecord</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modified from `wfdb.rdheader`.</span>
+<span class="w">    </span><span class="sd">"""Modified from `wfdb.rdheader`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -560,32 +579,32 @@
 <span class="sd">    wfdb.Record or wfdb.MultiRecord</span>
 <span class="sd">        The record object.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header_data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
         <span class="n">header_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">header_data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">header_data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.hea&quot;</span><span class="p">):</span>
-            <span class="n">_header_data</span> <span class="o">=</span> <span class="n">header_data</span> <span class="o">+</span> <span class="s2">&quot;.hea&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">header_data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".hea"</span><span class="p">):</span>
+            <span class="n">_header_data</span> <span class="o">=</span> <span class="n">header_data</span> <span class="o">+</span> <span class="s2">".hea"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_header_data</span> <span class="o">=</span> <span class="n">header_data</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_header_data</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;file `</span><span class="si">{</span><span class="n">_header_data</span><span class="si">}</span><span class="s2">` not found&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_header_data</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"file `</span><span class="si">{</span><span class="n">_header_data</span><span class="si">}</span><span class="s2">` not found"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_header_data</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">_header_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header_data</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="n">_header_data</span> <span class="o">=</span> <span class="n">header_data</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;header_data must be str or sequence of str, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">header_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"header_data must be str or sequence of str, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">header_data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="c1"># Read the header file. Separate comment and non-comment lines</span>
     <span class="n">header_lines</span><span class="p">,</span> <span class="n">comment_lines</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_header_data</span><span class="p">:</span>
         <span class="n">striped_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># Comment line</span>
-        <span class="k">if</span> <span class="n">striped_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">striped_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
             <span class="n">comment_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">striped_line</span><span class="p">)</span>
         <span class="c1"># Non-empty non-comment line = header line.</span>
         <span class="k">elif</span> <span class="n">striped_line</span><span class="p">:</span>
             <span class="c1"># Look for a comment in the line</span>
-            <span class="n">ci</span> <span class="o">=</span> <span class="n">striped_line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+            <span class="n">ci</span> <span class="o">=</span> <span class="n">striped_line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"#"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ci</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">striped_line</span><span class="p">[:</span><span class="n">ci</span><span class="p">])</span>
                 <span class="c1"># comment on same line as header line</span>
@@ -597,7 +616,7 @@
     <span class="n">record_fields</span> <span class="o">=</span> <span class="n">_header</span><span class="o">.</span><span class="n">_parse_record_line</span><span class="p">(</span><span class="n">header_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># Single segment header - Process signal specification lines</span>
-    <span class="k">if</span> <span class="n">record_fields</span><span class="p">[</span><span class="s2">&quot;n_seg&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">record_fields</span><span class="p">[</span><span class="s2">"n_seg"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Create a single-segment WFDB record object</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">Record</span><span class="p">()</span>
 
@@ -605,13 +624,13 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Read the fields from the signal lines</span>
             <span class="n">signal_fields</span> <span class="o">=</span> <span class="n">_header</span><span class="o">.</span><span class="n">_parse_signal_lines</span><span class="p">(</span><span class="n">header_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-            <span class="c1"># Set the object&#39;s signal fields</span>
+            <span class="c1"># Set the object's signal fields</span>
             <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">signal_fields</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">signal_fields</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
 
-        <span class="c1"># Set the object&#39;s record line fields</span>
+        <span class="c1"># Set the object's record line fields</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">record_fields</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;n_seg&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"n_seg"</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">record_fields</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
     <span class="c1"># Multi segment header - Process segment specification lines</span>
@@ -620,29 +639,29 @@
         <span class="n">record</span> <span class="o">=</span> <span class="n">MultiRecord</span><span class="p">()</span>
         <span class="c1"># Read the fields from the segment lines</span>
         <span class="n">segment_fields</span> <span class="o">=</span> <span class="n">_header</span><span class="o">.</span><span class="n">_read_segment_lines</span><span class="p">(</span><span class="n">header_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-        <span class="c1"># Set the object&#39;s segment fields</span>
+        <span class="c1"># Set the object's segment fields</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">segment_fields</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">segment_fields</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
-        <span class="c1"># Set the objects&#39; record fields</span>
+        <span class="c1"># Set the objects' record fields</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">record_fields</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">record_fields</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
 
         <span class="c1"># Determine whether the record is fixed or variable</span>
         <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">seg_len</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">record</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="s2">&quot;variable&quot;</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="s2">"variable"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">record</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="s2">&quot;fixed&quot;</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="s2">"fixed"</span>
 
     <span class="c1"># Set the comments field</span>
-    <span class="n">record</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\t</span><span class="s2">#&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">comment_lines</span><span class="p">]</span>
+    <span class="n">record</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">" </span><span class="se">\t</span><span class="s2">#"</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">comment_lines</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">record</span>
 
 
 <div class="viewcode-block" id="ensure_lead_fmt">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ensure_lead_fmt</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">n_leads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the multi-lead (ECG) signal to be of specified format.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensure_lead_fmt</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">n_leads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lead_first"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Ensure the multi-lead (ECG) signal to be of specified format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -650,10 +669,10 @@
 <span class="sd">        Values of the `n_leads`-lead (ECG) signal.</span>
 <span class="sd">    n_leads : int, default 12</span>
 <span class="sd">        Number of leads of the multi-lead (ECG) signal.</span>
-<span class="sd">    fmt : str, default &quot;lead_first&quot;</span>
+<span class="sd">    fmt : str, default "lead_first"</span>
 <span class="sd">        Format of the output values, can be one of</span>
-<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;),</span>
-<span class="sd">        &quot;lead_last&quot; (alias &quot;channel_last&quot;), case insensitive.</span>
+<span class="sd">        "lead_first" (alias "channel_first"),</span>
+<span class="sd">        "lead_last" (alias "channel_last"), case insensitive.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -663,30 +682,30 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; values = np.random.randn(5000, 12)</span>
-<span class="sd">    &gt;&gt;&gt; new_values = ensure_lead_fmt(values, fmt=&quot;lead_first&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; new_values = ensure_lead_fmt(values, fmt="lead_first")</span>
 <span class="sd">    &gt;&gt;&gt; new_values.shape</span>
 <span class="sd">    (5000, 12)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(values, new_values.T)</span>
 <span class="sd">    True</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">out_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">lead_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out_values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_leads</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">lead_dim</span> <span class="ow">or</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">lead_dim</span><span class="p">]):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not valid </span><span class="si">{</span><span class="n">n_leads</span><span class="si">}</span><span class="s2">-lead signal&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not valid </span><span class="si">{</span><span class="n">n_leads</span><span class="si">}</span><span class="s2">-lead signal"</span><span class="p">)</span>
     <span class="n">lead_dim</span> <span class="o">=</span> <span class="n">lead_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">lead_dim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lead_first&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
-        <span class="n">lead_dim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;lead_last&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_last&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">lead_dim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"lead_first"</span><span class="p">,</span> <span class="s2">"channel_first"</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">lead_dim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"lead_last"</span><span class="p">,</span> <span class="s2">"channel_last"</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="n">out_values</span> <span class="o">=</span> <span class="n">out_values</span><span class="o">.</span><span class="n">T</span>
     <span class="k">elif</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
+        <span class="s2">"lead_first"</span><span class="p">,</span>
+        <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="s2">"lead_last"</span><span class="p">,</span>
+        <span class="s2">"channel_last"</span><span class="p">,</span>
     <span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not valid fmt: `</span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not valid fmt: `</span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out_values</span></div>
 
 
@@ -696,10 +715,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">ensure_siglen</span><span class="p">(</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">siglen</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
+    <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lead_first"</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the (ECG) signal to be of specified length.</span>
+<span class="w">    </span><span class="sd">"""Ensure the (ECG) signal to be of specified length.</span>
 
 <span class="sd">    Strategy:</span>
 
@@ -717,10 +736,10 @@
 <span class="sd">        Values of the `n_leads`-lead (ECG) signal.</span>
 <span class="sd">    siglen : int</span>
 <span class="sd">        Length of the signal supposed to have.</span>
-<span class="sd">    fmt : str, default &quot;lead_first&quot;</span>
+<span class="sd">    fmt : str, default "lead_first"</span>
 <span class="sd">        Format of the input and output values, can be one of</span>
-<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;),</span>
-<span class="sd">        &quot;lead_last&quot; (alias &quot;channel_last&quot;), case insensitive.</span>
+<span class="sd">        "lead_first" (alias "channel_first"),</span>
+<span class="sd">        "lead_last" (alias "channel_last"), case insensitive.</span>
 <span class="sd">    tolerance : float, optional</span>
 <span class="sd">        Tolerance of the length of `values` to be</span>
 <span class="sd">        longer than `siglen` in percentage.</span>
@@ -734,19 +753,19 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; values = np.random.randn(12, 4629)</span>
-<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 5000, fmt=&quot;lead_first&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 5000, fmt="lead_first")</span>
 <span class="sd">    &gt;&gt;&gt; new_values.shape</span>
 <span class="sd">    (12, 5000)</span>
-<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt=&quot;lead_first&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt="lead_first")</span>
 <span class="sd">    &gt;&gt;&gt; new_values.shape</span>
 <span class="sd">    (2, 12, 4000)</span>
-<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt=&quot;lead_first&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt="lead_first")</span>
 <span class="sd">    &gt;&gt;&gt; new_values.shape</span>
 <span class="sd">    (1, 12, 4000)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
         <span class="c1"># to lead_first</span>
         <span class="n">_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="k">else</span><span class="p">:</span>
@@ -763,9 +782,9 @@
             <span class="n">pad_len</span> <span class="o">=</span> <span class="n">siglen</span> <span class="o">-</span> <span class="n">original_siglen</span>
             <span class="n">pad_left</span> <span class="o">=</span> <span class="n">pad_len</span> <span class="o">//</span> <span class="mi">2</span>
             <span class="n">pad_right</span> <span class="o">=</span> <span class="n">pad_len</span> <span class="o">-</span> <span class="n">pad_left</span>
-            <span class="n">out_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">_values</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">pad_left</span><span class="p">,</span> <span class="n">pad_right</span><span class="p">)),</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">out_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">_values</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">pad_left</span><span class="p">,</span> <span class="n">pad_right</span><span class="p">)),</span> <span class="s2">"constant"</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
             <span class="n">out_values</span> <span class="o">=</span> <span class="n">out_values</span><span class="o">.</span><span class="n">T</span>
         <span class="k">if</span> <span class="n">tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">out_values</span> <span class="o">=</span> <span class="n">out_values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
@@ -780,7 +799,7 @@
         <span class="p">],</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">fmt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
         <span class="n">out_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">out_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out_values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
@@ -788,12 +807,12 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ECGWaveForm</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass for ECG waveform information.</span>
+<span class="w">    </span><span class="sd">"""Dataclass for ECG waveform information.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
-<span class="sd">        Name of the wave, e.g. &quot;N&quot;, &quot;p&quot;, &quot;t&quot;, etc.</span>
+<span class="sd">        Name of the wave, e.g. "N", "p", "t", etc.</span>
 <span class="sd">    onset : float or int</span>
 <span class="sd">        Onset index of the wave,</span>
 <span class="sd">        :class:`~numpy.nan` for unknown/unannotated onset.</span>
@@ -811,7 +830,7 @@
 <span class="sd">    ----</span>
 <span class="sd">    Add `fs` field to indicate the sampling rate of the waveform,</span>
 <span class="sd">    and make `duration` a property computed from `fs`, `onset`, and `offset`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">onset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -824,7 +843,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="s2">&quot;peak&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="s2">"peak"</span><span class="p">,</span> <span class="s2">"duration"</span><span class="p">]:</span>
             <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v2</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -834,7 +853,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">duration_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Duration of the wave, with units in number of samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Duration of the wave, with units in number of samples."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">onset</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
@@ -842,14 +861,14 @@
 
 
 <span class="c1"># ECGWaveForm = namedtuple(</span>
-<span class="c1">#     typename=&quot;ECGWaveForm&quot;,</span>
-<span class="c1">#     field_names=[&quot;name&quot;, &quot;onset&quot;, &quot;offset&quot;, &quot;peak&quot;, &quot;duration&quot;],</span>
+<span class="c1">#     typename="ECGWaveForm",</span>
+<span class="c1">#     field_names=["name", "onset", "offset", "peak", "duration"],</span>
 <span class="c1"># )</span>
 
 <span class="n">ECGWaveFormNames</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;pwave&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;qrs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;twave&quot;</span><span class="p">,</span>
+    <span class="s2">"pwave"</span><span class="p">,</span>
+    <span class="s2">"qrs"</span><span class="p">,</span>
+    <span class="s2">"twave"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -859,10 +878,10 @@
     <span class="n">masks</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">fs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+    <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
     <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert masks into lists of :class:`ECGWaveForm` for each lead.</span>
+<span class="w">    </span><span class="sd">"""Convert masks into lists of :class:`ECGWaveForm` for each lead.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -871,14 +890,14 @@
 <span class="sd">        of shape ``(n_leads, seq_len)``, or ``(seq_len,)``.</span>
 <span class="sd">    class_map : dict</span>
 <span class="sd">        Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
-<span class="sd">        the keys should contain &quot;pwave&quot;, &quot;qrs&quot;, &quot;twave&quot;.</span>
+<span class="sd">        the keys should contain "pwave", "qrs", "twave".</span>
 <span class="sd">    fs : float or int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the `masks`,</span>
 <span class="sd">        used to compute the duration of each waveform.</span>
-<span class="sd">    mask_format : str, default &quot;channel_first&quot;</span>
+<span class="sd">    mask_format : str, default "channel_first"</span>
 <span class="sd">        Format of the mask, used only when ``masks.ndim = 2``, can be</span>
-<span class="sd">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;), case insensitive.</span>
+<span class="sd">        "channel_last" (alias "lead_last"), or</span>
+<span class="sd">        "channel_first" (alias "lead_first"), case insensitive.</span>
 <span class="sd">    leads : str or List[str], optional</span>
 <span class="sd">        Names of leads corresponding to the channels of the `masks`.</span>
 
@@ -888,38 +907,38 @@
 <span class="sd">        Each item value is a list containing the :class:`ECGWaveForm`</span>
 <span class="sd">        corr. to the lead.</span>
 <span class="sd">        Each item key is from `leads` if `leads` is set,</span>
-<span class="sd">        otherwise would be ``&quot;lead_1&quot;, &quot;lead_2&quot;, ..., &quot;lead_n&quot;``.</span>
+<span class="sd">        otherwise would be ``"lead_1", "lead_2", ..., "lead_n"``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; class_map = {</span>
-<span class="sd">    ...     &quot;pwave&quot;: 1,</span>
-<span class="sd">    ...     &quot;qrs&quot;: 2,</span>
-<span class="sd">    ...     &quot;twave&quot;: 3,</span>
+<span class="sd">    ...     "pwave": 1,</span>
+<span class="sd">    ...     "qrs": 2,</span>
+<span class="sd">    ...     "twave": 3,</span>
 <span class="sd">    ... }</span>
 <span class="sd">    &gt;&gt;&gt; masks = np.zeros((2, 500), dtype=int)  # 2 leads, 5000 samples</span>
 <span class="sd">    &gt;&gt;&gt; masks[:, 100:150] = 1</span>
 <span class="sd">    &gt;&gt;&gt; masks[:, 160:205] = 2</span>
 <span class="sd">    &gt;&gt;&gt; masks[:, 250:340] = 3</span>
-<span class="sd">    &gt;&gt;&gt; waveforms = masks_to_waveforms(masks, class_map=class_map, fs=500, leads=[&quot;III&quot;, &quot;aVR&quot;])</span>
-<span class="sd">    &gt;&gt;&gt; waveforms[&quot;III&quot;][0]</span>
-<span class="sd">    ECGWaveForm(name=&#39;pwave&#39;, onset=100, offset=150, peak=nan, duration=100.0)</span>
+<span class="sd">    &gt;&gt;&gt; waveforms = masks_to_waveforms(masks, class_map=class_map, fs=500, leads=["III", "aVR"])</span>
+<span class="sd">    &gt;&gt;&gt; waveforms["III"][0]</span>
+<span class="sd">    ECGWaveForm(name='pwave', onset=100, offset=150, peak=nan, duration=100.0)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">masks</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">_masks</span> <span class="o">=</span> <span class="n">masks</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">masks</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mask_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
+            <span class="s2">"channel_first"</span><span class="p">,</span>
+            <span class="s2">"lead_first"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="n">_masks</span> <span class="o">=</span> <span class="n">masks</span><span class="o">.</span><span class="n">T</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_masks</span> <span class="o">=</span> <span class="n">masks</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;masks should be of dim 1 or 2, but got a </span><span class="si">{</span><span class="n">masks</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">d array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"masks should be of dim 1 or 2, but got a </span><span class="si">{</span><span class="n">masks</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">d array"</span><span class="p">)</span>
 
-    <span class="n">_leads</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_masks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">leads</span>
+    <span class="n">_leads</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_masks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">leads</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_leads</span><span class="p">)</span> <span class="o">==</span> <span class="n">_masks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">_class_map</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">class_map</span><span class="p">))</span>
@@ -960,7 +979,7 @@
     <span class="n">vals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">right_inclusive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a mask into a list of intervals,</span>
+<span class="w">    </span><span class="sd">"""Convert a mask into a list of intervals,</span>
 <span class="sd">    or a dict of lists of intervals.</span>
 
 <span class="sd">    Parameters</span>
@@ -996,7 +1015,7 @@
 <span class="sd">    &gt;&gt;&gt; mask_to_intervals(mask, vals=[1, 2], right_inclusive=True)</span>
 <span class="sd">    {1: [[10, 19], [80, 94]], 2: [[50, 59]]}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">vals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -1032,7 +1051,7 @@
 <div class="viewcode-block" id="uniform">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">high</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a list of numbers uniformly distributed.</span>
+<span class="w">    </span><span class="sd">"""Generate a list of numbers uniformly distributed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1054,7 +1073,7 @@
 <span class="sd">    &gt;&gt;&gt; all([0 &lt;= x &lt;= 1 for x in arr])</span>
 <span class="sd">    True</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">arr</span></div>
 
@@ -1068,12 +1087,12 @@
     <span class="n">test_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
     <span class="n">reset_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform stratified train-test split on the dataframe.</span>
+<span class="w">    </span><span class="sd">"""Perform stratified train-test split on the dataframe.</span>
 
 <span class="sd">    For example,</span>
 <span class="sd">    if one has a dataframe with columns `sex`, `nationality`, etc.,</span>
 <span class="sd">    assuming `sex` includes `male`, `female`; `nationality` includes `Chinese`, `American`,</span>
-<span class="sd">    and sets `stratified_cols = [&quot;sex&quot;, &quot;nationality&quot;]` with `test_ratio = 0.2`,</span>
+<span class="sd">    and sets `stratified_cols = ["sex", "nationality"]` with `test_ratio = 0.2`,</span>
 <span class="sd">    then approximately 20% of the male and 20% of the female subjects</span>
 <span class="sd">    will be put into the test set,</span>
 <span class="sd">    and **at the same time**, approximately 20% of the Chinese and 20% of the Americans</span>
@@ -1102,11 +1121,11 @@
 <span class="sd">    df_test : pandas.DataFrame</span>
 <span class="sd">        The dataframe of the test set.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">invalid_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">stratified_cols</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">v</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Counter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">()])]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">invalid_cols</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;invalid columns: </span><span class="si">{</span><span class="n">invalid_cols</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="s2">&quot;each of which has classes with only one member (row).&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"invalid columns: </span><span class="si">{</span><span class="n">invalid_cols</span><span class="si">}</span><span class="s2">, "</span> <span class="s2">"each of which has classes with only one member (row)."</span><span class="p">,</span>
             <span class="ne">RuntimeWarning</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="n">stratified_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">stratified_cols</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">invalid_cols</span><span class="p">]</span>
@@ -1120,10 +1139,10 @@
         <span class="n">entities_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_entities</span><span class="p">)}</span>
         <span class="n">df_inspection</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_inspection</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">entities_dict</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
 
-    <span class="n">inspection_col_name</span> <span class="o">=</span> <span class="s2">&quot;Inspection&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">])</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">inspection_col_name</span> <span class="o">=</span> <span class="s2">"Inspection"</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">])</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_inspection</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-        <span class="n">cn</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">])</span>
+        <span class="n">cn</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">stratified_cols</span><span class="p">])</span>
         <span class="n">df_inspection</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cn</span>  <span class="c1"># type: ignore</span>
     <span class="n">item_names</span> <span class="o">=</span> <span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">item_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">df_inspection</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">df_inspection</span><span class="p">[</span><span class="n">inspection_col_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">item_names</span><span class="p">}</span>
@@ -1148,7 +1167,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">one_hot_encode</span><span class="p">(</span>
     <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a categorical array to a one-hot array.</span>
+<span class="w">    </span><span class="sd">"""Convert a categorical array to a one-hot array.</span>
 
 <span class="sd">    Convert a categorical (class indices) array of shape ``(num_samples,)``</span>
 <span class="sd">    to a one-hot (binary) array of shape ``(num_samples, num_classes)``.</span>
@@ -1181,24 +1200,24 @@
 <span class="sd">    &gt;&gt;&gt; cls_array = [[1, 5], [2], [0, 1, 4]]</span>
 <span class="sd">    &gt;&gt;&gt; bin_array = one_hot_encode(cls_array, num_classes=7)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">):</span>
         <span class="n">cls_array</span> <span class="o">=</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">num_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`cls_array` should be 1D if num_classes is not specified&quot;</span>
+            <span class="k">assert</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"`cls_array` should be 1D if num_classes is not specified"</span>
             <span class="n">num_classes</span> <span class="o">=</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># sequence of sequences of class indices</span>
             <span class="n">num_classes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cls_array</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">num_classes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_classes</span> <span class="o">&gt;=</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>  <span class="c1"># type: ignore</span>
-            <span class="s2">&quot;num_classes must be greater than 0 and greater than or equal to &quot;</span>
-            <span class="s2">&quot;the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified&quot;</span>
+            <span class="s2">"num_classes must be greater than 0 and greater than or equal to "</span>
+            <span class="s2">"the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
             <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_classes</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cls_array</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
-        <span class="p">),</span> <span class="s2">&quot;all values in the multi-class `cls_array` should be less than `num_classes`&quot;</span>
+        <span class="p">),</span> <span class="s2">"all values in the multi-class `cls_array` should be less than `num_classes`"</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_classes</span><span class="p">:</span>
         <span class="n">bin_array</span> <span class="o">=</span> <span class="n">cls_array</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1210,12 +1229,12 @@
 
 
 
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">one_hot_encode</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;one_hot_encode&quot;</span><span class="p">,</span> <span class="s2">&quot;cls_to_bin&quot;</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">one_hot_encode</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"one_hot_encode"</span><span class="p">,</span> <span class="s2">"cls_to_bin"</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cls_to_bin</span><span class="p">(</span>
     <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias of `one_hot_encode`.&quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`cls_to_bin` is deprecated, use `one_hot_encode` instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Alias of `one_hot_encode`."""</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"`cls_to_bin` is deprecated, use `one_hot_encode` instead"</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">one_hot_encode</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
 
@@ -1230,7 +1249,7 @@
     <span class="n">boundary_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate weight mask for a binary target mask,</span>
+<span class="w">    </span><span class="sd">"""Generate weight mask for a binary target mask,</span>
 <span class="sd">    accounting the foreground weight and boundary weight.</span>
 
 <span class="sd">    Parameters</span>
@@ -1278,16 +1297,16 @@
 <span class="sd">    &gt;&gt;&gt; weight_mask.shape</span>
 <span class="sd">    (5000,)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">target_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`target_mask` should be 1D&quot;</span>
-    <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target_mask</span><span class="p">))</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}),</span> <span class="s2">&quot;`target_mask` should be binary&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reduction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">reduction</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;`reduction` should be a real number greater than 1&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">target_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"`target_mask` should be 1D"</span>
+    <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target_mask</span><span class="p">))</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}),</span> <span class="s2">"`target_mask` should be binary"</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reduction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">reduction</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"`reduction` should be a real number greater than 1"</span>
     <span class="k">if</span> <span class="n">reduction</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># downsample the target mask</span>
         <span class="n">target_mask</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">interpolate</span><span class="p">(</span>
                 <span class="n">from_numpy</span><span class="p">(</span><span class="n">target_mask</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span>
                 <span class="n">scale_factor</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">reduction</span><span class="p">,</span>
                 <span class="n">recompute_scale_factor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1311,11 +1330,11 @@
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target_mask</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;target mask&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">weight_mask</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;weight mask&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target_mask</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"target mask"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">weight_mask</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"weight mask"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"samples"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"weight"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"best"</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">weight_mask</span></div>
@@ -1349,8 +1368,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1384,7 +1403,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

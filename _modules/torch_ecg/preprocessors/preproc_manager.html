@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/preprocessors/preproc_manager';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.preprocessors.preproc_manager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span></span><span class="sd">""" """</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample</span>
@@ -392,14 +411,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PREPROCESSORS</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;PreprocManager&quot;</span><span class="p">,</span>
+    <span class="s2">"PreprocManager"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="PreprocManager">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PreprocManager</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manager class for preprocessors.</span>
+<span class="w">    </span><span class="sd">"""Manager class for preprocessors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -420,16 +439,16 @@
 
 <span class="sd">        config = CFG(</span>
 <span class="sd">            random=False,</span>
-<span class="sd">            bandpass={&quot;fs&quot;:500},</span>
-<span class="sd">            normalize={&quot;method&quot;: &quot;min-max&quot;},</span>
+<span class="sd">            bandpass={"fs":500},</span>
+<span class="sd">            normalize={"method": "min-max"},</span>
 <span class="sd">        )</span>
 <span class="sd">        ppm = PreprocManager.from_config(config)</span>
 <span class="sd">        sig = torch.randn(2, 12, 8000)</span>
 <span class="sd">        sig = ppm(sig)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;PreprocManager&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"PreprocManager"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -444,27 +463,27 @@
 <div class="viewcode-block" id="PreprocManager.add_">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a preprocessor to the manager.</span>
+<span class="w">        </span><span class="sd">"""Add a preprocessor to the manager.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pp : torch.nn.Module or str or dict</span>
 <span class="sd">            The preprocessor to be added.</span>
-<span class="sd">            If it&#39;s a string or a dict, it will be built using the registry.</span>
+<span class="sd">            If it's a string or a dict, it will be built using the registry.</span>
 <span class="sd">        pos : int, default -1</span>
 <span class="sd">            The position to insert the preprocessor.</span>
 <span class="sd">            Should be &gt;= -1, with -1 being the indicator of the end.</span>
 <span class="sd">        **kwargs : Any</span>
 <span class="sd">            Additional keyword arguments for building the preprocessor.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="n">pp</span> <span class="o">=</span> <span class="n">PREPROCESSORS</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">p</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Preprocessor </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;pos must be an integer &gt;= -1, but got </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"Preprocessor </span><span class="si">{</span><span class="n">pp</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already exists."</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"pos must be an integer &gt;= -1, but got </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">."</span>
         <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -474,7 +493,7 @@
 <div class="viewcode-block" id="PreprocManager.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessors to the signal tensor.</span>
+<span class="w">        </span><span class="sd">"""Apply the preprocessors to the signal tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -486,9 +505,9 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The preprocessed signal tensor.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># raise ValueError(&quot;No preprocessors added to the manager.&quot;)</span>
+            <span class="c1"># raise ValueError("No preprocessors added to the manager.")</span>
             <span class="c1"># allow dummy (empty) preprocessors</span>
             <span class="k">return</span> <span class="n">sig</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span><span class="p">)))</span>
@@ -502,8 +521,8 @@
 <div class="viewcode-block" id="PreprocManager.from_config">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PreprocManager&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a :class:`PreprocManager` instance from a configuration.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"PreprocManager"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize a :class:`PreprocManager` instance from a configuration.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -516,34 +535,34 @@
 <span class="sd">        ppm : PreprocManager</span>
 <span class="sd">            A new instance of :class:`PreprocManager`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ppm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">random</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">inplace</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inplace&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="n">ppm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">random</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">inplace</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inplace"</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">pp_name</span><span class="p">,</span> <span class="n">pp_config</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;random&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;inplace&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;fs&quot;</span><span class="p">,</span>
+                <span class="s2">"random"</span><span class="p">,</span>
+                <span class="s2">"inplace"</span><span class="p">,</span>
+                <span class="s2">"fs"</span><span class="p">,</span>
             <span class="p">]:</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="n">PREPROCESSORS</span> <span class="ow">or</span> <span class="n">pp_name</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">PREPROCESSORS</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
+                <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">PREPROCESSORS</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
             <span class="p">]:</span>
                 <span class="k">if</span> <span class="n">pp_config</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="c1"># add default fs from config if not specified in pp_config</span>
-                    <span class="k">if</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pp_config</span> <span class="ow">and</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                        <span class="n">pp_config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">"fs"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pp_config</span> <span class="ow">and</span> <span class="s2">"fs"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                        <span class="n">pp_config</span><span class="p">[</span><span class="s2">"fs"</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"fs"</span><span class="p">]</span>
                     <span class="n">ppm</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">pp_name</span><span class="p">,</span> <span class="o">**</span><span class="n">pp_config</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">ppm</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">pp_name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># just ignore the other items</span>
                 <span class="k">pass</span>
-                <span class="c1"># raise ValueError(f&quot;Unknown preprocessor: {pp_name}&quot;)</span>
+                <span class="c1"># raise ValueError(f"Unknown preprocessor: {pp_name}")</span>
         <span class="k">if</span> <span class="n">ppm</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;No preprocessors added to the manager. You are using a dummy preprocessor.&quot;</span><span class="p">,</span>
+                <span class="s2">"No preprocessors added to the manager. You are using a dummy preprocessor."</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">ppm</span></div>
@@ -552,7 +571,7 @@
 <div class="viewcode-block" id="PreprocManager.rearrange">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.rearrange">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rearrange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_ordering</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rearrange the preprocessors.</span>
+<span class="w">        </span><span class="sd">"""Rearrange the preprocessors.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -563,27 +582,27 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The preprocessors are applied in random order, &quot;</span> <span class="s2">&quot;rearranging the preprocessors will not take effect.&quot;</span><span class="p">,</span>
+                <span class="s2">"The preprocessors are applied in random order, "</span> <span class="s2">"rearranging the preprocessors will not take effect."</span><span class="p">,</span>
                 <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="c1"># TODO: use a more robust way to map names to classes</span>
         <span class="n">_mapping</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># built-in preprocessors</span>
-            <span class="s2">&quot;Resample&quot;</span><span class="p">:</span> <span class="s2">&quot;resample&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;BandPass&quot;</span><span class="p">:</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;BaselineRemove&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline_remove&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Normalize&quot;</span><span class="p">:</span> <span class="s2">&quot;normalize&quot;</span><span class="p">,</span>
+            <span class="s2">"Resample"</span><span class="p">:</span> <span class="s2">"resample"</span><span class="p">,</span>
+            <span class="s2">"BandPass"</span><span class="p">:</span> <span class="s2">"bandpass"</span><span class="p">,</span>
+            <span class="s2">"BaselineRemove"</span><span class="p">:</span> <span class="s2">"baseline_remove"</span><span class="p">,</span>
+            <span class="s2">"Normalize"</span><span class="p">:</span> <span class="s2">"normalize"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">new_ordering</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_mapping</span><span class="p">:</span>
                 <span class="c1"># allow custom preprocessors</span>
-                <span class="k">assert</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Unknown preprocessor name: `</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">`&quot;</span>
+                <span class="k">assert</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"Unknown preprocessor name: `</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">`"</span>
                 <span class="n">_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="p">})</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)),</span> <span class="s2">&quot;Duplicate preprocessor names.&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">),</span> <span class="s2">&quot;Number of preprocessors mismatch.&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)),</span> <span class="s2">"Duplicate preprocessor names."</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ordering</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">),</span> <span class="s2">"Number of preprocessors mismatch."</span>
         <span class="n">pps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="p">)</span>
         <span class="n">pps</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">new_ordering</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span></div>
@@ -601,8 +620,8 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.extra_repr_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="s2">&quot;random&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;preprocessors&quot;</span><span class="p">,</span>
+            <span class="s2">"random"</span><span class="p">,</span>
+            <span class="s2">"preprocessors"</span><span class="p">,</span>
         <span class="p">]</span></div>
 </div>
 
@@ -635,8 +654,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -670,7 +689,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

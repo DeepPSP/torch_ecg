@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/ltafdb';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -385,7 +404,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -398,49 +416,49 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_FIG_SIZE_PER_SEC</span><span class="p">,</span> <span class="n">BeatAnn</span><span class="p">,</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">PhysioNetDataBase</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;LTAFDB&quot;</span><span class="p">,</span>
+    <span class="s2">"LTAFDB"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_LTAFDB_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    Long Term AF Database</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. contains 84 long-term ECG recordings of subjects with paroxysmal or sustained atrial fibrillation</span>
 <span class="s2">    2. each record contains two simultaneously recorded ECG signals digitized at 128 Hz</span>
 <span class="s2">    3. records have duration 24 - 25 hours</span>
-<span class="s2">    4. qrs annotations (.qrs files) were produced by an automated QRS detector, in which detected beats (including occasional ventricular ectopic beats) are labelled &quot;N&quot;, detected artifacts are labelled &quot;|&quot;, and AF terminations are labelled &quot;T&quot; (inserted manually)</span>
-<span class="s2">    5. atr annotations (.atr files) were obtained by manual review of the output of an automated ECG analysis system; in these annotation files, all detected beats are labelled by type (&#39;&quot;&#39;, &quot;+&quot;, &quot;A&quot;, &quot;N&quot;, &quot;Q&quot;, &quot;V&quot;), and rhythm changes (&quot;</span><span class="se">\x01</span><span class="s2"> Aux&quot;, &quot;(AB&quot;, &quot;(AFIB&quot;, &quot;(B&quot;, &quot;(IVR&quot;, &quot;(N&quot;, &quot;(SBR&quot;, &quot;(SVTA&quot;, &quot;(T&quot;, &quot;(VT&quot;, &quot;M&quot;, &quot;MB&quot;, &quot;MISSB&quot;, &quot;PSE&quot;) are also annotated</span>
+<span class="s2">    4. qrs annotations (.qrs files) were produced by an automated QRS detector, in which detected beats (including occasional ventricular ectopic beats) are labelled "N", detected artifacts are labelled "|", and AF terminations are labelled "T" (inserted manually)</span>
+<span class="s2">    5. atr annotations (.atr files) were obtained by manual review of the output of an automated ECG analysis system; in these annotation files, all detected beats are labelled by type ('"', "+", "A", "N", "Q", "V"), and rhythm changes ("</span><span class="se">\x01</span><span class="s2"> Aux", "(AB", "(AFIB", "(B", "(IVR", "(N", "(SBR", "(SVTA", "(T", "(VT", "M", "MB", "MISSB", "PSE") are also annotated</span>
 <span class="s2">    6. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">note</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    1. both channels of the signals have name &quot;ECG&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">note</span><span class="o">=</span><span class="s2">"""</span>
+<span class="s2">    1. both channels of the signals have name "ECG"</span>
 <span class="s2">    2. the automatically generated qrs annotations (.qrs files) contains NO rhythm annotations</span>
-<span class="s2">    3. `aux_note` of .atr files of all but one (&quot;64&quot;) record start with valid rhythms, all but one end with &quot;&quot; (&quot;30&quot; ends with &quot;</span><span class="se">\x01</span><span class="s2"> Aux&quot;)</span>
+<span class="s2">    3. `aux_note` of .atr files of all but one ("64") record start with valid rhythms, all but one end with "" ("30" ends with "</span><span class="se">\x01</span><span class="s2"> Aux")</span>
 <span class="s2">    4. for more statistics on the whole database, see [ref 3](#ref3)</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;Atrial fibrillation (AF) detection&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;(3 or 4) beat type classification&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Rhythm classification&quot;</span><span class="p">,</span>
+        <span class="s2">"Atrial fibrillation (AF) detection"</span><span class="p">,</span>
+        <span class="s2">"(3 or 4) beat type classification"</span><span class="p">,</span>
+        <span class="s2">"Rhythm classification"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;https://physionet.org/content/ltafdb/1.0.0/&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).&quot;</span><span class="p">,</span>
+        <span class="s2">"https://physionet.org/content/ltafdb/1.0.0/"</span><span class="p">,</span>
+        <span class="s2">"Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007)."</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;10.1093/europace/eum096&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.13026/C2QG6Q&quot;</span><span class="p">,</span>
+        <span class="s2">"10.1093/europace/eum096"</span><span class="p">,</span>
+        <span class="s2">"10.13026/C2QG6Q"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="LTAFDB">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.LTAFDB.html#torch_ecg.databases.LTAFDB">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_LTAFDB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_LTAFDB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LTAFDB</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -453,9 +471,9 @@
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;LTAFDB&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"LTAFDB"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -467,55 +485,55 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="kn">import</span> <span class="n">cm</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;ltafdb&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"ltafdb"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">128</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">auto_ann_ext</span> <span class="o">=</span> <span class="s2">&quot;qrs&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">manual_ann_ext</span> <span class="o">=</span> <span class="s2">&quot;atr&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">"dat"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_ann_ext</span> <span class="o">=</span> <span class="s2">"qrs"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manual_ann_ext</span> <span class="o">=</span> <span class="s2">"atr"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;(N&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(AB&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(AFIB&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(B&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(IVR&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(SBR&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(SVTA&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(T&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;(VT&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;NOISE&quot;</span><span class="p">,</span>  <span class="c1"># additional, since head of each record are noisy</span>
-        <span class="p">]</span>  <span class="c1"># others include &quot;\x01 Aux&quot;, &quot;M&quot;, &quot;MB&quot;, &quot;MISSB&quot;, &quot;PSE&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types</span><span class="p">)})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;palette&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="s2">"(N"</span><span class="p">,</span>
+            <span class="s2">"(AB"</span><span class="p">,</span>
+            <span class="s2">"(AFIB"</span><span class="p">,</span>
+            <span class="s2">"(B"</span><span class="p">,</span>
+            <span class="s2">"(IVR"</span><span class="p">,</span>
+            <span class="s2">"(SBR"</span><span class="p">,</span>
+            <span class="s2">"(SVTA"</span><span class="p">,</span>
+            <span class="s2">"(T"</span><span class="p">,</span>
+            <span class="s2">"(VT"</span><span class="p">,</span>
+            <span class="s2">"NOISE"</span><span class="p">,</span>  <span class="c1"># additional, since head of each record are noisy</span>
+        <span class="p">]</span>  <span class="c1"># others include "\x01 Aux", "M", "MB", "MISSB", "PSE"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"("</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types</span><span class="p">)})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"palette"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">n_colors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE&quot;</span><span class="p">]])</span>
+            <span class="n">n_colors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"N"</span><span class="p">,</span> <span class="s2">"NOISE"</span><span class="p">]])</span>
             <span class="n">colors</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">rainbow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_colors</span><span class="p">)))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"N"</span><span class="p">,</span> <span class="s2">"NOISE"</span><span class="p">]:</span>
                     <span class="k">continue</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">beat_types</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;A&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V&quot;</span><span class="p">,</span>
-            <span class="c1"># &#39;&quot;&#39;, &quot;+&quot;, are not beat types</span>
+            <span class="s2">"A"</span><span class="p">,</span>
+            <span class="s2">"N"</span><span class="p">,</span>
+            <span class="s2">"Q"</span><span class="p">,</span>
+            <span class="s2">"V"</span><span class="p">,</span>
+            <span class="c1"># '"', "+", are not beat types</span>
         <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="s2">&quot;qrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="s2">"qrs"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"green"</span>
 
 <div class="viewcode-block" id="LTAFDB.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.LTAFDB.html#torch_ecg.databases.LTAFDB.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -527,7 +545,7 @@
 <span class="sd">        int</span>
 <span class="sd">            Subject ID associated with the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -535,9 +553,9 @@
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.LTAFDB.html#torch_ecg.databases.LTAFDB.load_data">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
         <span class="n">PhysioNetDataBase</span><span class="o">.</span><span class="n">load_data</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;leads: str or int or sequence of str or int, optional,&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;leads: int or list of int, optional,&quot;</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;the leads to load&quot;</span><span class="p">,</span> <span class="s2">&quot;the lead number(s) to load&quot;</span><span class="p">)</span>
+            <span class="s2">"leads: str or int or sequence of str or int, optional,"</span><span class="p">,</span>
+            <span class="s2">"leads: int or list of int, optional,"</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"the leads to load"</span><span class="p">,</span> <span class="s2">"the lead number(s) to load"</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -545,11 +563,11 @@
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">leads</span><span class="p">,</span> <span class="n">sampfrom</span><span class="p">,</span> <span class="n">sampto</span><span class="p">,</span> <span class="n">data_format</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">return_fs</span><span class="p">)</span></div>
 
 
@@ -560,11 +578,11 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
-        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;beat&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;beat&quot;</span><span class="p">,</span>
+        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"intervals"</span><span class="p">,</span> <span class="s2">"mask"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"intervals"</span><span class="p">,</span>
+        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"beat"</span><span class="p">,</span> <span class="s2">"dict"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"beat"</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load rhythm and beat annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load rhythm and beat annotations of the record.</span>
 
 <span class="sd">        Rhythm and beat annotations are stored in the</span>
 <span class="sd">        `aux_note`, `symbol` attributes of corresponding annotation files.</span>
@@ -578,9 +596,9 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        rhythm_format : {&quot;intervals&quot;, &quot;mask&quot;}, default &quot;intervals&quot;</span>
+<span class="sd">        rhythm_format : {"intervals", "mask"}, default "intervals"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
-<span class="sd">        beat_format : {&quot;beat&quot;, &quot;dict&quot;}, default &quot;beat&quot;</span>
+<span class="sd">        beat_format : {"beat", "dict"}, default "beat"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
@@ -596,20 +614,20 @@
 
 <span class="sd">        NOTE</span>
 <span class="sd">        ----</span>
-<span class="sd">        At head and tail of the record, segments named &quot;NOISE&quot; were added.</span>
+<span class="sd">        At head and tail of the record, segments named "NOISE" were added.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">ann</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;beat&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_beat_ann</span><span class="p">(</span>
+            <span class="s2">"beat"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_beat_ann</span><span class="p">(</span>
                 <span class="n">rec</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="p">,</span>
                 <span class="n">beat_format</span><span class="p">,</span>
                 <span class="n">keep_original</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="s2">&quot;rhythm&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_rhythm_ann</span><span class="p">(</span>
+            <span class="s2">"rhythm"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_rhythm_ann</span><span class="p">(</span>
                 <span class="n">rec</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="p">,</span>
@@ -627,10 +645,10 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
+        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"intervals"</span><span class="p">,</span> <span class="s2">"mask"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"intervals"</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load rhythm annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load rhythm annotations of the record.</span>
 
 <span class="sd">        Rhythm annotations are stored in the `aux_note` attribute</span>
 <span class="sd">        of corresponding annotation files.</span>
@@ -644,7 +662,7 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        rhythm_format : {&quot;intervals&quot;, &quot;mask&quot;}, default &quot;intervals&quot;</span>
+<span class="sd">        rhythm_format : {"intervals", "mask"}, default "intervals"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
@@ -657,23 +675,23 @@
 
 <span class="sd">        NOTE</span>
 <span class="sd">        ----</span>
-<span class="sd">        At head and tail of the record, segments named &quot;NOISE&quot; were added.</span>
+<span class="sd">        At head and tail of the record, segments named "NOISE" were added.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">assert</span> <span class="n">rhythm_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;rhythm_format must be &#39;intervals&#39; or &#39;mask&#39;, got </span><span class="si">{</span><span class="n">rhythm_format</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"intervals"</span><span class="p">,</span>
+            <span class="s2">"mask"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"rhythm_format must be 'intervals' or 'mask', got </span><span class="si">{</span><span class="n">rhythm_format</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span>
         <span class="n">sig_len</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="n">sig_len</span>
-        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">&quot;`sampto` should be greater than `sampfrom`!&quot;</span>
+        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">"`sampto` should be greater than `sampfrom`!"</span>
 
-        <span class="n">simplified_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">_ann.json&quot;</span>
+        <span class="n">simplified_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">_ann.json"</span>
         <span class="k">if</span> <span class="n">simplified_fp</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="n">ann</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">simplified_fp</span><span class="o">.</span><span class="n">read_text</span><span class="p">()))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -683,23 +701,23 @@
             <span class="n">critical_points</span> <span class="o">=</span> <span class="n">wfdb_ann</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">aux_note</span> <span class="o">=</span> <span class="n">wfdb_ann</span><span class="o">.</span><span class="n">aux_note</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">current_rhythm</span> <span class="o">=</span> <span class="s2">&quot;NOISE&quot;</span>
+            <span class="n">current_rhythm</span> <span class="o">=</span> <span class="s2">"NOISE"</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">rhythm</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">critical_points</span><span class="p">,</span> <span class="n">aux_note</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">rhythm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">ann</span><span class="p">[</span><span class="n">current_rhythm</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">idx</span><span class="p">])</span>
-                <span class="n">current_rhythm</span> <span class="o">=</span> <span class="n">rhythm</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">current_rhythm</span> <span class="o">=</span> <span class="n">rhythm</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"("</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="n">idx</span>
-            <span class="c1"># all but one end with &quot;&quot; (&quot;30&quot; ends with &quot;\x01 Aux&quot;)</span>
+            <span class="c1"># all but one end with "" ("30" ends with "\x01 Aux")</span>
             <span class="c1"># i.e. none ends with (start of) valid rhythm</span>
             <span class="n">ann</span><span class="p">[</span><span class="n">current_rhythm</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">critical_points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
-            <span class="n">ann</span><span class="p">[</span><span class="s2">&quot;NOISE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">critical_points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sig_len</span><span class="p">])</span>
+            <span class="n">ann</span><span class="p">[</span><span class="s2">"NOISE"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">critical_points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sig_len</span><span class="p">])</span>
 
             <span class="n">simplified_fp</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
         <span class="n">ann</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">generalized_intervals_intersection</span><span class="p">(</span><span class="n">l_itv</span><span class="p">,</span> <span class="p">[[</span><span class="n">sf</span><span class="p">,</span> <span class="n">st</span><span class="p">]])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l_itv</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="n">ann</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">l_itv</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l_itv</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l_itv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">rhythm_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mask&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rhythm_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"mask"</span><span class="p">:</span>
             <span class="n">tmp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
             <span class="n">ann</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">st</span> <span class="o">-</span> <span class="n">sf</span><span class="p">,),</span> <span class="n">fill_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rhythm_types_map</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">rhythm</span><span class="p">,</span> <span class="n">l_itv</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -719,10 +737,10 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;beat&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;beat&quot;</span><span class="p">,</span>
+        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"beat"</span><span class="p">,</span> <span class="s2">"dict"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"beat"</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">BeatAnn</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load beat annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load beat annotations of the record.</span>
 
 <span class="sd">        Beat annotations are stored in the `symbol` attribute</span>
 <span class="sd">        of corresponding annotation files.</span>
@@ -735,7 +753,7 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        beat_format : {&quot;beat&quot;, &quot;dict&quot;}, default &quot;beat&quot;</span>
+<span class="sd">        beat_format : {"beat", "dict"}, default "beat"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
@@ -745,21 +763,21 @@
 <span class="sd">        -------</span>
 <span class="sd">        ann : dict or list</span>
 <span class="sd">            Locations (indices) of the all the</span>
-<span class="sd">            beat types (&quot;A&quot;, &quot;N&quot;, &quot;Q&quot;, &quot;V&quot;).</span>
+<span class="sd">            beat types ("A", "N", "Q", "V").</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">assert</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;beat&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;dict&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;beat_format must be &#39;beat&#39; or &#39;dict&#39;, got </span><span class="si">{</span><span class="n">beat_format</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"beat"</span><span class="p">,</span>
+            <span class="s2">"dict"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"beat_format must be 'beat' or 'dict', got </span><span class="si">{</span><span class="n">beat_format</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span>
         <span class="n">sig_len</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="n">sig_len</span>
-        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">&quot;`sampto` should be greater than `sampfrom`!&quot;</span>
+        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">"`sampto` should be greater than `sampfrom`!"</span>
 
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span>
@@ -777,7 +795,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ann</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
 
-        <span class="k">if</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;beat&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"beat"</span><span class="p">:</span>
             <span class="n">ann</span> <span class="o">=</span> <span class="p">[</span><span class="n">BeatAnn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ann</span></div>
 
@@ -792,7 +810,7 @@
         <span class="n">use_manual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load rpeak indices of the record.</span>
+<span class="w">        </span><span class="sd">"""Load rpeak indices of the record.</span>
 
 <span class="sd">        Rpeak indices, or equivalently qrs complex locations,</span>
 <span class="sd">        are stored in the `symbol` attribute of corresponding annotation files,</span>
@@ -818,7 +836,7 @@
 <span class="sd">        rpeak_inds : numpy.ndarray</span>
 <span class="sd">            Locations (indices) of the all the rpeaks (qrs complexes).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">use_manual</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manual_ann_ext</span>
@@ -852,7 +870,7 @@
         <span class="n">same_range</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Plot the signals of a record or external signals (units in μV),</span>
 <span class="sd">        with metadata (fs, labels, tranche, etc.),</span>
 <span class="sd">        possibly also along with wave delineations.</span>
@@ -863,7 +881,7 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        data : numpy.ndarray, optional</span>
 <span class="sd">            (2-lead) ECG signal to plot,</span>
-<span class="sd">            should be of the format &quot;channel_first&quot;,</span>
+<span class="sd">            should be of the format "channel_first",</span>
 <span class="sd">            and compatible with `leads`.</span>
 <span class="sd">            If is not None, data of `rec` will not be used.</span>
 <span class="sd">            This is useful when plotting filtered data.</span>
@@ -897,14 +915,14 @@
 <span class="sd">        kwargs : dict, optional</span>
 <span class="sd">            Additional arguments to be passed to `matplotlib.pyplot.plot`, etc.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">"plt"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
             <span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="o">.</span><span class="n">MAXTICKS</span> <span class="o">=</span> <span class="mi">3000</span>
-        <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">leads</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">leads</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
             <span class="n">_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_leads</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">leads</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">_leads</span> <span class="o">=</span> <span class="p">[</span><span class="n">leads</span><span class="p">]</span>
@@ -919,13 +937,13 @@
                 <span class="n">leads</span><span class="o">=</span><span class="n">_leads</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
-                <span class="n">data_format</span><span class="o">=</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;μV&quot;</span><span class="p">,</span>
+                <span class="n">data_format</span><span class="o">=</span><span class="s2">"channel_first"</span><span class="p">,</span>
+                <span class="n">units</span><span class="o">=</span><span class="s2">"μV"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_infer_units</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input data is auto detected to have units in </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mv&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"input data is auto detected to have units in </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"mv"</span><span class="p">:</span>
                 <span class="n">_data</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
@@ -935,7 +953,7 @@
                 <span class="n">rec</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
-                <span class="n">rhythm_format</span><span class="o">=</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
+                <span class="n">rhythm_format</span><span class="o">=</span><span class="s2">"intervals"</span><span class="p">,</span>
                 <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -956,7 +974,7 @@
         <span class="k">if</span> <span class="n">beat_ann</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_beat_ann</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_beat_ann</span><span class="p">(</span>
                 <span class="n">rec</span><span class="p">,</span>
-                <span class="n">beat_format</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span>
+                <span class="n">beat_format</span><span class="o">=</span><span class="s2">"dict"</span><span class="p">,</span>
                 <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
                 <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
                 <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -989,19 +1007,19 @@
             <span class="k">if</span> <span class="n">nb_leads</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_leads</span><span class="p">):</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">secs</span><span class="p">,</span> <span class="n">seg_data</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;lead - </span><span class="si">{</span><span class="n">_leads</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">secs</span><span class="p">,</span> <span class="n">seg_data</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"lead - </span><span class="si">{</span><span class="n">_leads</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">)</span>
                 <span class="c1"># NOTE that `Locator` has default `MAXTICKS` equal to 1000</span>
                 <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
-                    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">"major"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">ticks_granularity</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.04</span><span class="p">))</span>
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-                    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">"minor"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l_itv</span> <span class="ow">in</span> <span class="n">seg_ann</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"N"</span><span class="p">,</span> <span class="s2">"NOISE"</span><span class="p">]:</span>
                         <span class="k">continue</span>
                     <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">l_itv</span><span class="p">:</span>
                         <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span>
@@ -1015,18 +1033,18 @@
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span>
                         <span class="n">ri</span> <span class="o">-</span> <span class="mf">0.01</span><span class="p">,</span>
                         <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span>
-                        <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="s2">&quot;qrs&quot;</span><span class="p">],</span>
+                        <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="s2">"qrs"</span><span class="p">],</span>
                         <span class="n">alpha</span><span class="o">=</span><span class="n">rpeaks_plot_alpha</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l_t</span> <span class="ow">in</span> <span class="n">seg_beat_ann</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">l_t</span><span class="p">:</span>
                         <span class="n">x_pos</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="k">if</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">&lt;</span> <span class="n">secs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">t</span> <span class="o">-</span> <span class="mf">0.15</span>
-                        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="mf">0.65</span> <span class="o">*</span> <span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+                        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="mf">0.65</span> <span class="o">*</span> <span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">secs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">secs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_ranges</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
-                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Voltage [μV]&quot;</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Time [s]"</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Voltage [μV]"</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
@@ -1064,8 +1082,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1099,7 +1117,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

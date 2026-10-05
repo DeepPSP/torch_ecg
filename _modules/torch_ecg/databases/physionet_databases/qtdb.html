@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/qtdb';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -394,17 +413,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeatAnn</span><span class="p">,</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">PhysioNetDataBase</span><span class="p">,</span> <span class="n">WFDB_Beat_Annotations</span><span class="p">,</span> <span class="n">WFDB_Non_Beat_Annotations</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;QTDB&quot;</span><span class="p">,</span>
+    <span class="s2">"QTDB"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_QTDB_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    QT Database</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. The QT Database includes ECGs which were chosen to represent a wide variety of QRS and ST-T morphologies</span>
-<span class="s2">    2. Recordings were chosen chosen from the MIT-BIH Arrhythmia Database (MITDB), the European Society of Cardiology ST-T Database (EDB), and several other ECG databases collected at Boston&#39;s Beth Israel Deaconess Medical Center (MIT-BIH ST Change Database, MIT-BIH Supraventricular Arrhythmia Database, MIT-BIH Normal Sinus Rhythm Database, MIT-BIH Long-Term ECG Database, &quot;sudden death&quot; patients from BIH)</span>
+<span class="s2">    2. Recordings were chosen chosen from the MIT-BIH Arrhythmia Database (MITDB), the European Society of Cardiology ST-T Database (EDB), and several other ECG databases collected at Boston's Beth Israel Deaconess Medical Center (MIT-BIH ST Change Database, MIT-BIH Supraventricular Arrhythmia Database, MIT-BIH Normal Sinus Rhythm Database, MIT-BIH Long-Term ECG Database, "sudden death" patients from BIH)</span>
 <span class="s2">    3. Contains 105 fifteen-minute two-lead ECG recordings</span>
 <span class="s2">    4. Contains onset, peak, and end markers for P, QRS, T, and (where present) U waves of from 30 to 50 selected beats in each recording</span>
 <span class="s2">    5. Annotation file table:</span>
@@ -442,35 +461,35 @@
 <span class="s2">        +--------+------------------------------------------------------+</span>
 
 <span class="s2">    6. A part of the recordings have rhythm annotations, ST change (elevation or depression) annotations, all of which have .atr annotation files. These annotations are provided in the `aux_note` attribute of the annotation object.</span>
-<span class="s2">    7. In the first pass manual wave delineation annotation files (.qt1, .qt2 files), fiducial points were marked by a &quot;|&quot; symbol, along with beat annotations (one of &quot;A&quot;, &quot;B&quot;, &quot;N&quot;, &quot;Q&quot;, &quot;V&quot;) inherited from corresponding .man files.</span>
-<span class="s2">    8. In the second pass manual wave delineation annotation files (.q1c, .q2c files), the final manual annotations are recorded, with the regular annotation symbols &quot;(&quot; ,&quot;)&quot;, &quot;t&quot;, &quot;p&quot;, and &quot;u&quot;, and with annotations inherited from the .qt1, .qt2 files.</span>
+<span class="s2">    7. In the first pass manual wave delineation annotation files (.qt1, .qt2 files), fiducial points were marked by a "|" symbol, along with beat annotations (one of "A", "B", "N", "Q", "V") inherited from corresponding .man files.</span>
+<span class="s2">    8. In the second pass manual wave delineation annotation files (.q1c, .q2c files), the final manual annotations are recorded, with the regular annotation symbols "(" ,")", "t", "p", and "u", and with annotations inherited from the .qt1, .qt2 files.</span>
 <span class="s2">    9. The .pu0, .pu1 files contain the automatic waveform onsets and ends in signals 0 and 1 respectively, as detected using the differentiated threshold method by ecgpuwave. In the num fields of the pu* annotations, ecgpuwave classifies the T waves as normal (0), inverted (1), only upwards (2), only downwards (3), biphasic negative-positive (4), or biphasic positive-negative (5). Waveform onset (and offset) annotations specify the waveform type in their num fields (0 for a P-wave, 1 for a QRS complex, 2 for a T wave, or 3 for a U-wave).</span>
 <span class="s2">    10. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;ECG wave delineation&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ST segment&quot;</span><span class="p">,</span>
+        <span class="s2">"ECG wave delineation"</span><span class="p">,</span>
+        <span class="s2">"ST segment"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;https://physionet.org/content/qtdb/1.0.0/&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Laguna P, Mark RG, Goldberger AL, Moody GB. A Database for Evaluation of Algorithms for Measurement of QT and Other Waveform Intervals in the ECG. Computers in Cardiology 24:673-676 (1997).&quot;</span><span class="p">,</span>
+        <span class="s2">"https://physionet.org/content/qtdb/1.0.0/"</span><span class="p">,</span>
+        <span class="s2">"Laguna P, Mark RG, Goldberger AL, Moody GB. A Database for Evaluation of Algorithms for Measurement of QT and Other Waveform Intervals in the ECG. Computers in Cardiology 24:673-676 (1997)."</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">issues</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">issues</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. According to the paper of the database, there should be .ari files containing QRS annotations obtained automatically by ARISTOTLE, which however are not available in the database.</span>
 <span class="s2">    2. A large proportion of the wave delineation annotations lack onset indices (the T waves and U waves).</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;10.1109/cic.1997.648140&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.13026/C24K53&quot;</span><span class="p">,</span>
+        <span class="s2">"10.1109/cic.1997.648140"</span><span class="p">,</span>
+        <span class="s2">"10.13026/C24K53"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="QTDB">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_QTDB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_QTDB_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">QTDB</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -483,9 +502,9 @@
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;QTDB&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"QTDB"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -495,7 +514,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;qtdb&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"qtdb"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
@@ -503,11 +522,11 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">250</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">"dat"</span>
 
         <span class="c1"># fmt: off</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;atr&quot;</span><span class="p">,</span> <span class="s2">&quot;man&quot;</span><span class="p">,</span> <span class="s2">&quot;q1c&quot;</span><span class="p">,</span> <span class="s2">&quot;q2c&quot;</span><span class="p">,</span> <span class="s2">&quot;qt1&quot;</span><span class="p">,</span> <span class="s2">&quot;qt2&quot;</span><span class="p">,</span> <span class="s2">&quot;pu&quot;</span><span class="p">,</span> <span class="s2">&quot;pu0&quot;</span><span class="p">,</span> <span class="s2">&quot;pu1&quot;</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"atr"</span><span class="p">,</span> <span class="s2">"man"</span><span class="p">,</span> <span class="s2">"q1c"</span><span class="p">,</span> <span class="s2">"q2c"</span><span class="p">,</span> <span class="s2">"qt1"</span><span class="p">,</span> <span class="s2">"qt2"</span><span class="p">,</span> <span class="s2">"pu"</span><span class="p">,</span> <span class="s2">"pu0"</span><span class="p">,</span> <span class="s2">"pu1"</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        1. .atr:    reference beat annotations from original database (not available in all cases)</span>
 <span class="sd">        2. .man:    reference beat annotations for selected beats only</span>
 <span class="sd">        3. .q1c:    manually determined waveform boundary measurements for selected beats (annotator 1 only -- second pass)</span>
@@ -517,19 +536,19 @@
 <span class="sd">        7. .pu:     automatically determined waveform boundary measurements for all beats (based on both signals)</span>
 <span class="sd">        8. .pu0:    automatically determined waveform boundary measurements for all beats (based on signal 0 only)</span>
 <span class="sd">        9. .pu1:    automatically determined waveform boundary measurements for all beats (based on signal 1 only)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># records have different lead names</span>
         <span class="c1"># therefore, self.all_leads should not be set</span>
         <span class="c1"># otherwise, it will cause problems when loading data using `self.load_data`</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_leads</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;CC5&quot;</span><span class="p">,</span> <span class="s2">&quot;CM2&quot;</span><span class="p">,</span> <span class="s2">&quot;CM4&quot;</span><span class="p">,</span> <span class="s2">&quot;CM5&quot;</span><span class="p">,</span> <span class="s2">&quot;D3&quot;</span><span class="p">,</span> <span class="s2">&quot;D4&quot;</span><span class="p">,</span> <span class="s2">&quot;ECG1&quot;</span><span class="p">,</span> <span class="s2">&quot;ECG2&quot;</span><span class="p">,</span> <span class="s2">&quot;ML5&quot;</span><span class="p">,</span> <span class="s2">&quot;MLII&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;V1-V2&quot;</span><span class="p">,</span> <span class="s2">&quot;V2&quot;</span><span class="p">,</span> <span class="s2">&quot;V2-V3&quot;</span><span class="p">,</span> <span class="s2">&quot;V3&quot;</span><span class="p">,</span> <span class="s2">&quot;V4&quot;</span><span class="p">,</span> <span class="s2">&quot;V4-V5&quot;</span><span class="p">,</span> <span class="s2">&quot;V5&quot;</span><span class="p">,</span> <span class="s2">&quot;mod.V1&quot;</span><span class="p">,</span>
+            <span class="s2">"CC5"</span><span class="p">,</span> <span class="s2">"CM2"</span><span class="p">,</span> <span class="s2">"CM4"</span><span class="p">,</span> <span class="s2">"CM5"</span><span class="p">,</span> <span class="s2">"D3"</span><span class="p">,</span> <span class="s2">"D4"</span><span class="p">,</span> <span class="s2">"ECG1"</span><span class="p">,</span> <span class="s2">"ECG2"</span><span class="p">,</span> <span class="s2">"ML5"</span><span class="p">,</span> <span class="s2">"MLII"</span><span class="p">,</span>
+            <span class="s2">"V1"</span><span class="p">,</span> <span class="s2">"V1-V2"</span><span class="p">,</span> <span class="s2">"V2"</span><span class="p">,</span> <span class="s2">"V2-V3"</span><span class="p">,</span> <span class="s2">"V3"</span><span class="p">,</span> <span class="s2">"V4"</span><span class="p">,</span> <span class="s2">"V4-V5"</span><span class="p">,</span> <span class="s2">"V5"</span><span class="p">,</span> <span class="s2">"mod.V1"</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_annotations</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_annotations</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"("</span><span class="p">,</span> <span class="s2">")"</span><span class="p">,</span> <span class="s2">"N"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">]</span>
         <span class="c1"># fmt: on</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_extended</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;~&quot;+/AFJNQRSTVaefjs|&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_extended</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s2">"""~"+/AFJNQRSTVaefjs|"""</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nonbeat_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_extended</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">WFDB_Non_Beat_Annotations</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beat_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_extended</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">WFDB_Beat_Annotations</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beat_types</span><span class="p">)}</span>
@@ -542,7 +561,7 @@
 <div class="viewcode-block" id="QTDB.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -554,14 +573,14 @@
 <span class="sd">        int</span>
 <span class="sd">            Subject ID associated with the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="QTDB.get_lead_names">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB.get_lead_names">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lead_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the lead names of the record.</span>
+<span class="w">        </span><span class="sd">"""Get the lead names of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -573,7 +592,7 @@
 <span class="sd">        List[str]</span>
 <span class="sd">            List of the lead names of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">)))</span><span class="o">.</span><span class="n">sig_name</span></div>
 
 
@@ -586,9 +605,9 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">ignore_beat_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;q1c&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q1c"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the wave delineation annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load the wave delineation annotations of the record.</span>
 
 <span class="sd">        The wave delineation annotations are returned</span>
 <span class="sd">        in the form of list of :class:`ECGWaveForm`.</span>
@@ -605,8 +624,8 @@
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
 <span class="sd">            otherwise subtract `sampfrom` if specified.</span>
 <span class="sd">        ignore_beat_types : bool, default True</span>
-<span class="sd">            If True, the beat types will be ignored (all converted to &quot;N&quot;).</span>
-<span class="sd">        extension : str, default &quot;q1c&quot;</span>
+<span class="sd">            If True, the beat types will be ignored (all converted to "N").</span>
+<span class="sd">        extension : str, default "q1c"</span>
 <span class="sd">            Extension of the wave delineation file to use.</span>
 
 <span class="sd">        Returns</span>
@@ -614,20 +633,20 @@
 <span class="sd">        wave_list : List[ECGWaveForm]</span>
 <span class="sd">            The list of wave delineation in the form of :class:`ECGWaveForm`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;q1c&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;q2c&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;pu1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;pu2&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="s2">&quot;extension should be one of `q1c`, `q2c`, `pu1`, `pu2`&quot;</span>
+            <span class="s2">"q1c"</span><span class="p">,</span>
+            <span class="s2">"q2c"</span><span class="p">,</span>
+            <span class="s2">"pu1"</span><span class="p">,</span>
+            <span class="s2">"pu2"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="s2">"extension should be one of `q1c`, `q2c`, `pu1`, `pu2`"</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
         <span class="n">sig_len</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="n">sig_len</span>
-        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">&quot;`sampto` should be greater than `sampfrom`!&quot;</span>
+        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">"`sampto` should be greater than `sampfrom`!"</span>
 
         <span class="n">subtraction</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">keep_original</span> <span class="k">else</span> <span class="n">sf</span>
 
@@ -640,9 +659,9 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">st</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="k">if</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">"("</span><span class="p">:</span>
                 <span class="n">current_onset</span> <span class="o">=</span> <span class="n">idx</span>
-            <span class="k">elif</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">")"</span><span class="p">:</span>
                 <span class="n">wave_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">ECGWaveForm</span><span class="p">(</span>
                         <span class="n">onset</span><span class="o">=</span><span class="p">(</span><span class="n">current_onset</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span> <span class="o">-</span> <span class="n">subtraction</span><span class="p">,</span>
@@ -656,8 +675,8 @@
                 <span class="n">current_wave_name</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">current_wave_peak</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ignore_beat_types</span> <span class="ow">and</span> <span class="n">symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">]:</span>
-                    <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;N&quot;</span>
+                <span class="k">if</span> <span class="n">ignore_beat_types</span> <span class="ow">and</span> <span class="n">symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"p"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">]:</span>
+                    <span class="n">symbol</span> <span class="o">=</span> <span class="s2">"N"</span>
                 <span class="n">current_wave_name</span> <span class="o">=</span> <span class="n">symbol</span>
                 <span class="n">current_wave_peak</span> <span class="o">=</span> <span class="n">idx</span>
 
@@ -674,9 +693,9 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">ignore_beat_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;q1c&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q1c"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of self.load_ann&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""alias of self.load_ann"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span>
             <span class="n">rec</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
@@ -694,11 +713,11 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+        <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
         <span class="n">class_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;q1c&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q1c"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the wave delineation in the form of masks.</span>
+<span class="w">        </span><span class="sd">"""Load the wave delineation in the form of masks.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -708,14 +727,14 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        mask_format : str, default &quot;channel_first&quot;</span>
+<span class="sd">        mask_format : str, default "channel_first"</span>
 <span class="sd">            Format of the mask,</span>
-<span class="sd">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">            &quot;channel_first&quot; (alias &quot;lead_first&quot;).</span>
+<span class="sd">            "channel_last" (alias "lead_last"), or</span>
+<span class="sd">            "channel_first" (alias "lead_first").</span>
 <span class="sd">        class_map : dict, optional</span>
 <span class="sd">            A custom class map.</span>
 <span class="sd">            If is None, `self.class_map` will be used.</span>
-<span class="sd">        extension : str, default &quot;q1c&quot;</span>
+<span class="sd">        extension : str, default "q1c"</span>
 <span class="sd">            Extension of the wave delineation file to use.</span>
 
 <span class="sd">        Returns</span>
@@ -724,10 +743,10 @@
 <span class="sd">            The masks corresponding to the wave delineation annotations</span>
 <span class="sd">            of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;A large proportion of the wave delineation annotations lack onset indices. &quot;</span>
-            <span class="s2">&quot;Has to find a rule to give default onset index for the missing ones.&quot;</span>
+            <span class="s2">"A large proportion of the wave delineation annotations lack onset indices. "</span>
+            <span class="s2">"Has to find a rule to give default onset index for the missing ones."</span>
         <span class="p">)</span></div>
 
 
@@ -738,12 +757,12 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;intervals&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intervals&quot;</span><span class="p">,</span>
+        <span class="n">rhythm_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"intervals"</span><span class="p">,</span> <span class="s2">"mask"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"intervals"</span><span class="p">,</span>
         <span class="n">rhythm_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;atr&quot;</span><span class="p">,</span> <span class="s2">&quot;man&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;atr&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"atr"</span><span class="p">,</span> <span class="s2">"man"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"atr"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load rhythm annotations of a record.</span>
+<span class="w">        </span><span class="sd">"""Load rhythm annotations of a record.</span>
 
 <span class="sd">        Rhythm annotations are stored in the `aux_note` attribute</span>
 <span class="sd">        of corresponding annotation files.</span>
@@ -756,7 +775,7 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        rhythm_format : {&quot;intervals&quot;, &quot;mask&quot;}, default &quot;intervals&quot;</span>
+<span class="sd">        rhythm_format : {"intervals", "mask"}, default "intervals"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        rhythm_types : List[str], optional</span>
 <span class="sd">            The rhythm types to be loaded, defaults to `self.rhythm_types`.</span>
@@ -765,17 +784,17 @@
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
 <span class="sd">            otherwise subtract `sampfrom` if specified.</span>
-<span class="sd">        extension : str, default &quot;atr&quot;</span>
+<span class="sd">        extension : str, default "atr"</span>
 <span class="sd">            Extension of the annotation file to use.</span>
-<span class="sd">            Has to be &quot;atr&quot;, since &quot;man&quot; files has no rhythm annotation.</span>
+<span class="sd">            Has to be "atr", since "man" files has no rhythm annotation.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ann, dict or ndarray,</span>
 <span class="sd">            the annotations in the format of intervals, or in the format of mask</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only a small part of the recordings have rhythm annotations, &quot;</span> <span class="s2">&quot;hence not implemented yet&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Only a small part of the recordings have rhythm annotations, "</span> <span class="s2">"hence not implemented yet"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="QTDB.load_beat_ann">
@@ -785,12 +804,12 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;beat&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;beat&quot;</span><span class="p">,</span>
+        <span class="n">beat_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"beat"</span><span class="p">,</span> <span class="s2">"dict"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"beat"</span><span class="p">,</span>
         <span class="n">beat_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;atr&quot;</span><span class="p">,</span> <span class="s2">&quot;man&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;atr&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"atr"</span><span class="p">,</span> <span class="s2">"man"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"atr"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">BeatAnn</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load beat annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load beat annotations of the record.</span>
 
 <span class="sd">        Beat annotations are stored in the `symbol` attribute</span>
 <span class="sd">        of corresponding annotation files.</span>
@@ -803,7 +822,7 @@
 <span class="sd">            Start index of the annotations to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the annotations to be loaded.</span>
-<span class="sd">        beat_format : {&quot;beat&quot;, &quot;dict&quot;}, default &quot;beat&quot;</span>
+<span class="sd">        beat_format : {"beat", "dict"}, default "beat"</span>
 <span class="sd">            Format of returned annotation, case insensitive.</span>
 <span class="sd">        beat_types : List[str], optional</span>
 <span class="sd">            The beat types to be loaded, defaults to `self.beat_types`.</span>
@@ -812,7 +831,7 @@
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
 <span class="sd">            otherwise subtract `sampfrom` if specified.</span>
-<span class="sd">        extension : {&quot;atr&quot;, &quot;man&quot;}, default &quot;atr&quot;</span>
+<span class="sd">        extension : {"atr", "man"}, default "atr"</span>
 <span class="sd">            Extension of the annotation file, case insensitive.</span>
 
 <span class="sd">        Returns</span>
@@ -820,18 +839,18 @@
 <span class="sd">        beat_ann : dict or list</span>
 <span class="sd">            Locations (indices) of the the given beat types.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;beat&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;dict&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`beat_format` must be one of [&#39;beat&#39;, &#39;dict&#39;], but got `</span><span class="si">{</span><span class="n">beat_format</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="s2">"beat"</span><span class="p">,</span>
+            <span class="s2">"dict"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"`beat_format` must be one of ['beat', 'dict'], but got `</span><span class="si">{</span><span class="n">beat_format</span><span class="si">}</span><span class="s2">`"</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
         <span class="n">sig_len</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="n">sig_len</span>
-        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">&quot;`sampto` should be greater than `sampfrom`!&quot;</span>
+        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">"`sampto` should be greater than `sampfrom`!"</span>
         <span class="n">subs</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">keep_original</span> <span class="k">else</span> <span class="n">sf</span>
 
         <span class="n">sample_inds</span> <span class="o">=</span> <span class="n">wfdb_ann</span><span class="o">.</span><span class="n">sample</span>
@@ -844,7 +863,7 @@
             <span class="n">BeatAnn</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">subs</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sample_inds</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wfdb_ann</span><span class="o">.</span><span class="n">symbol</span><span class="p">)[</span><span class="n">indices</span><span class="p">])</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">beat_types</span>
         <span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;dict&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">beat_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"dict"</span><span class="p">:</span>
             <span class="n">beat_ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">beat_ann</span> <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">beat_types_extended</span><span class="p">}</span>
             <span class="n">beat_ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">beat_ann</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
 
@@ -859,9 +878,9 @@
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;atr&quot;</span><span class="p">,</span> <span class="s2">&quot;man&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;atr&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"atr"</span><span class="p">,</span> <span class="s2">"man"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"atr"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load rpeak indices of the record.</span>
+<span class="w">        </span><span class="sd">"""Load rpeak indices of the record.</span>
 
 <span class="sd">        Rpeak indices, or equivalently qrs complex locations,</span>
 <span class="sd">        which are stored in the `symbol` attribute of corresponding annotation files,</span>
@@ -878,7 +897,7 @@
 <span class="sd">        keep_original : bool, default False</span>
 <span class="sd">            If True, indices will keep the same with the annotation file,</span>
 <span class="sd">            otherwise subtract `sampfrom` if specified.</span>
-<span class="sd">        extension : {&quot;atr&quot;, &quot;man&quot;}, default &quot;atr&quot;</span>
+<span class="sd">        extension : {"atr", "man"}, default "atr"</span>
 <span class="sd">            Extension of the annotation file, case insensitive.</span>
 
 <span class="sd">        Returns</span>
@@ -886,25 +905,25 @@
 <span class="sd">        rpeak_inds : numpy.ndarray</span>
 <span class="sd">            Locations (indices) of the all the rpeaks (qrs complexes).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;atr&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;man&quot;</span><span class="p">,</span>
-        <span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;`extension` must be one of [&#39;atr&#39;, &#39;man&#39;], but got `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">`&quot;</span>
+            <span class="s2">"atr"</span><span class="p">,</span>
+            <span class="s2">"man"</span><span class="p">,</span>
+        <span class="p">],</span> <span class="sa">f</span><span class="s2">"`extension` must be one of ['atr', 'man'], but got `</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">`"</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">rec_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">rec_fp</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">another_extension</span> <span class="o">=</span> <span class="s2">&quot;man&quot;</span> <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;atr&quot;</span> <span class="k">else</span> <span class="s2">&quot;atr&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rec_fp</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">another_extension</span> <span class="o">=</span> <span class="s2">"man"</span> <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">"atr"</span> <span class="k">else</span> <span class="s2">"atr"</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;annotation file `</span><span class="si">{</span><span class="n">rec_fp</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` does not exist, &quot;</span> <span class="sa">f</span><span class="s2">&quot;try setting `extension = </span><span class="se">\042</span><span class="si">{</span><span class="n">another_extension</span><span class="si">}</span><span class="se">\042</span><span class="s2">`&quot;</span>
+                <span class="sa">f</span><span class="s2">"annotation file `</span><span class="si">{</span><span class="n">rec_fp</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` does not exist, "</span> <span class="sa">f</span><span class="s2">"try setting `extension = </span><span class="se">\042</span><span class="si">{</span><span class="n">another_extension</span><span class="si">}</span><span class="se">\042</span><span class="s2">`"</span>
             <span class="p">)</span>
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_fp</span><span class="p">),</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_fp</span><span class="p">))</span>
         <span class="n">sig_len</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="n">sampfrom</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">sampto</span> <span class="ow">or</span> <span class="n">sig_len</span>
-        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">&quot;`sampto` should be greater than `sampfrom`!&quot;</span>
+        <span class="k">assert</span> <span class="n">st</span> <span class="o">&gt;</span> <span class="n">sf</span><span class="p">,</span> <span class="s2">"`sampto` should be greater than `sampfrom`!"</span>
 
         <span class="n">rpeak_inds</span> <span class="o">=</span> <span class="n">wfdb_ann</span><span class="o">.</span><span class="n">sample</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">rpeak_inds</span> <span class="o">&gt;=</span> <span class="n">sf</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">rpeak_inds</span> <span class="o">&lt;</span> <span class="n">st</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">wfdb_ann</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beat_types</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
@@ -930,7 +949,7 @@
         <span class="n">rpeak_inds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Plot the signals of a record or external signals (units in μV),</span>
 <span class="sd">        with metadata (fs, labels, tranche, etc.),</span>
 <span class="sd">        possibly also along with wave delineations.</span>
@@ -975,10 +994,10 @@
 
 <span class="sd">        Contributors: Jeethan, and WEN Hao</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">"plt"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
             <span class="n">plt</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="o">.</span><span class="n">MAXTICKS</span> <span class="o">=</span> <span class="mi">3000</span>
@@ -1020,8 +1039,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1055,7 +1074,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/apnea_ecg';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -383,7 +402,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -396,51 +414,51 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">PhysioNetDataBase</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;ApneaECG&quot;</span><span class="p">,</span>
+    <span class="s2">"ApneaECG"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_ApneaECG_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    Apnea-ECG Database - The PhysioNet Computing in Cardiology Challenge 2000</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. consist of 70 single lead ECG records, divided into a learning set of 35 records (a01 through a20, b01 through b05, and c01 through c10), and a test set of 35 records (x01 through x35)</span>
 <span class="s2">    2. recordings vary in length from slightly less than 7 hours to nearly 10 hours (401 - 578 min) each</span>
 <span class="s2">    3. control group (c01 through c10): records having fewer than 5 min of disorder breathing</span>
 <span class="s2">    4. borderline group (b01 through b05): records having 10-96 min of disorder breathing</span>
 <span class="s2">    5. apnea group (a01 through a20): records having 100 min or more of disorder breathing</span>
 <span class="s2">    6. .dat files contain the digitized ECGs, and respiration signals, all with frequency 100 Hz</span>
-<span class="s2">    7. .apn files are (binary) annotation files (only for the learning set), containing an annotation for each minute of each recording indicating the presence or absence of apnea at that time. labels are in the member &quot;symbol&quot;, &quot;N&quot; for normal, &quot;A&quot; for apnea</span>
+<span class="s2">    7. .apn files are (binary) annotation files (only for the learning set), containing an annotation for each minute of each recording indicating the presence or absence of apnea at that time. labels are in the member "symbol", "N" for normal, "A" for apnea</span>
 <span class="s2">    8. .qrs files are machine-generated (binary) annotation files, unaudited and containing errors, provided for the convenience of those who do not wish to use their own QRS detectors</span>
 <span class="s2">    9. c05 and c06 come from the same original recording (c05 begins 80 seconds later than c06). c06 may have been a corrected version of c05</span>
 <span class="s2">    10. eight records (a01 through a04, b01, and c01 through c03) that include respiration signals have several additional files each:</span>
 
-<span class="s2">        - </span><span class="se">\\</span><span class="s2">*r.dat files contains respiration signals correspondingly, with 4 channels: &quot;Resp C&quot;, &quot;Resp A&quot;, &quot;Resp N&quot;, &quot;SpO2&quot;</span>
+<span class="s2">        - </span><span class="se">\\</span><span class="s2">*r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"</span>
 <span class="s2">        - </span><span class="se">\\</span><span class="s2">*er.</span><span class="se">\\</span><span class="s2">* files only contain annotations</span>
 <span class="s2">        - annotations for the respiration signals are identical to the corresponding ECG signals</span>
 
 <span class="s2">    11. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;Sleep apnea analysis&quot;</span><span class="p">,</span>
+        <span class="s2">"Sleep apnea analysis"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;https://physionet.org/content/apnea-ecg/&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258&quot;</span><span class="p">,</span>
+        <span class="s2">"https://physionet.org/content/apnea-ecg/"</span><span class="p">,</span>
+        <span class="s2">"T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;10.1109/cic.2000.898505&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.13026/C23W2R&quot;</span><span class="p">,</span>
+        <span class="s2">"10.1109/cic.2000.898505"</span><span class="p">,</span>
+        <span class="s2">"10.13026/C23W2R"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="ApneaECG">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_ApneaECG_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_ApneaECG_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ApneaECG</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -453,9 +471,9 @@
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ApneaECG&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"ApneaECG"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -465,17 +483,17 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;apnea-ecg&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"apnea-ecg"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">&quot;dat&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_pattern</span> <span class="o">=</span> <span class="s2">&quot;^[abcx]</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="s2">$&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">&quot;apn&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">qrs_ann_ext</span> <span class="o">=</span> <span class="s2">&quot;qrs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_ext</span> <span class="o">=</span> <span class="s2">"dat"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_pattern</span> <span class="o">=</span> <span class="s2">"^[abcx]</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="s2">$"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">"apn"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qrs_ann_ext</span> <span class="o">=</span> <span class="s2">"qrs"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span> <span class="o">=</span> <span class="kc">None</span>
@@ -488,19 +506,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sleep_event_keys</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;event_name&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;event_start&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;event_end&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;event_duration&quot;</span><span class="p">,</span>
+            <span class="s2">"event_name"</span><span class="p">,</span>
+            <span class="s2">"event_start"</span><span class="p">,</span>
+            <span class="s2">"event_end"</span><span class="p">,</span>
+            <span class="s2">"event_duration"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;Obstructive Apnea&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+            <span class="s2">"Obstructive Apnea"</span><span class="p">:</span> <span class="s2">"yellow"</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="w">        </span><span class="sd">"""Find all records in the database directory</span>
 <span class="sd">        and store them (path, metadata, etc.) in some private attributes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">subsample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># so that no subsampling in super()._ls_rec()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
@@ -510,14 +528,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[abcx]</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="s2">r$&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">"^[abcx]</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="s2">r$"</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">ecg_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_pattern</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">subsample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
                 <span class="nb">len</span><span class="p">(</span><span class="n">ecg_records</span><span class="p">),</span>
                 <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ecg_records</span><span class="p">)</span> <span class="o">*</span> <span class="n">subsample</span><span class="p">))),</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subsample `</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">` records from `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ecg_records</span><span class="p">)</span><span class="si">}</span><span class="s2">` `ecg_records`&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"subsample `</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">` records from `</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ecg_records</span><span class="p">)</span><span class="si">}</span><span class="s2">` `ecg_records`"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">ecg_records</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span><span class="p">)]</span>
             <span class="k">del</span> <span class="n">ecg_records</span>
@@ -526,12 +544,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="o">=</span> <span class="n">subsample</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">rsp_channels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Resp C&quot;</span><span class="p">,</span> <span class="s2">&quot;Resp A&quot;</span><span class="p">,</span> <span class="s2">&quot;Resp N&quot;</span><span class="p">,</span> <span class="s2">&quot;SpO2&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="k">if</span> <span class="s2">&quot;x&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="k">if</span> <span class="s2">&quot;x&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">control_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">&quot;c&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">borderline_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">apnea_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">&quot;a&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rsp_channels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Resp C"</span><span class="p">,</span> <span class="s2">"Resp A"</span><span class="p">,</span> <span class="s2">"Resp N"</span><span class="p">,</span> <span class="s2">"SpO2"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="k">if</span> <span class="s2">"x"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span> <span class="k">if</span> <span class="s2">"x"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">"c"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">borderline_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">"b"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apnea_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_set</span> <span class="k">if</span> <span class="s2">"a"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ecg_records</span><span class="p">)</span>
@@ -541,18 +559,18 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ecg_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The list of ECG records in the database.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The list of ECG records in the database."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecg_records</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rsp_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The list of respiration records in the database.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The list of respiration records in the database."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rsp_records</span>
 
 <div class="viewcode-block" id="ApneaECG.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -564,19 +582,19 @@
 <span class="sd">        int</span>
 <span class="sd">            Subject ID associated with the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="n">stoi</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">}</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span> <span class="o">+</span> <span class="n">stoi</span><span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span></div>
+        <span class="n">stoi</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">:</span> <span class="s2">"2"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">:</span> <span class="s2">"3"</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">:</span> <span class="s2">"4"</span><span class="p">}</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="s2">"2000"</span> <span class="o">+</span> <span class="n">stoi</span><span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ApneaECG.load_data">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG.load_data">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
         <span class="n">PhysioNetDataBase</span><span class="o">.</span><span class="n">load_data</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;ECG data&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ECG data or respiration data&quot;</span><span class="p">,</span>
+            <span class="s2">"ECG data"</span><span class="p">,</span>
+            <span class="s2">"ECG data or respiration data"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span>
@@ -585,11 +603,11 @@
         <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">leads</span><span class="p">,</span> <span class="n">sampfrom</span><span class="p">,</span> <span class="n">sampto</span><span class="p">,</span> <span class="n">data_format</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">return_fs</span><span class="p">)</span></div>
 
 
@@ -601,15 +619,15 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ecg_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` is not a record of ECG signals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` is not a record of ECG signals"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
             <span class="n">rec</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
@@ -625,8 +643,8 @@
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG.load_rsp_data">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
         <span class="n">PhysioNetDataBase</span><span class="o">.</span><span class="n">load_data</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;ECG data&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;respiration data&quot;</span><span class="p">,</span>
+            <span class="s2">"ECG data"</span><span class="p">,</span>
+            <span class="s2">"respiration data"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_rsp_data</span><span class="p">(</span>
@@ -635,13 +653,13 @@
         <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">rec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsp_records</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` is not a record of RSP signals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` is not a record of RSP signals"</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
             <span class="n">rec</span><span class="p">,</span>
             <span class="n">leads</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
@@ -663,7 +681,7 @@
         <span class="n">ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -678,11 +696,11 @@
 <span class="sd">        detailed_ann : list</span>
 <span class="sd">            List of annotations of the form ``[idx, ann]``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann_path</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extension&quot;</span><span class="p">,</span> <span class="s2">&quot;apn&quot;</span><span class="p">)</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"extension"</span><span class="p">,</span> <span class="s2">"apn"</span><span class="p">)</span>
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
         <span class="n">detailed_ann</span> <span class="o">=</span> <span class="p">[[</span><span class="n">si</span> <span class="o">//</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="mi">60</span><span class="p">),</span> <span class="n">sy</span><span class="p">]</span> <span class="k">for</span> <span class="n">si</span><span class="p">,</span> <span class="n">sy</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wfdb_ann</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">wfdb_ann</span><span class="o">.</span><span class="n">symbol</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">detailed_ann</span></div>
@@ -691,7 +709,7 @@
 <div class="viewcode-block" id="ApneaECG.load_apnea_event">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG.load_apnea_event">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_apnea_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotations of apnea events of the record.</span>
+<span class="w">        </span><span class="sd">"""Load annotations of apnea events of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -705,14 +723,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        df_apnea_ann : pandas.DataFrame</span>
 <span class="sd">            Apnea annotations with columns</span>
-<span class="sd">            &quot;event_start&quot;, &quot;event_end&quot;, &quot;event_name&quot;, &quot;event_duration&quot;</span>
+<span class="sd">            "event_start", "event_end", "event_name", "event_duration"</span>
 <span class="sd">            (ref. `self.sleep_event_keys`).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="n">detailed_anno</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_path</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;apn&quot;</span><span class="p">)</span>
-        <span class="n">apnea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">detailed_anno</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
+        <span class="n">detailed_anno</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_path</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">"apn"</span><span class="p">)</span>
+        <span class="n">apnea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">detailed_anno</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"A"</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">apnea</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">apnea_endpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">apnea</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
@@ -735,9 +753,9 @@
         <span class="n">apnea_periods</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">60</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">apnea_periods</span><span class="p">])</span>  <span class="c1"># minutes to seconds</span>
         <span class="n">apnea_periods</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">apnea_periods</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">apnea_periods</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
 
-        <span class="n">df_apnea_ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">apnea_periods</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;event_start&quot;</span><span class="p">,</span> <span class="s2">&quot;event_end&quot;</span><span class="p">])</span>
-        <span class="n">df_apnea_ann</span><span class="p">[</span><span class="s2">&quot;event_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Obstructive Apnea&quot;</span>
-        <span class="n">df_apnea_ann</span><span class="p">[</span><span class="s2">&quot;event_duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_apnea_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;event_end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;event_start&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">df_apnea_ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">apnea_periods</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"event_start"</span><span class="p">,</span> <span class="s2">"event_end"</span><span class="p">])</span>
+        <span class="n">df_apnea_ann</span><span class="p">[</span><span class="s2">"event_name"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Obstructive Apnea"</span>
+        <span class="n">df_apnea_ann</span><span class="p">[</span><span class="s2">"event_duration"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_apnea_ann</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">"event_end"</span><span class="p">]</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s2">"event_start"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">df_apnea_ann</span> <span class="o">=</span> <span class="n">df_apnea_ann</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_event_keys</span><span class="p">]</span>
 
@@ -747,7 +765,7 @@
 <div class="viewcode-block" id="ApneaECG.plot_ann">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG.plot_ann">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">ann_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Plot annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -761,26 +779,26 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">df_apnea_ann</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_apnea_event</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">ann_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_ann</span><span class="p">(</span><span class="n">df_apnea_ann</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_apnea_ann</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal function to plot annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Internal function to plot annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        df_apnea_ann : DataFrame,</span>
 <span class="sd">            Apnea events with columns</span>
-<span class="sd">            &quot;event_start&quot;, &quot;event_end&quot;, &quot;event_name&quot;, &quot;event_duration&quot;</span>
+<span class="sd">            "event_start", "event_end", "event_name", "event_duration"</span>
 <span class="sd">            (ref. `self.sleep_event_keys` or :meth:`load_apnea_event`).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpatches</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -789,14 +807,14 @@
         <span class="n">plot_alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_apnea_ann</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span>
-                <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;event_start&quot;</span><span class="p">]),</span>
-                <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;event_end&quot;</span><span class="p">]),</span>
-                <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;event_name&quot;</span><span class="p">]],</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"event_start"</span><span class="p">]),</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"event_end"</span><span class="p">]),</span>
+                <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"event_name"</span><span class="p">]],</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="n">plot_alpha</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">patches</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">keys</span><span class="p">()],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>  <span class="c1"># keep ordering</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">patches</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">keys</span><span class="p">()],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"best"</span><span class="p">)</span>  <span class="c1"># keep ordering</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">database_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataBaseInfo</span><span class="p">:</span>
@@ -831,8 +849,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -866,7 +884,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

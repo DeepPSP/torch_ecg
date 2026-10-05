@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/databases/physionet_databases/cinc2018';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -383,7 +402,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -398,15 +416,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataBaseInfo</span><span class="p">,</span> <span class="n">PhysioNetDataBase</span><span class="p">,</span> <span class="n">PSGDataBaseMixin</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;CINC2018&quot;</span><span class="p">,</span>
+    <span class="s2">"CINC2018"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">_CINC2018_INFO</span> <span class="o">=</span> <span class="n">DataBaseInfo</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    You Snooze You Win - The PhysioNet Computing in Cardiology Challenge 2018</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">about</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    """</span><span class="p">,</span>
+    <span class="n">about</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    1. includes 1,985 subjects, partitioned into balanced training (n = 994), and test sets (n = 989)</span>
 <span class="s2">    2. signals include</span>
 
@@ -448,26 +466,26 @@
 <span class="s2">        partial airway obstructions</span>
 
 <span class="s2">    7. Webpage of the database on PhysioNet [1]_.</span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    """</span><span class="p">,</span>
     <span class="n">usage</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;sleep stage&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sleep apnea&quot;</span><span class="p">,</span>
+        <span class="s2">"sleep stage"</span><span class="p">,</span>
+        <span class="s2">"sleep apnea"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">references</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;https://physionet.org/content/challenge-2018/&quot;</span><span class="p">,</span>
+        <span class="s2">"https://physionet.org/content/challenge-2018/"</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">doi</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;10.22489/CinC.2018.049&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;10.13026/6phb-r450&quot;</span><span class="p">,</span>
+        <span class="s2">"10.22489/CinC.2018.049"</span><span class="p">,</span>
+        <span class="s2">"10.13026/6phb-r450"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="CINC2018">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CINC2018_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">)</span>
+<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_CINC2018_INFO</span><span class="o">.</span><span class="n">format_database_docstring</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"prepend"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CINC2018</span><span class="p">(</span><span class="n">PhysioNetDataBase</span><span class="p">,</span> <span class="n">PSGDataBaseMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db_dir : `path-like`, optional</span>
@@ -479,12 +497,12 @@
 <span class="sd">        Level of logging verbosity.</span>
 <span class="sd">    kwargs : dict, optional</span>
 <span class="sd">        Auxilliary key word arguments, including:</span>
-<span class="sd">        - `subset` : {&quot;training&quot;, &quot;test&quot;}, default &quot;training&quot;.</span>
+<span class="sd">        - `subset` : {"training", "test"}, default "training".</span>
 <span class="sd">          The subset of the database to use.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CINC2018&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"CINC2018"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -494,28 +512,28 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;challenge-2018&quot;</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="s2">"challenge-2018"</span><span class="p">,</span>
             <span class="n">db_dir</span><span class="o">=</span><span class="n">db_dir</span><span class="p">,</span>
             <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">200</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subset&quot;</span><span class="p">,</span> <span class="s2">&quot;training&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span> <span class="o">=</span> <span class="s2">&quot;mat&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">&quot;arousal&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"subset"</span><span class="p">,</span> <span class="s2">"training"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rec_ext</span> <span class="o">=</span> <span class="s2">"mat"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span> <span class="o">=</span> <span class="s2">"arousal"</span>
 
         <span class="c1"># fmt: off</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_stage_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="s2">&quot;N3&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_stage_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"W"</span><span class="p">,</span> <span class="s2">"R"</span><span class="p">,</span> <span class="s2">"N1"</span><span class="p">,</span> <span class="s2">"N2"</span><span class="p">,</span> <span class="s2">"N3"</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arousal_types</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;arousal_bruxism&quot;</span><span class="p">,</span> <span class="s2">&quot;arousal_noise&quot;</span><span class="p">,</span> <span class="s2">&quot;arousal_plm&quot;</span><span class="p">,</span> <span class="s2">&quot;arousal_rera&quot;</span><span class="p">,</span> <span class="s2">&quot;arousal_snore&quot;</span><span class="p">,</span> <span class="s2">&quot;arousal_spontaneous&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;resp_centralapnea&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_cheynestokesbreath&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_hypopnea&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_hypoventilation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;resp_mixedapnea&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_obstructiveapnea&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_partialobstructive&quot;</span><span class="p">,</span>
+            <span class="s2">"arousal_bruxism"</span><span class="p">,</span> <span class="s2">"arousal_noise"</span><span class="p">,</span> <span class="s2">"arousal_plm"</span><span class="p">,</span> <span class="s2">"arousal_rera"</span><span class="p">,</span> <span class="s2">"arousal_snore"</span><span class="p">,</span> <span class="s2">"arousal_spontaneous"</span><span class="p">,</span>
+            <span class="s2">"resp_centralapnea"</span><span class="p">,</span> <span class="s2">"resp_cheynestokesbreath"</span><span class="p">,</span> <span class="s2">"resp_hypopnea"</span><span class="p">,</span> <span class="s2">"resp_hypoventilation"</span><span class="p">,</span>
+            <span class="s2">"resp_mixedapnea"</span><span class="p">,</span> <span class="s2">"resp_obstructiveapnea"</span><span class="p">,</span> <span class="s2">"resp_partialobstructive"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="c1"># fmt: on</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">training_rec_pattern</span> <span class="o">=</span> <span class="s2">&quot;^tr</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d</span><span class="si">{4}</span><span class="s2">.mat$&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_rec_pattern</span> <span class="o">=</span> <span class="s2">&quot;^te</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d</span><span class="si">{4}</span><span class="s2">.mat$&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_rec_pattern</span> <span class="o">=</span> <span class="s2">"^tr</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d</span><span class="si">{4}</span><span class="s2">.mat$"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_rec_pattern</span> <span class="o">=</span> <span class="s2">"^te</span><span class="se">\\</span><span class="s2">d</span><span class="si">{2}</span><span class="se">\\</span><span class="s2">-</span><span class="se">\\</span><span class="s2">d</span><span class="si">{4}</span><span class="s2">.mat$"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">training_records</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_records</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="p">[]</span>
@@ -523,41 +541,41 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ls_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all records in the database directory</span>
+<span class="w">        </span><span class="sd">"""Find all records in the database directory</span>
 <span class="sd">        and store them (path, metadata, etc.) in some private attributes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="n">records</span> <span class="o">=</span> <span class="n">get_record_list_recursive3</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span>
-            <span class="p">{</span><span class="s2">&quot;training&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_rec_pattern</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_rec_pattern</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"training"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_rec_pattern</span><span class="p">,</span> <span class="s2">"test"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_rec_pattern</span><span class="p">},</span>
             <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
-            <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-            <span class="n">df_tmp</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"path"</span><span class="p">])</span>
+            <span class="n">df_tmp</span><span class="p">[</span><span class="s2">"subset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">,</span> <span class="n">df_tmp</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subject_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;record&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subject_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;record&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subject_id"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"record"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subject_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"record"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;siglen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;available_signals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"fs"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"siglen"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"available_signals"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">iterrows</span><span class="p">(),</span>
             <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">),</span>
             <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading metadata&quot;</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">"Loading metadata"</span><span class="p">,</span>
             <span class="n">disable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
-                <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">fs</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;siglen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;available_signals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_name</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdheader</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"path"</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">"fs"</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">fs</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">"siglen"</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_len</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s2">"available_signals"</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">sig_name</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subset"</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subsample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -568,7 +586,7 @@
                         <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
                             <span class="p">[</span>
                                 <span class="n">df_tmp</span><span class="p">,</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subset"</span><span class="p">]</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
                                     <span class="n">size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SEED</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span>
                                 <span class="p">),</span>
                             <span class="p">],</span>
@@ -593,13 +611,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SEED</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;training&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">&quot;subset&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subset"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"training"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="p">[</span><span class="s2">"subset"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CINC2018.get_subject_id">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.get_subject_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subject_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a unique subject ID for the record.</span>
+<span class="w">        </span><span class="sd">"""Attach a unique subject ID for the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -611,8 +629,8 @@
 <span class="sd">        int</span>
 <span class="sd">            Subject ID associated with the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;2018&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="s2">"2018"</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">tail</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
         <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">tail</span><span class="p">)</span>
@@ -622,12 +640,12 @@
 <div class="viewcode-block" id="CINC2018.set_subset">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.set_subset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the subset of the database to use.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the subset of the database to use."""</span>
         <span class="k">assert</span> <span class="n">subset</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;training&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="s2">"training"</span><span class="p">,</span>
+            <span class="s2">"test"</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">,</span>
-        <span class="p">],</span> <span class="s2">&quot;&quot;&quot;`subset` must be in ``[&quot;training&quot;, &quot;test&quot;, None]``.&quot;&quot;&quot;</span>
+        <span class="p">],</span> <span class="s2">"""`subset` must be in ``["training", "test", None]``."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_subset</span> <span class="o">=</span> <span class="n">subset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span></div>
 
@@ -635,7 +653,7 @@
 <div class="viewcode-block" id="CINC2018.get_available_signals">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.get_available_signals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_available_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the available signals of the record.</span>
+<span class="w">        </span><span class="sd">"""Get the available signals of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -647,16 +665,16 @@
 <span class="sd">        signals : List[str]</span>
 <span class="sd">            Names of available signal of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;available_signals&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"available_signals"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.get_fs">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.get_fs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_fs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the sampling frequency of the record.</span>
+<span class="w">        </span><span class="sd">"""Get the sampling frequency of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -668,16 +686,16 @@
 <span class="sd">        fs : int</span>
 <span class="sd">            Sampling frequency of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"fs"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.get_siglen">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.get_siglen">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_siglen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the length of the signal of the record.</span>
+<span class="w">        </span><span class="sd">"""Get the length of the signal of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -689,10 +707,10 @@
 <span class="sd">        siglen : int</span>
 <span class="sd">            Length of the signal of the record.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">&quot;siglen&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_records</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">rec</span><span class="p">,</span> <span class="s2">"siglen"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.load_psg_data">
@@ -703,12 +721,12 @@
         <span class="n">channel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
         <span class="n">physical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load PSG data of the record.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Load PSG data of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -721,16 +739,16 @@
 <span class="sd">            Start index of the data to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the data to be loaded.</span>
-<span class="sd">        data_format: str, default &quot;channel_first&quot;.</span>
+<span class="sd">        data_format: str, default "channel_first".</span>
 <span class="sd">            Format of the ECG data,</span>
-<span class="sd">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">            &quot;channel_first&quot; (alias &quot;lead_first&quot;), or</span>
-<span class="sd">            &quot;flat&quot; (alias &quot;plain&quot;) which is valid</span>
+<span class="sd">            "channel_last" (alias "lead_last"), or</span>
+<span class="sd">            "channel_first" (alias "lead_first"), or</span>
+<span class="sd">            "flat" (alias "plain") which is valid</span>
 <span class="sd">            only when only one `channel` is passed.</span>
 <span class="sd">        physical : bool, default True</span>
 <span class="sd">            If True, the data will be converted to physical units,</span>
 <span class="sd">            otherwise, the data will be in digital units.</span>
-<span class="sd">        fs : numbers.Real, optional</span>
+<span class="sd">        fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            If not None, the loaded data will be resampled to this frequency,</span>
 <span class="sd">            otherwise, the original sampling frequency will be used.</span>
@@ -741,37 +759,37 @@
 <span class="sd">        -------</span>
 <span class="sd">        data : numpy.ndarray</span>
 <span class="sd">            PSG data corr. to the given `channel` of the record.</span>
-<span class="sd">        data_fs : numbers.Real, optional</span>
+<span class="sd">        data_fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">available_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_signals</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
         <span class="n">chn</span> <span class="o">=</span> <span class="n">available_signals</span> <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">channel</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chn</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">chn</span> <span class="o">=</span> <span class="p">[</span><span class="n">chn</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">chn</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">available_signals</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">&quot;`channel` should be one of `</span><span class="si">{</span><span class="n">available_signals</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">chn</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">chn</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">available_signals</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">"`channel` should be one of `</span><span class="si">{</span><span class="n">available_signals</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">chn</span><span class="si">}</span><span class="s2">`"</span>
 
         <span class="n">allowed_data_format</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;flat&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;plain&quot;</span><span class="p">,</span>
+            <span class="s2">"channel_first"</span><span class="p">,</span>
+            <span class="s2">"lead_first"</span><span class="p">,</span>
+            <span class="s2">"channel_last"</span><span class="p">,</span>
+            <span class="s2">"lead_last"</span><span class="p">,</span>
+            <span class="s2">"flat"</span><span class="p">,</span>
+            <span class="s2">"plain"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">allowed_data_format</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`data_format` should be one of `</span><span class="si">{</span><span class="n">allowed_data_format</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"`data_format` should be one of `</span><span class="si">{</span><span class="n">allowed_data_format</span><span class="si">}</span><span class="s2">`, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`"</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;channel_last&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;lead_last&quot;</span><span class="p">,</span>
+                <span class="s2">"channel_first"</span><span class="p">,</span>
+                <span class="s2">"lead_first"</span><span class="p">,</span>
+                <span class="s2">"channel_last"</span><span class="p">,</span>
+                <span class="s2">"lead_last"</span><span class="p">,</span>
             <span class="p">],</span> <span class="p">(</span>
-                <span class="s2">&quot;`data_format` should be one of &quot;</span>
-                <span class="s2">&quot;`[&#39;channel_first&#39;, &#39;lead_first&#39;, &#39;channel_last&#39;, &#39;lead_last&#39;]` &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;when the passed number of `channel` is larger than 1, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`&quot;</span>
+                <span class="s2">"`data_format` should be one of "</span>
+                <span class="s2">"`['channel_first', 'lead_first', 'channel_last', 'lead_last']` "</span>
+                <span class="sa">f</span><span class="s2">"when the passed number of `channel` is larger than 1, but got `</span><span class="si">{</span><span class="n">data_format</span><span class="si">}</span><span class="s2">`"</span>
             <span class="p">)</span>
 
         <span class="n">frp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
@@ -788,9 +806,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data_fs</span> <span class="o">=</span> <span class="n">wfdb_header</span><span class="o">.</span><span class="n">fs</span>
 
-        <span class="k">if</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_last&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_last&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_last"</span><span class="p">,</span> <span class="s2">"lead_last"</span><span class="p">]:</span>
             <span class="n">ret_data</span> <span class="o">=</span> <span class="n">ret_data</span><span class="o">.</span><span class="n">T</span>
-        <span class="k">elif</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">data_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"flat"</span><span class="p">,</span> <span class="s2">"plain"</span><span class="p">]:</span>
             <span class="n">ret_data</span> <span class="o">=</span> <span class="n">ret_data</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">return_fs</span><span class="p">:</span>
@@ -805,12 +823,12 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load ECG data of the record.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Load ECG data of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -818,20 +836,20 @@
 <span class="sd">            Record name or index of the record in :attr:`all_records`.</span>
 <span class="sd">        leads : str or int or Sequence[str] or Sequence[int], optional</span>
 <span class="sd">            The leads of the ECG data to load.</span>
-<span class="sd">            None or &quot;all&quot; for all leads.</span>
+<span class="sd">            None or "all" for all leads.</span>
 <span class="sd">        sampfrom : int, optional</span>
 <span class="sd">            Start index of the data to be loaded.</span>
 <span class="sd">        sampto : int, optional</span>
 <span class="sd">            End index of the data to be loaded.</span>
-<span class="sd">        data_format : str, default &quot;channel_first&quot;</span>
+<span class="sd">        data_format : str, default "channel_first"</span>
 <span class="sd">            Format of the ECG data,</span>
-<span class="sd">            &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">            &quot;channel_first&quot; (alias &quot;lead_first&quot;), or</span>
-<span class="sd">            &quot;flat&quot; (alias &quot;plain&quot;) which is valid only when `leads` is a single lead</span>
-<span class="sd">        units : str or None, default &quot;mV&quot;</span>
-<span class="sd">            Units of the output signal, can also be &quot;μV&quot; (aliases &quot;uV&quot;, &quot;muV&quot;).</span>
+<span class="sd">            "channel_last" (alias "lead_last"), or</span>
+<span class="sd">            "channel_first" (alias "lead_first"), or</span>
+<span class="sd">            "flat" (alias "plain") which is valid only when `leads` is a single lead</span>
+<span class="sd">        units : str or None, default "mV"</span>
+<span class="sd">            Units of the output signal, can also be "μV" (aliases "uV", "muV").</span>
 <span class="sd">            None for digital data, without digital-to-physical conversion.</span>
-<span class="sd">        fs : numbers.Real, optional</span>
+<span class="sd">        fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            If not None, the loaded data will be resampled to this frequency,</span>
 <span class="sd">            otherwise, the original sampling frequency will be used.</span>
@@ -843,20 +861,20 @@
 <span class="sd">        data : numpy.ndarray</span>
 <span class="sd">            The ECG data loaded from the record,</span>
 <span class="sd">            with given `units` and `data_format`.</span>
-<span class="sd">        data_fs : numbers.Real, optional</span>
+<span class="sd">        data_fs : int, optional</span>
 <span class="sd">            Sampling frequency of the output signal.</span>
 <span class="sd">            Returned if `return_fs` is True.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">available_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_signals</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;ECG&quot;</span> <span class="ow">in</span> <span class="n">available_signals</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;the record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have ECG signal&quot;</span>
-        <span class="n">allowed_units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;μv&quot;</span><span class="p">,</span> <span class="s2">&quot;muv&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s2">"ECG"</span> <span class="ow">in</span> <span class="n">available_signals</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"the record `</span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">` does not have ECG signal"</span>
+        <span class="n">allowed_units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mv"</span><span class="p">,</span> <span class="s2">"uv"</span><span class="p">,</span> <span class="s2">"μv"</span><span class="p">,</span> <span class="s2">"muv"</span><span class="p">]</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">allowed_units</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;`units` should be one of `</span><span class="si">{</span><span class="n">allowed_units</span><span class="si">}</span><span class="s2">` or None, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`&quot;</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">"`units` should be one of `</span><span class="si">{</span><span class="n">allowed_units</span><span class="si">}</span><span class="s2">` or None, but got `</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">`"</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">data_fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_psg_data</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
-            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;ECG&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">"ECG"</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
             <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
             <span class="n">data_format</span><span class="o">=</span><span class="n">data_format</span><span class="p">,</span>
@@ -864,7 +882,7 @@
             <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
             <span class="n">return_fs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;μv&quot;</span><span class="p">,</span> <span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;muv&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"μv"</span><span class="p">,</span> <span class="s2">"uv"</span><span class="p">,</span> <span class="s2">"muv"</span><span class="p">]:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">data</span>
 
         <span class="k">if</span> <span class="n">return_fs</span><span class="p">:</span>
@@ -880,12 +898,12 @@
         <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">sampfrom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;mV&quot;</span><span class="p">,</span>
-        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mV"</span><span class="p">,</span>
+        <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_fs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Real</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;alias of `load_data`&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""alias of `load_data`"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
@@ -906,7 +924,7 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load sleep stage and arousal annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load sleep stage and arousal annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -923,12 +941,12 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            A dictionary with keys &quot;sleep_stages&quot; and &quot;arousals&quot;,</span>
+<span class="sd">            A dictionary with keys "sleep_stages" and "arousals",</span>
 <span class="sd">            each of which is a dictionary with keys of sleep stages and arousals,</span>
 <span class="sd">            and values of lists of lists of start and</span>
 <span class="sd">            end indices of the sleep stages and arousals.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">frp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_absolute_path</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span>
         <span class="n">wfdb_ann</span> <span class="o">=</span> <span class="n">wfdb</span><span class="o">.</span><span class="n">rdann</span><span class="p">(</span><span class="n">frp</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_ext</span><span class="p">)</span>
 
@@ -943,10 +961,10 @@
                 <span class="n">current_sleep_stage</span> <span class="o">=</span> <span class="n">aux_note</span>
                 <span class="n">current_sleep_stage_start</span> <span class="o">=</span> <span class="n">sample</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;(&quot;</span> <span class="ow">in</span> <span class="n">aux_note</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"("</span> <span class="ow">in</span> <span class="n">aux_note</span><span class="p">:</span>
                     <span class="n">current_arousal_start</span> <span class="o">=</span> <span class="n">sample</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">arousals</span><span class="p">[</span><span class="n">aux_note</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">current_arousal_start</span><span class="p">,</span> <span class="n">sample</span><span class="p">])</span>
+                    <span class="n">arousals</span><span class="p">[</span><span class="n">aux_note</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">")"</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">current_arousal_start</span><span class="p">,</span> <span class="n">sample</span><span class="p">])</span>
         <span class="n">siglen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_siglen</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">current_sleep_stage_start</span> <span class="o">&lt;</span> <span class="n">siglen</span><span class="p">:</span>
             <span class="n">sleep_stages</span><span class="p">[</span><span class="n">current_sleep_stage</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">current_sleep_stage_start</span><span class="p">,</span> <span class="n">siglen</span><span class="p">])</span>
@@ -965,8 +983,8 @@
             <span class="n">sleep_stages</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[[</span><span class="n">s</span> <span class="o">-</span> <span class="n">sampfrom</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">sampfrom</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sleep_stages</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
             <span class="n">arousals</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[[</span><span class="n">s</span> <span class="o">-</span> <span class="n">sampfrom</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">sampfrom</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">arousals</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;sleep_stages&quot;</span><span class="p">:</span> <span class="n">sleep_stages</span><span class="p">,</span>
-            <span class="s2">&quot;arousals&quot;</span><span class="p">:</span> <span class="n">arousals</span><span class="p">,</span>
+            <span class="s2">"sleep_stages"</span><span class="p">:</span> <span class="n">sleep_stages</span><span class="p">,</span>
+            <span class="s2">"arousals"</span><span class="p">:</span> <span class="n">arousals</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
@@ -979,7 +997,7 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load sleep stage annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load sleep stage annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1000,13 +1018,13 @@
 <span class="sd">            values of lists of lists of start and</span>
 <span class="sd">            end indices of the sleep stages.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
             <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
             <span class="n">keep_original</span><span class="o">=</span><span class="n">keep_original</span><span class="p">,</span>
-        <span class="p">)[</span><span class="s2">&quot;sleep_stages&quot;</span><span class="p">]</span></div>
+        <span class="p">)[</span><span class="s2">"sleep_stages"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.load_arousals_ann">
@@ -1018,7 +1036,7 @@
         <span class="n">sampto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load arousal annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Load arousal annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1039,26 +1057,26 @@
 <span class="sd">            values of lists of lists of start and</span>
 <span class="sd">            end indices of the arousals.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span>
             <span class="n">rec</span><span class="o">=</span><span class="n">rec</span><span class="p">,</span>
             <span class="n">sampfrom</span><span class="o">=</span><span class="n">sampfrom</span><span class="p">,</span>
             <span class="n">sampto</span><span class="o">=</span><span class="n">sampto</span><span class="p">,</span>
             <span class="n">keep_original</span><span class="o">=</span><span class="n">keep_original</span><span class="p">,</span>
-        <span class="p">)[</span><span class="s2">&quot;arousals&quot;</span><span class="p">]</span></div>
+        <span class="p">)[</span><span class="s2">"arousals"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.plot">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;NOT implemented yet.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""NOT implemented yet."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="CINC2018.plot_ann">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018.plot_ann">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_ann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the sleep stage and arousal annotations of the record.</span>
+<span class="w">        </span><span class="sd">"""Plot the sleep stage and arousal annotations of the record.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1076,10 +1094,10 @@
 <span class="sd">        ----</span>
 <span class="sd">        Plot arousals events.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ann</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-        <span class="n">sleep_stages</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s2">&quot;sleep_stages&quot;</span><span class="p">]</span>
-        <span class="n">arousals</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s2">&quot;arousals&quot;</span><span class="p">]</span>
+        <span class="n">sleep_stages</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s2">"sleep_stages"</span><span class="p">]</span>
+        <span class="n">arousals</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s2">"arousals"</span><span class="p">]</span>
         <span class="n">stage_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sleep_stage_intervals_to_mask</span><span class="p">(</span><span class="n">sleep_stages</span><span class="p">)</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_hypnogram</span><span class="p">(</span><span class="n">stage_mask</span><span class="p">)</span>
         <span class="c1"># TODO: plot arousals events</span>
@@ -1119,8 +1137,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1154,7 +1172,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

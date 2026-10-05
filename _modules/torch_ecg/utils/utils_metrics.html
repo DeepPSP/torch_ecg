@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/utils_metrics';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,15 +398,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.utils.utils_metrics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Utilities for computing metrics.</span>
+<span></span><span class="sd">"""Utilities for computing metrics.</span>
 
 <span class="sd">NOTE that only the widely used metrics are implemented here,</span>
 <span class="sd">challenge (e.g. CinC, CPSC series) specific metrics are not included.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">einops</span>
@@ -401,12 +419,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECGWaveForm</span><span class="p">,</span> <span class="n">ECGWaveFormNames</span><span class="p">,</span> <span class="n">masks_to_waveforms</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;top_n_accuracy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;confusion_matrix&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ovr_confusion_matrix&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;QRS_score&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;metrics_from_confusion_matrix&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;compute_wave_delineation_metrics&quot;</span><span class="p">,</span>
+    <span class="s2">"top_n_accuracy"</span><span class="p">,</span>
+    <span class="s2">"confusion_matrix"</span><span class="p">,</span>
+    <span class="s2">"ovr_confusion_matrix"</span><span class="p">,</span>
+    <span class="s2">"QRS_score"</span><span class="p">,</span>
+    <span class="s2">"metrics_from_confusion_matrix"</span><span class="p">,</span>
+    <span class="s2">"compute_wave_delineation_metrics"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -417,7 +435,7 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
     <span class="n">n</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute top n accuracy.</span>
+<span class="w">    </span><span class="sd">"""Compute top n accuracy.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -443,10 +461,10 @@
 <span class="sd">    &gt;&gt;&gt; top_n_accuracy(labels, outputs, 3)</span>
 <span class="sd">    0.32</span>
 <span class="sd">    &gt;&gt;&gt; top_n_accuracy(labels, outputs, [1,3,5])</span>
-<span class="sd">    {&#39;top_1_acc&#39;: 0.12, &#39;top_3_acc&#39;: 0.32, &#39;top_5_acc&#39;: 0.52}</span>
+<span class="sd">    {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;outputs and labels must have the same batch size&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"outputs and labels must have the same batch size"</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
     <span class="n">batch_size</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_dims</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -455,10 +473,10 @@
         <span class="n">ln</span> <span class="o">=</span> <span class="n">n</span>
     <span class="n">acc</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">_n</span> <span class="ow">in</span> <span class="n">ln</span><span class="p">:</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;top_</span><span class="si">{</span><span class="n">_n</span><span class="si">}</span><span class="s2">_acc&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"top_</span><span class="si">{</span><span class="n">_n</span><span class="si">}</span><span class="s2">_acc"</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">_n</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># of shape (batch_size, n) or (batch_size, n, d_1, ..., d_n)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;d_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">extra_dims</span><span class="p">))])</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;batch_size </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> -&gt; batch_size n </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"d_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">extra_dims</span><span class="p">))])</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"batch_size </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> -&gt; batch_size n </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">correct</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">indices</span> <span class="o">==</span> <span class="n">einops</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">_n</span><span class="p">))</span>
         <span class="n">acc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">correct</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">extra_dims</span><span class="p">:</span>
@@ -476,7 +494,7 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
     <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute a binary confusion matrix</span>
+<span class="w">    </span><span class="sd">"""Compute a binary confusion matrix</span>
 
 <span class="sd">    The columns are ground truth labels and rows are predicted labels.</span>
 
@@ -498,11 +516,11 @@
 <span class="sd">    cm : numpy.ndarray</span>
 <span class="sd">        Confusion matrix, of shape ``(n_classes, n_classes)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="s2">&quot;labels and outputs must have the same shape&quot;</span>
-    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">)]),</span> <span class="s2">&quot;labels must be binary&quot;</span>
-    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outputs</span><span class="p">)]),</span> <span class="s2">&quot;outputs must be binary&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="s2">"labels and outputs must have the same shape"</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">)]),</span> <span class="s2">"labels must be binary"</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outputs</span><span class="p">)]),</span> <span class="s2">"outputs must be binary"</span>
 
     <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
@@ -521,7 +539,7 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
     <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute binary one-vs-rest confusion matrices.</span>
+<span class="w">    </span><span class="sd">"""Compute binary one-vs-rest confusion matrices.</span>
 
 <span class="sd">    Columns are ground truth labels and rows are predicted labels.</span>
 
@@ -543,11 +561,11 @@
 <span class="sd">    ovr_cm : numpy.ndarray</span>
 <span class="sd">        One-vs-rest confusion matrix, of shape ``(n_classes, 2, 2)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="s2">&quot;labels and outputs must have the same shape&quot;</span>
-    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">)]),</span> <span class="s2">&quot;labels must be binary&quot;</span>
-    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outputs</span><span class="p">)]),</span> <span class="s2">&quot;outputs must be binary&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="s2">"labels and outputs must have the same shape"</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">)]),</span> <span class="s2">"labels must be binary"</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outputs</span><span class="p">)]),</span> <span class="s2">"outputs must be binary"</span>
 
     <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
@@ -570,7 +588,7 @@
 <span class="n">ovr_confusion_matrix</span> <span class="o">=</span> <span class="n">one_vs_rest_confusion_matrix</span>
 
 
-<span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">    Compute macro </span><span class="si">{metric}</span><span class="s2">, and </span><span class="si">{metrics}</span><span class="s2"> for each class.</span>
 
 <span class="s2">    Parameters</span>
@@ -596,14 +614,14 @@
 <span class="s2">        If is False, then NaN will be left in the result.</span>
 <span class="s2">        If is True, then NaN will be filled with 0.0.</span>
 <span class="s2">        If is a float, then NaN will be filled with the specified value.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 
 <div class="viewcode-block" id="metrics_from_confusion_matrix">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.metrics_from_confusion_matrix.html#torch_ecg.utils.metrics_from_confusion_matrix">[docs]</a>
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"metrics"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"metrics"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">metrics_from_confusion_matrix</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -613,7 +631,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    metrics : dict</span>
@@ -638,7 +656,7 @@
 <span class="sd">    &gt;&gt;&gt; # RuntimeWarning: `outputs` is probably binary or categorical, AUC may be incorrect</span>
 <span class="sd">    &gt;&gt;&gt; metrics = metrics_from_confusion_matrix(labels, outputs)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">outputs_ndim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
     <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -648,7 +666,7 @@
     <span class="n">bin_outputs</span><span class="p">[</span><span class="n">outputs</span> <span class="o">&gt;=</span> <span class="n">thr</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">bin_outputs</span><span class="p">[</span><span class="n">outputs</span> <span class="o">&lt;</span> <span class="n">thr</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`outputs` is probably binary or categorical, AUC may be incorrect&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"`outputs` is probably binary or categorical, AUC may be incorrect"</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 
     <span class="n">ovr_cm</span> <span class="o">=</span> <span class="n">ovr_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">bin_outputs</span><span class="p">)</span>
 
@@ -674,23 +692,23 @@
         <span class="k">if</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">sens</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sens</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+            <span class="n">sens</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">prec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">prec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+            <span class="n">prec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">spec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tn</span> <span class="o">/</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">spec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+            <span class="n">spec</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">npv</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tn</span> <span class="o">/</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">npv</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+            <span class="n">npv</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">jac</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">jac</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+            <span class="n">jac</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="n">acc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">tn</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_samples</span>
         <span class="n">phi</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tp</span> <span class="o">*</span> <span class="n">tn</span> <span class="o">-</span> <span class="n">fp</span> <span class="o">*</span> <span class="n">fn</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">))</span>
 
@@ -741,15 +759,15 @@
             <span class="k">if</span> <span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">fn</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
                 <span class="n">tpr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">fn</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">tpr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+                <span class="n">tpr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">tn</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
                 <span class="n">tnr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tn</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">tn</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">tnr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+                <span class="n">tnr_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
                 <span class="n">ppv_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">tp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">fp</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ppv_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+                <span class="n">ppv_</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
 
         <span class="c1"># Compute AUROC as the area under a piecewise linear function with TPR/</span>
         <span class="c1"># sensitivity (x-axis) and TNR/specificity (y-axis) and AUPRC as the area</span>
@@ -779,38 +797,38 @@
         <span class="n">_weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
     <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;sens&quot;</span><span class="p">,</span>  <span class="c1"># sensitivity, recall, hit rate, or true positive rate</span>
-        <span class="s2">&quot;spec&quot;</span><span class="p">,</span>  <span class="c1"># specificity, selectivity or true negative rate</span>
-        <span class="s2">&quot;prec&quot;</span><span class="p">,</span>  <span class="c1"># precision or positive predictive value</span>
-        <span class="s2">&quot;npv&quot;</span><span class="p">,</span>  <span class="c1"># negative predictive value</span>
-        <span class="s2">&quot;jac&quot;</span><span class="p">,</span>  <span class="c1"># jaccard index, threat score, or critical success index</span>
-        <span class="s2">&quot;acc&quot;</span><span class="p">,</span>  <span class="c1"># accuracy</span>
-        <span class="s2">&quot;phi&quot;</span><span class="p">,</span>  <span class="c1"># phi coefficient, or matthews correlation coefficient</span>
-        <span class="s2">&quot;fnr&quot;</span><span class="p">,</span>  <span class="c1"># false negative rate, miss rate</span>
-        <span class="s2">&quot;fpr&quot;</span><span class="p">,</span>  <span class="c1"># false positive rate, fall-out</span>
-        <span class="s2">&quot;fdr&quot;</span><span class="p">,</span>  <span class="c1"># false discovery rate</span>
-        <span class="s2">&quot;for_&quot;</span><span class="p">,</span>  <span class="c1"># false omission rate</span>
-        <span class="s2">&quot;plr&quot;</span><span class="p">,</span>  <span class="c1"># positive likelihood ratio</span>
-        <span class="s2">&quot;nlr&quot;</span><span class="p">,</span>  <span class="c1"># negative likelihood ratio</span>
-        <span class="s2">&quot;pt&quot;</span><span class="p">,</span>  <span class="c1"># prevalence threshold</span>
-        <span class="s2">&quot;ba&quot;</span><span class="p">,</span>  <span class="c1"># balanced accuracy</span>
-        <span class="s2">&quot;f1&quot;</span><span class="p">,</span>  <span class="c1"># f1-measure</span>
-        <span class="s2">&quot;fm&quot;</span><span class="p">,</span>  <span class="c1"># fowlkes-mallows index</span>
-        <span class="s2">&quot;bm&quot;</span><span class="p">,</span>  <span class="c1"># bookmaker informedness</span>
-        <span class="s2">&quot;mk&quot;</span><span class="p">,</span>  <span class="c1"># markedness</span>
-        <span class="s2">&quot;dor&quot;</span><span class="p">,</span>  <span class="c1"># diagnostic odds ratio</span>
-        <span class="s2">&quot;auroc&quot;</span><span class="p">,</span>  <span class="c1"># area under the receiver-operater characteristic curve (ROC AUC)</span>
-        <span class="s2">&quot;auprc&quot;</span><span class="p">,</span>  <span class="c1"># area under the precision-recall curve</span>
+        <span class="s2">"sens"</span><span class="p">,</span>  <span class="c1"># sensitivity, recall, hit rate, or true positive rate</span>
+        <span class="s2">"spec"</span><span class="p">,</span>  <span class="c1"># specificity, selectivity or true negative rate</span>
+        <span class="s2">"prec"</span><span class="p">,</span>  <span class="c1"># precision or positive predictive value</span>
+        <span class="s2">"npv"</span><span class="p">,</span>  <span class="c1"># negative predictive value</span>
+        <span class="s2">"jac"</span><span class="p">,</span>  <span class="c1"># jaccard index, threat score, or critical success index</span>
+        <span class="s2">"acc"</span><span class="p">,</span>  <span class="c1"># accuracy</span>
+        <span class="s2">"phi"</span><span class="p">,</span>  <span class="c1"># phi coefficient, or matthews correlation coefficient</span>
+        <span class="s2">"fnr"</span><span class="p">,</span>  <span class="c1"># false negative rate, miss rate</span>
+        <span class="s2">"fpr"</span><span class="p">,</span>  <span class="c1"># false positive rate, fall-out</span>
+        <span class="s2">"fdr"</span><span class="p">,</span>  <span class="c1"># false discovery rate</span>
+        <span class="s2">"for_"</span><span class="p">,</span>  <span class="c1"># false omission rate</span>
+        <span class="s2">"plr"</span><span class="p">,</span>  <span class="c1"># positive likelihood ratio</span>
+        <span class="s2">"nlr"</span><span class="p">,</span>  <span class="c1"># negative likelihood ratio</span>
+        <span class="s2">"pt"</span><span class="p">,</span>  <span class="c1"># prevalence threshold</span>
+        <span class="s2">"ba"</span><span class="p">,</span>  <span class="c1"># balanced accuracy</span>
+        <span class="s2">"f1"</span><span class="p">,</span>  <span class="c1"># f1-measure</span>
+        <span class="s2">"fm"</span><span class="p">,</span>  <span class="c1"># fowlkes-mallows index</span>
+        <span class="s2">"bm"</span><span class="p">,</span>  <span class="c1"># bookmaker informedness</span>
+        <span class="s2">"mk"</span><span class="p">,</span>  <span class="c1"># markedness</span>
+        <span class="s2">"dor"</span><span class="p">,</span>  <span class="c1"># diagnostic odds ratio</span>
+        <span class="s2">"auroc"</span><span class="p">,</span>  <span class="c1"># area under the receiver-operater characteristic curve (ROC AUC)</span>
+        <span class="s2">"auprc"</span><span class="p">,</span>  <span class="c1"># area under the precision-recall curve</span>
     <span class="p">]:</span>
-        <span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
         <span class="c1"># convert to Python float from numpy float if possible</span>
-        <span class="n">metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;macro_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">_weights</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">"macro_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">_weights</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">m</span><span class="p">)))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">fillna</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fillna</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="n">fillna</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">fillna</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;fillna must be in [0, 1]&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">fillna</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fillna must be in [0, 1]"</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="p">])]</span> <span class="o">=</span> <span class="n">fillna</span>
@@ -821,8 +839,8 @@
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;F1-measure&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;F1-measures&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"F1-measure"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"F1-measures"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">f_measure</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -832,7 +850,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_f1 : float</span>
@@ -840,15 +858,15 @@
 <span class="sd">    f1 : numpy.ndarray</span>
 <span class="sd">        F1-measures for each class, of shape: ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_f1&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_f1"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"f1"</span><span class="p">]</span>
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sensitivity&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;sensitivities&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"sensitivity"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"sensitivities"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sensitivity</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -858,7 +876,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_sens : float</span>
@@ -866,10 +884,10 @@
 <span class="sd">    sens : numpy.ndarray</span>
 <span class="sd">        Sensitivities for each class, of shape ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_sens&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;sens&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_sens"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"sens"</span><span class="p">]</span>
 
 
 <span class="c1"># aliases</span>
@@ -879,8 +897,8 @@
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;precisions&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"precision"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"precisions"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">precision</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -890,7 +908,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_prec : float</span>
@@ -898,10 +916,10 @@
 <span class="sd">    prec : numpy.ndarray</span>
 <span class="sd">        Precisions for each class, of shape ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_prec&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;prec&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_prec"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"prec"</span><span class="p">]</span>
 
 
 <span class="c1"># aliases</span>
@@ -909,8 +927,8 @@
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;specificity&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;specificities&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"specificity"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"specificities"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">specificity</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -920,7 +938,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_spec : float</span>
@@ -928,10 +946,10 @@
 <span class="sd">    spec : numpy.ndarray</span>
 <span class="sd">        Specificities for each class, of shape ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_spec&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;spec&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_spec"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"spec"</span><span class="p">]</span>
 
 
 <span class="c1"># aliases</span>
@@ -940,8 +958,8 @@
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;AUROC and macro AUPRC&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;AUPRCs, AUPRCs&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"AUROC and macro AUPRC"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"AUPRCs, AUPRCs"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">auc</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -951,7 +969,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_auroc : float</span>
@@ -963,17 +981,17 @@
 <span class="sd">    auprc : numpy.ndarray</span>
 <span class="sd">        AUPRCs for each class, of shape ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">outputs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;outputs must be of shape (n_samples, n_classes) to compute AUC&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"outputs must be of shape (n_samples, n_classes) to compute AUC"</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_auroc&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_auprc&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;auroc&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;auprc&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_auroc"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_auprc"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"auroc"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"auprc"</span><span class="p">]</span>
 
 
 <span class="nd">@add_docstring</span><span class="p">(</span>
-    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">&quot;accuracies&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
+    <span class="n">_METRICS_FROM_CONFUSION_MATRIX_PARAMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"accuracy"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="s2">"accuracies"</span><span class="p">),</span>
+    <span class="s2">"prepend"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span>
@@ -983,7 +1001,7 @@
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">fillna</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    macro_acc : float</span>
@@ -991,10 +1009,10 @@
 <span class="sd">    acc: numpy.ndarray,</span>
 <span class="sd">        Accuracies for each class, of shape ``(n_classes,)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">metrics_from_confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">thr</span><span class="p">,</span> <span class="n">fillna</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;macro_acc&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;acc&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">[</span><span class="s2">"macro_acc"</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">"acc"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="QRS_score">
@@ -1002,10 +1020,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">QRS_score</span><span class="p">(</span>
     <span class="n">rpeaks_truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
     <span class="n">rpeaks_preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.075</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    QRS accuracy score, proposed in CPSC2019.</span>
 
 <span class="sd">    Parameters</span>
@@ -1016,7 +1034,7 @@
 <span class="sd">    rpeaks_preds : array_like</span>
 <span class="sd">        predictions of ground truths of rpeaks locations (indices)</span>
 <span class="sd">        for multiple records.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int</span>
 <span class="sd">        Sampling frequency of ECG signal</span>
 <span class="sd">    thr : float, default 0.075</span>
 <span class="sd">        Threshold for a prediction to be truth positive,</span>
@@ -1027,10 +1045,10 @@
 <span class="sd">    rec_acc : float</span>
 <span class="sd">        Accuracy of predictions.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_truths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
         <span class="n">rpeaks_preds</span>
-    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;number of records does not match, truth indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_truths</span><span class="p">)</span><span class="si">}</span><span class="s2">, while pred indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_preds</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">"number of records does not match, truth indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_truths</span><span class="p">)</span><span class="si">}</span><span class="s2">, while pred indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_preds</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">n_records</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_truths</span><span class="p">)</span>
     <span class="n">record_flags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">rpeaks_truths</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">thr_</span> <span class="o">=</span> <span class="n">thr</span> <span class="o">*</span> <span class="n">fs</span>
@@ -1077,7 +1095,7 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
     <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert categorical (of shape ``(n_samples,)``) labels and outputs</span>
+<span class="w">    </span><span class="sd">"""Convert categorical (of shape ``(n_samples,)``) labels and outputs</span>
 <span class="sd">    to binary (of shape ``(n_samples, n_classes)``) labels and outputs if applicable.</span>
 
 <span class="sd">    Parameters</span>
@@ -1103,7 +1121,7 @@
 <span class="sd">    outputs: numpy.ndarray</span>
 <span class="sd">        Binary outputs of shape ``(n_samples, n_classes)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">):</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">):</span>
@@ -1114,7 +1132,7 @@
             <span class="n">num_classes</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">outputs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">num_classes</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">num_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;num_classes is required if both labels and outputs are categorical&quot;</span>
+    <span class="k">assert</span> <span class="n">num_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"num_classes is required if both labels and outputs are categorical"</span>
 
     <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">num_classes</span><span class="p">)</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">_one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
@@ -1124,7 +1142,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_one_hot_pair</span><span class="p">(</span><span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert categorical array to binary array.</span>
+<span class="w">    </span><span class="sd">"""Convert categorical array to binary array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1140,7 +1158,7 @@
 <span class="sd">    numpy.ndarray</span>
 <span class="sd">        Binarized array of `cls_array` of shape ``(n_samples, n_classes)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cls_array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cls_array</span>
     <span class="n">bin_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
@@ -1155,8 +1173,8 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
     <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias of `one_hot_pair`.&quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`cls_to_bin` is deprecated, use `one_hot_pair` instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Alias of `one_hot_pair`."""</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"`cls_to_bin` is deprecated, use `one_hot_pair` instead"</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">one_hot_pair</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
 
 
@@ -1166,11 +1184,11 @@
     <span class="n">truth_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span>
     <span class="n">pred_masks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NDArray</span><span class="p">],</span>
     <span class="n">class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
-    <span class="n">tol</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"channel_first"</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    Compute metrics for the task of ECG wave delineation</span>
 <span class="s2">    (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)</span>
 <span class="s2">    for multiple evaluations.</span>
@@ -1188,15 +1206,15 @@
 <span class="s2">        of the same shapes.</span>
 <span class="s2">    class_map : dict</span>
 <span class="s2">        Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
-<span class="s2">        the keys should contain </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ECGWaveFormNames</span><span class="p">])</span><span class="si">}</span><span class="s2">.</span>
-<span class="s2">    fs : numbers.Real</span>
+<span class="s2">        the keys should contain </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">"'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ECGWaveFormNames</span><span class="p">])</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">    fs : int</span>
 <span class="s2">        Sampling frequency of the signal corresponding to the masks,</span>
 <span class="s2">        used to compute the duration of each waveform,</span>
 <span class="s2">        and thus the error and standard deviations of errors.</span>
-<span class="s2">    mask_format : str, default &quot;channel_first&quot;</span>
+<span class="s2">    mask_format : str, default "channel_first"</span>
 <span class="s2">        Format of the mask, one of the following:</span>
-<span class="s2">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="s2">        &quot;channel_first&quot; (alias &quot;lead_first&quot;)</span>
+<span class="s2">        "channel_last" (alias "lead_last"), or</span>
+<span class="s2">        "channel_first" (alias "lead_first")</span>
 <span class="s2">    tol : float, default 0.15</span>
 <span class="s2">        Tolerance for the duration of the waveform,</span>
 <span class="s2">        with units in seconds.</span>
@@ -1208,19 +1226,19 @@
 <span class="s2">        Each scoring is a dict consisting of the following metrics:</span>
 <span class="s2">        sensitivity, precision, f1_score, mean_error, standard_deviation</span>
 
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">truth_masks</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred_masks</span><span class="p">),</span> <span class="s2">&quot;length of truth_masks and pred_masks should be the same&quot;</span>
+<span class="s2">    """</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">truth_masks</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred_masks</span><span class="p">),</span> <span class="s2">"length of truth_masks and pred_masks should be the same"</span>
     <span class="n">truth_waveforms</span><span class="p">,</span> <span class="n">pred_waveforms</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="c1"># compute for each element</span>
     <span class="k">for</span> <span class="n">tm</span><span class="p">,</span> <span class="n">pm</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">truth_masks</span><span class="p">,</span> <span class="n">pred_masks</span><span class="p">):</span>
-        <span class="n">n_masks</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">mask_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;channel_first&quot;</span><span class="p">,</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">tm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">n_masks</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">mask_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"channel_first"</span><span class="p">,</span> <span class="s2">"lead_first"</span><span class="p">]</span> <span class="k">else</span> <span class="n">tm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">new_t</span> <span class="o">=</span> <span class="n">masks_to_waveforms</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span> <span class="n">class_map</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">mask_format</span><span class="p">)</span>
-        <span class="n">new_t</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_t</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_masks</span><span class="p">)]</span>  <span class="c1"># list of list of `ECGWaveForm`s</span>
+        <span class="n">new_t</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_t</span><span class="p">[</span><span class="sa">f</span><span class="s2">"lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_masks</span><span class="p">)]</span>  <span class="c1"># list of list of `ECGWaveForm`s</span>
         <span class="n">truth_waveforms</span> <span class="o">+=</span> <span class="n">new_t</span>
 
         <span class="n">new_p</span> <span class="o">=</span> <span class="n">masks_to_waveforms</span><span class="p">(</span><span class="n">pm</span><span class="p">,</span> <span class="n">class_map</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">mask_format</span><span class="p">)</span>
-        <span class="n">new_p</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_p</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_masks</span><span class="p">)]</span>  <span class="c1"># list of list of `ECGWaveForm`s</span>
+        <span class="n">new_p</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_p</span><span class="p">[</span><span class="sa">f</span><span class="s2">"lead_</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_masks</span><span class="p">)]</span>  <span class="c1"># list of list of `ECGWaveForm`s</span>
         <span class="n">pred_waveforms</span> <span class="o">+=</span> <span class="n">new_p</span>
 
     <span class="n">scorings</span> <span class="o">=</span> <span class="n">compute_metrics_waveform</span><span class="p">(</span><span class="n">truth_waveforms</span><span class="p">,</span> <span class="n">pred_waveforms</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
@@ -1232,10 +1250,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_metrics_waveform</span><span class="p">(</span>
     <span class="n">truth_waveforms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]],</span>
     <span class="n">pred_waveforms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">tol</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    compute the sensitivity, precision, f1_score, mean error</span>
 <span class="sd">    and standard deviation of the mean errors,</span>
 <span class="sd">    of evaluations on a multiple samples (differ by records, or leads).</span>
@@ -1248,7 +1266,7 @@
 <span class="sd">    pred_waveforms : Sequence[Sequence[ECGWaveForm]]</span>
 <span class="sd">        The predictions corresponding to `truth_waveforms`,</span>
 <span class="sd">        each element is a sequence of :class:`ECGWaveForm` from the same sample.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the waveforms,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        and thus the error and standard deviations of errors.</span>
@@ -1263,37 +1281,37 @@
 <span class="sd">        Each scoring is a dict consisting of the following metrics:</span>
 <span class="sd">        sensitivity, precision, f1_score, mean_error, standard_deviation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">truth_positive</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]})</span>
-    <span class="n">false_positive</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]})</span>
-    <span class="n">false_negative</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]})</span>
-    <span class="n">errors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]})</span>
+<span class="sd">    """</span>
+    <span class="n">truth_positive</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]})</span>
+    <span class="n">false_positive</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]})</span>
+    <span class="n">false_negative</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]})</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]})</span>
     <span class="c1"># accumulating results</span>
     <span class="k">for</span> <span class="n">tw</span><span class="p">,</span> <span class="n">pw</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">truth_waveforms</span><span class="p">,</span> <span class="n">pred_waveforms</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">_compute_metrics_waveform</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;pwave&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;qrs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;twave&quot;</span><span class="p">,</span>
+            <span class="s2">"pwave"</span><span class="p">,</span>
+            <span class="s2">"qrs"</span><span class="p">,</span>
+            <span class="s2">"twave"</span><span class="p">,</span>
         <span class="p">]:</span>
-            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]:</span>
-                <span class="n">truth_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;truth_positive&quot;</span><span class="p">]</span>
-                <span class="n">false_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;false_positive&quot;</span><span class="p">]</span>
-                <span class="n">false_negative</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;false_negative&quot;</span><span class="p">]</span>
-                <span class="n">errors</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]:</span>
+                <span class="n">truth_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">][</span><span class="s2">"truth_positive"</span><span class="p">]</span>
+                <span class="n">false_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">][</span><span class="s2">"false_positive"</span><span class="p">]</span>
+                <span class="n">false_negative</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">][</span><span class="s2">"false_negative"</span><span class="p">]</span>
+                <span class="n">errors</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">][</span><span class="s2">"errors"</span><span class="p">]</span>
     <span class="n">scorings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]:</span>
-            <span class="n">tp</span> <span class="o">=</span> <span class="n">truth_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-            <span class="n">fp</span> <span class="o">=</span> <span class="n">false_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="n">false_negative</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-            <span class="n">err</span> <span class="o">=</span> <span class="n">errors</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]:</span>
+            <span class="n">tp</span> <span class="o">=</span> <span class="n">truth_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="n">false_positive</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="n">false_negative</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">errors</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
             <span class="n">sensitivity</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span> <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
             <span class="n">precision</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
             <span class="n">f1_score</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sensitivity</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">/</span> <span class="p">(</span><span class="n">sensitivity</span> <span class="o">+</span> <span class="n">precision</span> <span class="o">+</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
             <span class="n">mean_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fs</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="n">standard_deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fs</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="n">scorings</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">scorings</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">,</span>
                 <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
                 <span class="n">f1_score</span><span class="o">=</span><span class="n">f1_score</span><span class="p">,</span>
@@ -1307,10 +1325,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_metrics_waveform</span><span class="p">(</span>
     <span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span>
     <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">],</span>
-    <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
-    <span class="n">tol</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the sensitivity, precision, f1_score, mean error</span>
 <span class="sd">    and standard deviation of the mean errors,</span>
 <span class="sd">    of evaluations on a single sample (the same record, the same lead)</span>
@@ -1321,7 +1339,7 @@
 <span class="sd">        The ground truth</span>
 <span class="sd">    preds : Sequence[ECGWaveForm]</span>
 <span class="sd">        The predictions corresponding to `truths`.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the waveforms,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        and thus the error and standard deviations of errors.</span>
@@ -1337,7 +1355,7 @@
 <span class="sd">        truth_positive, false_negative, false_positive, errors,</span>
 <span class="sd">        sensitivity, precision, f1_score, mean_error, standard_deviation</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">pwave_onset_truths</span><span class="p">,</span> <span class="n">pwave_offset_truths</span><span class="p">,</span> <span class="n">pwave_onset_preds</span><span class="p">,</span> <span class="n">pwave_offset_preds</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">[],</span>
         <span class="p">[],</span>
@@ -1357,14 +1375,14 @@
         <span class="p">[],</span>
     <span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;truths&quot;</span><span class="p">,</span> <span class="s2">&quot;preds&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"truths"</span><span class="p">,</span> <span class="s2">"preds"</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">eval</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]:</span>
-                <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">w</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">.append(w.</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]:</span>
+                <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">w</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">.append(w.</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
 
     <span class="n">scorings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">ECGWaveFormNames</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"onset"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">]:</span>
             <span class="p">(</span>
                 <span class="n">truth_positive</span><span class="p">,</span>
                 <span class="n">false_negative</span><span class="p">,</span>
@@ -1375,8 +1393,8 @@
                 <span class="n">f1_score</span><span class="p">,</span>
                 <span class="n">mean_error</span><span class="p">,</span>
                 <span class="n">standard_deviation</span><span class="p">,</span>
-            <span class="p">)</span> <span class="o">=</span> <span class="n">_compute_metrics_base</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_truths&quot;</span><span class="p">),</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_preds&quot;</span><span class="p">),</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
-            <span class="n">scorings</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">_compute_metrics_base</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_truths"</span><span class="p">),</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">_preds"</span><span class="p">),</span> <span class="n">fs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
+            <span class="n">scorings</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">wave</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="n">truth_positive</span><span class="o">=</span><span class="n">truth_positive</span><span class="p">,</span>
                 <span class="n">false_negative</span><span class="o">=</span><span class="n">false_negative</span><span class="p">,</span>
                 <span class="n">false_positive</span><span class="o">=</span><span class="n">false_positive</span><span class="p">,</span>
@@ -1390,16 +1408,16 @@
     <span class="k">return</span> <span class="n">scorings</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_metrics_base</span><span class="p">(</span><span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base function for computing the metrics of the onset and offset of a waveform.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_metrics_base</span><span class="p">(</span><span class="n">truths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base function for computing the metrics of the onset and offset of a waveform.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    truths : Sequence[numbers.Real]</span>
+<span class="sd">    truths : Sequence[int]</span>
 <span class="sd">        Ground truth of indices of corresponding critical points.</span>
-<span class="sd">    preds : Sequence[numbers.Real]</span>
+<span class="sd">    preds : Sequence[int]</span>
 <span class="sd">        Predicted indices of corresponding critical points.</span>
-<span class="sd">    fs : numbers.Real</span>
+<span class="sd">    fs : int</span>
 <span class="sd">        Sampling frequency of the signal corresponding to the critical points,</span>
 <span class="sd">        used to compute the duration of each waveform,</span>
 <span class="sd">        and thus the error and standard deviations of errors.</span>
@@ -1418,10 +1436,10 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [#dl_seg] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov.</span>
-<span class="sd">                 &quot;Deep Learning for ECG Segmentation.&quot; International Conference on Neuroinformatics.</span>
+<span class="sd">                 "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics.</span>
 <span class="sd">                 Springer, Cham, 2019.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">_tolerance</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">tol</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
     <span class="n">_truths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">truths</span><span class="p">)</span>
     <span class="n">_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
@@ -1456,7 +1474,7 @@
         <span class="n">f1_score</span><span class="p">,</span>
         <span class="n">mean_error</span><span class="p">,</span>
         <span class="n">standard_deviation</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># type: ignore</span>
 </pre></div>
 
                 </article>
@@ -1486,8 +1504,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1521,7 +1539,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

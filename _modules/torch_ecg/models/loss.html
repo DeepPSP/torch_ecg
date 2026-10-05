@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/loss';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.loss</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">torch_ecg.models.loss</span>
 <span class="sd">=====================</span>
 <span class="sd">Custom loss functions for ECG analysis, as a complement to</span>
@@ -403,10 +422,9 @@
 <span class="sd">    AsymmetricLoss</span>
 <span class="sd">    setup_criterion</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
@@ -415,12 +433,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..components.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOSSES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;WeightedBCELoss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BCEWithLogitsWithClassWeightLoss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MaskedBCEWithLogitsLoss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;FocalLoss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AsymmetricLoss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;setup_criterion&quot;</span><span class="p">,</span>
+    <span class="s2">"WeightedBCELoss"</span><span class="p">,</span>
+    <span class="s2">"BCEWithLogitsWithClassWeightLoss"</span><span class="p">,</span>
+    <span class="s2">"MaskedBCEWithLogitsLoss"</span><span class="p">,</span>
+    <span class="s2">"FocalLoss"</span><span class="p">,</span>
+    <span class="s2">"AsymmetricLoss"</span><span class="p">,</span>
+    <span class="s2">"setup_criterion"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -432,7 +450,7 @@
     <span class="n">size_average</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">reduce</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Weighted Binary Cross Entropy Loss function.</span>
+<span class="w">    </span><span class="sd">"""Weighted Binary Cross Entropy Loss function.</span>
 
 <span class="sd">    This implementation is based on [#wbce]_.</span>
 
@@ -465,9 +483,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">sigmoid_x</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target size (</span><span class="si">{</span><span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">) must be the same as input size (</span><span class="si">{</span><span class="n">sigmoid_x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Target size (</span><span class="si">{</span><span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">) must be the same as input size (</span><span class="si">{</span><span class="n">sigmoid_x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
 
     <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">pos_weight</span> <span class="o">*</span> <span class="n">targets</span> <span class="o">*</span> <span class="n">sigmoid_x</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">targets</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sigmoid_x</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 
@@ -486,7 +504,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss">[docs]</a>
 <span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WeightedBCELoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Weighted Binary Cross Entropy Loss class.</span>
+<span class="w">    </span><span class="sd">"""Weighted Binary Cross Entropy Loss class.</span>
 
 <span class="sd">    This implementation is based on [#wbce]_.</span>
 
@@ -514,9 +532,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;WeightedBCELoss&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"WeightedBCELoss"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -529,10 +547,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;pos_weight&quot;</span><span class="p">,</span> <span class="n">pos_weight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"pos_weight"</span><span class="p">,</span> <span class="n">pos_weight</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pos_weight</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"weight"</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size_average</span> <span class="o">=</span> <span class="n">size_average</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reduce</span> <span class="o">=</span> <span class="n">reduce</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PosWeightIsDynamic</span> <span class="o">=</span> <span class="n">PosWeightIsDynamic</span>
@@ -540,7 +558,7 @@
 <div class="viewcode-block" id="WeightedBCELoss.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -556,7 +574,7 @@
 <span class="sd">        loss : torch.Tensor</span>
 <span class="sd">            The weighted binary cross entropy loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PosWeightIsDynamic</span><span class="p">:</span>
             <span class="n">positive_counts</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">nBatch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
@@ -578,25 +596,25 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss">[docs]</a>
 <span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BCEWithLogitsWithClassWeightLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class-weighted Binary Cross Entropy Loss class.</span>
+<span class="w">    </span><span class="sd">"""Class-weighted Binary Cross Entropy Loss class.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    class_weight : torch.Tensor</span>
 <span class="sd">        Class weight, of shape ``(1, n_classes)``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BCEWithLogitsWithClassWeightLoss&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"BCEWithLogitsWithClassWeightLoss"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;class_weight&quot;</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">"none"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"class_weight"</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BCEWithLogitsWithClassWeightLoss.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -612,7 +630,7 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The class-weighted binary cross entropy loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">loss</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_weight</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span></div>
@@ -624,7 +642,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss">[docs]</a>
 <span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MaskedBCEWithLogitsLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Masked Binary Cross Entropy Loss class.</span>
+<span class="w">    </span><span class="sd">"""Masked Binary Cross Entropy Loss class.</span>
 
 <span class="sd">    This loss is used mainly for the segmentation task, where</span>
 <span class="sd">    there are some regions that are of much higher importance,</span>
@@ -637,25 +655,25 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [#mbce] Wen, Hao, and Jingsu Kang. &quot;A comparative study on neural networks for</span>
-<span class="sd">               paroxysmal atrial fibrillation events detection from electrocardiography.&quot;</span>
+<span class="sd">    .. [#mbce] Wen, Hao, and Jingsu Kang. "A comparative study on neural networks for</span>
+<span class="sd">               paroxysmal atrial fibrillation events detection from electrocardiography."</span>
 <span class="sd">               Journal of Electrocardiology 75 (2022): 19-27.</span>
-<span class="sd">    .. [#unet] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. &quot;U-net: Convolutional</span>
-<span class="sd">               networks for biomedical image segmentation.&quot; International Conference on</span>
+<span class="sd">    .. [#unet] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. "U-net: Convolutional</span>
+<span class="sd">               networks for biomedical image segmentation." International Conference on</span>
 <span class="sd">               Medical image computing and computer-assisted intervention. Springer, Cham,</span>
 <span class="sd">               2015.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;MaskedBCEWithLogitsLoss&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"MaskedBCEWithLogitsLoss"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">"none"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MaskedBCEWithLogitsLoss.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">weight_mask</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -684,7 +702,7 @@
 <span class="sd">        A typical example is when `input` and `target` have shape</span>
 <span class="sd">        ``(batch_size, sig_len, n_classes)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="n">weight_mask</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">weight_mask</span> <span class="o">=</span> <span class="n">weight_mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -698,7 +716,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss">[docs]</a>
 <span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FocalLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">_WeightedLoss</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Focal loss class.</span>
+<span class="w">    </span><span class="sd">"""Focal loss class.</span>
 
 <span class="sd">    The focal loss is proposed in [1]_, and this implementation is</span>
 <span class="sd">    based on [2]_, [3]_, and [4]_. The focal loss is computed as follows:</span>
@@ -709,7 +727,7 @@
 
 <span class="sd">    Where:</span>
 
-<span class="sd">    - :math:`p_t` is the model&#39;s estimated probability for each class.</span>
+<span class="sd">    - :math:`p_t` is the model's estimated probability for each class.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -727,22 +745,22 @@
 <span class="sd">        Not used, to keep in accordance with PyTorch native loss.</span>
 <span class="sd">    reduce : bool, optional</span>
 <span class="sd">        Not used, to keep in accordance with PyTorch native loss.</span>
-<span class="sd">    reduction: {&quot;none&quot;, &quot;mean&quot;, &quot;sum&quot;}, optional</span>
-<span class="sd">        Specifies the reduction to apply to the output, by default &quot;mean&quot;.</span>
+<span class="sd">    reduction: {"none", "mean", "sum"}, optional</span>
+<span class="sd">        Specifies the reduction to apply to the output, by default "mean".</span>
 <span class="sd">    multi_label : bool, default True</span>
 <span class="sd">        If True, the loss is computed for multi-label classification.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [1] Lin, Tsung-Yi, et al. &quot;Focal loss for dense object detection.&quot;</span>
+<span class="sd">    .. [1] Lin, Tsung-Yi, et al. "Focal loss for dense object detection."</span>
 <span class="sd">           Proceedings of the IEEE international conference on computer vision. 2017.</span>
 <span class="sd">    .. [2] https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py</span>
 <span class="sd">    .. [3] https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py</span>
 <span class="sd">    .. [4] https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;FocalLoss&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"FocalLoss"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -751,7 +769,7 @@
         <span class="n">class_weight</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># alpha</span>
         <span class="n">size_average</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">reduction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+        <span class="n">reduction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mean"</span><span class="p">,</span>
         <span class="n">multi_label</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -770,7 +788,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">entropy_func</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span>
             <span class="c1"># for `binary_cross_entropy_with_logits`,</span>
             <span class="c1"># its parameter `weight` is a manual rescaling weight given to the loss of each batch element</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;class_weight&quot;</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"class_weight"</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">entropy_func</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span>
             <span class="c1"># for `cross_entropy`,</span>
@@ -784,7 +802,7 @@
 <div class="viewcode-block" id="FocalLoss.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -800,20 +818,20 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The focal loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">entropy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entropy_func</span><span class="p">(</span>
             <span class="nb">input</span><span class="p">,</span>
             <span class="n">target</span><span class="p">,</span>
             <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
-            <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="n">reduction</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">p_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">entropy</span><span class="p">)</span>
         <span class="n">fl</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">entropy</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fl</span> <span class="o">=</span> <span class="n">fl</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_weight</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"mean"</span><span class="p">:</span>
             <span class="n">fl</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"sum"</span><span class="p">:</span>
             <span class="n">fl</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">fl</span></div>
 </div>
@@ -824,7 +842,7 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss">[docs]</a>
 <span class="nd">@LOSSES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AsymmetricLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Asymmetric loss class.</span>
+<span class="w">    </span><span class="sd">"""Asymmetric loss class.</span>
 
 <span class="sd">    The asymmetric loss is proposed in [#al]_, with official</span>
 <span class="sd">    implementation in [#al_code]_. The asymmetric loss is defined as</span>
@@ -846,17 +864,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    gamma_neg : numbers.Real, default 4</span>
+<span class="sd">    gamma_neg : int or float, default 4</span>
 <span class="sd">        Exponent of the multiplier to the negative loss.</span>
-<span class="sd">    gamma_pos : numbers.Real, default 1</span>
+<span class="sd">    gamma_pos : int or float, default 1</span>
 <span class="sd">        Exponent of the multiplier to the positive loss.</span>
 <span class="sd">    prob_margin : float, default 0.05</span>
 <span class="sd">        The probability margin</span>
 <span class="sd">    disable_torch_grad_focal_loss : bool, default False</span>
 <span class="sd">        If True, disable :func:`torch.grad` for asymmetric focal loss computing.</span>
-<span class="sd">    reduction : {&quot;none&quot;, &quot;mean&quot;, &quot;sum&quot;}, default &quot;mean&quot;</span>
+<span class="sd">    reduction : {"none", "mean", "sum"}, default "mean"</span>
 <span class="sd">        Specifies the reduction to apply to the output.</span>
-<span class="sd">    implementation : {&quot;alibaba-miil&quot;, &quot;deep-psp&quot;}, default &quot;alibaba-miil&quot;</span>
+<span class="sd">    implementation : {"alibaba-miil", "deep-psp"}, default "alibaba-miil"</span>
 <span class="sd">        Implementation by Alibaba-MIIL, or by `DeepPSP`, case insensitive.</span>
 
 <span class="sd">    NOTE</span>
@@ -872,51 +890,51 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [#al] Ridnik, Tal, et al. &quot;Asymmetric Loss for Multi-Label Classification.&quot;</span>
+<span class="sd">    .. [#al] Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification."</span>
 <span class="sd">             Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.</span>
 <span class="sd">    .. [#al_code] https://github.com/Alibaba-MIIL/ASL/</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;AsymmetricLoss&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"AsymmetricLoss"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gamma_neg</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="n">gamma_pos</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">gamma_neg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">gamma_pos</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">prob_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
         <span class="n">disable_torch_grad_focal_loss</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">reduction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
-        <span class="n">implementation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;alibaba-miil&quot;</span><span class="p">,</span> <span class="s2">&quot;deep-psp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;alibaba-miil&quot;</span><span class="p">,</span>
+        <span class="n">reduction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"none"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mean"</span><span class="p">,</span>
+        <span class="n">implementation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"alibaba-miil"</span><span class="p">,</span> <span class="s2">"deep-psp"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"alibaba-miil"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="o">=</span> <span class="n">implementation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;alibaba-miil&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;deep-psp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;deeppsp&quot;</span><span class="p">,</span>
+            <span class="s2">"alibaba-miil"</span><span class="p">,</span>
+            <span class="s2">"deep-psp"</span><span class="p">,</span>
+            <span class="s2">"deeppsp"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma_neg</span> <span class="o">=</span> <span class="n">gamma_neg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma_pos</span> <span class="o">=</span> <span class="n">gamma_pos</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prob_margin</span> <span class="o">=</span> <span class="n">prob_margin</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob_margin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`prob_margin` must be non-negative&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`prob_margin` must be non-negative"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_torch_grad_focal_loss</span> <span class="o">=</span> <span class="n">disable_torch_grad_focal_loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-8</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">=</span> <span class="n">reduction</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="o">==</span> <span class="s2">&quot;alibaba-miil&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="o">==</span> <span class="s2">"alibaba-miil"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anti_targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs_neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asymmetric_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;deep-psp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;deeppsp&quot;</span><span class="p">,</span>
+            <span class="s2">"deep-psp"</span><span class="p">,</span>
+            <span class="s2">"deeppsp"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anti_targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs_neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_neg</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="AsymmetricLoss.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -932,15 +950,15 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The asymmetric loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="o">==</span> <span class="s2">&quot;alibaba-miil&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">implementation</span> <span class="o">==</span> <span class="s2">"alibaba-miil"</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_alibaba_miil</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_deep_psp</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_forward_deep_psp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of DeepPSP implementation.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of DeepPSP implementation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -956,7 +974,7 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The asymmetric loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">target</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">anti_targets</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">target</span>
 
@@ -983,14 +1001,14 @@
                 <span class="n">torch</span><span class="o">.</span><span class="n">set_grad_enabled</span><span class="p">(</span><span class="n">prev</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_neg</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"mean"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"sum"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_forward_alibaba_miil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of Alibaba MIIL implementation.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of Alibaba MIIL implementation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1006,7 +1024,7 @@
 <span class="sd">        torch.Tensor</span>
 <span class="sd">            The asymmetric loss.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">target</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">anti_targets</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">target</span>
 
@@ -1038,9 +1056,9 @@
                 <span class="n">torch</span><span class="o">.</span><span class="n">set_grad_enabled</span><span class="p">(</span><span class="n">prev</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asymmetric_w</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"mean"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span> <span class="o">==</span> <span class="s2">"sum"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span>
@@ -1051,7 +1069,7 @@
 <div class="viewcode-block" id="setup_criterion">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.models.loss.setup_criterion.html#torch_ecg.models.loss.setup_criterion">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">setup_criterion</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup the criterion (loss function).</span>
+<span class="w">    </span><span class="sd">"""Setup the criterion (loss function).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1065,19 +1083,19 @@
 <span class="sd">    nn.Module</span>
 <span class="sd">        The criterion (loss function).</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">LOSSES</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">LOSSES</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;nn.&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"nn."</span><span class="p">):</span>
         <span class="n">criterion</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">nn</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">__all__</span><span class="p">:</span>
         <span class="n">criterion</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;loss `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` not implemented! &quot;</span>
-            <span class="s2">&quot;Please use one of the following: `BCEWithLogitsWithClassWeightLoss`, &quot;</span>
-            <span class="s2">&quot;`MaskedBCEWithLogitsLoss`, `FocalLoss`, `AsymmetricLoss`, &quot;</span>
-            <span class="s2">&quot;or any loss function in `torch.nn`.&quot;</span>
+            <span class="sa">f</span><span class="s2">"loss `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` not implemented! "</span>
+            <span class="s2">"Please use one of the following: `BCEWithLogitsWithClassWeightLoss`, "</span>
+            <span class="s2">"`MaskedBCEWithLogitsLoss`, `FocalLoss`, `AsymmetricLoss`, "</span>
+            <span class="s2">"or any loss function in `torch.nn`."</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">criterion</span></div>
@@ -1111,8 +1129,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1146,7 +1164,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

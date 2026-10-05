@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -51,25 +51,32 @@
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/models/cnn/densenet';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.31" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -95,7 +102,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -184,11 +191,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -201,8 +215,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -287,11 +300,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -304,8 +324,7 @@
           
           
           
-          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,7 +398,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torch_ecg.models.cnn.densenet</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">The core part of the SOTA model (framework) of CPSC2020</span>
 
 <span class="sd">Its key points:</span>
@@ -391,7 +410,7 @@
 <span class="sd">5. PVC and SPB model detection: DenseNet</span>
 <span class="sd">6. post-processing with clinical rules: a set of clinical experiences and rules including rhythm and morphological rules to suppress false positives and search for false negatives of PVC and SPB detection</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
@@ -409,20 +428,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;DenseNet&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DenseBasicBlock&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DenseBottleNeck&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DenseMacroBlock&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DenseTransition&quot;</span><span class="p">,</span>
+    <span class="s2">"DenseNet"</span><span class="p">,</span>
+    <span class="s2">"DenseBasicBlock"</span><span class="p">,</span>
+    <span class="s2">"DenseBottleNeck"</span><span class="p">,</span>
+    <span class="s2">"DenseMacroBlock"</span><span class="p">,</span>
+    <span class="s2">"DenseTransition"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">&quot;Dropout1d&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">"Dropout1d"</span><span class="p">):</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span>  <span class="c1"># added in pytorch 1.12</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseBasicBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The basic building block for DenseNet.</span>
+<span class="w">    </span><span class="sd">"""The basic building block for DenseNet.</span>
 
 <span class="sd">    This block consists of</span>
 <span class="sd">    normalization -&gt; activation -&gt; convolution (-&gt; dropout (optional)).</span>
@@ -445,20 +464,20 @@
 <span class="sd">        Whether to use bias in the convolution layers.</span>
 <span class="sd">    dropout : float or dict, default 0.0</span>
 <span class="sd">        Dropout rate of the new features produced from the main stream.</span>
-<span class="sd">        If is a dict, it should contain the keys ``&quot;p&quot;`` and ``&quot;type&quot;``,</span>
-<span class="sd">        where ``&quot;p&quot;`` is the dropout rate and ``&quot;type&quot;`` is the type of dropout,</span>
-<span class="sd">        which can be either ``&quot;1d&quot;`` (:class:`torch.nn.Dropout1d`) or</span>
+<span class="sd">        If is a dict, it should contain the keys ``"p"`` and ``"type"``,</span>
+<span class="sd">        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,</span>
+<span class="sd">        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or</span>
 <span class="sd">        ``None`` (:class:`torch.nn.Dropout`).</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Additional hyper-parameters, including</span>
 <span class="sd">        activation choices, memory_efficient choices, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DenseBasicBlock&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DenseBasicBlock"</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
         <span class="n">memory_efficient</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -479,8 +498,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="n">in_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`in_channels` (= `</span><span class="si">{</span><span class="n">in_channels</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
-        <span class="k">assert</span> <span class="n">growth_rate</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;`growth_rate` (= `</span><span class="si">{</span><span class="n">growth_rate</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)&quot;</span>
+        <span class="k">assert</span> <span class="n">in_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`in_channels` (= `</span><span class="si">{</span><span class="n">in_channels</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)"</span>
+        <span class="k">assert</span> <span class="n">growth_rate</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"`growth_rate` (= `</span><span class="si">{</span><span class="n">growth_rate</span><span class="si">}</span><span class="s2">`) must be divisible by `groups` (= `</span><span class="si">{</span><span class="n">groups</span><span class="si">}</span><span class="s2">`)"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bac</span> <span class="o">=</span> <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
             <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
@@ -493,13 +512,13 @@
             <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
             <span class="n">kw_activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">,</span>
             <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
-            <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;bac&quot;</span><span class="p">,</span>
+            <span class="n">ordering</span><span class="o">=</span><span class="s2">"bac"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">dropout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -508,7 +527,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the network.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the network.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -522,7 +541,7 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape (batch_size, n_channels, seq_len).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">new_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bac</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="n">new_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">new_features</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -549,7 +568,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the network.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the network.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -563,14 +582,14 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the network.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rate</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_shape</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseBottleNeck</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Bottleneck modification of :class:`DenseBasicBlock`,</span>
 <span class="sd">    with an additional prefixed sequence of</span>
 <span class="sd">    (normalization -&gt; activation -&gt; convolution of kernel size 1)</span>
@@ -594,20 +613,20 @@
 <span class="sd">        Whether to use bias in the convolutional layers.</span>
 <span class="sd">    dropout : float or dict, default 0.0</span>
 <span class="sd">        Dropout rate of the new features produced from the main stream.</span>
-<span class="sd">        If is a dict, it should contain the keys ``&quot;p&quot;`` and ``&quot;type&quot;``,</span>
-<span class="sd">        where ``&quot;p&quot;`` is the dropout rate and ``&quot;type&quot;`` is the type of dropout,</span>
-<span class="sd">        which can be either ``&quot;1d&quot;`` (:class:`torch.nn.Dropout1d`) or</span>
+<span class="sd">        If is a dict, it should contain the keys ``"p"`` and ``"type"``,</span>
+<span class="sd">        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,</span>
+<span class="sd">        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or</span>
 <span class="sd">        ``None`` (:class:`torch.nn.Dropout`).</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Other hyper-parameters, including</span>
 <span class="sd">        activation choices, memory_efficient choices, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DenseBottleNeck&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DenseBottleNeck"</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
         <span class="n">memory_efficient</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -643,7 +662,7 @@
             <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
             <span class="n">kw_activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">,</span>
             <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
-            <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;bac&quot;</span><span class="p">,</span>
+            <span class="n">ordering</span><span class="o">=</span><span class="s2">"bac"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_conv</span> <span class="o">=</span> <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
             <span class="n">in_channels</span><span class="o">=</span><span class="n">bottleneck_channels</span><span class="p">,</span>
@@ -656,13 +675,13 @@
             <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
             <span class="n">kw_activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">,</span>
             <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
-            <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;bac&quot;</span><span class="p">,</span>
+            <span class="n">ordering</span><span class="o">=</span><span class="s2">"bac"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"1d"</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">[</span><span class="s2">"p"</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">dropout</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -671,9 +690,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">bn_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;BottleNeck function.</span>
+<span class="w">        </span><span class="sd">"""BottleNeck function.</span>
 
-<span class="sd">        The &quot;not memory_efficient&quot; way.</span>
+<span class="sd">        The "not memory_efficient" way.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -686,12 +705,12 @@
 <span class="sd">        bottleneck_output : torch.Tensor</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">bottleneck_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neck_conv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bottleneck_output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+<span class="w">        </span><span class="sd">"""Forward pass.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -705,7 +724,7 @@
 <span class="sd">            Output tensor,</span>
 <span class="sd">            of shape ``(batch_size, n_channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">memory_efficient</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="k">else</span><span class="p">:</span>
@@ -736,7 +755,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the network.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the network.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -750,14 +769,14 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            The output shape of the network.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rate</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output_shape</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseMacroBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Macro blocks for :class:`DenseNet`.</span>
+<span class="w">    </span><span class="sd">"""Macro blocks for :class:`DenseNet`.</span>
 
 <span class="sd">    Composed of a stacked sequence</span>
 <span class="sd">    of builing blocks of similar pattern.</span>
@@ -789,9 +808,9 @@
 <span class="sd">        extra kw for :class:`DenseBottleNeck`, and</span>
 <span class="sd">        activation choices, memory_efficient choices, etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DenseMacroBlock&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DenseMacroBlock"</span>
     <span class="n">building_block</span> <span class="o">=</span> <span class="n">DenseBottleNeck</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -822,15 +841,15 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_layers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;building_block&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;basic&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;basic_block&quot;</span><span class="p">,</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"building_block"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">"basic"</span><span class="p">,</span>
+            <span class="s2">"basic_block"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span> <span class="o">=</span> <span class="n">DenseBasicBlock</span>
 
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_layers</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;dense_building_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"dense_building_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">building_block</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">+</span> <span class="n">idx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
                     <span class="n">growth_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
@@ -844,18 +863,18 @@
             <span class="p">)</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the network."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseTransition</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transition blocks between :class:`DenseMacroBlock`.</span>
+<span class="w">    </span><span class="sd">"""Transition blocks between :class:`DenseMacroBlock`.</span>
 
 <span class="sd">    This is a module that is</span>
 <span class="sd">    used to perform sub-sampling,</span>
@@ -879,13 +898,13 @@
 <span class="sd">        Other parameters, including</span>
 <span class="sd">        activation choices, subsampling mode (method), etc.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DenseTransition&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DenseTransition"</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
-        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-        <span class="n">subsample_mode</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">subsample_mode</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -913,7 +932,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span> <span class="o">=</span> <span class="n">nfw_per_group</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__groups</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;bac&quot;</span><span class="p">,</span>
+            <span class="s2">"bac"</span><span class="p">,</span>
             <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span>
@@ -925,11 +944,11 @@
                 <span class="n">activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
                 <span class="n">kw_activation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kw_activation</span><span class="p">,</span>
                 <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
-                <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;bac&quot;</span><span class="p">,</span>
+                <span class="n">ordering</span><span class="o">=</span><span class="s2">"bac"</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;down&quot;</span><span class="p">,</span>
+            <span class="s2">"down"</span><span class="p">,</span>
             <span class="n">DownSample</span><span class="p">(</span>
                 <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_length</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__out_channels</span><span class="p">,</span>
@@ -938,23 +957,23 @@
         <span class="p">)</span>
 
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the network."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DenseNet">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.DenseNet.html#torch_ecg.models.DenseNet">[docs]</a>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;densenet&quot;</span><span class="p">)</span>
-<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dense_net&quot;</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"densenet"</span><span class="p">)</span>
+<span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"dense_net"</span><span class="p">)</span>
 <span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The core part of the SOTA model (framework) of CPSC2020.</span>
+<span class="w">    </span><span class="sd">"""The core part of the SOTA model (framework) of CPSC2020.</span>
 
 <span class="sd">    DenseNet is originally proposed in [1]_, [2]_ (journal version).</span>
 <span class="sd">    The original implementation is available at [3]_ and [4]_. [5]_ is an</span>
@@ -1023,11 +1042,11 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger,</span>
-<span class="sd">           &quot;Densely Connected Convolutional Networks,&quot;</span>
+<span class="sd">           "Densely Connected Convolutional Networks,"</span>
 <span class="sd">           2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR),</span>
 <span class="sd">           Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.</span>
 <span class="sd">    .. [2] G. Huang, Z. Liu, G. Pleiss, L. Van Der Maaten and K. Weinberger,</span>
-<span class="sd">           &quot;Convolutional Networks with Dense Connectivity,&quot;</span>
+<span class="sd">           "Convolutional Networks with Dense Connectivity,"</span>
 <span class="sd">           in IEEE Transactions on Pattern Analysis and Machine Intelligence,</span>
 <span class="sd">           doi: 10.1109/TPAMI.2019.2918284.</span>
 <span class="sd">    .. [3] https://github.com/liuzhuang13/DenseNet/tree/master/models</span>
@@ -1035,20 +1054,20 @@
 <span class="sd">    .. [5] https://github.com/bamos/densenet.pytorch/blob/master/densenet.py</span>
 <span class="sd">    .. [6] https://github.com/pytorch/vision/blob/main/torchvision/models/densenet.py</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;DenseNet&quot;</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">"DenseNet"</span>
     <span class="n">__DEFAULT_CONFIG__</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
         <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
-        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;inplace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-        <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">&quot;he_normal&quot;</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span>
+        <span class="n">kw_activation</span><span class="o">=</span><span class="p">{</span><span class="s2">"inplace"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">"he_normal"</span><span class="p">,</span>
         <span class="n">kw_initializer</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">init_subsample_mode</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+        <span class="n">init_subsample_mode</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__DEFAULT_CONFIG__</span><span class="p">))</span>
@@ -1056,7 +1075,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">num_layers</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;init_cba&quot;</span><span class="p">,</span>
+            <span class="s2">"init_cba"</span><span class="p">,</span>
             <span class="n">Conv_Bn_Activation</span><span class="p">(</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_channels</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">init_num_filters</span><span class="p">,</span>
@@ -1071,7 +1090,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
-            <span class="s2">&quot;init_pool&quot;</span><span class="p">,</span>
+            <span class="s2">"init_pool"</span><span class="p">,</span>
             <span class="n">DownSample</span><span class="p">(</span>
                 <span class="n">down_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">init_pool_stride</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">init_num_filters</span><span class="p">,</span>
@@ -1086,24 +1105,24 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">growth_rates</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`config.growth_rates` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`config.growth_rates` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__growth_rates</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+            <span class="sa">f</span><span class="s2">"while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">filter_lengths</span><span class="p">)</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`config.filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`config.filter_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__filter_lengths</span><span class="p">)</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+                <span class="sa">f</span><span class="s2">"while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">subsample_lengths</span><span class="p">)</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`config.subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> macro blocks, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`config.subsample_lengths` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__subsample_lengths</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> macro blocks, "</span>
+                <span class="sa">f</span><span class="s2">"while `config.num_layers` indicates </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="n">macro_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">init_num_filters</span>
@@ -1120,7 +1139,7 @@
                 <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">block</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">transition_in_channels</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dmb</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dense_macro_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dmb</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dense_macro_block_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dmb</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">dt</span> <span class="o">=</span> <span class="n">DenseTransition</span><span class="p">(</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">transition_in_channels</span><span class="p">,</span>
@@ -1131,25 +1150,25 @@
                     <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">transition</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">_</span><span class="p">,</span> <span class="n">macro_in_channels</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transition_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"transition_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DenseNet.compute_output_shape">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.DenseNet.html#torch_ecg.models.DenseNet.compute_output_shape">[docs]</a>
     <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">compute_sequential_output_shape_docstring</span><span class="p">,</span> <span class="s2">" "</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the network."""</span>
         <span class="k">return</span> <span class="n">compute_sequential_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DenseNet.forward_features">
 <a class="viewcode-back" href="../../../../api/generated/torch_ecg.models.DenseNet.html#torch_ecg.models.DenseNet.forward_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model to extract features.</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the model to extract features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1163,7 +1182,7 @@
 <span class="sd">            Feature map tensor,</span>
 <span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 
 
@@ -1172,7 +1191,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_features_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the features.</span>
+<span class="w">        </span><span class="sd">"""Compute the output shape of the features.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1186,7 +1205,7 @@
 <span class="sd">        output_shape : sequence</span>
 <span class="sd">            Output shape of the features.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span></div>
 
 
@@ -1196,7 +1215,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">doi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;10.1109/cvpr.2017.243&quot;</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"doi"</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"10.1109/cvpr.2017.243"</span><span class="p">]))</span></div>
 
 </pre></div>
 
@@ -1227,8 +1246,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1262,7 +1281,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
