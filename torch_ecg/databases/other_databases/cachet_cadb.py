@@ -681,8 +681,8 @@ class CACHET_CADB(_DataBase):
     @property
     def url(self) -> Dict[str, str]:
         return {
-            "CACHET-CADB.zip": "https://data.dtu.dk/ndownloader/files/27928830",
-            "cachet-cadb_short_format_without_context.hdf5.zip": "https://data.dtu.dk/ndownloader/files/27917358",
+            "CACHET-CADB.zip": "https://ndownloader.figshare.com/files/27928830",
+            "cachet-cadb_short_format_without_context.hdf5.zip": "https://ndownloader.figshare.com/files/27917358",
         }
 
     def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:

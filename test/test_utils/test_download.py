@@ -426,6 +426,90 @@ def test_url_is_reachable_exception(monkeypatch):
     assert dl.url_is_reachable("https://whatever") is False
 
 
+class FakeStreamResponse:
+    """Minimal streaming response for http_get hardening tests."""
+
+    def __init__(self, status_code=200, content=b"", headers=None):
+        self.status_code = status_code
+        self.content = content
+        self.headers = headers or {}
+        self.headers.setdefault("Content-Length", str(len(content)))
+        self.url = "http://mock.url"
+
+    @property
+    def text(self):
+        if isinstance(self.content, bytes):
+            return self.content.decode("utf-8", errors="replace")
+        return self.content
+
+    def iter_content(self, chunk_size=1024):
+        yield self.content
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise Exception(f"HTTP Error {self.status_code}")
+
+
+def _patch_session(monkeypatch, get_func):
+    monkeypatch.setattr(
+        dl,
+        "_requests_retry_session",
+        lambda: types.SimpleNamespace(get=get_func, close=lambda: None),
+    )
+    # make the 202-retry backoff instantaneous in tests
+    monkeypatch.setattr(dl.time, "sleep", lambda *_a: None)
+
+
+def test_http_get_persistent_202(monkeypatch, tmp_path):
+    """Persistent 202 (Accepted) responses must raise with actionable guidance."""
+    _patch_session(monkeypatch, lambda *a, **k: FakeStreamResponse(status_code=202))
+
+    with pytest.raises(RuntimeError, match="202"):
+        dl.http_get("https://portal.example.com/ndownloader/files/123", tmp_path, extract=False, filename="f.bin")
+
+
+def test_http_get_202_then_ok(monkeypatch, tmp_path):
+    """A 202 followed by 200 must succeed after the internal retries."""
+    calls = {"n": 0}
+
+    def get_func(*a, **k):
+        calls["n"] += 1
+        if calls["n"] <= 2:
+            return FakeStreamResponse(status_code=202)
+        return FakeStreamResponse(content=b"real content")
+
+    _patch_session(monkeypatch, get_func)
+
+    out = tmp_path / "f.bin"
+    dl.http_get("https://portal.example.com/ndownloader/files/123", tmp_path, extract=False, filename="f.bin")
+    assert out.exists()
+    assert out.read_bytes() == b"real content"
+    assert calls["n"] == 3
+
+
+def test_http_get_html_instead_of_archive(monkeypatch, tmp_path):
+    """An HTML page served for an expected archive must raise, not be saved as a fake archive."""
+
+    def get_func(*a, **k):
+        return FakeStreamResponse(
+            content=b"<html><body>link temporarily disabled</body></html>",
+            headers={"Content-Type": "text/html"},
+        )
+
+    _patch_session(monkeypatch, get_func)
+
+    with pytest.raises(RuntimeError, match="HTML page"):
+        dl.http_get("https://www.example.com/some/file.zip", tmp_path, extract=True)
+
+
+def test_http_get_empty_body(monkeypatch, tmp_path):
+    """A 0-byte response body must raise instead of writing an empty file."""
+    _patch_session(monkeypatch, lambda *a, **k: FakeStreamResponse(content=b""))
+
+    with pytest.raises(IOError, match="empty"):
+        dl.http_get("https://www.example.com/some/file.zip", tmp_path, extract=False, filename="f.bin")
+
+
 def test_download_from_aws_awscli_missing(monkeypatch, tmp_path):
     monkeypatch.setattr(dl.shutil, "which", lambda name: None)
 

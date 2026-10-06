@@ -34,6 +34,19 @@ Changed
   `torch_ecg.utils.download` module.
 - Add length verification in the `http_get` function in
   `torch_ecg.utils.download` module.
+- Harden the `http_get` function in `torch_ecg.utils.download` module:
+  retry and raise clear errors on persistent 202 (Accepted) queued
+  downloads (e.g. figshare portal domains), refuse to save HTML error
+  pages as archive files, and raise on empty (0-byte) downloads,
+  instead of silently writing broken files.
+- Replace dead or unreliable database download URLs: the mirror of the
+  CPSC2019 training set now points to Zenodo; SPH and CACHET-CADB now
+  use the central `ndownloader.figshare.com` file URLs (portal domains
+  put downloads behind a queue that replies 202).
+- Move data downloads in database tests out of the module level (the
+  pytest collection phase) into session-scoped fixtures which skip the
+  test module on download failure, and mark those tests with the new
+  `db` marker.
 - Enhance the pytorch `preprocessors` module: all preprocessors now have
   pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
 

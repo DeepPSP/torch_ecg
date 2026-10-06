@@ -385,7 +385,7 @@ class CPSC2019(CPSCDataBase):
 
     @property
     def url(self) -> str:
-        return "https://www.dropbox.com/s/75nee0pqdy3f9r2/CPSC2019-train.zip?dl=1"
+        return "https://zenodo.org/records/23179391/files/CPSC2019-train.zip?download=1"
 
     @property
     def database_info(self) -> DataBaseInfo:
