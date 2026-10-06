@@ -235,6 +235,8 @@ def http_get(
             except Exception:
                 snippet = ""
                 try:
+                    # best effort: enrich the error with a body snippet;
+                    # the RuntimeError below is raised regardless
                     snippet = req.text[:300]
                 except Exception:
                     pass
@@ -255,6 +257,8 @@ def http_get(
             if extract and req.headers.get("Content-Type", "").lower().startswith("text/html"):
                 snippet = ""
                 try:
+                    # best effort: enrich the error with a body snippet;
+                    # the RuntimeError below is raised regardless
                     snippet = req.text[:300]
                 except Exception:
                     pass

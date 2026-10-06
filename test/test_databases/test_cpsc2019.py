@@ -49,7 +49,10 @@ config_1.recover_length = True
 
 
 @pytest.fixture(scope="session")
-def datasets():
+def datasets(reader):
+    # depends on `reader` so that the database is downloaded (or the tests
+    # skipped) even when only `TestCPSC2019Dataset` is selected, or when the
+    # tests are distributed across xdist workers
     try:
         with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
             ds = CPSC2019Dataset(config, training=False, lazy=False, db_dir=_CWD)
