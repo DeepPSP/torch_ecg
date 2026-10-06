@@ -40,7 +40,8 @@ Changed
   pages as archive files, and raise on empty (0-byte) downloads,
   instead of silently writing broken files.
 - Replace dead or unreliable database download URLs: the mirror of the
-  CPSC2019 training set now points to Zenodo; SPH and CACHET-CADB now
+  CPSC2019 training set and the CACHET-CADB-Mini / SPH-Mini test subsets
+  now point to Zenodo records; SPH and CACHET-CADB now
   use the central `ndownloader.figshare.com` file URLs (portal domains
   put downloads behind a queue that replies 202).
 - Move data downloads in database tests out of the module level (the

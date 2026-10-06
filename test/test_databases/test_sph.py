@@ -27,8 +27,7 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 pytestmark = pytest.mark.db
 
-# TODO: move to a Zenodo record, like CACHET-CADB-Mini and CPSC2019-train
-_MINI_DB_URL = "https://www.dropbox.com/s/og877l6d4bh4vew/SPH-Mini.tar.gz?dl=1"
+_MINI_DB_URL = "https://zenodo.org/records/23193826/files/SPH-Mini.tar.gz?download=1"
 
 
 @pytest.fixture(scope="session")
