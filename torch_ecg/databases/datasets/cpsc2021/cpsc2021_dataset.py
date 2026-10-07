@@ -757,7 +757,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            self.segments_json.write_text(json.dump(self.__all_segments, ensure_ascii=False))
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _slice_one_record(
         self,

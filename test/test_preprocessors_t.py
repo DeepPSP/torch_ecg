@@ -224,3 +224,11 @@ def test_resample() -> None:
     assert isinstance(sig_np, np.ndarray)
 
     del rsmp, sig
+
+
+def test_resample_missing_dst() -> None:
+    # `fs` alone specifies the source sampling frequency only; without
+    # `dst_fs` or `siglen` the resampling target is undefined, which used
+    # to crash only at `forward` time with an obscure message
+    with pytest.raises(AssertionError, match="either `dst_fs` or `siglen` should be set"):
+        Resample(fs=500)

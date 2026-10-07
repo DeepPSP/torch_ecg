@@ -180,7 +180,9 @@ def preprocess_multi_lead_signal(
             raise ValueError(f"Unsupported filter type `{filter_type}`")
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
-        filtered_ecg = filtered_ecg.T
+        # `T` would reverse all axes and is wrong for inputs with a batch
+        # dimension, e.g. of shape (batch, samples, leads)
+        filtered_ecg = np.swapaxes(filtered_ecg, -2, -1)
 
     return filtered_ecg
 

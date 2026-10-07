@@ -33,6 +33,15 @@ def test_classification_metrics():
 
     cm(labels, outputs_prob)
     assert isinstance(cm.accuracy, float)
+    # regression: `__call__` used to drop the `thr` argument, and `compute`
+    # used to not forward it to `metrics_from_confusion_matrix`, so `thr`
+    # was silently ignored end-to-end
+    cm(labels, outputs_prob, thr=0.3)
+    sens_thr_03 = cm.sensitivity
+    cm.compute(labels, outputs_prob, thr=0.3)
+    assert cm.sensitivity == sens_thr_03
+    cm.compute(labels, outputs_prob, thr=0.7)
+    assert cm.sensitivity != sens_thr_03
     assert isinstance(cm.precision, float)
     assert isinstance(cm.recall, float)
     assert isinstance(cm.sensitivity, float)

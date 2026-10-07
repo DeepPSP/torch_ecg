@@ -651,7 +651,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 # if verbose >= 1:
                 #     print(f"{idx+1}/{len(self.reader)} records", end="\r")
         if force_recompute:
-            self.segments_json.write_text(json.dump(self.__all_segments, ensure_ascii=False))
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _slice_one_record(
         self,
@@ -1343,7 +1343,7 @@ class _FastDataReader(ReprMixin, Dataset):
                     axis=0,
                 ).squeeze(axis=1)
             seg_data, _ = self.seg_ppm(seg_data, self.config.fs)
-            if self.task == [
+            if self.task in [
                 "rhythm_segmentation",
                 "af_event",  # segmentation of AF events
             ]:
