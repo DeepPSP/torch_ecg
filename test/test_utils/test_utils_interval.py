@@ -206,6 +206,15 @@ def test_get_optimal_covering():
 
     assert get_optimal_covering(total_interval, [], min_len=10, split_threshold=5) == []
 
+    # regression: numpy scalars in `to_cover` (as produced by iterating
+    # numpy arrays, e.g. beat indices from annotations) used to raise
+    # IndexError, since they are not instances of the builtin int/float
+    to_cover_np = [np.int64(7), np.float64(50), np.int64(89)]
+    to_cover_py = [7, 50, 89]
+    covering_np = get_optimal_covering(total_interval, to_cover_np, min_len=10, split_threshold=5)
+    covering_py = get_optimal_covering(total_interval, to_cover_py, min_len=10, split_threshold=5)
+    assert covering_np == covering_py
+
     with pytest.raises(
         ValueError,
         match="some of the elements in `to_cover` exceeds the range of `total_interval`",
