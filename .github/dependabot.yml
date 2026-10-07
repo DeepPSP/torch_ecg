@@ -11,6 +11,12 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      # bundle all github-actions updates into a single PR to reduce noise
+      # and the number of (expensive) CI runs
+      github-actions:
+        patterns:
+          - "*"
     labels:
       - dependencies
     commit-message:
@@ -50,6 +56,10 @@ updates:
     directory: "/.devcontainer"
     schedule:
       interval: "weekly"
+    groups:
+      devcontainers:
+        patterns:
+          - "*"
     labels:
       - dependencies
     commit-message:
