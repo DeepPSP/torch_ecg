@@ -134,6 +134,7 @@ def _prepare_cwd():
     try:
         shutil.rmtree(_CWD)
     except FileNotFoundError:
+        # the directory does not exist on the first run
         pass
     _CWD.mkdir(parents=True, exist_ok=True)
     yield
