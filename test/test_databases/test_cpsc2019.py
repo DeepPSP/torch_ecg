@@ -26,17 +26,47 @@ except FileNotFoundError:
 _CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
+pytestmark = pytest.mark.db
 
-reader = CPSC2019(_CWD)
-if len(reader) == 0:
-    reader.download()
+
+@pytest.fixture(scope="session")
+def reader():
+    _reader = CPSC2019(_CWD)
+    if len(_reader) == 0:
+        try:
+            _reader.download()
+        except Exception as err:
+            pytest.skip(f"failed to download the database: {err}")
+    return _reader
+
+
+config = deepcopy(CPSC2019TrainCfg)
+config.db_dir = _CWD
+config.recover_length = False
+
+config_1 = deepcopy(config)
+config_1.recover_length = True
+
+
+@pytest.fixture(scope="session")
+def datasets(reader):
+    # depends on `reader` so that the database is downloaded (or the tests
+    # skipped) even when only `TestCPSC2019Dataset` is selected, or when the
+    # tests are distributed across xdist workers
+    try:
+        with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
+            ds = CPSC2019Dataset(config, training=False, lazy=False, db_dir=_CWD)
+        ds_1 = CPSC2019Dataset(config_1, training=False, lazy=False)
+    except Exception as err:
+        pytest.skip(f"failed to build the datasets: {err}")
+    return ds, ds_1
 
 
 class TestCPSC2019:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 2000
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CPSC2019(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -51,7 +81,7 @@ class TestCPSC2019:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2019(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         data_1 = reader.load_data(0, data_format="flat", units="μV")
         assert data.ndim == 2 and data.shape[0] == 1
@@ -67,24 +97,24 @@ class TestCPSC2019:
         with pytest.raises(ValueError, match="Invalid `units`: kV"):
             reader.load_data(0, units="kV")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, np.ndarray) and ann.ndim == 1
 
-    def test_load_rpeaks(self):
+    def test_load_rpeaks(self, reader):
         # alias of `load_ann`
         rpeaks = reader.load_rpeaks(0)
         assert np.allclose(rpeaks, reader.load_ann(0))
 
-    def test_load_rpeak_indices(self):
+    def test_load_rpeak_indices(self, reader):
         # alias of `load_ann`
         rpeaks = reader.load_rpeak_indices(0)
         assert np.allclose(rpeaks, reader.load_ann(0))
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
@@ -94,14 +124,14 @@ class TestCPSC2019:
         assert isinstance(all_references, list) and len(all_references) == len(reader)
         assert all_annotations == all_references
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, ticks_granularity=2)
         data = reader.load_data(0, data_format="flat")
         reader.plot(0, data=data, ticks_granularity=1)
         data = reader.load_data(0, units="μV", data_format="flat")
         reader.plot(0, data=data, ticks_granularity=0)
 
-    def test_compute_metrics(self):
+    def test_compute_metrics(self, reader):
         rpeaks_truths = np.array([500, 1000])
         rpeaks_preds = np.array([500, 700, 1000])
         QRS_acc = compute_metrics([rpeaks_truths], [rpeaks_preds], reader.fs, verbose=2)
@@ -112,25 +142,13 @@ class TestCPSC2019:
         assert np.allclose(QRS_acc, 1.0)
 
 
-config = deepcopy(CPSC2019TrainCfg)
-config.db_dir = _CWD
-config.recover_length = False
-
-with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
-    ds = CPSC2019Dataset(config, training=False, lazy=False, db_dir=_CWD)
-
-
-config_1 = deepcopy(config)
-config_1.recover_length = True
-
-ds_1 = CPSC2019Dataset(config_1, training=False, lazy=False)
-
-
 class TestCPSC2019Dataset:
-    def test_len(self):
+    def test_len(self, datasets):
+        ds, ds_1 = datasets
         assert len(ds) == len(ds.records) > 0
 
-    def test_getitem(self):
+    def test_getitem(self, datasets):
+        ds, ds_1 = datasets
         assert config.n_leads == 1
         assert config.input_len == config_1.input_len > 0
         for i in range(len(ds)):
@@ -154,5 +172,6 @@ class TestCPSC2019Dataset:
             1,
         )
 
-    def test_properties(self):
+    def test_properties(self, datasets):
+        ds, ds_1 = datasets
         assert str(ds) == repr(ds)

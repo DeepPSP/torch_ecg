@@ -1,5 +1,7 @@
 """ """
 
+import inspect
+
 import pytest
 import torch
 
@@ -149,4 +151,21 @@ def test_setup_criterion():
     criterion = setup_criterion("MaskedBCEWithLogitsLoss")
 
     for name in torch.nn.modules.loss.__all__:
+        # skip losses whose constructors have required arguments, e.g.
+        # `torch.nn.LinearCrossEntropyLoss` (added in newer versions of
+        # torch) requires `in_features` and `num_classes`
+        required_params = [
+            p
+            for p in inspect.signature(getattr(torch.nn, name).__init__).parameters.values()
+            if p.name != "self"
+            and p.default is inspect.Parameter.empty
+            and p.kind
+            in (
+                inspect.Parameter.POSITIONAL_ONLY,
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                inspect.Parameter.KEYWORD_ONLY,
+            )
+        ]
+        if required_params:
+            continue
         criterion = setup_criterion(name)

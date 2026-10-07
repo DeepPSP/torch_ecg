@@ -23,24 +23,31 @@ except FileNotFoundError:
 _CWD.mkdir(parents=True, exist_ok=True)
 
 
-http_get(
-    url="https://www.dropbox.com/s/og877l6d4bh4vew/SPH-Mini.tar.gz?dl=1",
-    dst_dir=_CWD,
-    extract=True,
-)
-
-
 ###############################################################################
 
+pytestmark = pytest.mark.db
 
-reader = SPH(_CWD)
+_MINI_DB_URL = "https://zenodo.org/records/23193826/files/SPH-Mini.tar.gz?download=1"
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        http_get(
+            url=_MINI_DB_URL,
+            dst_dir=_CWD,
+            extract=True,
+        )
+    except Exception as err:
+        pytest.skip(f"failed to download the mini database from {_MINI_DB_URL}: {err}")
+    return SPH(_CWD)
 
 
 class TestSPH:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 100
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = SPH(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -55,7 +62,7 @@ class TestSPH:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             SPH(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         for rec in reader:
             data = reader.load_data(rec)
             data_1 = reader.load_data(rec, leads=[1, 7])
@@ -75,7 +82,7 @@ class TestSPH:
         with pytest.raises(AssertionError, match="Invalid units: `kV`"):
             reader.load_data(rec, units="kV")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         for rec in reader:
             ann = reader.load_ann(rec, ann_format="c")
             ann_1 = reader.load_ann(rec, ann_format="f")
@@ -92,7 +99,7 @@ class TestSPH:
         with pytest.raises(NotImplementedError, match="Abbreviations are not supported yet"):
             reader.load_ann(rec, ann_format="a")
 
-    def test_get_subject_info(self):
+    def test_get_subject_info(self, reader):
         for rec in reader:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
@@ -101,14 +108,14 @@ class TestSPH:
         assert isinstance(info, dict)
         assert info.keys() == {"age"}
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         for rec in reader:
             sid = reader.get_subject_id(rec)
             assert isinstance(sid, str)
         sid = reader.get_subject_id(0)
         assert isinstance(sid, str)
 
-    def test_get_age(self):
+    def test_get_age(self, reader):
         for rec in reader:
             age = reader.get_age(rec)
             assert isinstance(age, int)
@@ -117,7 +124,7 @@ class TestSPH:
         assert isinstance(age, int)
         assert age > 0
 
-    def test_get_sex(self):
+    def test_get_sex(self, reader):
         for rec in reader:
             sex = reader.get_sex(rec)
             assert isinstance(sex, str)
@@ -126,7 +133,7 @@ class TestSPH:
         assert isinstance(sex, str)
         assert sex in ["M", "F"]
 
-    def test_get_siglen(self):
+    def test_get_siglen(self, reader):
         for rec in reader:
             siglen = reader.get_siglen(rec)
             data = reader.load_data(rec)
@@ -137,12 +144,12 @@ class TestSPH:
         assert isinstance(siglen, int)
         assert siglen == data.shape[1]
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.url, dict)
         assert reader.get_citation() is None  # printed
         isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         waves = {
             "p_onsets": [100, 1100],
             "p_offsets": [110, 1110],

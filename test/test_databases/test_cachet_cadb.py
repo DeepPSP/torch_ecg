@@ -24,24 +24,31 @@ except FileNotFoundError:
 _CWD.mkdir(parents=True, exist_ok=True)
 
 
-http_get(
-    url="https://www.dropbox.com/s/u0qbewjh7zjsdu6/CACHET-CADB-Mini.tar.gz?dl=1",
-    dst_dir=_CWD,
-    extract=True,
-)
-
-
 ###############################################################################
 
+pytestmark = pytest.mark.db
 
-reader = CACHET_CADB(_CWD)
+_MINI_DB_URL = "https://zenodo.org/records/23178266/files/CACHET-CADB-Mini.tar.gz?download=1"
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        http_get(
+            url=_MINI_DB_URL,
+            dst_dir=_CWD,
+            extract=True,
+        )
+    except Exception as err:
+        pytest.skip(f"failed to download the mini database from {_MINI_DB_URL}: {err}")
+    return CACHET_CADB(_CWD)
 
 
 class TestCACHET_CADB:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 2
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         # reader.fs is 1024
         for rec in reader:
             data = reader.load_data(rec, sampfrom=0, sampto=6000)
@@ -71,7 +78,7 @@ class TestCACHET_CADB:
         with pytest.raises(ValueError, match="Invalid record name: `xxx`"):
             reader.load_data("xxx")
 
-    def test_load_context_data(self):
+    def test_load_context_data(self, reader):
         for context_name in reader.context_data_ext:
             context_data = reader.load_context_data(0, context_name)
             assert context_data.ndim == 2
@@ -94,7 +101,7 @@ class TestCACHET_CADB:
         with pytest.warns(RuntimeWarning, match="duplicate `channels` are removed"):
             reader.load_context_data(0, context_name="acc", channels=[0, "accX"])
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, pd.DataFrame)
         assert ann.columns.tolist() == ["Start", "End", "Class"]
@@ -111,7 +118,7 @@ class TestCACHET_CADB:
         with pytest.raises(ValueError, match="`ann_format`: `np` not supported"):
             reader.load_ann(0, ann_format="np")
 
-    def test_load_context_ann(self):
+    def test_load_context_ann(self, reader):
         context_ann = reader.load_context_ann(0)
         assert isinstance(context_ann, dict)
         context_ann = reader.load_context_ann(0, sheet_name="movisens DataAnalyzer Parameter")
@@ -119,23 +126,23 @@ class TestCACHET_CADB:
         context_ann = reader.load_context_ann(0, sheet_name="movisens DataAnalyzer Results")
         assert isinstance(context_ann, pd.DataFrame)
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         sid = reader.get_subject_id(0)
         assert isinstance(sid, str)
         assert sid in reader.all_subjects
 
-    def test_get_subject_info(self):
+    def test_get_subject_info(self, reader):
         info = reader.get_subject_info(0)
         assert isinstance(info, dict)
         assert info.keys() == {"age", "gender", "height", "weight"}
         info = reader.get_subject_info(0, ["age", "gender"])
         assert info.keys() == {"age", "gender"}
 
-    def test_get_record_metadata(self):
+    def test_get_record_metadata(self, reader):
         metadata = reader.get_record_metadata(0)
         assert isinstance(metadata, dict)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.url, dict)
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
@@ -143,7 +150,7 @@ class TestCACHET_CADB:
         assert isinstance(reader.all_subjects, list)
         assert isinstance(reader.df_metadata, pd.DataFrame)
 
-    def test_get_absolute_path(self):
+    def test_get_absolute_path(self, reader):
         rec = 0
         for ext in [
             "header",
@@ -159,10 +166,10 @@ class TestCACHET_CADB:
             abs_path = reader.get_absolute_path(rec, ext)
             assert abs_path.exists()
 
-    def test_plot(self):
+    def test_plot(self, reader):
         pass  # `plot` not implemented yet
 
-    def test_download(self):
+    def test_download(self, reader):
         with pytest.raises(AssertionError, match="`files` should be a subset of `.+`"), pytest.warns(RuntimeWarning):
             reader.download(files="xxx")
         with pytest.raises(AssertionError, match="`files` should be a subset of `.+`"), pytest.warns(RuntimeWarning):

@@ -581,9 +581,9 @@ def get_optimal_covering(
     tmp = sorted(total_interval)
     tot_start, tot_end = tmp[0], tmp[-1]
 
-    if (tot_start > min([item if isinstance(item, (int, float)) else item[0] for item in to_cover])) or (
-        tot_end < max([item if isinstance(item, (int, float)) else item[-1] for item in to_cover])
-    ):
+    if (
+        tot_start > min([item if isinstance(item, (int, float, np.integer, np.floating)) else item[0] for item in to_cover])
+    ) or (tot_end < max([item if isinstance(item, (int, float, np.integer, np.floating)) else item[-1] for item in to_cover])):
         raise ValueError("some of the elements in `to_cover` exceeds the range of `total_interval`")
 
     if verbose >= 1:

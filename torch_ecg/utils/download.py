@@ -36,6 +36,11 @@ __all__ = [
 
 PHYSIONET_DB_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+"
 
+# number of retries and interval (in seconds) for downloads that the server
+# keeps replying 202 (Accepted) with an empty body, e.g. figshare portal domains
+_ASYNC_DOWNLOAD_RETRIES = 3
+_ASYNC_DOWNLOAD_RETRY_INTERVAL = 5.0
+
 
 def _requests_retry_session(
     retries: int = 5,
@@ -217,21 +222,51 @@ def http_get(
         # req = requests.get(url, stream=True, proxies=proxies)
         session = _requests_retry_session()
         try:
-            req = session.get(url, stream=True, proxies=proxies, timeout=timeout)
+            # some hosting services (e.g. figshare portal domains) put direct file
+            # URLs behind an asynchronous queue and reply 202 (Accepted) with an
+            # empty body; retry a few times before giving up
+            for _ in range(_ASYNC_DOWNLOAD_RETRIES + 1):
+                req = session.get(url, stream=True, proxies=proxies, timeout=timeout)
+                if req.status_code != 202:
+                    break
+                time.sleep(_ASYNC_DOWNLOAD_RETRY_INTERVAL)
             try:
                 req.raise_for_status()
             except Exception:
                 snippet = ""
                 try:
+                    # best effort: enrich the error with a body snippet;
+                    # the RuntimeError below is raised regardless
                     snippet = req.text[:300]
                 except Exception:
                     pass
                 raise RuntimeError(f"Failed to download {url}, status={req.status_code}, body[:300]={snippet!r}")
+            if req.status_code == 202:
+                raise RuntimeError(
+                    f"Failed to download {url}: the server keeps replying 202 (Accepted) with an empty body. "
+                    "This is typical of hosting services that queue downloads (e.g. figshare portal domains). "
+                    "Try a direct file URL instead, e.g. `ndownloader.figshare.com/files/...` "
+                    "instead of `<portal>.figshare.com/ndownloader/files/...`."
+                )
 
             content_length = req.headers.get("Content-Length")
             total = int(content_length) if content_length is not None else None
-            if req.status_code in [403, 404]:
-                raise Exception(f"Could not reach {url}.")
+            # when the target is expected to be an archive, an HTML response body
+            # usually indicates an error/interstitial page rather than real data,
+            # e.g. a bandwidth-limited or dead link on some file hosting services
+            if extract and req.headers.get("Content-Type", "").lower().startswith("text/html"):
+                snippet = ""
+                try:
+                    # best effort: enrich the error with a body snippet;
+                    # the RuntimeError below is raised regardless
+                    snippet = req.text[:300]
+                except Exception:
+                    pass
+                raise RuntimeError(
+                    f"Failed to download {url}: expected an archive file, but got an HTML page "
+                    f"(body[:300]={snippet!r}). This usually means the link is broken, expired, "
+                    "or rate-limited by the hosting service."
+                )
             if str2bool(os.environ.get("CI")):
                 mininterval = 10.0
                 disable = True
@@ -252,6 +287,10 @@ def http_get(
             session.close()
         downloaded_file.close()
 
+        if downloaded_size == 0:
+            raise IOError(
+                f"Downloaded file from {url} is empty (0 bytes). " "The server probably did not serve the actual file content."
+            )
         if verify_length and total is not None and downloaded_size != total:
             raise IOError(f"Size mismatch for {url}. Expected {total} bytes, got {downloaded_size} bytes.")
 

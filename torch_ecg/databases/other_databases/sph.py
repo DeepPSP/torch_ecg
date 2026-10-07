@@ -369,9 +369,9 @@ class SPH(_DataBase):
     @property
     def url(self) -> Dict[str, str]:
         return {
-            "metadata.csv": "https://springernature.figshare.com/ndownloader/files/34793152",
-            "code.csv": "https://springernature.figshare.com/ndownloader/files/32630954",
-            "records.tar": "https://springernature.figshare.com/ndownloader/files/32630684",
+            "metadata.csv": "https://ndownloader.figshare.com/files/34793152",
+            "code.csv": "https://ndownloader.figshare.com/files/32630954",
+            "records.tar": "https://ndownloader.figshare.com/files/32630684",
         }
 
     def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:
