@@ -48,6 +48,15 @@ Changed
   pytest collection phase) into session-scoped fixtures which skip the
   test module on download failure, and mark those tests with the new
   `db` marker.
+- Fix the best-model checkpointing in `BaseTrainer`: the snapshot of the
+  best weights is now a detached CPU copy (it used to be a reference to
+  the parameter tensors and drifted along with the training), it is
+  written to disk immediately when the monitored metric improves (so
+  that the best weights survive a crash of the training process), and
+  the saved file and the return value of `train()` now contain the
+  best-epoch weights instead of the final-epoch weights. `CkptMixin.save`
+  gains a `state_dict` parameter, and `BaseTrainer` falls back to
+  `torch.save` for models without a `save` method.
 - Enhance the pytorch `preprocessors` module: all preprocessors now have
   pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
 

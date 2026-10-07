@@ -1338,6 +1338,7 @@ class CkptMixin(object):
         extra_items: Optional[dict] = None,
         use_safetensors: Optional[bool] = None,
         safetensors_single_file: bool = True,
+        state_dict: Optional[Dict[str, torch.Tensor]] = None,
     ) -> Path:
         """Save the model to disk.
 
@@ -1372,6 +1373,12 @@ class CkptMixin(object):
             Whether to save the metadata along with the state dict into one file.
 
             .. versionadded:: 0.0.32
+        state_dict : dict, optional
+            The state dict to save, e.g. a snapshot of the best weights
+            taken at an earlier time. If None (default), the current state
+            dict of the model (:meth:`state_dict`) is saved.
+
+            .. versionadded:: 0.0.32
 
         Returns
         -------
@@ -1386,6 +1393,7 @@ class CkptMixin(object):
         if not path.parent.exists():
             path.parent.mkdir(parents=True)
         extra_items = extra_items or {}
+        sd = self.state_dict() if state_dict is None else state_dict  # type: ignore
 
         excluded_suffixes = (".pt", ".pth", ".ckpt", ".ckpt.pt", ".ckpt.pth", ".pth.tar", ".pt.tar")
         if use_safetensors is None:
@@ -1410,7 +1418,7 @@ class CkptMixin(object):
             path = Path(str(path) + ".safetensors")
 
         if use_safetensors and safetensors_single_file:
-            tensors = dict(self.state_dict())  # type: ignore
+            tensors = dict(sd)  # type: ignore
 
             tensor_groups = []
             for key, val in extra_items.items():
@@ -1442,7 +1450,7 @@ class CkptMixin(object):
             _train_config = make_serializable(_train_config)
             (path / "model_config.json").write_text(json.dumps(_model_config, ensure_ascii=False))
             (path / "train_config.json").write_text(json.dumps(_train_config, ensure_ascii=False))
-            save_file(self.state_dict(), path / "model.safetensors")  # type: ignore
+            save_file(sd, path / "model.safetensors")  # type: ignore
             # save extra items
             for key, val in extra_items.items():
                 # if val is a dict of torch tensors, save them as safetensors
@@ -1454,7 +1462,7 @@ class CkptMixin(object):
 
         torch.save(
             {
-                "model_state_dict": self.state_dict(),  # type: ignore
+                "model_state_dict": sd,  # type: ignore
                 "model_config": _model_config,
                 "train_config": _train_config,
                 **extra_items,

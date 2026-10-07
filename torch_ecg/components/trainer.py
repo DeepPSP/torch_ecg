@@ -131,6 +131,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.pseudo_best_epoch = -1
 
         self.saved_models = deque()
+        self._best_model_path: Optional[Path] = None
         self.model.train()
         self.global_step = 0
         self.epoch = 0
@@ -226,10 +227,18 @@ class BaseTrainer(ReprMixin, ABC):
                 if self.train_config.monitor is not None:  # type: ignore
                     if eval_res[self.train_config.monitor] > self.best_metric:  # type: ignore
                         self.best_metric = eval_res[self.train_config.monitor]  # type: ignore
-                        self.best_state_dict = self._model.state_dict()
+                        # NOTE: `state_dict` returns references to the parameter
+                        # tensors, which are updated in-place by the optimizer,
+                        # hence a detached copy is taken here
+                        self.best_state_dict = self._snapshot_state_dict()
                         self.best_eval_res = deepcopy(eval_res)
                         self.best_epoch = self.epoch
                         self.pseudo_best_epoch = self.epoch
+                        # save the best model immediately, so that the best
+                        # weights are not lost if the training process crashes
+                        # later on (`keep_checkpoint_max` may have already
+                        # deleted the per-epoch checkpoints)
+                        self._save_best_model(eval_res)
                     elif self.train_config.early_stopping:  # type: ignore
                         if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:  # type: ignore
                             self.pseudo_best_epoch = self.epoch
@@ -273,34 +282,26 @@ class BaseTrainer(ReprMixin, ABC):
             self.epoch += 1
 
         # save the best model
-        if self.best_metric > -np.inf:
-            if self.train_config.final_model_name:  # type: ignore
-                save_folder = self.train_config.final_model_name  # type: ignore
-            else:
-                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"  # type: ignore
-                # save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-                save_folder = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}"
-            save_path = self.train_config.model_dir / save_folder  # type: ignore
-            # self.save_checkpoint(path=str(save_path))
-            self._model.save(path=str(save_path), train_config=self.train_config)
-            self.log_manager.log_message(f"best model is saved at {save_path}")  # type: ignore
-        elif self.train_config.monitor is None:  # type: ignore
+        # the best model has already been saved when the monitored metric
+        # improved; save here only if `monitor` is None (the last model is
+        # then the best model), or as a fallback if the immediate save never
+        # happened for some reason
+        if self.train_config.monitor is None:  # type: ignore
             self.log_manager.log_message("no monitor is set, the last model is selected and saved as the best model")  # type: ignore
-            self.best_state_dict = self._model.state_dict()
-            # save_filename = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}.pth.tar"
-            save_folder = f"BestModel_{self.save_prefix}{self.epoch}_{get_date_str()}"
-            save_path = self.train_config.model_dir / save_folder  # type: ignore
-            # self.save_checkpoint(path=str(save_path))
-            self._model.save(path=str(save_path), train_config=self.train_config)
-        else:
+            self.best_epoch = self.epoch
+            self.best_state_dict = self._snapshot_state_dict()
+            self._save_best_model(None)
+        elif self.best_metric == -np.inf:
             raise ValueError("No best model found!")
+        elif self._best_model_path is None:
+            self._save_best_model(self.best_eval_res)
 
         self.log_manager.close()  # type: ignore
 
         if not self.best_state_dict:
             # in case no best model is found,
             # e.g. monitor is not set, or keep_checkpoint_max is 0
-            self.best_state_dict = self._model.state_dict()
+            self.best_state_dict = self._snapshot_state_dict()
 
         return self.best_state_dict  # type: ignore
 
@@ -767,6 +768,89 @@ class BaseTrainer(ReprMixin, ABC):
         self.epoch = ckpt["epoch"]
         self._setup_from_config(ckpt["train_config"])
         # TODO: resume optimizer, etc.
+
+    def _snapshot_state_dict(self) -> OrderedDict:
+        """Take a detached, CPU copy of the current state dict of the model.
+
+        :meth:`state_dict` returns references to the parameter tensors,
+        which are updated in-place by the optimizer, hence a copy is needed
+        for the snapshot to stay frozen at the time it is taken. CPU copies
+        are taken so that no extra GPU memory is occupied.
+
+        Returns
+        -------
+        OrderedDict
+            The copied state dict.
+
+        """
+        sd = self._model.state_dict()
+        snapshot = OrderedDict(
+            (key, val.detach().cpu().clone() if isinstance(val, torch.Tensor) else deepcopy(val)) for key, val in sd.items()
+        )
+        if hasattr(sd, "_metadata"):
+            snapshot._metadata = sd._metadata  # type: ignore[attr-defined]
+        return snapshot
+
+    def _save_best_model(self, eval_res: Optional[dict] = None) -> Optional[Path]:
+        """Save the best model (the frozen snapshot of the weights) to `model_dir`.
+
+        Called each time the monitored metric improves, so that the best
+        weights are not lost if the training process crashes later on.
+        Also serves as the final save when `monitor` is None.
+
+        Parameters
+        ----------
+        eval_res : dict, optional
+            The evaluation results at the time the best metric was obtained,
+            used to name the saved folder.
+
+        Returns
+        -------
+        Path, optional
+            The actual path the best model was saved to.
+
+        """
+        if not self.best_state_dict:
+            return None
+        if self.train_config.final_model_name:  # type: ignore
+            save_folder = self.train_config.final_model_name  # type: ignore
+        elif eval_res is not None:
+            save_suffix = f"metric_{eval_res[self.train_config.monitor]:.2f}"  # type: ignore
+            save_folder = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}"
+        else:
+            save_folder = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}"
+        save_path = self.train_config.model_dir / save_folder  # type: ignore
+        # remove the previously saved best model, whose folder name embeds
+        # the (now outdated) best epoch and metric
+        if self._best_model_path is not None and self._best_model_path != save_path:
+            try:
+                if self._best_model_path.is_dir():
+                    shutil.rmtree(self._best_model_path)
+                else:
+                    os.remove(self._best_model_path)
+            except OSError:
+                self.log_manager.log_message(f"failed to remove the previous best model at {self._best_model_path}")  # type: ignore
+        if hasattr(self._model, "save"):
+            self._best_model_path = self._model.save(  # type: ignore
+                path=str(save_path),
+                train_config=self.train_config,
+                state_dict=self.best_state_dict,
+            )
+        else:
+            # fall back for plain `nn.Module` models without `save`
+            if not str(save_path).endswith(".pth.tar"):
+                save_path = Path(str(save_path) + ".pth.tar")
+            torch.save(
+                {
+                    "model_state_dict": self.best_state_dict,
+                    "model_config": make_safe_globals(self.model_config),
+                    "train_config": make_safe_globals(self.train_config),
+                },
+                save_path,
+            )
+            self._best_model_path = save_path
+        self.log_manager.log_message(f"best model is saved at {self._best_model_path}")  # type: ignore
+        return self._best_model_path
 
     def save_checkpoint(self, path: str) -> Optional[Path]:
         """Save the current state of the trainer to a checkpoint.
