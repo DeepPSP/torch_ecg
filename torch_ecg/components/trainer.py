@@ -270,8 +270,11 @@ class BaseTrainer(ReprMixin, ABC):
                             shutil.rmtree(model_to_remove)
                         else:
                             os.remove(model_to_remove)
-                    except Exception:
-                        self.log_manager.log_message(f"failed to remove {str(model_to_remove)}")  # type: ignore
+                    except OSError as e:
+                        self.log_manager.log_message(  # type: ignore
+                            f"failed to remove the outdated checkpoint {str(model_to_remove)}: {e}",
+                            level=logging.WARNING,
+                        )
 
                 # update learning rate using lr_scheduler
                 if self.train_config.lr_scheduler.lower() == "plateau":  # type: ignore
@@ -742,32 +745,32 @@ class BaseTrainer(ReprMixin, ABC):
             "model_config", "train_config", "epoch"
             to resume a training process.
 
-        .. note::
+        Raises
+        ------
+        NotImplementedError
+            Always, at the moment. Resuming a training process is not
+            supported yet:
 
-            NOT finished, NOT tested.
+            - checkpoints written by :meth:`save_checkpoint` are
+              ``.safetensors`` files, which `torch.load` cannot read;
+            - the optimizer state (momentum tensors etc.) is not
+              persisted in a recoverable form in the current checkpoint
+              format;
+            - the scheduler, RNG and early-stopping states are not
+              saved at all.
+
+            To restore model weights only, use
+            :meth:`~torch_ecg.utils.utils_nn.CkptMixin.from_checkpoint`.
 
         """
-        if isinstance(checkpoint, str):
-            ckpt = torch.load(checkpoint, map_location=self.device)
-        else:
-            ckpt = checkpoint
-        insufficient_msg = "this checkpoint has no sufficient data to resume training"
-        assert isinstance(ckpt, dict), insufficient_msg
-        assert set(
-            [
-                "model_state_dict",
-                "optimizer_state_dict",
-                "model_config",
-                "train_config",
-                "epoch",
-            ]
-        ).issubset(ckpt.keys()), insufficient_msg
-        if not self._check_model_config_compatability(ckpt["model_config"]):
-            raise ValueError("model config of the checkpoint is not compatible with the config of the current model")
-        self._model.load_state_dict(ckpt["model_state_dict"])
-        self.epoch = ckpt["epoch"]
-        self._setup_from_config(ckpt["train_config"])
-        # TODO: resume optimizer, etc.
+        raise NotImplementedError(
+            "Resuming a training process from a checkpoint is not supported yet: "
+            "the current checkpoint format does not persist the optimizer state "
+            "(nor the scheduler / RNG / early-stopping states), and the "
+            "`.safetensors` files written by `save_checkpoint` cannot be read "
+            "by `torch.load`. Use `CkptMixin.from_checkpoint` to restore model "
+            "weights only."
+        )
 
     def _snapshot_state_dict(self) -> OrderedDict:
         """Take a detached, CPU copy of the current state dict of the model.
