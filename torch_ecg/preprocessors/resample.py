@@ -60,6 +60,15 @@ class Resample(torch.nn.Module):
         if self.dst_fs is not None:
             assert self.fs is not None, "if `dst_fs` is set, `fs` should also be set"
             self.scale_factor = self.dst_fs / self.fs
+        else:
+            assert self.siglen is not None, (
+                "either `dst_fs` or `siglen` should be set: "
+                "`fs` alone specifies the source sampling frequency only, "
+                "and the target sampling frequency (`dst_fs`) or the target "
+                "signal length (`siglen`) is additionally needed. "
+                "NOTE this differs from the NumPy `Preprocessors.Resample`, "
+                "where `fs` is the target sampling frequency."
+            )
 
     def forward(self, sig: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
         """Apply the resampling to the signal.

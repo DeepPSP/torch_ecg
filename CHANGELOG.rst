@@ -57,6 +57,35 @@ Changed
   best-epoch weights instead of the final-epoch weights. `CkptMixin.save`
   gains a `state_dict` parameter, and `BaseTrainer` falls back to
   `torch.save` for models without a `save` method.
+- Make `BaseTrainer.resume_from_checkpoint` raise an explicit
+  `NotImplementedError` explaining why resuming is not supported by the
+  current checkpoint format (it used to be a silent, untested
+  half-implementation), and log the error detail when removing outdated
+  checkpoints fails.
+- Fix the `thr` argument of `ClassificationMetrics`, which was silently
+  ignored end-to-end (`__call__` dropped it, and `compute` did not
+  forward it to `metrics_from_confusion_matrix`), so passing e.g.
+  `thr=0.3` always computed metrics at the default 0.5.
+- Fix `json.dump` misuse in `MITDBDataset` and `CINC2021Dataset` (missing
+  file-object argument), which crashed `_slice_data` with
+  `force_recompute=True` after the full recomputation.
+- Fix the `weight_mask` branch in `MITDBDataset` for the `af_event` task:
+  the condition never held (`task == [list]` instead of membership
+  testing), and once fixed, the categorical `rhythm_mask` crashed
+  `generate_weight_mask` (binary-only). The `af_event` labels are now
+  binarized (AF vs non-AF, as for the `rr_lstm` task) before the weight
+  mask is generated; the multiclass `rhythm_segmentation` target gets no
+  weight mask.
+- Fix `PhysioNetDataBase.download` silently doing nothing when the AWS
+  CLI is unavailable and the database has no compressed archive URL: it
+  logged "Downloading the uncompressed version..." but returned without
+  downloading; it now falls through to `wfdb.dl_database`.
+- Fix the `.T` transpose in `preprocess_multi_lead_signal`, which
+  reversed all axes and corrupted outputs for 3-D (batched) channel_last
+  inputs; only the last two axes are swapped now.
+- Validate at construction time that the torch `Resample` preprocessor
+  has `dst_fs` or `siglen` set (with `fs` alone it used to crash at
+  `forward` time with an obscure message).
 - Enhance the pytorch `preprocessors` module: all preprocessors now have
   pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
 

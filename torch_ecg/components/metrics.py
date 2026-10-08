@@ -155,7 +155,7 @@ class ClassificationMetrics(Metrics):
         bin_outputs[outputs < thr] = 0
         self._cm = confusion_matrix(labels, bin_outputs, num_classes)
         self._cm_ovr = ovr_confusion_matrix(labels, bin_outputs, num_classes)
-        self._metrics = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+        self._metrics = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
         if self._extra_metrics is not None:
             self._em = self._extra_metrics(labels, outputs, num_classes, weights)
             self._metrics.update(self._em)
@@ -171,7 +171,7 @@ class ClassificationMetrics(Metrics):
         weights: Optional[NDArray] = None,
         thr: float = 0.5,
     ) -> "ClassificationMetrics":
-        return self.compute(labels, outputs, num_classes, weights)
+        return self.compute(labels, outputs, num_classes, weights, thr)
 
     @property
     def sensitivity(self) -> Union[float, NDArray]:

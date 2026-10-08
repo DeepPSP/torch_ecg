@@ -232,6 +232,15 @@ def test_preprocess_multi_lead_signal():
     with pytest.raises(ValueError, match="Unsupported filter type `xxx`"):
         preprocess_multi_lead_signal(sig, fs, band_fs=[0.5, 45], filter_type="xxx")
 
+    # regression: 3-D (batch, samples, leads) channel_last input used to be
+    # transposed back with `.T`, which reverses ALL axes and produces a
+    # wrong shape; it must swap the last two axes only
+    sig_3d = torch.randn(2, 12, 8000).numpy()
+    out_lead_first = preprocess_multi_lead_signal(sig_3d, fs, sig_fmt="lead_first", band_fs=[0.5, 45])
+    out_channel_last = preprocess_multi_lead_signal(np.swapaxes(sig_3d, -2, -1), fs, sig_fmt="channel_last", band_fs=[0.5, 45])
+    assert out_channel_last.shape == (2, 8000, 12)
+    assert np.allclose(out_channel_last, np.swapaxes(out_lead_first, -2, -1), atol=1e-6)
+
 
 def test_preprocess_single_lead_signal():
     sig = torch.randn(8000).numpy()
