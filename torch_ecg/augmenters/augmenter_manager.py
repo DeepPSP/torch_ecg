@@ -1,12 +1,12 @@
 """Manger for the augmenters"""
 
 import warnings
-from random import sample
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import torch
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from ..utils.misc import add_docstring, default_class_repr
 from .base import Augmenter, _augmenter_forward_doc
 from .registry import AUGMENTERS
@@ -106,7 +106,7 @@ class AugmenterManager(torch.nn.Module):
             return (sig, label, *extra_tensors)
         ordering = list(range(len(self.augmenters)))
         if self.random:
-            ordering = sample(ordering, len(ordering))
+            DEFAULTS.RNG.shuffle(ordering)
         for idx in ordering:
             sig, label, *extra_tensors = self.augmenters[idx](sig, label, *extra_tensors, **kwargs)
         return (sig, label, *extra_tensors)

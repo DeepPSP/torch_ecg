@@ -1,6 +1,5 @@
 """ """
 
-from random import choice, randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -110,7 +109,7 @@ class StretchCompress(Augmenter):
                 labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
             label_len.append(ll)
         for batch_idx in self.get_indices(prob=self.prob, pop_size=batch):
-            sign = choice([-1, 1])
+            sign = int(DEFAULTS.RNG.choice([-1, 1]))
             ratio = self._sample_ratio()
             # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
             new_len = int(round((1 + sign * ratio) * siglen))
@@ -267,7 +266,7 @@ def _stretch_compress_one_batch_element(
         if ll != siglen:
             labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
         label_len.append(ll)
-    sign = choice([-1, 1])
+    sign = int(DEFAULTS.RNG.choice([-1, 1]))
     ratio = np.clip(DEFAULTS.RNG.normal(ratio, 0.382 * ratio), 0, 2 * ratio)
     # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
     new_len = int(round((1 + sign * ratio) * siglen))
@@ -452,7 +451,7 @@ class StretchCompressOffline(ReprMixin):
         for cp in critical_points or []:
             start_idx = max(
                 0,
-                cp - seglen + randint(critical_forward_len[0], critical_forward_len[1]),
+                cp - seglen + DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1]),
             )
             while start_idx <= min(cp - critical_forward_len[1], siglen - seglen):
                 new_seg = self.__generate_segment(
@@ -462,7 +461,7 @@ class StretchCompressOffline(ReprMixin):
                     start_idx=start_idx,
                 )
                 segments.append(new_seg)
-                start_idx += randint(critical_forward_len[0], critical_forward_len[1])
+                start_idx += DEFAULTS.RNG_randint(critical_forward_len[0], critical_forward_len[1])
         return segments
 
     def __generate_segment(
@@ -508,7 +507,7 @@ class StretchCompressOffline(ReprMixin):
         ratio = self._sample_ratio()
         aug_labels = []
         if ratio != 0:
-            sign = choice([-1, 1])
+            sign = int(DEFAULTS.RNG.choice([-1, 1]))
             new_len = int(round((1 + sign * ratio) * seglen))
             if start_idx is not None:
                 start_idx = min(siglen, max(0, start_idx))

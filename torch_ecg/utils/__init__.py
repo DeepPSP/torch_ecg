@@ -2,8 +2,8 @@
 torch_ecg.utils
 ===============
 
-This module contains a collection of utility functions and classes that are used
-throughout the package.
+This module contains a collection of utility functions and classes that are
+used throughout the package.
 
 .. contents::
     :depth: 2
@@ -188,6 +188,7 @@ from .misc import (
     timeout,
 )
 from .registry import Registry
+from .rng import seed_everything, worker_init_fn
 from .utils_data import (
     ECGWaveForm,
     ECGWaveFormNames,
@@ -257,6 +258,8 @@ from .utils_signal_t import resample as resample_t
 __all__ = [
     "EAK",
     "http_get",
+    "seed_everything",
+    "worker_init_fn",
     "get_record_list_recursive3",
     "dict_to_str",
     "str2bool",

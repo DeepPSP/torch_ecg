@@ -1,7 +1,6 @@
 """ """
 
 from copy import deepcopy
-from random import shuffle
 from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -134,7 +133,7 @@ class CutMix(Augmenter):
             ori = self.get_indices(prob=self.prob, pop_size=batch)
             # permuted indices
             perm = deepcopy(ori)
-            shuffle(perm)
+            DEFAULTS.RNG.shuffle(perm)
             indices[ori] = perm
             indices = torch.from_numpy(indices).long()
 

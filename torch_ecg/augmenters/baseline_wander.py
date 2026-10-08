@@ -1,8 +1,6 @@
 """Add baseline wander composed of sinusoidal and Gaussian noise to the ECGs."""
 
-import multiprocessing as mp
 from itertools import repeat
-from random import randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -214,15 +212,13 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
     Returns
     -------
     ampl : torch.Tensor
-        Amplitude of each lead, of shape ``(batch, lead, 1)``.
+        Amplitude of each lead, of shape ``(batch * lead, 1)``.
 
     """
-    with mp.Pool(processes=max(1, mp.cpu_count() - 2)) as pool:
-        ampl = pool.starmap(
-            get_ampl,
-            iterable=[(sig[i].cpu().numpy(), fs) for i in range(sig.shape[0])],
-        )
-    ampl = torch.as_tensor(np.array(ampl), dtype=sig.dtype, device=sig.device).unsqueeze(-1)
+    # `get_ampl` is natively vectorized over any leading dimensions,
+    # hence no loop (nor multiprocessing pool) is needed
+    ampl = get_ampl(sig.detach().cpu().numpy(), fs)
+    ampl = torch.as_tensor(np.asarray(ampl), dtype=sig.dtype, device=sig.device).reshape(-1, 1)
     return ampl
 
 
@@ -346,8 +342,10 @@ def gen_baseline_wander(
     ampl_ratio: NDArray,
     gaussian: NDArray,
 ) -> Tensor:
-    """Generate 1d baseline wander of given
-    length, amplitude, and frequency.
+    """Generate baseline wander for a batch of ECGs,
+    one independent wander curve per (batch, lead) item.
+
+    Fully vectorized over ``(batch, lead)``.
 
     Parameters
     ----------
@@ -358,10 +356,11 @@ def gen_baseline_wander(
     bw_fs : float or int, or list of float or int,
         Frequency (Frequencies) of the baseline wander.
     ampl_ratio : numpy.ndarray, optional
-        Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
-        of shape ``(m, n)``.
+        Candidate ratios of noise amplitudes compared to the original
+        ECGs for each `fs`, of shape ``(m, n)``.
     gaussian : numpy.ndarray, optional
-        Candidate mean and std of the Gaussian noises,
+        Candidate mean and std of the Gaussian noises
+        (in terms of ratios of the ECG amplitudes),
         of shape ``(k, 2)``.
 
     Returns
@@ -372,24 +371,37 @@ def gen_baseline_wander(
 
     """
     batch, lead, siglen = sig.shape
-    sig_ampl = _get_ampl(sig, fs)
+    n_items = batch * lead
+    # amplitude of each (batch, lead) item, of shape (n_items, 1)
+    sig_ampl = _get_ampl(sig, fs).cpu().numpy()
     _n_bw_choices = len(ampl_ratio)
     _n_gn_choices = len(gaussian)
+    _bw_fs = np.atleast_1d(np.asarray(bw_fs, dtype=float))
 
-    with mp.Pool(processes=max(1, mp.cpu_count() - 2)) as pool:
-        bw = pool.starmap(
-            _gen_baseline_wander,
-            iterable=[
-                (
-                    siglen,
-                    fs,
-                    bw_fs,
-                    ampl_ratio[randint(0, _n_bw_choices - 1)],
-                    gaussian[randint(0, _n_gn_choices - 1)],
-                )
-                for i in range(sig.shape[0])
-                for j in range(sig.shape[1])
-            ],
-        )
-    bw = torch.as_tensor(np.array(bw), dtype=sig.dtype, device=sig.device).reshape(batch, lead, siglen)
+    # one independent choice of (ampl_ratio row, gaussian row) per item
+    ampl_idx = DEFAULTS.RNG.integers(0, _n_bw_choices, n_items)
+    gn_idx = DEFAULTS.RNG.integers(0, _n_gn_choices, n_items)
+    # of shape (n_items, n_bw_fs)
+    amplitude = sig_ampl * ampl_ratio[ampl_idx]
+    # of shape (n_items, 2), ratios scaled by the ECG amplitude
+    amplitude_gaussian = sig_ampl * gaussian[gn_idx]
+
+    # Gaussian noise part, of shape (n_items, siglen)
+    bw = DEFAULTS.RNG.normal(
+        amplitude_gaussian[:, 0:1],
+        amplitude_gaussian[:, 1:2],
+        (n_items, siglen),
+    )
+
+    # sinusoidal part, vectorized over (n_items, n_bw_fs, siglen)
+    duration = siglen / fs
+    # start phase in degrees, of shape (n_items, n_bw_fs)
+    start_phase = DEFAULTS.RNG.integers(0, 361, (n_items, _bw_fs.shape[0]))
+    end_phase = duration * _bw_fs[None, :] * 360 + start_phase
+    # linear interpolation of the phases from start to end
+    t = np.linspace(0, 1, siglen)
+    phase = start_phase[..., None] + t * (end_phase - start_phase)[..., None]
+    bw += np.sum(amplitude[..., None] * np.sin(np.pi * phase / 180), axis=1)
+
+    bw = torch.as_tensor(bw, dtype=sig.dtype, device=sig.device).reshape(batch, lead, siglen)
     return bw
