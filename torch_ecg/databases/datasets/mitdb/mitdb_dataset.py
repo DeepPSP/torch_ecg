@@ -1328,6 +1328,16 @@ class _FastDataReader(ReprMixin, Dataset):
                 seg_data[idx] = remove_spikes_naive(seg_data[idx])
             seg_ann_fp = self.file_dirs.ann[rec] / f"{seg_name}.{self.file_ext}"
             seg_label = loadmat(str(seg_ann_fp))[self._seg_keys[self.task]].reshape((self.seglen, -1))
+            if self.task == "af_event":
+                # the stored `rhythm_mask` is categorical (rhythm class
+                # indices); the `af_event` task is binary (AF vs non-AF),
+                # hence the mask is binarized, as is done for the `rr_lstm` task
+                seg_label = np.where(
+                    seg_label == self.rhythm_types_map["AFIB"],
+                    1,
+                    0,
+                ).astype(seg_label.dtype)
+                seg_label = seg_label.reshape((self.seglen, -1))
             if self.config[self.task].reduction > 1:
                 reduction = self.config[self.task].reduction
                 seg_len, n_classes = seg_label.shape
@@ -1343,10 +1353,9 @@ class _FastDataReader(ReprMixin, Dataset):
                     axis=0,
                 ).squeeze(axis=1)
             seg_data, _ = self.seg_ppm(seg_data, self.config.fs)
-            if self.task in [
-                "rhythm_segmentation",
-                "af_event",  # segmentation of AF events
-            ]:
+            if self.task == "af_event":
+                # the weight mask requires a binary target mask; it does not
+                # apply to the categorical `rhythm_segmentation` target
                 weight_mask = generate_weight_mask(
                     target_mask=seg_label.squeeze(-1),
                     fg_weight=2,

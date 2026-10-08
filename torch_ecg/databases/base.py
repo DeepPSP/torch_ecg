@@ -932,14 +932,13 @@ class PhysioNetDataBase(_DataBase):
             self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")  # type: ignore
         if use_s3:
             http_get(self.s3_url, self.db_dir)
-        elif compressed:
-            if self.url_ is not None:
-                http_get(self.url_, self.db_dir, extract=True)
-                self._ls_rec()
-                return
-            else:
-                self.logger.info("No compressed database available! Downloading the uncompressed version...")  # type: ignore
+        elif compressed and self.url_ is not None:
+            http_get(self.url_, self.db_dir, extract=True)
         else:
+            if compressed:
+                # no compressed archive available for this database;
+                # fall through and download the uncompressed files
+                self.logger.info("No compressed database available! Downloading the uncompressed version...")  # type: ignore
             wfdb.dl_database(
                 self.db_name,
                 self.db_dir,
