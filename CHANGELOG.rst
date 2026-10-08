@@ -8,8 +8,11 @@ Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...HEAD>`__
+`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...HEAD>`__
 ----------------------------------------------------------------------------
+
+`0.0.32 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...v0.0.32>`__ - 2026-10-08
+----------------------------------------------------------------------------------------
 
 Added
 ~~~~~
