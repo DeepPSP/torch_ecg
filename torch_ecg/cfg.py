@@ -217,7 +217,10 @@ DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
 
 def set_seed(seed: int) -> None:
     """
-    Set the seed of the random number generator.
+    Set the seed of all random number generators:
+    the :class:`numpy.random.Generator` ``DEFAULTS.RNG``,
+    the global ``random`` and ``numpy.random`` states,
+    and the ``torch`` (CPU and CUDA) seeds.
 
     Parameters
     ----------
@@ -232,6 +235,13 @@ def set_seed(seed: int) -> None:
     DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
 
     random.seed(seed)
+    # `DEFAULTS.RNG` is the canonical RNG of this package; the global
+    # `numpy.random` state is seeded as well only because third-party
+    # libraries and legacy code (e.g. scipy functions with
+    # `random_state=None`) draw from the global state and know nothing
+    # about `DEFAULTS.RNG`. Seeding it costs nothing and does not affect
+    # the stream of `DEFAULTS.RNG` (the two are independent).
+    np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 

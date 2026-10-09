@@ -11,6 +11,43 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 `Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...HEAD>`__
 ----------------------------------------------------------------------------
 
+Added
+~~~~~
+
+- Add ``torch_ecg.utils.seed_everything`` (alias of ``DEFAULTS.set_seed``)
+  and ``torch_ecg.utils.worker_init_fn``, a ``worker_init_fn`` for
+  ``torch.utils.data.DataLoader`` which reseeds ``DEFAULTS.RNG`` per
+  worker: PyTorch only reseeds the global ``random`` / ``torch`` /
+  ``numpy.random`` states in workers, so with the default ``fork`` start
+  method every worker inherited a copy of the parent's
+  ``DEFAULTS.RNG`` and all workers produced identical random streams
+  for the augmentations.
+
+Changed
+~~~~~~~
+
+- Unify all randomness of the augmenters on ``DEFAULTS.RNG``
+  (``mixup``, ``cutmix``, ``random_masking``, ``stretch_compress``,
+  ``baseline_wander`` and the ``AugmenterManager`` used to draw from the
+  Python ``random`` module). NOTE this changes the random streams: old
+  seeds no longer reproduce old results.
+- ``DEFAULTS.set_seed`` now also seeds the global ``numpy.random``
+  state (see the in-code comment for the rationale); it used to seed
+  ``random`` and ``torch`` but not ``numpy.random``.
+
+Fixed
+~~~~~
+
+- ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
+  two ``multiprocessing.Pool`` instances per forward call (each forward
+  now takes milliseconds instead of process-pool startup costs, and the
+  fork-related duplication of random streams and Windows ``spawn``
+  incompatibilities are gone). The baseline wander amplitude and the
+  Gaussian noise are now scaled by the ECG amplitude as documented
+  (``ampl_ratio`` are ratios of the signal amplitude); they used to be
+  used as absolute values, with the per-lead amplitude computed but
+  never used.
+
 `0.0.32 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...v0.0.32>`__ - 2026-10-08
 ----------------------------------------------------------------------------------------
 

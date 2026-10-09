@@ -1,7 +1,6 @@
 """ """
 
 from copy import deepcopy
-from random import shuffle
 from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -113,7 +112,7 @@ class Mixup(Augmenter):
         ori = self.get_indices(prob=self.prob, pop_size=batch)
         # print(f"ori = {ori}, len(ori) = {len(ori)}")
         perm = deepcopy(ori)
-        shuffle(perm)
+        DEFAULTS.RNG.shuffle(perm)
         indices[ori] = perm
         indices = torch.from_numpy(indices).long()
 

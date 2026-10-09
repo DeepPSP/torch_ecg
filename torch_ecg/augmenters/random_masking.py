@@ -1,6 +1,5 @@
 """ """
 
-from random import randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -130,7 +129,7 @@ class RandomMasking(Augmenter):
                 )
                 indices += self.mask_width[1] // 2
             for j in indices:
-                masked_radius = randint(self.mask_width[0], self.mask_width[1]) // 2
+                masked_radius = DEFAULTS.RNG_randint(self.mask_width[0], self.mask_width[1]) // 2
                 mask[batch_idx, :, j - masked_radius : j + masked_radius] = self.mask_value
             # print(f"batch_idx = {batch_idx}, len(indices) = {len(indices)}")
         sig = sig.mul_(mask)
