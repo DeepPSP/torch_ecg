@@ -18,34 +18,39 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "ptb-xl"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 
 _FEATURE_DB_DIR = _CWD.parent / "ptb-xl-plus"
-try:
-    shutil.rmtree(_FEATURE_DB_DIR)
-except FileNotFoundError:
-    pass
-_FEATURE_DB_DIR.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = PTBXL(_CWD, feature_db_dir=_FEATURE_DB_DIR)
-if len(reader) == 0:
-    reader.download()
-assert reader._feature_reader is not None
-if len(reader._feature_reader) == 0:
-    reader._feature_reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    for db_dir in [_CWD, _FEATURE_DB_DIR]:
+        try:
+            shutil.rmtree(db_dir)
+        except FileNotFoundError:
+            pass
+        db_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        reader = PTBXL(_CWD, feature_db_dir=_FEATURE_DB_DIR)
+        if len(reader) == 0:
+            reader.download()
+        assert reader._feature_reader is not None
+        if len(reader._feature_reader) == 0:
+            reader._feature_reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download PTB-XL (and/or PTB-XL+): {err}")
+    return reader
 
 
 class TestPTBXL:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) > 0
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = PTBXL(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1), f"{len(reader_ss)=} != {len(reader) * ss_ratio}"
@@ -53,19 +58,19 @@ class TestPTBXL:
         reader_ss = PTBXL(_CWD, subsample=ss_ratio)
         assert len(reader_ss) == 1, f"{len(reader_ss)=} != 1"
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         assert data.ndim == 2 and data.shape[0] == 12
         data_1 = reader.load_data(0, leads=0, data_format="flat", sampto=1000)
         assert np.allclose(data[0][:1000], data_1)
 
-    def test_reset_fs(self):
+    def test_reset_fs(self, reader):
         reader.reset_fs(100)
         assert reader.fs == 100, f"{reader.fs=}"
         reader.reset_fs(500)
         assert reader.fs == 500, f"{reader.fs=}"
 
-    def test_load_metadata(self):
+    def test_load_metadata(self, reader):
         metadata = reader.load_metadata(0)
         assert isinstance(metadata, dict), f"{type(metadata)=}"
         assert len(metadata) > 0, f"{metadata=}"
@@ -75,7 +80,7 @@ class TestPTBXL:
         metadata = reader.load_metadata(0, items="patient_id")
         assert isinstance(metadata, int), f"{type(metadata)=}"
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, dict), f"{type(ann)=}"
         for k, v in ann.items():
@@ -87,7 +92,7 @@ class TestPTBXL:
             assert isinstance(v, dict), f"{type(v)=}"
             assert "likelihood" in v and v["likelihood"] == ann[k], f"{v=}, {ann[k]=}"
 
-    def test_properties(self):
+    def test_properties(self, reader):
         data_split_dict = reader.default_train_val_test_split
         assert len(data_split_dict) == 3, f"{len(data_split_dict)=}"
         for k, v in data_split_dict.items():
@@ -105,7 +110,7 @@ class TestPTBXL:
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_feature_reader(self):
+    def test_feature_reader(self, reader):
         assert reader._feature_reader is not None
         assert len(reader._feature_reader) > 0
 

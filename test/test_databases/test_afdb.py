@@ -20,30 +20,38 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "afdb"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-with pytest.warns(RuntimeWarning):
-    reader = AFDB(_CWD, verbose=1)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
 
-reader._update_db_list()
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        with pytest.warns(RuntimeWarning):
+            reader = AFDB(_CWD, verbose=1)
+        if len(reader) == 0:
+            reader.download()
+        reader._update_db_list()
+    except Exception as err:
+        pytest.skip(f"failed to download AFDB: {err}")
+    return reader
 
 
 class TestAFDB:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 23
 
         reader._ls_rec(local=False)
         assert len(reader) == 23
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = AFDB(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -58,7 +66,7 @@ class TestAFDB:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             AFDB(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         data_muv = reader.load_data(0, units="μv")
         data_lead_last = reader.load_data(0, data_format="lead_last")
@@ -88,7 +96,7 @@ class TestAFDB:
         with pytest.raises(AssertionError, match="`units` should be one of `.+` or None, but got `.+`"):
             reader.load_data(0, units="kV")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, dict) and ann.keys() == reader.class_map.keys()
         ann = reader.load_ann(0, ann_format="mask")
@@ -105,7 +113,7 @@ class TestAFDB:
         assert ann.shape == ann_1.shape == (1000,)
         assert np.allclose(ann, ann_1)
 
-    def test_load_beat_ann(self):
+    def test_load_beat_ann(self, reader):
         rec = reader.qrsc_records[0]
         beat_ann = reader.load_beat_ann(rec)
         assert isinstance(beat_ann, np.ndarray) and beat_ann.ndim == 1
@@ -116,14 +124,14 @@ class TestAFDB:
         assert beat_ann.shape == beat_ann_1.shape
         assert np.allclose(beat_ann, beat_ann_1 - 1000)
 
-    def test_load_rpeak_indices(self):
+    def test_load_rpeak_indices(self, reader):
         # `load_rpeak_indices` is alias of `load_beat_ann`
         rec = reader.qrsc_records[0]
         beat_ann = reader.load_beat_ann(rec)
         rpeak_indices = reader.load_rpeak_indices(rec)
         assert np.allclose(beat_ann, rpeak_indices)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
@@ -132,7 +140,7 @@ class TestAFDB:
         assert len(reader.df_all_db_info) > 0
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=2000)
         reader.plot(0, ticks_granularity=0, sampfrom=1000, sampto=2000)
         data = reader.load_data(0, leads=[0, 1], sampfrom=1000, sampto=2000)

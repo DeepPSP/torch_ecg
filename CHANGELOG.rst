@@ -22,6 +22,8 @@ Added
   method every worker inherited a copy of the parent's
   ``DEFAULTS.RNG`` and all workers produced identical random streams
   for the augmentations.
+- Add ``codecov.yml`` with flag carry-forward, matching the tiered CI
+  (see below).
 
 Changed
 ~~~~~~~
@@ -33,7 +35,21 @@ Changed
   seeds no longer reproduce old results.
 - ``DEFAULTS.set_seed`` now also seeds the global ``numpy.random``
   state (see the in-code comment for the rationale); it used to seed
-  ``random`` and ``torch`` but not ``numpy.random``.
+  ``random`` and ``torch`` but not ``numpy.random``. The legacy
+  ``numpy.random`` state is seeded with ``seed % 2**32`` since
+  ``np.random.seed`` rejects values beyond 32-bit.
+- Tiered CI (``run-pytest.yml``): pull requests and dev pushes run the
+  fast lane (``pytest -m "not db"``), while the full suite including all
+  database-downloading tests runs nightly and on manual dispatch
+  (``workflow_dispatch`` input ``suite``). All test modules that
+  downloaded databases at import (collection) time now download in
+  session-scoped fixtures marked ``db`` which skip gracefully on
+  download failure. Jobs get an explicit ``timeout-minutes`` so that a
+  job killed by GitHub's 6-hour limit fails visibly instead of showing
+  up as "cancelled".
+- Replace the Dropbox-hosted remote-model test fixtures of
+  ``test_utils_nn.py`` with GitHub release assets
+  (``test-assets-v1``), since the Dropbox links are traffic-suspended.
 
 Fixed
 ~~~~~

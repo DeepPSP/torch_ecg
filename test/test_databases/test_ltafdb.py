@@ -18,25 +18,34 @@ from torch_ecg.utils.utils_interval import validate_interval
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "ltafdb"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-with pytest.warns(RuntimeWarning):
-    reader = LTAFDB(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        with pytest.warns(RuntimeWarning):
+            reader = LTAFDB(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download LTAFDB: {err}")
+    return reader
 
 
 class TestLTAFDB:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 84
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = LTAFDB(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -51,7 +60,7 @@ class TestLTAFDB:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LTAFDB(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         rec = 0
         data = reader.load_data(rec)
         assert data.ndim == 2
@@ -63,7 +72,7 @@ class TestLTAFDB:
         data, data_fs = reader.load_data(rec, fs=100, return_fs=True)
         assert data_fs == 100
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, dict) and ann.keys() == {"beat", "rhythm"}
         assert isinstance(ann["beat"], list) and all(isinstance(a, BeatAnn) for a in ann["beat"])
@@ -83,7 +92,7 @@ class TestLTAFDB:
         data = reader.load_data(0, leads=[0], data_format="flat")
         assert ann["rhythm"].shape == data.shape
 
-    def test_load_rhythm_ann(self):
+    def test_load_rhythm_ann(self, reader):
         rhythm_ann = reader.load_rhythm_ann(0)
         assert isinstance(rhythm_ann, dict) and rhythm_ann.keys() <= reader.rhythm_types_map.keys()
         for v in rhythm_ann.values():
@@ -97,7 +106,7 @@ class TestLTAFDB:
         data = reader.load_data(0, leads=[0], data_format="flat")
         assert rhythm_ann.shape == data.shape
 
-    def test_load_beat_ann(self):
+    def test_load_beat_ann(self, reader):
         beat_ann = reader.load_beat_ann(0)
         assert isinstance(beat_ann, list) and all(isinstance(a, BeatAnn) for a in beat_ann)
 
@@ -109,7 +118,7 @@ class TestLTAFDB:
         for v in beat_ann.values():
             assert isinstance(v, np.ndarray) and v.ndim == 1
 
-    def test_load_rpeak_indices(self):
+    def test_load_rpeak_indices(self, reader):
         rpeak_indices = reader.load_rpeak_indices(0)
         assert isinstance(rpeak_indices, np.ndarray) and rpeak_indices.ndim == 1
 
@@ -119,13 +128,13 @@ class TestLTAFDB:
         assert isinstance(rpeak_indices_1, np.ndarray) and rpeak_indices_1.ndim == 1
         assert np.all(rpeak_indices_1 == rpeak_indices - 1000)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=3000)
         reader.plot(0, ticks_granularity=0, sampfrom=1000, sampto=3000)
         data = reader.load_data(0, sampfrom=1000, sampto=3000)

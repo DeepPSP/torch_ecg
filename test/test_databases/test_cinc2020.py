@@ -33,18 +33,26 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cinc2021"
 ###############################################################################
 
 
-reader = CINC2020(_CWD)
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        return CINC2020(_CWD)
+    except Exception as err:
+        pytest.skip(f"failed to prepare CINC2020 sample data at {_CWD}: {err}")
 
 
 class TestCINC2020:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 30
         for db in list("ABCD"):
             assert len(reader.all_records[db]) == 0
         assert len(reader.all_records["E"]) == 10
         assert len(reader.all_records["F"]) == 20
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CINC2020(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -59,7 +67,7 @@ class TestCINC2020:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2020(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         for rec in reader:
             data = reader.load_data(rec)
             data_1 = reader.load_data(rec, leads=[1, 7])
@@ -84,7 +92,7 @@ class TestCINC2020:
         with pytest.raises(ValueError, match="backend `numpy` not supported for loading data"):
             reader.load_data(rec, backend="numpy")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         for rec in reader:
             ann_1 = reader.load_ann(rec)
             ann_3 = reader.load_ann(rec, raw=True)
@@ -95,13 +103,13 @@ class TestCINC2020:
         assert isinstance(ann_1, dict)
         assert isinstance(ann_3, str)
 
-    def test_load_header(self):
+    def test_load_header(self, reader):
         # alias for `load_ann`
         for rec in reader:
             header = reader.load_header(rec)
             assert dicts_equal(header, reader.load_ann(rec))
 
-    def test_get_labels(self):
+    def test_get_labels(self, reader):
         for rec in reader:
             labels_1 = reader.get_labels(rec)
             labels_2 = reader.get_labels(rec, fmt="f")
@@ -113,11 +121,11 @@ class TestCINC2020:
         with pytest.raises(ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"):
             reader.get_labels(0, fmt="flat")
 
-    def test_get_fs(self):
+    def test_get_fs(self, reader):
         for rec in reader:
             assert reader.get_fs(rec) in reader.fs.values()
 
-    def test_get_subject_info(self):
+    def test_get_subject_info(self, reader):
         for rec in reader:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
@@ -133,7 +141,7 @@ class TestCINC2020:
             for k, v in info_1.items():
                 assert info[k] == v
 
-    def test_get_tranche_class_distribution(self):
+    def test_get_tranche_class_distribution(self, reader):
         dist = reader.get_tranche_class_distribution(list("ABCDE"))
         assert isinstance(dist, dict)
         dist_1 = reader.get_tranche_class_distribution(list("ABCDE"), scored_only=False)
@@ -142,7 +150,7 @@ class TestCINC2020:
         for k, v in dist.items():
             assert v == dist_1[k]
 
-    def test_load_resampled_data(self):
+    def test_load_resampled_data(self, reader):
         for rec in reader:
             data = reader.load_resampled_data(rec)
             assert data.ndim == 2 and data.shape[0] == 12
@@ -152,7 +160,7 @@ class TestCINC2020:
             assert data_1.ndim == 3 and data_1.shape[1:] == (12, 2000)
         reader.load_resampled_data(0)
 
-    def test_load_raw_data(self):
+    def test_load_raw_data(self, reader):
         for rec in reader:
             data_1 = reader.load_raw_data(rec, backend="wfdb")  # lead-last
             data_2 = reader.load_raw_data(rec, backend="scipy")  # lead-first
@@ -161,15 +169,15 @@ class TestCINC2020:
             assert np.allclose(data_1, data_2.T)
         reader.load_raw_data(0, backend="wfdb")
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         for rec in reader:
             assert isinstance(reader.get_subject_id(rec), int)
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_check_nan(self):
+    def test_check_nan(self, reader):
         reader._check_nan(tranches="ABCDE")
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert isinstance(reader.url, list) and len(reader.url) == len(reader.all_records) == len(reader.tranche_names) == len(
             reader.db_tranches
@@ -178,7 +186,7 @@ class TestCINC2020:
         assert set(reader.diagnoses_records_list.keys()) >= set(dx_mapping_scored.Abbreviation)
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         waves = {
             "p_onsets": [100, 1100],
             "p_offsets": [110, 1110],
@@ -252,15 +260,18 @@ class TestCINC2020:
 config = deepcopy(CINC2020TrainCfg)
 config.db_dir = _CWD
 
-with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
-    ds = CINC2020Dataset(config, training=False, lazy=False, db_dir=_CWD)
+
+@pytest.fixture(scope="session")
+def ds(reader):
+    with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
+        return CINC2020Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 
 class TestCINC2020Dataset:
-    def test_len(self):
+    def test_len(self, ds):
         assert len(ds) == len(ds.records) > 0
 
-    def test_getitem(self):
+    def test_getitem(self, ds):
         for i in range(len(ds)):
             data, target = ds[i]
             assert data.ndim == 2 and data.shape == (
@@ -274,13 +285,13 @@ class TestCINC2020Dataset:
         assert data.shape == (2, len(config.leads), config.input_len)
         assert target.shape == (2, len(config.classes))
 
-    def test_load_one_record(self):
+    def test_load_one_record(self, ds):
         for rec in ds.records:
             data, target = ds._load_one_record(rec)
             assert data.shape == (1, len(config.leads), config.input_len)
             assert target.shape == (1, len(config.classes))
 
-    def test_properties(self):
+    def test_properties(self, ds):
         assert ds.signals.shape == (
             len(ds.records),
             len(config.leads),
@@ -289,13 +300,13 @@ class TestCINC2020Dataset:
         assert ds.labels.shape == (len(ds.records), len(config.classes))
         assert str(ds) == repr(ds)
 
-    def test_persistence(self):
+    def test_persistence(self, ds):
         ds.persistence()
 
-    def test_check_nan(self):
+    def test_check_nan(self, ds):
         ds._check_nan()
 
-    def test_train_test_split(self):
+    def test_train_test_split(self, reader, ds):
         ds._train_test_split()
 
         ns = "_ns" if len(ds.config.special_classes) == 0 else ""

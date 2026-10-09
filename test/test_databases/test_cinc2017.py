@@ -16,25 +16,34 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cinc2017"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-with pytest.warns(RuntimeWarning):
-    reader = CINC2017(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        with pytest.warns(RuntimeWarning):
+            reader = CINC2017(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download CINC2017: {err}")
+    return reader
 
 
 class TestCINC2017:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 8528
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CINC2017(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -49,7 +58,7 @@ class TestCINC2017:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2017(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         rec = reader._validation_set[0]
         data = reader.load_data(rec)
         assert data.ndim == 2
@@ -58,7 +67,7 @@ class TestCINC2017:
         data = reader.load_data(rec, leads=[0], data_format="flat", sampfrom=1000, sampto=2000)
         assert data.shape == (1000,)
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         rec = 0
         ann = reader.load_ann(rec)
         ann_1 = reader.load_ann(rec, version=1)
@@ -69,11 +78,11 @@ class TestCINC2017:
         with pytest.raises(ValueError, match="Annotation version v100 does not exist! Choose from "):
             reader.load_ann(rec, version=100)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, ticks_granularity=2)

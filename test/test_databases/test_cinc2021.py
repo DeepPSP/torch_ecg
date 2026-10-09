@@ -34,11 +34,19 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cinc2021"
 ###############################################################################
 
 
-reader = CINC2021(_CWD)
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        return CINC2021(_CWD)
+    except Exception as err:
+        pytest.skip(f"failed to prepare CINC2021 sample data at {_CWD}: {err}")
 
 
 class TestCINC2021:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 50
         for db in list("ABCD"):
             assert len(reader.all_records[db]) == 0
@@ -46,7 +54,7 @@ class TestCINC2021:
         assert len(reader.all_records["F"]) == 20
         assert len(reader.all_records["G"]) == 20
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CINC2021(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -61,7 +69,7 @@ class TestCINC2021:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2021(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         for rec in reader:
             data = reader.load_data(rec)
             data_1 = reader.load_data(rec, leads=[1, 7])
@@ -89,7 +97,7 @@ class TestCINC2021:
         with pytest.raises(ValueError, match="backend `numpy` not supported for loading data"):
             reader.load_data(0, backend="numpy")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         for rec in reader:
             ann_1 = reader.load_ann(rec)
             ann_3 = reader.load_ann(rec, raw=True)
@@ -100,14 +108,14 @@ class TestCINC2021:
         assert isinstance(ann_1, dict)
         assert isinstance(ann_3, str)
 
-    def test_load_header(self):
+    def test_load_header(self, reader):
         # alias for `load_ann`
         for rec in reader:
             header = reader.load_header(rec)
             assert dicts_equal(header, reader.load_ann(rec))
         reader.load_header(0)
 
-    def test_get_labels(self):
+    def test_get_labels(self, reader):
         for rec in reader:
             labels_1 = reader.get_labels(rec)
             labels_2 = reader.get_labels(rec, fmt="f")
@@ -118,17 +126,17 @@ class TestCINC2021:
         with pytest.raises(ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"):
             reader.get_labels(0, fmt="xxx")
 
-    def test_get_fs(self):
+    def test_get_fs(self, reader):
         for rec in reader:
             assert reader.get_fs(rec) in reader.fs.values()
         assert isinstance(reader.get_fs(0, from_hea=False), int)
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         for rec in reader:
             assert isinstance(reader.get_subject_id(rec), int)
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_get_subject_info(self):
+    def test_get_subject_info(self, reader):
         for rec in reader:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
@@ -145,7 +153,7 @@ class TestCINC2021:
                 assert info[k] == v
         reader.get_subject_info(0)
 
-    def test_get_tranche_class_distribution(self):
+    def test_get_tranche_class_distribution(self, reader):
         dist = reader.get_tranche_class_distribution(list("ABCDE"))
         assert isinstance(dist, dict)
         dist_1 = reader.get_tranche_class_distribution(list("ABCDE"), scored_only=False)
@@ -154,7 +162,7 @@ class TestCINC2021:
         for k, v in dist.items():
             assert v == dist_1[k]
 
-    def test_load_resampled_data(self):
+    def test_load_resampled_data(self, reader):
         for rec in reader:
             data = reader.load_resampled_data(rec)
             assert data.ndim == 2 and data.shape[0] == 12
@@ -164,7 +172,7 @@ class TestCINC2021:
             assert data_1.ndim == 3 and data_1.shape[1:] == (12, 2000)
         reader.load_resampled_data(0)
 
-    def test_load_raw_data(self):
+    def test_load_raw_data(self, reader):
         for rec in reader:
             data_1 = reader.load_raw_data(rec, backend="wfdb")  # lead-last
             data_2 = reader.load_raw_data(rec, backend="scipy")  # lead-first
@@ -173,7 +181,7 @@ class TestCINC2021:
             assert np.allclose(data_1, data_2.T)
         reader.load_raw_data(0)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert isinstance(reader.url, list) and len(reader.url) - 1 == len(reader.all_records) == len(
             reader.tranche_names
@@ -195,7 +203,7 @@ class TestCINC2021:
         assert (df_1 <= df_2).all(None)
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         waves = {
             "p_onsets": [100, 1100],
             "p_offsets": [110, 1110],
@@ -246,7 +254,7 @@ class TestCINC2021:
         assert isinstance(metrics, tuple)
         assert all([isinstance(m, (float, np.ndarray)) for m in metrics]), [(m, type(m)) for m in metrics]
 
-    def test_aux_data(self):
+    def test_aux_data(self, reader):
         mat = load_weights(return_fmt="np")
         assert isinstance(mat, np.ndarray)
         mat = load_weights(return_fmt="pd")
@@ -282,15 +290,18 @@ class TestCINC2021:
 config = deepcopy(CINC2021TrainCfg)
 config.db_dir = _CWD
 
-with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
-    ds = CINC2021Dataset(config, training=False, lazy=False, db_dir=_CWD)
+
+@pytest.fixture(scope="session")
+def ds(reader):
+    with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
+        return CINC2021Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 
 class TestCINC2021Dataset:
-    def test_len(self):
+    def test_len(self, ds):
         assert len(ds) == len(ds.records) > 0
 
-    def test_getitem(self):
+    def test_getitem(self, ds):
         for i in range(len(ds)):
             data, target = ds[i]
             assert data.ndim == 2 and data.shape == (
@@ -304,13 +315,13 @@ class TestCINC2021Dataset:
         assert data.shape == (2, len(config.leads), config.input_len)
         assert target.shape == (2, len(config.classes))
 
-    def test_load_one_record(self):
+    def test_load_one_record(self, ds):
         for rec in ds.records:
             data, target = ds._load_one_record(rec)
             assert data.shape == (1, len(config.leads), config.input_len)
             assert target.shape == (1, len(config.classes))
 
-    def test_properties(self):
+    def test_properties(self, ds):
         assert ds.signals.shape == (
             len(ds.records),
             len(config.leads),
@@ -346,7 +357,7 @@ class TestCINC2021Dataset:
         assert new_ds.labels.shape == (0, len(config.classes))
         del new_ds
 
-    def test_from_extern(self):
+    def test_from_extern(self, ds):
         new_config = deepcopy(config)
         new_config.leads = deepcopy(three_leads)
         new_ds = CINC2021Dataset.from_extern(ds, new_config)
@@ -354,7 +365,7 @@ class TestCINC2021Dataset:
         assert new_ds.labels.shape == (len(ds.records), len(config.classes))
         del new_ds, new_config
 
-    def test_reload_from_extern(self):
+    def test_reload_from_extern(self, ds):
         new_config = deepcopy(config)
         new_config.leads = deepcopy(six_leads)
         new_ds = CINC2021Dataset.from_extern(ds, new_config)
@@ -373,13 +384,13 @@ class TestCINC2021Dataset:
 
         del new_ds, new_config
 
-    def test_persistence(self):
+    def test_persistence(self, ds):
         ds.persistence()
 
-    def test_check_nan(self):
+    def test_check_nan(self, ds):
         ds._check_nan()
 
-    def test_train_test_split(self):
+    def test_train_test_split(self, reader, ds):
         ds._train_test_split()
 
         ns = "_ns" if len(ds.config.special_classes) == 0 else ""

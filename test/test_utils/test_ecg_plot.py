@@ -29,10 +29,18 @@ for f in _TMP_DIR.iterdir():
     elif f.is_dir():
         shutil.rmtree(f)
 
-reader = CINC2021(_CWD)
+pytestmark = pytest.mark.db
 
 
-def test_ecg_plot():
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        return CINC2021(_CWD)
+    except Exception as err:
+        pytest.skip(f"failed to prepare CINC2021 sample data at {_CWD}: {err}")
+
+
+def test_ecg_plot(reader):
     # test inches_to_dots
     assert inches_to_dots(1.2, 200) == 240
 

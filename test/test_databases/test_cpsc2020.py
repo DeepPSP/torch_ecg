@@ -18,24 +18,33 @@ from torch_ecg.utils import validate_interval
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cpsc2020"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = CPSC2020(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        reader = CPSC2020(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download CPSC2020: {err}")
+    return reader
 
 
 class TestCPSC2020:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 10
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CPSC2020(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -50,7 +59,7 @@ class TestCPSC2020:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2020(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         # reader.fs is 400
         data_1 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="flat")
         data_2 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="channel_last")
@@ -69,12 +78,12 @@ class TestCPSC2020:
         with pytest.raises(ValueError, match="Invalid `units`"):
             reader.load_data(0, units="invalid")
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0, sampfrom=1000, sampto=9000)
         assert ann.keys() == {"SPB_indices", "PVC_indices"}
         assert all([isinstance(v, np.ndarray) for v in ann.values()]), [type(v) for v in ann.values()]
 
-    def test_locate_premature_beats(self):
+    def test_locate_premature_beats(self, reader):
         premature_beat_intervals = reader.locate_premature_beats(0)
         assert len(premature_beat_intervals) > 0
         premature_beat_intervals_1 = reader.locate_premature_beats(0, sampfrom=1000, sampto=90000)
@@ -84,7 +93,7 @@ class TestCPSC2020:
         premature_beat_intervals = reader.locate_premature_beats(0, premature_type="PVC")
         assert len(premature_beat_intervals) == 0 or validate_interval(premature_beat_intervals)[0]
 
-    def test_train_test_split_rec(self):
+    def test_train_test_split_rec(self, reader):
         for test_rec_num in range(1, 5):
             split_res = reader.train_test_split_rec(test_rec_num=test_rec_num)
             assert split_res.keys() == {"train", "test"}
@@ -97,10 +106,10 @@ class TestCPSC2020:
         with pytest.raises(ValueError, match="Invalid `test_rec_num`"):
             reader.train_test_split_rec(test_rec_num=0)
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
@@ -110,7 +119,7 @@ class TestCPSC2020:
         assert isinstance(all_references, list) and len(all_references) == len(reader)
         assert all_annotations == all_references
 
-    def test_plot(self):
+    def test_plot(self, reader):
         rec = "A04"
         sampfrom = 2000
         sampto = 12000
@@ -126,7 +135,7 @@ class TestCPSC2020:
         data = reader.load_data(rec, sampfrom=sampfrom, sampto=sampto, units="μV", data_format="flat")
         reader.plot(rec, data=data, ticks_granularity=0)
 
-    def test_compute_metrics(self):
+    def test_compute_metrics(self, reader):
         sbp_true_0 = reader.load_ann(0)["SPB_indices"]
         pvc_true_0 = reader.load_ann(0)["PVC_indices"]
         sbp_true_1 = reader.load_ann(1)["SPB_indices"]

@@ -8,9 +8,20 @@ on:
     branches: [ dev ]
   pull_request:
     branches: [ master ]
+  schedule:
+    # nightly full suite (incl. `db`-marked tests that download real databases),
+    # 02:30 Beijing time
+    - cron: "30 18 * * *"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: "core"
+        type: choice
+        options: ["core", "full"]
 
 env:
   PYTHON_PRIMARY_VERSION: '3.12'
@@ -22,11 +33,19 @@ jobs:
     if: github.repository_owner == 'DeepPSP'
 
     runs-on: ubuntu-22.04
+    # fail with an explicit timeout instead of being hard-killed at 6h
+    # (which renders as "cancelled" and hides the cause)
+    timeout-minutes: 350
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.12", "3.13"]
       fail-fast: false
-
+    env:
+      # `core` = fast lane, deselects `db`-marked tests (no database downloads);
+      # `full` = the whole suite.  PRs and dev pushes only need the fast lane;
+      # the full suite runs nightly and on manual dispatch, so that slow or
+      # flaky database downloads cannot eat the whole CI budget.
+      SUITE: ${{ (github.event_name == 'schedule') && 'full' || (github.event_name == 'workflow_dispatch') && inputs.suite || 'core' }}
     steps:
     - uses: actions/checkout@v7
     - name: Clear unnecessary system components
@@ -72,7 +91,7 @@ jobs:
     # ref. https://github.com/DeepPSP/nsrr-automate
       # uses: gacts/run-and-post-run@v1
       continue-on-error: true
-      if: ${{ env.SHHS_DATA_AVAILABLE == 'true' }}
+      if: ${{ env.SHHS_DATA_AVAILABLE == 'true' && env.SUITE == 'full' }}
       run: |
         set -u -o pipefail
         gem install nsrr --no-document
@@ -106,7 +125,12 @@ jobs:
     - name: Run test with pytest and collect coverage
       run: |
         echo "SHHS_DATA_AVAILABLE at test step: $SHHS_DATA_AVAILABLE"
-        pytest --cov --junitxml=junit.xml -o junit_family=legacy
+        echo "SUITE at test step: $SUITE"
+        if [ "$SUITE" = "full" ]; then
+          pytest --cov --junitxml=junit.xml -o junit_family=legacy
+        else
+          pytest -m "not db" --cov --junitxml=junit.xml -o junit_family=legacy
+        fi
       env:
         SHHS_DATA_AVAILABLE: ${{ env.SHHS_DATA_AVAILABLE }}
     - name: Upload coverage to Codecov
@@ -116,6 +140,7 @@ jobs:
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
         token: ${{ secrets.CODECOV_TOKEN }} # required
+        flags: ${{ env.SUITE }}
     - name: Upload test results to Codecov
       if: ${{ !cancelled() }}
       uses: codecov/test-results-action@v1

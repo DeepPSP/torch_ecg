@@ -18,20 +18,29 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2018"
 ###############################################################################
 
 
-with pytest.warns(
-    RuntimeWarning,
-    match="Annotation file not found\\. Please call method `_download_labels`, and call method `_ls_rec` again",
-):
-    reader = CPSC2018(_CWD)
-reader._download_labels()
-reader._ls_rec()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        with pytest.warns(
+            RuntimeWarning,
+            match="Annotation file not found\\. Please call method `_download_labels`, and call method `_ls_rec` again",
+        ):
+            reader = CPSC2018(_CWD)
+        reader._download_labels()
+        reader._ls_rec()
+    except Exception as err:
+        pytest.skip(f"failed to prepare CPSC2018 sample data at {_CWD}: {err}")
+    return reader
 
 
 class TestCPSC2018:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 10
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CPSC2018(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -46,7 +55,7 @@ class TestCPSC2018:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2018(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         for rec in reader:
             data = reader.load_data(rec)
             data_1 = reader.load_data(rec, leads=[1, 7])
@@ -61,7 +70,7 @@ class TestCPSC2018:
             assert data_fs == reader.fs
         reader.load_data(0)
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         for rec in reader:
             ann_1 = reader.load_ann(rec, ann_format="n")
             ann_2 = reader.load_ann(rec, ann_format="a")
@@ -75,7 +84,7 @@ class TestCPSC2018:
         ):
             reader.load_ann(0, ann_format="xxx")
 
-    def test_get_labels(self):
+    def test_get_labels(self, reader):
         # alias of `load_ann`
         for rec in reader:
             ann_1 = reader.load_ann(rec, ann_format="n")
@@ -84,30 +93,30 @@ class TestCPSC2018:
         reader.get_labels(0, ann_format="n")
         reader.load_ann(0, ann_format="n")
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         for rec in reader:
             assert isinstance(reader.get_subject_id(rec), int)
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_get_subject_info(self):
+    def test_get_subject_info(self, reader):
         for rec in reader:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
             assert info.keys() == {"age", "sex"}
         info = reader.get_subject_info(0, items=["age"])
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_helper(self):
+    def test_helper(self, reader):
         assert reader.helper() is None  # printed
         for item in ["attributes", "methods"]:
             assert reader.helper(item) is None  # printed
         assert reader.helper(["attributes", "methods"]) is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, leads=["I", 3, 9], ticks_granularity=2)
 
     def test_compute_metrics(self):

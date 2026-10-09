@@ -17,24 +17,33 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "qtdb"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = QTDB(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        reader = QTDB(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download QTDB: {err}")
+    return reader
 
 
 class TestQTDB:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 105
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = QTDB(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -49,14 +58,14 @@ class TestQTDB:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             QTDB(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         assert data.ndim == 2
         assert data.shape[0] == len(reader.get_lead_names(0))
         data_1 = reader.load_data(0, leads=0, data_format="flat", sampto=1000, units="uV")
         assert np.allclose(data[0][:1000], data_1 / 1000)
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         ann_1 = reader.load_ann(0, ignore_beat_types=False)
         assert len(ann) <= len(ann_1)
@@ -72,11 +81,11 @@ class TestQTDB:
         with pytest.raises(AssertionError, match="`sampto` should be greater than `sampfrom`"):
             reader.load_ann(0, sampfrom=2000, sampto=1000)
 
-    def test_load_wave_ann(self):
+    def test_load_wave_ann(self, reader):
         # alias of `load_ann`
         assert len(reader.load_wave_ann(0)) == len(reader.load_ann(0))
 
-    def test_load_wave_masks(self):
+    def test_load_wave_masks(self, reader):
         # Not implemented yet
         with pytest.raises(
             NotImplementedError,
@@ -84,7 +93,7 @@ class TestQTDB:
         ):
             reader.load_wave_masks(0)
 
-    def test_load_rhythm_ann(self):
+    def test_load_rhythm_ann(self, reader):
         # Not implemented yet
         with pytest.raises(
             NotImplementedError,
@@ -92,7 +101,7 @@ class TestQTDB:
         ):
             reader.load_rhythm_ann(0)
 
-    def test_load_beat_ann(self):
+    def test_load_beat_ann(self, reader):
         beat_ann = reader.load_beat_ann(0)
         beat_ann_1 = reader.load_beat_ann(0, beat_types=reader.beat_types[:2])
         assert len(beat_ann) >= len(beat_ann_1)
@@ -111,7 +120,7 @@ class TestQTDB:
         ):
             reader.load_beat_ann(0, beat_format="list")
 
-    def test_load_rpeak_indices(self):
+    def test_load_rpeak_indices(self, reader):
         rpeak_indices = reader.load_rpeak_indices(0, sampfrom=1000, sampto=2000)
         rpeak_indices_1 = reader.load_rpeak_indices(0, sampfrom=1000, sampto=2000, keep_original=True)
         assert np.allclose(rpeak_indices, rpeak_indices_1 - 1000)
@@ -127,13 +136,13 @@ class TestQTDB:
         ):
             reader.load_rpeak_indices("sel30")
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         # `plot` not implemented yet
         with pytest.raises(NotImplementedError):
             reader.plot(0)
