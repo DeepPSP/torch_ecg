@@ -762,7 +762,7 @@ wolff parkinson white pattern,74390002,WPW"""))
 
 
 for ea_str in __all__:
-    ea = eval(ea_str)
+    ea = globals()[ea_str]
     try:
         ea["url"].insert(
             0,

@@ -970,8 +970,8 @@ class CPSC2021(PhysioNetDataBase):
                         seg[ax_idx, itv_start:itv_end],
                         color="red",
                     )
-                for w in ["p_waves", "qrs", "t_waves"]:
-                    for itv in eval(w):
+                for w, wave_itvs in {"p_waves": p_waves, "qrs": qrs, "t_waves": t_waves}.items():
+                    for itv in wave_itvs:
                         itv_start = max(0, itv[0] - idx * line_len)
                         itv_end = min(itv[1] - idx * line_len, line_len)
                         if not 0 <= itv_start < itv_end <= line_len:

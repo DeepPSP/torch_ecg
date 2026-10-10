@@ -1,8 +1,10 @@
 """ """
 
+import io
 import re
 import shutil
 import subprocess
+import tarfile
 import types
 import urllib.parse
 from pathlib import Path
@@ -515,6 +517,75 @@ def test_download_from_aws_awscli_missing(monkeypatch, tmp_path):
 
     with pytest.raises(RuntimeError, match="AWS cli is required to download from S3"):
         dl._download_from_aws_s3_using_awscli("s3://bucket/prefix/", tmp_path)
+
+
+def _write_tar(tar_path, members):
+    """Build a tar archive from `(name, type, data)` triples,
+    where `data` is the file content or the link target."""
+    with tarfile.open(tar_path, "w:gz") as tar:
+        for name, typ, data in members:
+            info = tarfile.TarInfo(name)
+            info.type = typ
+            if typ in (tarfile.REGTYPE, tarfile.AREGTYPE):
+                info.size = len(data)
+                tar.addfile(info, io.BytesIO(data))
+            else:  # symlink / hardlink
+                info.linkname = data
+                tar.addfile(info)
+
+
+def test_safe_tar_extract_rejects_traversal(tmp_path):
+    """Regression for the path-traversal check in `_safe_tar_extract`.
+
+    The old check compared *string* prefixes via `os.path.commonprefix`,
+    so a sibling directory whose name merely starts with the destination
+    directory's name (e.g. `dst_evil` next to `dst`) passed the check.
+    """
+    dst = tmp_path / "dst"
+    dst.mkdir()
+
+    def _assert_blocked(members, tar_name):
+        tar_path = tmp_path / tar_name
+        _write_tar(tar_path, members)
+        with tarfile.open(tar_path) as tar, pytest.raises(Exception, match="Path Traversal"):
+            dl._safe_tar_extract(tar, str(dst))
+        # nothing may have been written outside the destination
+        assert list(tmp_path.glob(f"{dst.name}*")) == [dst]
+        assert list(dst.iterdir()) == []
+
+    # sibling directory with a string-prefix name (bypassed the old check):
+    # `join(dst, "../dst_evil/x")` normalizes to `/…/dst_evil/x`, whose string
+    # prefix still equals `/…/dst` under `commonprefix`
+    _assert_blocked([("../dst_evil/file.txt", tarfile.REGTYPE, b"x")], "sibling.tar.gz")
+    # classic `..` traversal
+    _assert_blocked([("../evil.txt", tarfile.REGTYPE, b"x")], "dotdot.tar.gz")
+    # absolute member path (os.path.join discards dst for absolute names)
+    _assert_blocked([("/etc/evil.txt", tarfile.REGTYPE, b"x")], "absolute.tar.gz")
+    # symlink pointing outside, then a member going through it
+    _assert_blocked(
+        [
+            ("link", tarfile.SYMTYPE, str(tmp_path)),
+            ("link/evil.txt", tarfile.REGTYPE, b"x"),
+        ],
+        "symlink.tar.gz",
+    )
+
+
+def test_safe_tar_extract_legit_archive(tmp_path):
+    dst = tmp_path / "dst"
+    dst.mkdir()
+    tar_path = tmp_path / "ok.tar.gz"
+    _write_tar(
+        tar_path,
+        [
+            ("top.txt", tarfile.REGTYPE, b"top"),
+            ("nested/dir/inner.txt", tarfile.REGTYPE, b"inner"),
+        ],
+    )
+    with tarfile.open(tar_path) as tar:
+        dl._safe_tar_extract(tar, str(dst))
+    assert (dst / "top.txt").read_bytes() == b"top"
+    assert (dst / "nested" / "dir" / "inner.txt").read_bytes() == b"inner"
 
 
 def test_download_from_aws_awscli_present_fast_path(monkeypatch, tmp_path):

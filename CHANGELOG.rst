@@ -24,6 +24,9 @@ Added
   for the augmentations.
 - Add ``codecov.yml`` with flag carry-forward, matching the tiered CI
   (see below).
+- ``test_download.py``: regression tests for path traversal in tar
+  extraction (sibling directory, ``..``, absolute member names,
+  symlink/hardlink escapes).
 
 Changed
 ~~~~~~~
@@ -54,6 +57,27 @@ Changed
 Fixed
 ~~~~~
 
+- Harden the safe tar extraction in ``download.py``: the membership check
+  now uses ``os.path.realpath`` + ``os.path.commonpath`` instead of
+  string-prefix ``commonprefix`` (which a sibling directory whose name
+  merely starts with the destination's name could bypass), additionally
+  refuses to extract members *through* symlink/hardlink members (which
+  ``extractall`` would create first and then follow outside the
+  destination), and validates that link members point inside the
+  destination.
+- Remove all ``eval`` calls from the package (15 sites): config-driven
+  code execution in ``make_attention_layer`` (unknown names now always
+  raise ``ValueError``) and ``setup_criterion`` (the ``"nn."``-prefixed
+  path now uses ``getattr``); replaced dynamic name resolution with
+  ``getattr`` / ``globals()`` / ``locals()`` / explicit dicts in
+  ``cfg.py``, ``misc.py``, ``utils_signal.py``, ``utils_metrics.py``
+  (including the wave-delineation metric collection in
+  ``compute_metrics_waveform`` and its copy in
+  ``ludb.compute_metrics``), ``utils_nn.py``, ``databases/base.py``,
+  ``ecg_arrhythmia_knowledge.py``, and the ``plot`` methods of
+  ``cinc2020``/``cinc2021``/``cpsc2021``/``sph``/``ludb``. Behavior is
+  unchanged except that invalid names now raise the documented errors
+  instead of executing arbitrary expressions.
 - ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
   two ``multiprocessing.Pool`` instances per forward call (each forward
   now takes milliseconds instead of process-pool startup costs, and the

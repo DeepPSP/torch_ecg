@@ -655,7 +655,7 @@ def setup_criterion(name: str, **kwargs: Any) -> nn.Module:
     if name in LOSSES:
         return LOSSES.build(name, **kwargs)
     if name.startswith("nn."):
-        criterion = eval(name)(**kwargs)
+        criterion = getattr(nn, name[3:])(**kwargs)
     elif name in nn.modules.loss.__all__:
         criterion = getattr(nn, name)(**kwargs)
     else:

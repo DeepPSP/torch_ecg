@@ -412,10 +412,10 @@ def metrics_from_confusion_matrix(
         "auroc",  # area under the receiver-operater characteristic curve (ROC AUC)
         "auprc",  # area under the precision-recall curve
     ]:
-        metrics[m.strip("_")] = eval(m)
+        metrics[m.strip("_")] = locals()[m]
         # convert to Python float from numpy float if possible
         metrics[f"macro_{m}".strip("_")] = (
-            np.nanmean(eval(m) * _weights).item() if np.any(np.isfinite(eval(m))) else float("nan")
+            np.nanmean(locals()[m] * _weights).item() if np.any(np.isfinite(locals()[m])) else float("nan")
         )
     if fillna is not False:
         if isinstance(fillna, bool):
@@ -941,29 +941,19 @@ def _compute_metrics_waveform(
         sensitivity, precision, f1_score, mean_error, standard_deviation
 
     """
-    pwave_onset_truths, pwave_offset_truths, pwave_onset_preds, pwave_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
-    qrs_onset_truths, qrs_offset_truths, qrs_onset_preds, qrs_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
-    twave_onset_truths, twave_offset_truths, twave_onset_preds, twave_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
 
-    for item in ["truths", "preds"]:
-        for w in eval(item):
+    # collected[w.name][term][item] : list of onset/offset sample indices,
+    # e.g. collected["pwave"]["onset"]["truths"]; unknown waveform names are
+    # tolerated (collected but ignored by the scoring loop below)
+    def _new_wave_entry():
+        return {term: {item: [] for item in ["truths", "preds"]} for term in ["onset", "offset"]}
+
+    collected = {wave: _new_wave_entry() for wave in ECGWaveFormNames}
+    sources = {"truths": truths, "preds": preds}
+    for item, waveforms in sources.items():
+        for w in waveforms:
             for term in ["onset", "offset"]:
-                eval(f"{w.name}_{term}_{item}.append(w.{term})")
+                collected.setdefault(w.name, _new_wave_entry())[term][item].append(getattr(w, term))
 
     scorings = dict()
     for wave in ECGWaveFormNames:
@@ -978,7 +968,7 @@ def _compute_metrics_waveform(
                 f1_score,
                 mean_error,
                 standard_deviation,
-            ) = _compute_metrics_base(eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs, tol)
+            ) = _compute_metrics_base(collected[wave][term]["truths"], collected[wave][term]["preds"], fs, tol)
             scorings[f"{wave}_{term}"] = dict(
                 truth_positive=truth_positive,
                 false_negative=false_negative,

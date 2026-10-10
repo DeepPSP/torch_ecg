@@ -166,7 +166,7 @@ class DTYPE:
         if self.NP is None:
             self.NP = np.dtype(self.STR)
         if self.TORCH is None:
-            self.TORCH = eval(f"torch.{self.STR}")
+            self.TORCH = getattr(torch, self.STR)
         if self.INT is None:
             self.INT = int(re.search("\\d+", self.STR).group(0))  # type: ignore
         assert all(
