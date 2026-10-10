@@ -150,6 +150,12 @@ def test_setup_criterion():
     criterion = setup_criterion("AsymmetricLoss")
     criterion = setup_criterion("MaskedBCEWithLogitsLoss")
 
+    # the `nn.`-prefixed path (used to go through `eval`)
+    criterion = setup_criterion("nn.BCEWithLogitsLoss")
+    assert isinstance(criterion, torch.nn.BCEWithLogitsLoss)
+    with pytest.raises(AttributeError):
+        setup_criterion("nn.NotALoss")
+
     for name in torch.nn.modules.loss.__all__:
         # skip losses whose constructors have required arguments, e.g.
         # `torch.nn.LinearCrossEntropyLoss` (added in newer versions of

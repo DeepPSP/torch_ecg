@@ -4470,7 +4470,8 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
         # NOT IMPLEMENTED
         return BAMBlock(in_channels, **config)
     else:
-        try:
-            return eval(f"""{name}(in_channels, **config)""")
-        except Exception:
-            raise ValueError(f"Unknown attention type: `{name}`")
+        # used to be `eval(f"{name}(in_channels, **config)")`, which allowed
+        # arbitrary code execution via the user-supplied config; the lowercased
+        # `name` never matched any module-level callable in practice, so this
+        # branch always ended in the `ValueError` below anyway
+        raise ValueError(f"Unknown attention type: `{name}`")

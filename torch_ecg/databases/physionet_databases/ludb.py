@@ -838,8 +838,8 @@ class LUDB(PhysioNetDataBase):
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             for d in diagnoses:
                 axes[idx].plot([], [], " ", label=d)
-            for w in ["pwaves", "qrs", "twaves"]:
-                for itv in eval(f"{w}['{lead_name}']"):
+            for w, lead_itvs in {"pwaves": pwaves, "qrs": qrs, "twaves": twaves}.items():
+                for itv in lead_itvs[lead_name]:
                     axes[idx].axvspan(
                         itv[0] / self.fs,
                         itv[1] / self.fs,
@@ -1074,36 +1074,22 @@ def _compute_metrics_waveform(
         sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
-    pwave_onset_truths, pwave_offset_truths, pwave_onset_preds, pwave_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
-    qrs_onset_truths, qrs_offset_truths, qrs_onset_preds, qrs_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
-    twave_onset_truths, twave_offset_truths, twave_onset_preds, twave_offset_preds = (
-        [],
-        [],
-        [],
-        [],
-    )
+    # collected[wave][term][item] : list of onset/offset sample indices;
+    # unknown waveform names are tolerated (collected but ignored below)
+    waves = ["pwave", "qrs", "twave"]
 
-    for item in ["truths", "preds"]:
-        for w in eval(item):
+    def _new_wave_entry():
+        return {term: {item: [] for item in ["truths", "preds"]} for term in ["onset", "offset"]}
+
+    collected = {wave: _new_wave_entry() for wave in waves}
+    sources = {"truths": truths, "preds": preds}
+    for item, waveforms in sources.items():
+        for w in waveforms:
             for term in ["onset", "offset"]:
-                eval(f"{w.name}_{term}_{item}.append(w.{term})")
+                collected.setdefault(w.name, _new_wave_entry())[term][item].append(getattr(w, term))
 
     scorings = CFG()
-    for wave in [
-        "pwave",
-        "qrs",
-        "twave",
-    ]:
+    for wave in waves:
         for term in ["onset", "offset"]:
             (
                 truth_positive,
@@ -1115,7 +1101,7 @@ def _compute_metrics_waveform(
                 f1_score,
                 mean_error,
                 standard_deviation,
-            ) = _compute_metrics_base(eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs)
+            ) = _compute_metrics_base(collected[wave][term]["truths"], collected[wave][term]["preds"], fs)
             scorings[f"{wave}_{term}"] = CFG(
                 truth_positive=truth_positive,
                 false_negative=false_negative,

@@ -117,7 +117,7 @@ def smooth(
     if window == "flat":  # moving average
         w = np.ones(radius, "d")
     else:
-        w = eval("np." + window + "(radius)")
+        w = getattr(np, window)(radius)
 
     y = np.convolve(w / w.sum(), s, mode=mode)  # type: ignore
     y = y[(radius // 2 - 1) : -(radius // 2) - 1]

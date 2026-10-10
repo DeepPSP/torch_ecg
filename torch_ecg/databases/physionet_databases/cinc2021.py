@@ -1353,8 +1353,8 @@ class CINC2021(PhysioNetDataBase):
             axes[idx].plot([], [], " ", label=f"labels_a - {','.join(diag_all)}")
             axes[idx].plot([], [], " ", label=f"tranche - {self.tranche_names[tranche]}")
             axes[idx].plot([], [], " ", label=f"fs - {self.fs[tranche]}")
-            for w in ["p_waves", "qrs", "t_waves"]:
-                for itv in eval(w):
+            for w, wave_itvs in {"p_waves": p_waves, "qrs": qrs, "t_waves": t_waves}.items():
+                for itv in wave_itvs:
                     axes[idx].axvspan(t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha)
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])

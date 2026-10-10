@@ -837,7 +837,7 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
             "(\n"
             + ",\n".join(
                 [
-                    f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}"""
+                    f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(getattr(c, k), align, depth + 1)}"""
                     for k in c.__dir__()
                     if k in c.extra_repr_keys()  # type: ignore
                 ]

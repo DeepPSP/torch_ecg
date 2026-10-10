@@ -46,7 +46,7 @@ __all__ = [
 
 
 def _get_np_dtypes():
-    return [eval(f"np.dtypes.{dtype}") for dtype in dir(np.dtypes) if dtype.endswith("DType")]
+    return [getattr(np.dtypes, dtype) for dtype in dir(np.dtypes) if dtype.endswith("DType")]
 
 
 with warnings.catch_warnings():

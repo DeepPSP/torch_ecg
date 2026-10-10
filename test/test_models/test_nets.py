@@ -881,6 +881,13 @@ def test_attention_blocks():
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(seq_len=SEQ_LEN, batch_size=BATCH_SIZE)
     assert nl.in_channels == IN_CHANNELS
 
+    # unknown names must raise (the fallback used to be an `eval` of the
+    # config-supplied name, i.e. arbitrary code execution)
+    with pytest.raises(ValueError, match="Unknown attention type"):
+        make_attention_layer(IN_CHANNELS, name="nonexistent_attention")
+    with pytest.raises(ValueError, match="Unknown attention type"):
+        make_attention_layer(IN_CHANNELS, name="__import__('os').system('true') and 'se'")
+
     with pytest.raises(AssertionError, match="`filter_lengths` must be an int or a dict, but got `.+`"):
         NonLocalBlock(
             in_channels=IN_CHANNELS,

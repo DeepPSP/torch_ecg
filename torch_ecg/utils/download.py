@@ -456,12 +456,21 @@ def _is_within_directory(directory: Union[str, bytes, os.PathLike], target: Unio
         False otherwise.
 
     """
-    abs_directory = os.path.abspath(directory)
-    abs_target = os.path.abspath(target)
+    # `os.path.realpath` (not `abspath`) so that symlinks created by earlier
+    # members of the same archive are resolved as well; `commonpath` (not
+    # `commonprefix`) so that sibling directories like `/dst_evil` cannot
+    # bypass the check, which string-prefix comparison allowed.
+    abs_directory = os.path.realpath(directory)
+    abs_target = os.path.realpath(target)
 
-    prefix = os.path.commonprefix([abs_directory, abs_target])  # type: ignore
+    return os.path.commonpath([abs_directory, abs_target]) == abs_directory
 
-    return prefix == abs_directory
+
+def _ancestor_names(name: Union[str, bytes, os.PathLike]) -> set:
+    """Return the normalized ancestor directory names of a path, e.g.
+    ``"a/b/c"`` -> ``{"a", "a/b"}``."""
+    parts = Path(name).parts
+    return {os.path.normpath("/".join(parts[:i])) for i in range(1, len(parts))}
 
 
 def _safe_tar_extract(
@@ -497,10 +506,31 @@ def _safe_tar_extract(
     None
 
     """
-    for member in members or tar.getmembers():
+    members = list(members) if members else tar.getmembers()
+    link_member_names = {os.path.normpath(m.name) for m in members if m.issym() or m.islnk()}
+    for member in members:
         member_path = os.path.join(dst_dir, member.name)  # type: ignore
         if not _is_within_directory(dst_dir, member_path):
             raise Exception("Attempted Path Traversal in Tar File")
+        # `extractall` creates members in order; a link member created earlier
+        # would make the current member be written through the link, possibly
+        # outside `dst_dir` (realpath of the not-yet-existing link cannot
+        # catch this in the check above), so refuse to extract through links
+        for ancestor in _ancestor_names(member.name):
+            if ancestor in link_member_names:
+                raise Exception(
+                    f"Attempted Path Traversal in Tar File " f"(member `{member.name}` extracted through link `{ancestor}`)"
+                )
+        # link members themselves must point inside the destination
+        if member.issym():
+            link_target = os.path.join(os.path.dirname(member_path), member.linkname)
+            if not _is_within_directory(dst_dir, link_target):
+                raise Exception(f"Attempted Path Traversal in Tar File (link `{member.name}` -> `{member.linkname}`)")
+        elif member.islnk():
+            # hardlink targets are member names, relative to the archive root
+            link_target = os.path.join(dst_dir, member.linkname)
+            if not _is_within_directory(dst_dir, link_target):
+                raise Exception(f"Attempted Path Traversal in Tar File (link `{member.name}` -> `{member.linkname}`)")
 
     tar.extractall(dst_dir, members, numeric_owner=numeric_owner)
 

@@ -389,7 +389,7 @@ class _DataBase(ReprMixin, ABC):
         else:
             d = arrhythmias
         for idx, item in enumerate(d):
-            print(dict_to_str(eval(f"EAK.{item}")))
+            print(dict_to_str(getattr(EAK, item)))
             if idx < len(d) - 1:
                 print("*" * 110)
 
