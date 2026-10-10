@@ -28,9 +28,46 @@ env:
   SHHS_DATA_AVAILABLE: 'false'
 
 jobs:
+  # The nightly schedule fires unconditionally; this gate skips the heavy
+  # builds when master has not advanced since the last nightly run actually
+  # tested something (quiet days cost ~10 seconds instead of hours). If
+  # several commits land in one day, the nightly simply tests whatever is
+  # the HEAD of master at fire time -- earlier commits were already
+  # validated by their PRs' core lane.
+  nightly-gate:
+    if: github.repository_owner == 'DeepPSP'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    outputs:
+      run: ${{ steps.decide.outputs.run }}
+    steps:
+      - name: Decide whether to run
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "not a scheduled run -> run"
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # head_sha of the latest *other* scheduled run of this workflow
+          LAST_SHA=$(gh api "repos/${{ github.repository }}/actions/runs?event=schedule&per_page=100" \
+            --jq '[.workflow_runs[] | select(.name == "${{ github.workflow }}" and (.id != ${{ github.run_id }}))][0].head_sha // ""')
+          echo "last nightly tested: ${LAST_SHA:-<none>}"
+          echo "current HEAD:        ${{ github.sha }}"
+          if [ -n "$LAST_SHA" ] && [ "$LAST_SHA" = "${{ github.sha }}" ]; then
+            echo "master unchanged since the last nightly run -> skip"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
     # Don't run on forked repos.
-    if: github.repository_owner == 'DeepPSP'
+    if: github.repository_owner == 'DeepPSP' && needs.nightly-gate.outputs.run == 'true'
+    needs: nightly-gate
 
     runs-on: ubuntu-22.04
     # fail with an explicit timeout instead of being hard-killed at 6h
