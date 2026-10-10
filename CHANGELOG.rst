@@ -28,6 +28,22 @@ Added
 Changed
 ~~~~~~~
 
+- Drop support for Python 3.9 (end-of-life since 2025-10; the latest
+  torch already requires >=3.10) and add Python 3.14:
+  ``requires-python >= 3.10``, classifiers 3.10-3.14, and the CI matrix
+  becomes ``3.10 / 3.11 / 3.12 / 3.13 / 3.14`` (3.11 was previously
+  missing from the matrix; 3.13/3.14 were tested but not listed in the
+  classifiers).
+- Replace the ``pyEDFlib`` dependency with the actively maintained
+  pure-Python ``edfio`` (pyEDFlib's last PyPI release was 2025-06, with
+  no wheels for newer Python versions). The EDF reading used by the
+  NSRR readers (e.g. SHHS) now goes through a small
+  ``pyedflib.EdfReader``-compatible adapter on top of ``edfio``
+  (``torch_ecg.databases._edf``), so no reader code changes and no
+  behavior changes; verified by a round-trip test in ``test_base.py``.
+  This also unblocks Python 3.14 (pyEDFlib was the only dependency
+  without compatible wheels). ``Cython``, which was only needed to
+  build ``pyEDFlib`` from source, is dropped from the dependencies.
 - Unify all randomness of the augmenters on ``DEFAULTS.RNG``
   (``mixup``, ``cutmix``, ``random_masking``, ``stretch_compress``,
   ``baseline_wander`` and the ``AugmenterManager`` used to draw from the
