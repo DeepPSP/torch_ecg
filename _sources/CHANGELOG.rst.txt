@@ -8,8 +8,90 @@ Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...HEAD>`__
+`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...HEAD>`__
 ----------------------------------------------------------------------------
+
+Added
+~~~~~
+
+- Add ``torch_ecg.utils.seed_everything`` (alias of ``DEFAULTS.set_seed``)
+  and ``torch_ecg.utils.worker_init_fn``, a ``worker_init_fn`` for
+  ``torch.utils.data.DataLoader`` which reseeds ``DEFAULTS.RNG`` per
+  worker: PyTorch only reseeds the global ``random`` / ``torch`` /
+  ``numpy.random`` states in workers, so with the default ``fork`` start
+  method every worker inherited a copy of the parent's
+  ``DEFAULTS.RNG`` and all workers produced identical random streams
+  for the augmentations.
+- Add ``codecov.yml`` with flag carry-forward, matching the tiered CI
+  (see below).
+- ``test_download.py``: regression tests for path traversal in tar
+  extraction (sibling directory, ``..``, absolute member names,
+  symlink/hardlink escapes).
+
+Changed
+~~~~~~~
+
+- Unify all randomness of the augmenters on ``DEFAULTS.RNG``
+  (``mixup``, ``cutmix``, ``random_masking``, ``stretch_compress``,
+  ``baseline_wander`` and the ``AugmenterManager`` used to draw from the
+  Python ``random`` module). NOTE this changes the random streams: old
+  seeds no longer reproduce old results.
+- ``DEFAULTS.set_seed`` now also seeds the global ``numpy.random``
+  state (see the in-code comment for the rationale); it used to seed
+  ``random`` and ``torch`` but not ``numpy.random``. The legacy
+  ``numpy.random`` state is seeded with ``seed % 2**32`` since
+  ``np.random.seed`` rejects values beyond 32-bit.
+- Tiered CI (``run-pytest.yml``): pull requests and dev pushes run the
+  fast lane (``pytest -m "not db"``), while the full suite including all
+  database-downloading tests runs nightly and on manual dispatch
+  (``workflow_dispatch`` input ``suite``). All test modules that
+  downloaded databases at import (collection) time now download in
+  session-scoped fixtures marked ``db`` which skip gracefully on
+  download failure. Jobs get an explicit ``timeout-minutes`` so that a
+  job killed by GitHub's 6-hour limit fails visibly instead of showing
+  up as "cancelled".
+- Replace the Dropbox-hosted remote-model test fixtures of
+  ``test_utils_nn.py`` with GitHub release assets
+  (``test-assets-v1``), since the Dropbox links are traffic-suspended.
+
+Fixed
+~~~~~
+
+- Harden the safe tar extraction in ``download.py``, completing the
+  CVE-2007-4559 mitigation introduced in 2022 (commit 8f22086a), which
+  correctly blocked the primary ``..``/absolute-path vectors: the
+  membership check now uses ``os.path.realpath`` +
+  ``os.path.commonpath`` instead of string-prefix ``commonprefix``
+  (which a sibling directory whose name merely starts with the
+  destination's name could bypass), additionally refuses to extract
+  members *through* symlink/hardlink members (which ``extractall``
+  would create first and then follow outside the destination), and
+  validates that link members point inside the destination.
+- Remove all ``eval`` calls from the package (15 sites): config-driven
+  code execution in ``make_attention_layer`` (unknown names now always
+  raise ``ValueError``) and ``setup_criterion`` (the ``"nn."``-prefixed
+  path now uses ``getattr``); replaced dynamic name resolution with
+  ``getattr`` / ``globals()`` / ``locals()`` / explicit dicts in
+  ``cfg.py``, ``misc.py``, ``utils_signal.py``, ``utils_metrics.py``
+  (including the wave-delineation metric collection in
+  ``compute_metrics_waveform`` and its copy in
+  ``ludb.compute_metrics``), ``utils_nn.py``, ``databases/base.py``,
+  ``ecg_arrhythmia_knowledge.py``, and the ``plot`` methods of
+  ``cinc2020``/``cinc2021``/``cpsc2021``/``sph``/``ludb``. Behavior is
+  unchanged except that invalid names now raise the documented errors
+  instead of executing arbitrary expressions.
+- ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
+  two ``multiprocessing.Pool`` instances per forward call (each forward
+  now takes milliseconds instead of process-pool startup costs, and the
+  fork-related duplication of random streams and Windows ``spawn``
+  incompatibilities are gone). The baseline wander amplitude and the
+  Gaussian noise are now scaled by the ECG amplitude as documented
+  (``ampl_ratio`` are ratios of the signal amplitude); they used to be
+  used as absolute values, with the per-lead amplitude computed but
+  never used.
+
+`0.0.32 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.31...v0.0.32>`__ - 2026-10-08
+----------------------------------------------------------------------------------------
 
 Added
 ~~~~~
@@ -34,6 +116,58 @@ Changed
   `torch_ecg.utils.download` module.
 - Add length verification in the `http_get` function in
   `torch_ecg.utils.download` module.
+- Harden the `http_get` function in `torch_ecg.utils.download` module:
+  retry and raise clear errors on persistent 202 (Accepted) queued
+  downloads (e.g. figshare portal domains), refuse to save HTML error
+  pages as archive files, and raise on empty (0-byte) downloads,
+  instead of silently writing broken files.
+- Replace dead or unreliable database download URLs: the mirror of the
+  CPSC2019 training set and the CACHET-CADB-Mini / SPH-Mini test subsets
+  now point to Zenodo records; SPH and CACHET-CADB now
+  use the central `ndownloader.figshare.com` file URLs (portal domains
+  put downloads behind a queue that replies 202).
+- Move data downloads in database tests out of the module level (the
+  pytest collection phase) into session-scoped fixtures which skip the
+  test module on download failure, and mark those tests with the new
+  `db` marker.
+- Fix the best-model checkpointing in `BaseTrainer`: the snapshot of the
+  best weights is now a detached CPU copy (it used to be a reference to
+  the parameter tensors and drifted along with the training), it is
+  written to disk immediately when the monitored metric improves (so
+  that the best weights survive a crash of the training process), and
+  the saved file and the return value of `train()` now contain the
+  best-epoch weights instead of the final-epoch weights. `CkptMixin.save`
+  gains a `state_dict` parameter, and `BaseTrainer` falls back to
+  `torch.save` for models without a `save` method.
+- Make `BaseTrainer.resume_from_checkpoint` raise an explicit
+  `NotImplementedError` explaining why resuming is not supported by the
+  current checkpoint format (it used to be a silent, untested
+  half-implementation), and log the error detail when removing outdated
+  checkpoints fails.
+- Fix the `thr` argument of `ClassificationMetrics`, which was silently
+  ignored end-to-end (`__call__` dropped it, and `compute` did not
+  forward it to `metrics_from_confusion_matrix`), so passing e.g.
+  `thr=0.3` always computed metrics at the default 0.5.
+- Fix `json.dump` misuse in `MITDBDataset` and `CINC2021Dataset` (missing
+  file-object argument), which crashed `_slice_data` with
+  `force_recompute=True` after the full recomputation.
+- Fix the `weight_mask` branch in `MITDBDataset` for the `af_event` task:
+  the condition never held (`task == [list]` instead of membership
+  testing), and once fixed, the categorical `rhythm_mask` crashed
+  `generate_weight_mask` (binary-only). The `af_event` labels are now
+  binarized (AF vs non-AF, as for the `rr_lstm` task) before the weight
+  mask is generated; the multiclass `rhythm_segmentation` target gets no
+  weight mask.
+- Fix `PhysioNetDataBase.download` silently doing nothing when the AWS
+  CLI is unavailable and the database has no compressed archive URL: it
+  logged "Downloading the uncompressed version..." but returned without
+  downloading; it now falls through to `wfdb.dl_database`.
+- Fix the `.T` transpose in `preprocess_multi_lead_signal`, which
+  reversed all axes and corrupted outputs for 3-D (batched) channel_last
+  inputs; only the last two axes are swapped now.
+- Validate at construction time that the torch `Resample` preprocessor
+  has `dst_fs` or `siglen` set (with `fs` alone it used to crash at
+  `forward` time with an obscure message).
 - Enhance the pytorch `preprocessors` module: all preprocessors now have
   pure PyTorch implementations, and NumPy fallbacks for NumPy array inputs.
 

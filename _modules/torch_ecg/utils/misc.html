@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.utils.misc &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.utils.misc &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -1263,7 +1263,7 @@
             <span class="s2">"(</span><span class="se">\n</span><span class="s2">"</span>
             <span class="o">+</span> <span class="s2">",</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">"""</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">k</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">align</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="p">[</span><span class="s2">"center"</span><span class="p">,</span><span class="w"> </span><span class="s2">"c"</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">default_class_repr</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"c.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span><span class="n">align</span><span class="p">,</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">"""</span>
+                    <span class="sa">f</span><span class="s2">"""</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">k</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">align</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="p">[</span><span class="s2">"center"</span><span class="p">,</span><span class="w"> </span><span class="s2">"c"</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">default_class_repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">),</span><span class="w"> </span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">depth</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">"""</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
                 <span class="p">]</span>

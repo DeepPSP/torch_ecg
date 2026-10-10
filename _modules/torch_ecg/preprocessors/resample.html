@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.preprocessors.resample &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.preprocessors.resample &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -462,6 +462,15 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"if `dst_fs` is set, `fs` should also be set"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_fs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">siglen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">"either `dst_fs` or `siglen` should be set: "</span>
+                <span class="s2">"`fs` alone specifies the source sampling frequency only, "</span>
+                <span class="s2">"and the target sampling frequency (`dst_fs`) or the target "</span>
+                <span class="s2">"signal length (`siglen`) is additionally needed. "</span>
+                <span class="s2">"NOTE this differs from the NumPy `Preprocessors.Resample`, "</span>
+                <span class="s2">"where `fs` is the target sampling frequency."</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="Resample.forward">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample.forward">[docs]</a>

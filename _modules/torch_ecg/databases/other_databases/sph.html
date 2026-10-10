@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.databases.other_databases.sph &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.databases.other_databases.sph &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../../_static/searchtools.js"></script>
@@ -792,9 +792,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">"metadata.csv"</span><span class="p">:</span> <span class="s2">"https://springernature.figshare.com/ndownloader/files/34793152"</span><span class="p">,</span>
-            <span class="s2">"code.csv"</span><span class="p">:</span> <span class="s2">"https://springernature.figshare.com/ndownloader/files/32630954"</span><span class="p">,</span>
-            <span class="s2">"records.tar"</span><span class="p">:</span> <span class="s2">"https://springernature.figshare.com/ndownloader/files/32630684"</span><span class="p">,</span>
+            <span class="s2">"metadata.csv"</span><span class="p">:</span> <span class="s2">"https://ndownloader.figshare.com/files/34793152"</span><span class="p">,</span>
+            <span class="s2">"code.csv"</span><span class="p">:</span> <span class="s2">"https://ndownloader.figshare.com/files/32630954"</span><span class="p">,</span>
+            <span class="s2">"records.tar"</span><span class="p">:</span> <span class="s2">"https://ndownloader.figshare.com/files/32630684"</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="SPH.download">
@@ -1006,8 +1006,8 @@
             <span class="c1"># add extra info. to legend</span>
             <span class="c1"># https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"labels - </span><span class="si">{</span><span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"p_waves"</span><span class="p">,</span> <span class="s2">"qrs"</span><span class="p">,</span> <span class="s2">"t_waves"</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="nb">eval</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">wave_itvs</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"p_waves"</span><span class="p">:</span> <span class="n">p_waves</span><span class="p">,</span> <span class="s2">"qrs"</span><span class="p">:</span> <span class="n">qrs</span><span class="p">,</span> <span class="s2">"t_waves"</span><span class="p">:</span> <span class="n">t_waves</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">itv</span> <span class="ow">in</span> <span class="n">wave_itvs</span><span class="p">:</span>
                     <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">itv</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">t</span><span class="p">[</span><span class="n">itv</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">palette</span><span class="p">[</span><span class="n">w</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="n">plot_alpha</span><span class="p">)</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.databases.base &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.databases.base &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -789,7 +789,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">arrhythmias</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">dict_to_str</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"EAK.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">"</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dict_to_str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">EAK</span><span class="p">,</span> <span class="n">item</span><span class="p">)))</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">"*"</span> <span class="o">*</span> <span class="mi">110</span><span class="p">)</span>
 
@@ -1348,14 +1348,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"AWS CLI is not available! Downloading the database from PhysioNet..."</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">use_s3</span><span class="p">:</span>
             <span class="n">http_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s3_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">compressed</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">http_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ls_rec</span><span class="p">()</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No compressed database available! Downloading the uncompressed version..."</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="n">compressed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">http_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
+                <span class="c1"># no compressed archive available for this database;</span>
+                <span class="c1"># fall through and download the uncompressed files</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No compressed database available! Downloading the uncompressed version..."</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="n">wfdb</span><span class="o">.</span><span class="n">dl_database</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span>

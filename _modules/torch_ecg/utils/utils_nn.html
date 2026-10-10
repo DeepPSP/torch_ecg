@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.utils.utils_nn &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.utils.utils_nn &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -446,7 +446,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_np_dtypes</span><span class="p">():</span>
-    <span class="k">return</span> <span class="p">[</span><span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">"np.dtypes.</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span> <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"DType"</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtypes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span> <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"DType"</span><span class="p">)]</span>
 
 
 <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
@@ -1787,6 +1787,7 @@
         <span class="n">extra_items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_safetensors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">safetensors_single_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">state_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Save the model to disk.</span>
 
@@ -1821,6 +1822,12 @@
 <span class="sd">            Whether to save the metadata along with the state dict into one file.</span>
 
 <span class="sd">            .. versionadded:: 0.0.32</span>
+<span class="sd">        state_dict : dict, optional</span>
+<span class="sd">            The state dict to save, e.g. a snapshot of the best weights</span>
+<span class="sd">            taken at an earlier time. If None (default), the current state</span>
+<span class="sd">            dict of the model (:meth:`state_dict`) is saved.</span>
+
+<span class="sd">            .. versionadded:: 0.0.32</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1835,6 +1842,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">extra_items</span> <span class="o">=</span> <span class="n">extra_items</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">sd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">state_dict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">state_dict</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">excluded_suffixes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">".pt"</span><span class="p">,</span> <span class="s2">".pth"</span><span class="p">,</span> <span class="s2">".ckpt"</span><span class="p">,</span> <span class="s2">".ckpt.pt"</span><span class="p">,</span> <span class="s2">".ckpt.pth"</span><span class="p">,</span> <span class="s2">".pth.tar"</span><span class="p">,</span> <span class="s2">".pt.tar"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1859,7 +1867,7 @@
             <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".safetensors"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">and</span> <span class="n">safetensors_single_file</span><span class="p">:</span>
-            <span class="n">tensors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
+            <span class="n">tensors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
             <span class="n">tensor_groups</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extra_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1891,7 +1899,7 @@
             <span class="n">_train_config</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">_train_config</span><span class="p">)</span>
             <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"model_config.json"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_model_config</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
             <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"train_config.json"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_train_config</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-            <span class="n">save_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">"model.safetensors"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">save_file</span><span class="p">(</span><span class="n">sd</span><span class="p">,</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">"model.safetensors"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="c1"># save extra items</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extra_items</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># if val is a dict of torch tensors, save them as safetensors</span>
@@ -1903,7 +1911,7 @@
 
         <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">"model_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>  <span class="c1"># type: ignore</span>
+                <span class="s2">"model_state_dict"</span><span class="p">:</span> <span class="n">sd</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                 <span class="s2">"model_config"</span><span class="p">:</span> <span class="n">_model_config</span><span class="p">,</span>
                 <span class="s2">"train_config"</span><span class="p">:</span> <span class="n">_train_config</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">extra_items</span><span class="p">,</span>

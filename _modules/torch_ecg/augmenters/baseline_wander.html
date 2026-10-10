@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torch_ecg.augmenters.baseline_wander &#8212; torch-ecg 0.0.31 documentation</title>
+    <title>torch_ecg.augmenters.baseline_wander &#8212; torch-ecg 0.0.32 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+    <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.31" />
+  <meta name="docsearch:version" content="0.0.32" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -400,9 +400,7 @@
   <h1>Source code for torch_ecg.augmenters.baseline_wander</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Add baseline wander composed of sinusoidal and Gaussian noise to the ECGs."""</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">repeat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -623,15 +621,13 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ampl : torch.Tensor</span>
-<span class="sd">        Amplitude of each lead, of shape ``(batch, lead, 1)``.</span>
+<span class="sd">        Amplitude of each lead, of shape ``(batch * lead, 1)``.</span>
 
 <span class="sd">    """</span>
-    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-        <span class="n">ampl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span>
-            <span class="n">get_ampl</span><span class="p">,</span>
-            <span class="n">iterable</span><span class="o">=</span><span class="p">[(</span><span class="n">sig</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">fs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-        <span class="p">)</span>
-    <span class="n">ampl</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ampl</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># `get_ampl` is natively vectorized over any leading dimensions,</span>
+    <span class="c1"># hence no loop (nor multiprocessing pool) is needed</span>
+    <span class="n">ampl</span> <span class="o">=</span> <span class="n">get_ampl</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">ampl</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ampl</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ampl</span>
 
 
@@ -755,8 +751,10 @@
     <span class="n">ampl_ratio</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
     <span class="n">gaussian</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Generate 1d baseline wander of given</span>
-<span class="sd">    length, amplitude, and frequency.</span>
+<span class="w">    </span><span class="sd">"""Generate baseline wander for a batch of ECGs,</span>
+<span class="sd">    one independent wander curve per (batch, lead) item.</span>
+
+<span class="sd">    Fully vectorized over ``(batch, lead)``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -767,10 +765,11 @@
 <span class="sd">    bw_fs : float or int, or list of float or int,</span>
 <span class="sd">        Frequency (Frequencies) of the baseline wander.</span>
 <span class="sd">    ampl_ratio : numpy.ndarray, optional</span>
-<span class="sd">        Candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,</span>
-<span class="sd">        of shape ``(m, n)``.</span>
+<span class="sd">        Candidate ratios of noise amplitudes compared to the original</span>
+<span class="sd">        ECGs for each `fs`, of shape ``(m, n)``.</span>
 <span class="sd">    gaussian : numpy.ndarray, optional</span>
-<span class="sd">        Candidate mean and std of the Gaussian noises,</span>
+<span class="sd">        Candidate mean and std of the Gaussian noises</span>
+<span class="sd">        (in terms of ratios of the ECG amplitudes),</span>
 <span class="sd">        of shape ``(k, 2)``.</span>
 
 <span class="sd">    Returns</span>
@@ -781,26 +780,39 @@
 
 <span class="sd">    """</span>
     <span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">sig_ampl</span> <span class="o">=</span> <span class="n">_get_ampl</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+    <span class="n">n_items</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">*</span> <span class="n">lead</span>
+    <span class="c1"># amplitude of each (batch, lead) item, of shape (n_items, 1)</span>
+    <span class="n">sig_ampl</span> <span class="o">=</span> <span class="n">_get_ampl</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="n">_n_bw_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ampl_ratio</span><span class="p">)</span>
     <span class="n">_n_gn_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaussian</span><span class="p">)</span>
+    <span class="n">_bw_fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bw_fs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-        <span class="n">bw</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span>
-            <span class="n">_gen_baseline_wander</span><span class="p">,</span>
-            <span class="n">iterable</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">(</span>
-                    <span class="n">siglen</span><span class="p">,</span>
-                    <span class="n">fs</span><span class="p">,</span>
-                    <span class="n">bw_fs</span><span class="p">,</span>
-                    <span class="n">ampl_ratio</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_bw_choices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span>
-                    <span class="n">gaussian</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_gn_choices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)],</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="p">],</span>
-        <span class="p">)</span>
-    <span class="n">bw</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bw</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
+    <span class="c1"># one independent choice of (ampl_ratio row, gaussian row) per item</span>
+    <span class="n">ampl_idx</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_bw_choices</span><span class="p">,</span> <span class="n">n_items</span><span class="p">)</span>
+    <span class="n">gn_idx</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_n_gn_choices</span><span class="p">,</span> <span class="n">n_items</span><span class="p">)</span>
+    <span class="c1"># of shape (n_items, n_bw_fs)</span>
+    <span class="n">amplitude</span> <span class="o">=</span> <span class="n">sig_ampl</span> <span class="o">*</span> <span class="n">ampl_ratio</span><span class="p">[</span><span class="n">ampl_idx</span><span class="p">]</span>
+    <span class="c1"># of shape (n_items, 2), ratios scaled by the ECG amplitude</span>
+    <span class="n">amplitude_gaussian</span> <span class="o">=</span> <span class="n">sig_ampl</span> <span class="o">*</span> <span class="n">gaussian</span><span class="p">[</span><span class="n">gn_idx</span><span class="p">]</span>
+
+    <span class="c1"># Gaussian noise part, of shape (n_items, siglen)</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+        <span class="n">amplitude_gaussian</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">amplitude_gaussian</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span>
+        <span class="p">(</span><span class="n">n_items</span><span class="p">,</span> <span class="n">siglen</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># sinusoidal part, vectorized over (n_items, n_bw_fs, siglen)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">siglen</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="c1"># start phase in degrees, of shape (n_items, n_bw_fs)</span>
+    <span class="n">start_phase</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">RNG</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">361</span><span class="p">,</span> <span class="p">(</span><span class="n">n_items</span><span class="p">,</span> <span class="n">_bw_fs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">end_phase</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">_bw_fs</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mi">360</span> <span class="o">+</span> <span class="n">start_phase</span>
+    <span class="c1"># linear interpolation of the phases from start to end</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">start_phase</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="n">end_phase</span> <span class="o">-</span> <span class="n">start_phase</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">bw</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">amplitude</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">phase</span> <span class="o">/</span> <span class="mi">180</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">bw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">lead</span><span class="p">,</span> <span class="n">siglen</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">bw</span>
 </pre></div>
 
