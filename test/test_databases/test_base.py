@@ -109,3 +109,60 @@ def test_list_datasets():
     assert isinstance(list_datasets(), list)
     assert len(list_datasets()) > 0
     assert all([item.endswith("Dataset") for item in list_datasets()]), list_datasets()
+
+
+class _NSRR(NSRRDataBase):
+    """Minimal concrete NSRR database to exercise `safe_edf_file_operation`."""
+
+    def _ls_rec(self):
+        pass
+
+    @property
+    def database_info(self):
+        return None
+
+    def load_ann(self, rec):
+        pass
+
+    def load_data(self, rec):
+        pass
+
+    @property
+    def url(self):
+        return []
+
+
+def test_edf_reader_roundtrip(tmp_path):
+    """`safe_edf_file_operation` goes through the `_EdfReader` adapter on
+    top of `edfio` (pyedflib was replaced); verify the API subset used by
+    the NSRR readers via a synthetic EDF written with edfio itself."""
+    from edfio import Edf, EdfSignal
+
+    ecg = np.linspace(0.0, 1.0, 1250, dtype=np.float64)
+    eeg = np.random.rand(625)
+    signals = [
+        EdfSignal(ecg, 125.0, label="ECG", transducer_type="AgCl", physical_dimension="mV", prefiltering="HP:0.5Hz"),
+        EdfSignal(eeg, 62.5, label="EEG", physical_dimension="uV"),
+    ]
+    edf_path = tmp_path / "test.edf"
+    Edf(signals=signals).write(edf_path)
+
+    db = _NSRR("shhs", verbose=0)
+    db.safe_edf_file_operation("open", edf_path)
+    assert db.file_opened.getSignalLabels() == ["ECG", "EEG"]
+    assert db.file_opened.getSampleFrequency(0) == 125.0
+    assert db.file_opened.getSampleFrequency(1) == 62.5
+    assert db.file_opened.getPhysicalDimension(0) == "mV"
+    assert db.file_opened.getTransducer(0) == "AgCl"
+    assert db.file_opened.getPrefilter(0) == "HP:0.5Hz"
+
+    # physical samples are quantized through the digital range, so allow
+    # a tolerance; digital samples must round-trip exactly
+    np.testing.assert_allclose(db.file_opened.readSignal(0), ecg, atol=1e-3)
+    digital = db.file_opened.readSignal(0, digital=True)
+    assert np.issubdtype(digital.dtype, np.integer)
+    db.safe_edf_file_operation("close")
+    assert db.file_opened is None
+
+    with pytest.raises(ValueError, match="Illegal operation"):
+        db.safe_edf_file_operation("reopen")
