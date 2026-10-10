@@ -57,14 +57,16 @@ Changed
 Fixed
 ~~~~~
 
-- Harden the safe tar extraction in ``download.py``: the membership check
-  now uses ``os.path.realpath`` + ``os.path.commonpath`` instead of
-  string-prefix ``commonprefix`` (which a sibling directory whose name
-  merely starts with the destination's name could bypass), additionally
-  refuses to extract members *through* symlink/hardlink members (which
-  ``extractall`` would create first and then follow outside the
-  destination), and validates that link members point inside the
-  destination.
+- Harden the safe tar extraction in ``download.py``, completing the
+  CVE-2007-4559 mitigation introduced in 2022 (commit 8f22086a), which
+  correctly blocked the primary ``..``/absolute-path vectors: the
+  membership check now uses ``os.path.realpath`` +
+  ``os.path.commonpath`` instead of string-prefix ``commonprefix``
+  (which a sibling directory whose name merely starts with the
+  destination's name could bypass), additionally refuses to extract
+  members *through* symlink/hardlink members (which ``extractall``
+  would create first and then follow outside the destination), and
+  validates that link members point inside the destination.
 - Remove all ``eval`` calls from the package (15 sites): config-driven
   code execution in ``make_attention_layer`` (unknown names now always
   raise ``ValueError``) and ``setup_criterion`` (the ``"nn."``-prefixed
