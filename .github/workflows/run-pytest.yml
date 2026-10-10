@@ -149,6 +149,10 @@ jobs:
     - name: Cleanup SHHS temp data
       if: always() && true
       run: |
-        cd ~/tmp/ && du -sh $(ls -A)
+        # `~/tmp` is created by the SHHS download step above; when that step
+        # is skipped (core lane, or SHHS unavailable) the directory does not
+        # exist at all, hence the `mkdir -p` guard.
+        mkdir -p ~/tmp
+        cd ~/tmp/ && du -sh $(ls -A) || true
         rm -rf ~/tmp/nsrr-data/
-        cd ~/tmp/ && du -sh $(ls -A)
+        cd ~/tmp/ && du -sh $(ls -A) || true
