@@ -556,7 +556,7 @@ def test_mixin_classes():
     save_path = Path(__file__).resolve().parents[1] / "tmp" / "test_remote_model"
     save_path.mkdir(exist_ok=True, parents=True)
     loaded_model, _ = Model1D.from_remote(
-        url="https://www.dropbox.com/scl/fi/5q5q0z0ta48ml0u2xtwm7/test-remote-model.pth?rlkey=2l2erhdnrfc4om0fqarokikb0&dl=1",
+        url="https://github.com/DeepPSP/torch_ecg/releases/download/test-assets-v1/test-remote-model.pth",
         model_dir=save_path,
         weights_only=False,
     )
@@ -567,7 +567,7 @@ def test_mixin_classes():
     save_path = Path(__file__).resolve().parents[1] / "tmp" / "test_remote_model"
     save_path.mkdir(exist_ok=True, parents=True)
     loaded_model, _ = Model1D.from_remote(
-        url="https://www.dropbox.com/scl/fi/2eqhnagz1m0w0ka86uegr/test-remote-model.zip?rlkey=1mkuwhx4kykqmc7h4rnou46z0&dl=1",
+        url="https://github.com/DeepPSP/torch_ecg/releases/download/test-assets-v1/test-remote-model.zip",
         model_dir=save_path,
         weights_only=False,
     )

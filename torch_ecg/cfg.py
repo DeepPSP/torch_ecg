@@ -241,7 +241,10 @@ def set_seed(seed: int) -> None:
     # `random_state=None`) draw from the global state and know nothing
     # about `DEFAULTS.RNG`. Seeding it costs nothing and does not affect
     # the stream of `DEFAULTS.RNG` (the two are independent).
-    np.random.seed(seed)
+    # Legacy `np.random.seed` only accepts values in [0, 2**32 - 1], while
+    # `seed` may be a full 64-bit value (e.g. derived from
+    # `torch.initial_seed()`), hence the normalization below.
+    np.random.seed(seed % 2**32)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 

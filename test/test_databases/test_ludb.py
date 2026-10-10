@@ -23,24 +23,33 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "ludb"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = LUDB(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        reader = LUDB(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download LUDB: {err}")
+    return reader
 
 
 class TestLUDB:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 200
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = LUDB(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -55,14 +64,14 @@ class TestLUDB:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             LUDB(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         data_1 = reader.load_data(0, leads=[1, 7])
         assert data.shape[0] == 12
         assert data_1.shape[0] == 2
         assert np.allclose(data[[1, 7], :], data_1)  # type: ignore
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert ann.keys() == {"waves"}
         assert ann["waves"].keys() == set(reader.all_leads)
@@ -71,11 +80,11 @@ class TestLUDB:
         ann = reader.load_ann(0, metadata=True)
         assert ann.keys() > {"waves"}
 
-    def test_load_diagnoses(self):
+    def test_load_diagnoses(self, reader):
         diagnoses = reader.load_diagnoses(0)
         assert all([isinstance(item, str) for item in diagnoses]), [(item, type(item)) for item in diagnoses]
 
-    def test_load_masks(self):
+    def test_load_masks(self, reader):
         data = reader.load_data(0)
         masks = reader.load_masks(0)
         assert masks.shape == data.shape
@@ -83,7 +92,7 @@ class TestLUDB:
         masks = reader.load_masks(0, leads=[1, 7], mask_format="lead_last")
         assert masks.shape == data.T.shape
 
-    def test_load_subject_info(self):
+    def test_load_subject_info(self, reader):
         subject_info = reader.load_subject_info(0)
         assert isinstance(subject_info, dict)
         subject_info = reader.load_subject_info(0, fields=["Sex", "Age"])
@@ -92,10 +101,10 @@ class TestLUDB:
         subject_info = reader.load_subject_info(0, fields="Sex")
         assert isinstance(subject_info, str)
 
-    def test_get_subject_id(self):
+    def test_get_subject_id(self, reader):
         assert isinstance(reader.get_subject_id(0), int)
 
-    def test_from_masks(self):
+    def test_from_masks(self, reader):
         ann = reader.from_masks(reader.load_masks(0), leads=reader.all_leads)
         ann_1 = reader.load_ann(0)["waves"]
         for lead in reader.all_leads:
@@ -105,18 +114,18 @@ class TestLUDB:
                 assert ann[lead][i].onset == ann_1[lead][i].onset
                 assert ann[lead][i].offset == ann_1[lead][i].offset
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot(self):
+    def test_plot(self, reader):
         reader.plot(0, leads=["I", 5], ticks_granularity=2)
         data = reader.load_data(0, leads="III", data_format="flat")
         reader.plot(0, data=data, leads="III")  # type: ignore
 
-    def test_get_absolute_path(self):
+    def test_get_absolute_path(self, reader):
         path = reader.get_absolute_path(0, extension="avf")
         assert path.is_file() and path.suffix == ".avf"
 
@@ -124,17 +133,23 @@ class TestLUDB:
 config = deepcopy(LUDBTrainCfg)
 config.db_dir = _CWD
 
-ds = LUDBDataset(config, training=False, lazy=False)
 
-config_1 = deepcopy(config)
-ds_1 = LUDBDataset(config_1, training=False, lazy=True)
+@pytest.fixture(scope="session")
+def ds(reader):
+    return LUDBDataset(config, training=False, lazy=False)
+
+
+@pytest.fixture(scope="session")
+def ds_1(ds):
+    config_1 = deepcopy(config)
+    return LUDBDataset(config_1, training=False, lazy=True)
 
 
 class TestLUDBDataset:
-    def test_len(self):
+    def test_len(self, ds, ds_1):
         assert len(ds) == len(ds_1) > 0
 
-    def test_getitem(self):
+    def test_getitem(self, ds, ds_1):
         for i in range(len(ds)):
             signals, labels = ds[i]
             assert signals.shape == (config.n_leads, config.input_len)
@@ -153,7 +168,7 @@ class TestLUDBDataset:
         # instead of (n_samples, n_leads, signal_len, n_classes)
         assert labels.shape == (2, config.input_len, len(config.classes))
 
-    def test_properties(self):
+    def test_properties(self, ds, ds_1):
         signals_shape = ds.signals.shape  # (n_samples, n_leads, signal_len)
         labels_shape = ds.labels.shape  # (n_samples, n_leads, signal_len, n_classes)
         assert signals_shape[:2] == labels_shape[:2] == (len(ds), config.n_leads)

@@ -19,26 +19,35 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "apnea-ecg"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-with pytest.warns(RuntimeWarning):
-    reader = ApneaECG(_CWD)
-if len(reader) == 0:
-    reader.download()
+pytestmark = pytest.mark.db
+
+
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        with pytest.warns(RuntimeWarning):
+            reader = ApneaECG(_CWD)
+        if len(reader) == 0:
+            reader.download()
+    except Exception as err:
+        pytest.skip(f"failed to download ApneaECG: {err}")
+    return reader
 
 
 class TestApneaECG:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == len(reader.ecg_records) == 70
         assert len(reader._all_records) == 78
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = ApneaECG(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -53,7 +62,7 @@ class TestApneaECG:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             ApneaECG(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         assert data.ndim == 2
         data = reader.load_data(0, leads=0, data_format="flat")
@@ -63,7 +72,7 @@ class TestApneaECG:
         data, data_fs = reader.load_data(0, fs=100, return_fs=True)
         assert data_fs == 100
 
-    def test_load_ecg_data(self):
+    def test_load_ecg_data(self, reader):
         rec = reader.ecg_records[0]
         data = reader.load_ecg_data(rec)
         assert data.ndim == 2
@@ -72,7 +81,7 @@ class TestApneaECG:
         with pytest.raises(ValueError, match=f"`{rec}` is not a record of ECG signals"):
             reader.load_ecg_data(rec)
 
-    def test_load_rsp_data(self):
+    def test_load_rsp_data(self, reader):
         rec = reader.rsp_records[0]
         data = reader.load_rsp_data(rec)
         assert data.ndim == 2
@@ -81,21 +90,21 @@ class TestApneaECG:
         with pytest.raises(ValueError, match=f"`{rec}` is not a record of RSP signals"):
             reader.load_rsp_data(rec)
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert all([len(item) == 2 for item in ann]), [len(item) for item in ann]
         assert all([isinstance(item[0], int) for item in ann]), [type(item[0]) for item in ann]
         assert all([isinstance(item[1], str) for item in ann]), [type(item[1]) for item in ann]
 
-    def test_load_apnea_event(self):
+    def test_load_apnea_event(self, reader):
         df_apnea_event = reader.load_apnea_event(0)
         assert df_apnea_event.columns.tolist() == reader.sleep_event_keys
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_plot_ann(self):
+    def test_plot_ann(self, reader):
         reader.plot_ann(0)

@@ -17,40 +17,46 @@ from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN, http_get
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "cinc2018"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = CINC2018(_CWD)
+pytestmark = pytest.mark.db
 
 
-for file in [
-    "training/tr03-0005/tr03-0005-arousal.mat",
-    "training/tr03-0005/tr03-0005.arousal",
-    "training/tr03-0005/tr03-0005.mat",
-    "training/tr03-0005/tr03-0005.hea",
-    "training/tr12-0685/tr12-0685-arousal.mat",
-    "training/tr12-0685/tr12-0685.arousal",
-    "training/tr12-0685/tr12-0685.hea",
-    "training/tr12-0685/tr12-0685.mat",
-    "test/te06-0293/te06-0293.hea",
-    "test/te06-0293/te06-0293.mat",
-]:
-    url = reader.get_file_download_url(file)
-    http_get(url, _CWD, extract=False)
-
-reader._ls_rec()
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        shutil.rmtree(_CWD)
+    except FileNotFoundError:
+        pass
+    _CWD.mkdir(parents=True, exist_ok=True)
+    try:
+        reader = CINC2018(_CWD)
+        for file in [
+            "training/tr03-0005/tr03-0005-arousal.mat",
+            "training/tr03-0005/tr03-0005.arousal",
+            "training/tr03-0005/tr03-0005.mat",
+            "training/tr03-0005/tr03-0005.hea",
+            "training/tr12-0685/tr12-0685-arousal.mat",
+            "training/tr12-0685/tr12-0685.arousal",
+            "training/tr12-0685/tr12-0685.hea",
+            "training/tr12-0685/tr12-0685.mat",
+            "test/te06-0293/te06-0293.hea",
+            "test/te06-0293/te06-0293.mat",
+        ]:
+            url = reader.get_file_download_url(file)
+            http_get(url, _CWD, extract=False)
+        reader._ls_rec()
+    except Exception as err:
+        pytest.skip(f"failed to download CINC2018: {err}")
+    return reader
 
 
 class TestCINC2018:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 2
 
-    def test_set_subset(self):
+    def test_set_subset(self, reader):
         assert reader._subset == "training"
         reader.set_subset("test")
         assert reader._subset == "test"
@@ -62,7 +68,7 @@ class TestCINC2018:
         assert reader._subset == "training"
         assert len(reader) == 2
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.6
         reader_ss = CINC2018(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -77,21 +83,21 @@ class TestCINC2018:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CINC2018(_CWD, subsample=-0.1)
 
-    def test_get_available_signals(self):
+    def test_get_available_signals(self, reader):
         available_signals = reader.get_available_signals(0)
         assert isinstance(available_signals, list)
         assert len(available_signals) > 0
         assert all([isinstance(s, str) for s in available_signals]), available_signals
 
-    def test_get_fs(self):
+    def test_get_fs(self, reader):
         fs = reader.get_fs(0)
         assert isinstance(fs, int)
 
-    def test_get_siglen(self):
+    def test_get_siglen(self, reader):
         siglen = reader.get_siglen(0)
         assert isinstance(siglen, int)
 
-    def test_load_psg_data(self):
+    def test_load_psg_data(self, reader):
         available_signals = reader.get_available_signals(0)
         psg_data = reader.load_psg_data(0)
         assert isinstance(psg_data, np.ndarray)
@@ -131,7 +137,7 @@ class TestCINC2018:
         ):
             reader.load_psg_data(0, data_format="plain")
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         assert isinstance(data, np.ndarray)
         assert data.shape == (1, reader.get_siglen(0))
@@ -144,13 +150,13 @@ class TestCINC2018:
         data, data_fs = reader.load_data(0, fs=100, return_fs=True)
         assert data_fs == 100
 
-    def test_load_ecg_data(self):
+    def test_load_ecg_data(self, reader):
         # alias of `load_data`
         data = reader.load_ecg_data(0)
         assert isinstance(data, np.ndarray)
         assert data.shape == (1, reader.get_siglen(0))
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         ann = reader.load_ann(0)
         assert isinstance(ann, dict)
         assert ann.keys() == {"arousals", "sleep_stages"}
@@ -188,7 +194,7 @@ class TestCINC2018:
                 assert itv[0] == ann_1["sleep_stages"][k][idx][0] - SAMPFROM
                 assert itv[1] == ann_1["sleep_stages"][k][idx][1] - SAMPFROM
 
-    def test_load_sleep_stages_ann(self):
+    def test_load_sleep_stages_ann(self, reader):
         sleep_stages_ann = reader.load_sleep_stages_ann(0)
         assert isinstance(sleep_stages_ann, dict)
         assert set(sleep_stages_ann.keys()) <= set(reader.sleep_stage_names)
@@ -199,7 +205,7 @@ class TestCINC2018:
                 assert isinstance(itv[0], int)
                 assert isinstance(itv[1], int)
 
-    def test_load_arousals_ann(self):
+    def test_load_arousals_ann(self, reader):
         arousals_ann = reader.load_arousals_ann(0)
         assert isinstance(arousals_ann, dict)
         assert set(arousals_ann.keys()) <= set(reader.arousal_types)
@@ -210,7 +216,7 @@ class TestCINC2018:
                 assert isinstance(itv[0], int)
                 assert isinstance(itv[1], int)
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.version, str) and re.match(PHYSIONET_DB_VERSION_PATTERN, reader.version)
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
@@ -219,5 +225,5 @@ class TestCINC2018:
     def test_plot(self):
         pass  # NOTE: not implemented yet
 
-    def test_plot_ann(self):
+    def test_plot_ann(self, reader):
         reader.plot_ann(0)

@@ -18,10 +18,18 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cinc2021"
 ###############################################################################
 
 
-reader = CINC2021(_CWD)
+pytestmark = pytest.mark.db
 
 
-def test_edr():
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        return CINC2021(_CWD)
+    except Exception as err:
+        pytest.skip(f"failed to prepare CINC2021 sample data at {_CWD}: {err}")
+
+
+def test_edr(reader):
     for rec in reader:
         signal = reader.load_data(rec)[2]
         fs = reader.get_fs(rec)

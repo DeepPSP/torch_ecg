@@ -1,0 +1,25 @@
+# Codecov configuration
+# docs: https://docs.codecov.com/docs/codecov-yaml
+#
+# CI is tiered (see .github/workflows/run-pytest.yml): PRs upload only the
+# `core` report (fast lane, `-m "not db"`); the nightly/dev runs upload the
+# `full` report.  Carry-forward keeps project coverage complete on PRs that
+# don't upload the full report, and patch status stays informational because
+# coverage of `db`-marked test files only refreshes nightly.
+
+flag_management:
+  default_rules:
+    carryforward: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 0.5%
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: "reach, diff, flags, files"

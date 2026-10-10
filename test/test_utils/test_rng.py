@@ -27,6 +27,28 @@ def test_seed_everything():
     assert not np.array_equal(DEFAULTS.RNG.random(8), rng_vals)
 
 
+def test_seed_everything_accepts_64bit_seed():
+    """Regression: the legacy `np.random.seed` only accepts values in
+    [0, 2**32 - 1]; a full 64-bit seed (e.g. one derived from
+    `torch.initial_seed()`) used to raise, after `DEFAULTS.RNG` had
+    already been replaced."""
+    large_seed = torch.initial_seed() + 2**32
+    assert large_seed >= 2**32
+    seed_everything(large_seed)
+    assert DEFAULTS.SEED == large_seed
+    # the normalized legacy state must still be usable
+    np.random.random(4)
+    DEFAULTS.RNG.random(4)
+
+
+def test_get_rng():
+    from torch_ecg.utils import get_rng
+
+    seed_everything(7)
+    assert get_rng() is DEFAULTS.RNG
+    assert len(get_rng().random(4)) == 4
+
+
 class _RNGDataset(Dataset):
     """Each item draws one number from `DEFAULTS.RNG`."""
 

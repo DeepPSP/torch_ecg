@@ -33,12 +33,20 @@ _DB_DIR = _CWD / "ludb"
 _DB_DIR.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
+
 ###############################################################################
 # download data
-dr = LUDB(_DB_DIR)
-dr.download(compressed=True)
-dr._ls_rec()
-del dr
+@pytest.fixture(scope="session")
+def db_dir():
+    try:
+        dr = LUDB(_DB_DIR)
+        dr.download(compressed=True)
+        dr._ls_rec()
+    except Exception as err:
+        pytest.skip(f"failed to download LUDB: {err}")
+    return _DB_DIR
+
+
 ###############################################################################
 
 ###############################################################################
@@ -380,13 +388,14 @@ class LUDBTrainer(BaseTrainer):
         return []
 
 
-def test_unet_trainer() -> None:
+@pytest.mark.db
+def test_unet_trainer(db_dir) -> None:
     """ """
     train_cfg_fl = deepcopy(LUDBTrainCfg)
     train_cfg_fl.use_single_lead = False
     train_cfg_fl.loss = "FocalLoss"
 
-    train_cfg_fl.db_dir = _DB_DIR
+    train_cfg_fl.db_dir = db_dir
     train_cfg_fl.log_dir = _CWD / "logs"
     train_cfg_fl.model_dir = _CWD / "saved_models"
     train_cfg_fl.checkpoints = _CWD / "checkpoints"

@@ -3,16 +3,25 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from torch_ecg.databases import CINC2021
 from torch_ecg.utils._preproc import preprocess_multi_lead_signal, preprocess_single_lead_signal, rpeaks_detect_multi_leads
 
 _SAMPLE_DATA_DIR = Path(__file__).resolve().parents[2] / "sample-data" / "cinc2021"
 
-reader = CINC2021(_SAMPLE_DATA_DIR)
+pytestmark = pytest.mark.db
 
 
-def test_preprocess_multi_lead_signal():
+@pytest.fixture(scope="session")
+def reader():
+    try:
+        return CINC2021(_SAMPLE_DATA_DIR)
+    except Exception as err:
+        pytest.skip(f"failed to prepare CINC2021 sample data at {_SAMPLE_DATA_DIR}: {err}")
+
+
+def test_preprocess_multi_lead_signal(reader):
     raw_data = reader.load_data(0, leads=["II", "aVR"])
     fs = reader.get_fs(0)
     data = preprocess_multi_lead_signal(
@@ -40,7 +49,7 @@ def test_preprocess_multi_lead_signal():
     assert len(data["rpeaks"]) == 0
 
 
-def test_preprocess_single_lead_signal():
+def test_preprocess_single_lead_signal(reader):
     raw_data = reader.load_data(0, leads=["II"]).squeeze()
     fs = reader.get_fs(0)
     data = preprocess_single_lead_signal(
@@ -67,7 +76,7 @@ def test_preprocess_single_lead_signal():
     assert len(data["rpeaks"]) == 0
 
 
-def test_rpeaks_detect_multi_leads():
+def test_rpeaks_detect_multi_leads(reader):
     raw_data = reader.load_data(0, leads=["II", "aVR"])
     fs = reader.get_fs(0)
     rpeaks = rpeaks_detect_multi_leads(raw_data, fs, rpeak_fn="xqrs", verbose=2)

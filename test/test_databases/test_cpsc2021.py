@@ -31,38 +31,49 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2021"
 ###############################################################################
 
 
-reader = CPSC2021(_CWD)
-
-
-_ANS_JSON_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.json"
-_ANS_MAT_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.mat"
-
-_ANS_JSON_FILE.parent.mkdir(parents=True, exist_ok=True)
+pytestmark = pytest.mark.db
 
 _ANS_JSON_DICT = {"predict_endpoints": [[1000, 2000], [3000, 4000], [5000, 6000]]}
 _ANS_MAT_DICT = {"predict_endpoints": [[1001, 2001], [3001, 4001], [5001, 6001]]}
 
-_ANS_JSON_FILE.write_text(json.dumps(_ANS_JSON_DICT))
-savemat(str(_ANS_MAT_FILE), _ANS_MAT_DICT)
 
-rec = reader.diagnoses_records_list["AFp"][0]
-data_path = reader.get_absolute_path(rec)
-stem = data_path.stem
-ans_json_file = _ANS_JSON_FILE.parent / f"{stem}.json"
-_ANS_JSON_FILE.rename(ans_json_file)
-_ANS_JSON_FILE = ans_json_file
-rec = reader.diagnoses_records_list["AFf"][0]
-data_path = reader.get_absolute_path(rec)
-ans_mat_file = _ANS_MAT_FILE.parent / f"{stem}.mat"
-_ANS_MAT_FILE.rename(ans_mat_file)
-_ANS_MAT_FILE = ans_mat_file
+@pytest.fixture(scope="session")
+def reader():
+    """Reader plus the answer files used by `load_ans` tests."""
+    try:
+        reader = CPSC2021(_CWD)
+
+        _ans_json_file = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.json"
+        _ans_mat_file = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.mat"
+
+        _ans_json_file.parent.mkdir(parents=True, exist_ok=True)
+
+        _ans_json_file.write_text(json.dumps(_ANS_JSON_DICT))
+        savemat(str(_ans_mat_file), _ANS_MAT_DICT)
+
+        rec = reader.diagnoses_records_list["AFp"][0]
+        data_path = reader.get_absolute_path(rec)
+        stem = data_path.stem
+        ans_json_file = _ans_json_file.parent / f"{stem}.json"
+        _ans_json_file.rename(ans_json_file)
+        global _ANS_JSON_FILE
+        _ANS_JSON_FILE = ans_json_file
+        rec = reader.diagnoses_records_list["AFf"][0]
+        data_path = reader.get_absolute_path(rec)
+        ans_mat_file = _ans_mat_file.parent / f"{stem}.mat"
+        _ans_mat_file.rename(ans_mat_file)
+        global _ANS_MAT_FILE
+        _ANS_MAT_FILE = ans_mat_file
+    except Exception as err:
+        pytest.skip(f"failed to prepare CPSC2021 sample data at {_CWD}: {err}")
+    return reader
 
 
 class TestCPSC2021:
-    def test_len(self):
+    def test_len(self, reader):
         assert len(reader) == 18
 
-    def test_subsample(self):
+    def test_subsample(self, reader):
         ss_ratio = 0.3
         reader_ss = CPSC2021(_CWD, subsample=ss_ratio, verbose=0)
         assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
@@ -77,7 +88,7 @@ class TestCPSC2021:
         with pytest.raises(AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"):
             CPSC2021(_CWD, subsample=-0.1)
 
-    def test_load_data(self):
+    def test_load_data(self, reader):
         data = reader.load_data(0)
         data_1 = reader.load_data(0, leads=0, sampfrom=1000, sampto=5000, data_format="plain", units="μV")
         assert data.ndim == 2
@@ -86,7 +97,7 @@ class TestCPSC2021:
         data_1 = reader.load_data(0, leads=0, data_format="channel_last", fs=2 * reader.fs)
         assert data_1.shape == (2 * data.shape[1], 1)
 
-    def test_load_ann(self):
+    def test_load_ann(self, reader):
         rec = reader.diagnoses_records_list["AFp"][0]
         ann = reader.load_ann(rec)
         assert isinstance(ann, dict) and ann.keys() == {
@@ -184,7 +195,7 @@ class TestCPSC2021:
         assert reader.load_af_episodes(rec) == reader.load_ann(rec, field="af_episodes")
         assert reader.load_label(rec) == reader.load_ann(rec, field="label")
 
-    def test_gen_endpoint_score_mask(self):
+    def test_gen_endpoint_score_mask(self, reader):
         rec = reader.diagnoses_records_list["AFp"][0]
         data = reader.load_data(rec)
         onset_score_mask, offset_score_mask = reader.gen_endpoint_score_mask(rec)
@@ -222,7 +233,7 @@ class TestCPSC2021:
 
         del new_reader
 
-    def test_meta_data(self):
+    def test_meta_data(self, reader):
         assert isinstance(reader.diagnoses_records_list, dict)
         assert all([isinstance(v, list) for v in reader.diagnoses_records_list.values()]), reader.diagnoses_records_list
         assert all(
@@ -230,13 +241,13 @@ class TestCPSC2021:
         ), reader.diagnoses_records_list
         assert isinstance(reader.database_info, DataBaseInfo)
 
-    def test_helper(self):
+    def test_helper(self, reader):
         assert reader.helper() is None  # printed
         for item in ["attributes", "methods"]:
             assert reader.helper(item) is None  # printed
         assert reader.helper(["attributes", "methods"]) is None  # printed
 
-    def test_plot(self):
+    def test_plot(self, reader):
         waves = {
             "p_onsets": [100, 1100],
             "p_offsets": [110, 1110],
@@ -261,7 +272,7 @@ class TestCPSC2021:
         data = reader.load_data(0, sampfrom=1000, sampto=3000)
         reader.plot(0, data=data, ticks_granularity=0, waves=waves)
 
-    def test_compute_metric(self):
+    def test_compute_metric(self, reader):
         rec = reader.diagnoses_records_list["AFp"][0]
         class_true = reader.load_ann(rec, field="label", fmt="n")
         class_pred = reader.load_ann(rec, field="label", fmt="n")
@@ -291,7 +302,7 @@ class TestCPSC2021:
         )
         assert score < 0
 
-    def test_RefInfo(self):
+    def test_RefInfo(self, reader):
         rec = reader.diagnoses_records_list["AFp"][0]
         path = str(reader.get_absolute_path(rec))
         ref_info = RefInfo(path)
@@ -328,7 +339,7 @@ class TestCPSC2021:
         assert np.allclose(onset_score_mask, ref_info.onset_score_range)
         assert np.allclose(offset_score_mask, ref_info.offset_score_range)
 
-    def test_load_ans(self):
+    def test_load_ans(self, reader):
         ans = load_ans(str(_ANS_JSON_FILE))
         # assert dicts_equal(ans, _ANS_JSON_DICT)
         assert np.array_equal(ans, _ANS_JSON_DICT["predict_endpoints"])
@@ -337,7 +348,7 @@ class TestCPSC2021:
         # assert dicts_equal(ans, _ANS_JSON_DICT)  # NOT _ANS_MAT_DICT
         assert np.array_equal(ans, _ANS_JSON_DICT["predict_endpoints"])
 
-    def test_score_func(self):
+    def test_score_func(self, reader):
         score = score_func(
             data_path=str(_CWD),
             ans_path=str(_ANS_JSON_FILE.parent),
@@ -349,26 +360,37 @@ config = deepcopy(CPSC2021TrainCfg)
 config.db_dir = _CWD
 config.stretch_compress = 5  # 5%
 
-with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
-    ds = CPSC2021Dataset(config, task="main", training=False, lazy=False, db_dir=_CWD)
-ds.persistence(verbose=2)
-
-
 config_1 = deepcopy(config)
-ds_1 = CPSC2021Dataset(config_1, task="rr_lstm", training=False, lazy=False)
-
 config_2 = deepcopy(config)
-ds_2 = CPSC2021Dataset(config_2, task="rr_lstm", training=False, lazy=False)
-ds_2.reset_task(task="qrs_detection", lazy=True)
+
+
+@pytest.fixture(scope="session")
+def ds(reader):
+    with pytest.warns(RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"):
+        ds = CPSC2021Dataset(config, task="main", training=False, lazy=False, db_dir=_CWD)
+    ds.persistence(verbose=2)
+    return ds
+
+
+@pytest.fixture(scope="session")
+def ds_1(ds):
+    return CPSC2021Dataset(config_1, task="rr_lstm", training=False, lazy=False)
+
+
+@pytest.fixture(scope="session")
+def ds_2(ds):
+    ds_2 = CPSC2021Dataset(config_2, task="rr_lstm", training=False, lazy=False)
+    ds_2.reset_task(task="qrs_detection", lazy=True)
+    return ds_2
 
 
 class TestCPSC2021Dataset:
-    def test_len(self):
+    def test_len(self, ds, ds_1, ds_2):
         assert len(ds) > 0
         assert len(ds_1) > 0
         assert len(ds_2) > 0
 
-    def test_getitem(self):
+    def test_getitem(self, ds, ds_1, ds_2):
         input_len = config[ds.task].input_len
         for i in range(len(ds)):
             data, af_mask, weight_mask = ds[i]
@@ -395,7 +417,7 @@ class TestCPSC2021Dataset:
         assert af_mask.ndim == 3 and af_mask.shape == (2, input_len, 1)
         assert weight_mask.ndim == 3 and weight_mask.shape == (2, input_len, 1)
 
-    def test_properties(self):
+    def test_properties(self, ds, ds_1, ds_2):
         assert ds.task == "main"
         assert ds_1.task == "rr_lstm"
         assert ds_2.task == "qrs_detection"
@@ -409,27 +431,27 @@ class TestCPSC2021Dataset:
         assert len(ds_2) == len(ds_2.segments) < len(list_sum(ds_2.all_segments.values()))
         assert str(ds) == repr(ds)
 
-    def test_load_seg_seq_lab(self):
+    def test_load_seg_seq_lab(self, ds):
         seg_data = ds._load_seg_data(ds.segments[0])
         seg_seq_lab = ds._load_seg_seq_lab(ds.segments[0], reduction=1)
         assert seg_seq_lab.shape == (seg_data.shape[1], 1)
         seg_seq_lab = ds._load_seg_seq_lab(ds.segments[0], reduction=8)
         assert seg_seq_lab.shape == (seg_data.shape[1] // 8, 1)
 
-    def test_load_rr_seq(self):
+    def test_load_rr_seq(self, ds_1):
         rr_seq = ds_1._load_rr_seq(ds_1.rr_seq[0])
         assert isinstance(rr_seq, dict)
         assert rr_seq.keys() == {"rr", "label", "interval"}
         assert rr_seq["rr"].shape == rr_seq["label"].shape == (ds_1.seglen, 1)
         assert rr_seq["interval"].shape == (2,)
 
-    def test_plot_seg(self):
+    def test_plot_seg(self, ds):
         ds.plot_seg(ds.segments[0], ticks_granularity=2)
 
-    def test_clear_cached_segments(self):
+    def test_clear_cached_segments(self, reader, ds):
         ds._clear_cached_segments(recs=[ds.reader.all_records[0]])
         ds._clear_cached_segments()
 
-    def test_clear_cached_rr_seq(self):
+    def test_clear_cached_rr_seq(self, reader, ds_1):
         ds_1._clear_cached_rr_seq(recs=[ds_1.reader.all_records[0]])
         ds_1._clear_cached_rr_seq()

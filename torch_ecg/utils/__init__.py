@@ -188,7 +188,7 @@ from .misc import (
     timeout,
 )
 from .registry import Registry
-from .rng import seed_everything, worker_init_fn
+from .rng import get_rng, seed_everything, worker_init_fn
 from .utils_data import (
     ECGWaveForm,
     ECGWaveFormNames,
@@ -260,6 +260,7 @@ __all__ = [
     "http_get",
     "seed_everything",
     "worker_init_fn",
+    "get_rng",
     "get_record_list_recursive3",
     "dict_to_str",
     "str2bool",
