@@ -27,9 +27,12 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
+# Allow one concurrent deployment per ref. The group must include the ref:
+# a single global group with `cancel-in-progress` let the docs build of any
+# PR cancel the builds of master/dev and of every other PR (all their
+# required "build" checks then report cancelled/failure).
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
