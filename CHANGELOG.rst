@@ -96,6 +96,15 @@ Fixed
   ``cinc2020``/``cinc2021``/``cpsc2021``/``sph``/``ludb``. Behavior is
   unchanged except that invalid names now raise the documented errors
   instead of executing arbitrary expressions.
+- ``misc.timeout`` now uses a synchronous SIGALRM-based timer on POSIX
+  main threads. The previous ``threading.Timer`` +
+  ``PyThreadState_SetAsyncExc`` injection delivers the exception only
+  at bytecode boundaries and could deadlock with the interpreter's
+  exception machinery (first observed hanging CI on Python 3.11 for
+  hours); the thread-injection fallback is kept for Windows and
+  non-main threads. ``test_read_event_scalars`` (downloads a real
+  TensorBoard event file at test time) is now marked ``db`` so the
+  core CI lane stays network-free.
 - ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
   two ``multiprocessing.Pool`` instances per forward call (each forward
   now takes milliseconds instead of process-pool startup costs, and the

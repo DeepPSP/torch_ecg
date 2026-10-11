@@ -238,9 +238,12 @@ def test_read_log_txt():
     # But for now, let's just skip the network part.
 
 
+@pytest.mark.db
 def test_read_event_scalars():
     # It's hard to mock a tensorboard event file without tensorflow or tensorboardX
     # So we just skip this test if the file is not available
+    # marked `db`: it downloads at test time and must stay out of the
+    # network-free core lane
     event_scalars_url = (
         "https://github.com/DeepPSP/cinc2021/blob/master/results/20211121-12leads/"
         "events.out.tfevents.1637416376.ubuntuECG_CRNN_CINC2021_adamw_amsgrad_"
