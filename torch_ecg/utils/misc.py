@@ -890,8 +890,12 @@ class CitationMixin(_CitationMixin):
         df = df.reset_index(drop=True)
         df.to_csv(_CitationMixin.citation_cache, index=False)
         del df_old, df
-        # delete the old cache
-        (_DATA_CACHE / "database_citation.csv").unlink()
+        # delete the old cache; `missing_ok` is required because this class
+        # body runs at import time, and on Python 3.14+ multiprocessing
+        # workers (forkserver/spawn start method) re-import the module
+        # concurrently, so a sibling worker may have deleted the file
+        # between our `exists()` check and this `unlink()`
+        (_DATA_CACHE / "database_citation.csv").unlink(missing_ok=True)
 
     def get_citation(
         self,

@@ -3,6 +3,8 @@
 import datetime
 import inspect
 import json
+import subprocess
+import sys
 import textwrap
 import time
 from itertools import product
@@ -13,7 +15,8 @@ import pandas as pd
 import pytest
 import torch
 
-from torch_ecg.cfg import _DATA_CACHE, DEFAULTS
+import torch_ecg
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.download import http_get
 from torch_ecg.utils.misc import (
     CitationMixin,
@@ -51,11 +54,6 @@ _SAMPLE_DATA_DIR = Path(__file__).parents[2].resolve() / "sample-data"
 
 _TMP_DIR = Path(__file__).parents[2].resolve() / "tmp"
 _TMP_DIR.mkdir(exist_ok=True, parents=True)
-
-
-# create `_DATA_CACHE / "database_citation.csv"`
-# to test backward compatibility of `CitationMixin`
-(_DATA_CACHE / "database_citation.csv").write_text("doi,citation\n")
 
 
 class SomeClass(ReprMixin, CitationMixin):
@@ -370,6 +368,79 @@ def test_CitationMixin():
     citation = another_class.get_citation(lookup=False, print_result=False)
     assert citation == "\n".join(another_class.doi)
     assert another_class.get_citation(print_result=True) is None
+
+
+_MIGRATION_DOI = "10.9999/torch-ecg-migration-test"
+
+# runs in a subprocess: preload `torch_ecg.cfg` from source with the cache
+# paths redirected into the sandbox, so that the import of
+# `torch_ecg.utils.misc` executes the one-time legacy-csv migration in the
+# class body of `CitationMixin` against the sandbox instead of the real
+# user cache.  `torch_ecg/__init__.py` imports the whole package, so the
+# patched `cfg` must be inserted into `sys.modules` before any regular
+# `torch_ecg.*` import happens.
+_MIGRATION_SUBPROCESS = """
+import importlib.util
+import os
+import sys
+import time
+import types
+from pathlib import Path
+
+sandbox, pkg_dir, n_proc = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
+
+parent = types.ModuleType("torch_ecg")
+parent.__path__ = [str(pkg_dir)]
+sys.modules["torch_ecg"] = parent
+
+spec = importlib.util.spec_from_file_location("torch_ecg.cfg", pkg_dir / "cfg.py")
+cfg = importlib.util.module_from_spec(spec)
+sys.modules["torch_ecg.cfg"] = cfg
+spec.loader.exec_module(cfg)
+cfg._DATA_CACHE = sandbox / "data"
+
+from bib_lookup import CitationMixin as _CM
+
+_CM.citation_cache = sandbox / "citations.csv"
+
+# barrier: wait until all processes have finished their heavy imports, so
+# that they execute the migration in `torch_ecg.utils.misc` simultaneously
+# (this is what a DataLoader spawning several workers does)
+(sandbox / f"ready.{os.getpid()}").touch()
+while len(list(sandbox.glob("ready.*"))) < n_proc:
+    time.sleep(0.005)
+
+import torch_ecg.utils.misc  # noqa: F401  (runs the migration)
+"""
+
+
+def test_citation_migration_race(tmp_path):
+    """The one-time legacy ``database_citation.csv`` migration lives in the
+    ``CitationMixin`` class body, i.e. it runs at import time of
+    ``torch_ecg.utils.misc``. Python 3.14+ DataLoader workers (forkserver /
+    spawn start methods) re-import the package concurrently, so several
+    processes may execute the migration at the same time; it must consume
+    the legacy file exactly once without any importer crashing.
+    """
+    sandbox = tmp_path / "sandbox"
+    data_cache = sandbox / "data"
+    data_cache.mkdir(parents=True)
+    (data_cache / "database_citation.csv").write_text(f"doi,citation\n{_MIGRATION_DOI},legacy entry\n")
+    pkg_dir = Path(torch_ecg.__file__).parent
+    n_proc = 6
+    procs = [
+        subprocess.Popen(
+            [sys.executable, "-c", _MIGRATION_SUBPROCESS, str(sandbox), str(pkg_dir), str(n_proc)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        for _ in range(n_proc)
+    ]
+    returncodes = [p.wait() for p in procs]
+    assert returncodes == [0] * n_proc, "an importer crashed during the migration"
+    assert not (data_cache / "database_citation.csv").exists(), "legacy csv not consumed"
+    merged = [p for p in sandbox.glob("*.csv") if _MIGRATION_DOI in p.read_text(encoding="utf-8", errors="replace")]
+    assert merged, "legacy csv was deleted without being merged"
 
 
 def test_MovingAverage():
