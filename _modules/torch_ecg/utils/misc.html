@@ -1325,8 +1325,12 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">_CitationMixin</span><span class="o">.</span><span class="n">citation_cache</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">df_old</span><span class="p">,</span> <span class="n">df</span>
-        <span class="c1"># delete the old cache</span>
-        <span class="p">(</span><span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">"database_citation.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="c1"># delete the old cache; `missing_ok` is required because this class</span>
+        <span class="c1"># body runs at import time, and on Python 3.14+ multiprocessing</span>
+        <span class="c1"># workers (forkserver/spawn start method) re-import the module</span>
+        <span class="c1"># concurrently, so a sibling worker may have deleted the file</span>
+        <span class="c1"># between our `exists()` check and this `unlink()`</span>
+        <span class="p">(</span><span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">"database_citation.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CitationMixin.get_citation">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.CitationMixin.html#torch_ecg.utils.CitationMixin.get_citation">[docs]</a>

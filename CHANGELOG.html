@@ -478,6 +478,14 @@ up as “cancelled”.</p></li>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul>
+<li><p>Fix an import-time race in the one-time <code class="docutils literal notranslate"><span class="pre">database_citation.csv</span></code>
+migration in <code class="docutils literal notranslate"><span class="pre">CitationMixin</span></code>: the <code class="docutils literal notranslate"><span class="pre">unlink()</span></code> after merging is now
+<code class="docutils literal notranslate"><span class="pre">missing_ok=True</span></code>. On Python 3.14+ the Linux default multiprocessing
+start method is forkserver (not fork), so <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> workers
+re-import the package concurrently; two workers could both pass the
+<code class="docutils literal notranslate"><span class="pre">exists()</span></code> check and both delete the file, and the loser crashed
+with <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code> at import (observed as <code class="docutils literal notranslate"><span class="pre">DataLoader</span> <span class="pre">worker</span>
+<span class="pre">exited</span> <span class="pre">unexpectedly</span></code> failing CI on 3.14).</p></li>
 <li><p>Harden the safe tar extraction in <code class="docutils literal notranslate"><span class="pre">download.py</span></code>, completing the
 CVE-2007-4559 mitigation introduced in 2022 (commit 8f22086a), which
 correctly blocked the primary <code class="docutils literal notranslate"><span class="pre">..</span></code>/absolute-path vectors: the
