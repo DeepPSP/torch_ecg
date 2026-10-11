@@ -22,81 +22,6 @@ __all__ = [
 ]
 
 
-_KNOWN_ISSUES = """
-    NOTE
-    ----
-    Known issues:
-
-        - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example
-
-        .. code-block:: python
-
-        {}
-    """
-_ClassificationOutput_ISSUE_EXAMPLE = """
-            >>> output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-            >>> output
-            {'classes': ['AF', 'N', 'SPB'],
-                'prob': array([[1., 1., 1.]]),
-                'pred': array([[1., 1., 1.]]),
-                'd': {'d': 1}}
-            >>> output.d  # has to access via `output["d"]`
-            AttributeError: 'ClassificationOutput' object has no attribute 'd'
-    """
-_MultiLabelClassificationOutput_ISSUE_EXAMPLE = """
-            >>> output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-            >>> output
-            {'classes': ['AF', 'N', 'SPB'],
-                'prob': array([[1., 1., 1.]]),
-                'pred': array([[1., 1., 1.]]),
-                'thr': 0.5,
-                'd': {'d': 1}}
-            >>> output.d  # has to access via `output["d"]`
-            AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'
-    """
-_SequenceTaggingOutput_ISSUE_EXAMPLE = """
-            >>> output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-            >>> output
-            {'classes': ['AF', 'N', 'SPB'],
-                'prob': array([[[1., 1., 1.],
-                        [1., 1., 1.],
-                        [1., 1., 1.]]]),
-                'pred': array([[[1., 1., 1.],
-                        [1., 1., 1.],
-                        [1., 1., 1.]]]),
-                'thr': 0.5,
-                'd': {'d': 1}}
-            >>> output.d  # has to access via `output["d"]`
-            AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'
-    """
-_WaveDelineationOutput_ISSUE_EXAMPLE = """
-            >>> output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, mask=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-            >>> output
-            {'classes': ['AF', 'N', 'SPB'],
-                'prob': array([[[1., 1., 1.],
-                        [1., 1., 1.],
-                        [1., 1., 1.]]]),
-                'mask': array([[[1., 1., 1.],
-                        [1., 1., 1.],
-                        [1., 1., 1.]]]),
-                'd': {'d': 1}}
-            >>> output.d  # has to access via `output["d"]`
-            AttributeError: 'WaveDelineationOutput' object has no attribute 'd'
-    """
-_RPeaksDetectionOutput_ISSUE_EXAMPLE = """
-            >>> output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})
-            >>> output
-            {'rpeak_indices': [[2]],
-                'prob': array([[[1., 1., 1.],
-                        [1., 1., 1.],
-                        [1., 1., 1.]]]),
-                'thr': 0.5,
-                'd': {'d': 1}}
-            >>> output.d  # has to access via `output["d"]`
-            AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'
-    """
-
-
 class BaseOutput(CFG, ABC):
     """Base class for all outputs.
 
@@ -161,7 +86,6 @@ class BaseOutput(CFG, ABC):
                     raise ValueError(f"field `{k}` of type `{type(v_)}` is not supported")
 
 
-@add_docstring(_KNOWN_ISSUES.format(_ClassificationOutput_ISSUE_EXAMPLE), "append")
 class ClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a (typically single-label) classification task.
@@ -207,7 +131,6 @@ class ClassificationOutput(BaseOutput):
         return clf_met.compute(self.get("labels", self.get("label")), self.pred, len(self.classes))
 
 
-@add_docstring(_KNOWN_ISSUES.format(_MultiLabelClassificationOutput_ISSUE_EXAMPLE), "append")
 class MultiLabelClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a multi-label classification task.
@@ -261,7 +184,6 @@ class MultiLabelClassificationOutput(BaseOutput):
         return clf_met.compute(self.get("labels", self.get("label")), self.pred, len(self.classes))
 
 
-@add_docstring(_KNOWN_ISSUES.format(_SequenceTaggingOutput_ISSUE_EXAMPLE), "append")
 class SequenceTaggingOutput(BaseOutput):
     """Class that maintains the output of a sequence tagging task.
 
@@ -323,7 +245,6 @@ SequenceLabellingOutput = SequenceTaggingOutput
 SequenceLabellingOutput.__name__ = "SequenceLabellingOutput"
 
 
-@add_docstring(_KNOWN_ISSUES.format(_WaveDelineationOutput_ISSUE_EXAMPLE), "append")
 class WaveDelineationOutput(SequenceTaggingOutput):
     """Class that maintains the output of a wave delineation task.
 
@@ -390,7 +311,6 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         return wd_met.compute(labels, self.mask, class_map=class_map, fs=fs)
 
 
-@add_docstring(_KNOWN_ISSUES.format(_RPeaksDetectionOutput_ISSUE_EXAMPLE), "append")
 class RPeaksDetectionOutput(BaseOutput):
     """
     Class that maintains the output of an R peaks detection task.

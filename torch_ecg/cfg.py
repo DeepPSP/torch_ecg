@@ -3,10 +3,11 @@
 import os
 import random
 import re
+from copy import deepcopy
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Any, MutableMapping, Optional, Union
+from typing import Any, Dict, MutableMapping, Optional, Union
 
 import numpy as np
 import torch
@@ -23,6 +24,25 @@ if os.access(_PACKAGE_CACHE.parent, os.W_OK) and not _PACKAGE_CACHE.exists():
 _DATA_CACHE = _PACKAGE_CACHE / "data"
 if os.access(_DATA_CACHE.parent, os.W_OK) and not _DATA_CACHE.exists():
     _DATA_CACHE.mkdir(parents=True, exist_ok=True)
+
+
+# keys that would shadow `dict`/`dict`-like API when written onto a `CFG`
+# via either the attribute or the item interface
+_RESERVED_KEYS = frozenset(
+    {
+        "clear",
+        "copy",
+        "fromkeys",
+        "get",
+        "items",
+        "keys",
+        "pop",
+        "popitem",
+        "setdefault",
+        "update",
+        "values",
+    }
+)
 
 
 class CFG(dict):
@@ -73,10 +93,20 @@ class CFG(dict):
                 setattr(self, k, getattr(self, k))
 
     def __setattr__(self, name: str, value: Any) -> None:
+        if name in _RESERVED_KEYS:
+            raise ValueError(
+                f"key `{name}` is reserved by the dict API of `CFG` and would shadow it; " f"please use a different key"
+            )
+        # NOTE nested values are always converted with the base `CFG` class,
+        # NOT with `self.__class__`: subclasses may override `__init__` with
+        # stricter contracts (e.g. `BaseOutput` asserts its required fields),
+        # and routing a plain nested dict through the subclass constructor
+        # used to crash those subclasses (see the former `_KNOWN_ISSUES` in
+        # components/outputs.py)
         if isinstance(value, (list, tuple)):
-            value = [self.__class__(x) if isinstance(x, dict) else x for x in value]
-        elif isinstance(value, dict) and not isinstance(value, self.__class__):
-            value = self.__class__(value)
+            value = [CFG(x) if isinstance(x, dict) and not isinstance(x, CFG) else x for x in value]
+        elif isinstance(value, dict) and not isinstance(value, CFG):
+            value = CFG(value)
 
         if isinstance(name, str) and name.isidentifier():
             super().__setattr__(name, value)
@@ -91,6 +121,7 @@ class CFG(dict):
         ----------
         new_cfg : MutableMapping, optional
             The new configuration, by default None.
+            New values recursively override old ones.
         **kwargs : dict, optional
             Key value pairs, by default None.
 
@@ -103,11 +134,14 @@ class CFG(dict):
                 if isinstance(self[k], MutableMapping):
                     self[k].update(_new_cfg[k])
                 else:  # for example, self[k] is `None`
-                    self[k] = _new_cfg[k]  # deepcopy?
+                    # deepcopy, so that the updated config does not share
+                    # (mutable) values with the config it was updated from
+                    self[k] = deepcopy(_new_cfg[k])
             else:
                 try:
                     setattr(self, k, _new_cfg[k])
-                except Exception:
+                except TypeError:
+                    # non-str keys cannot go through `setattr`
                     dict.__setitem__(self, k, _new_cfg[k])
 
     def pop(self, key: str, default: Optional[Any] = None) -> Any:
@@ -126,10 +160,27 @@ class CFG(dict):
         return super().pop(key, default)
 
     def __repr__(self) -> str:
-        return repr({k: v for k, v in self.items() if not callable(v)})
+        return repr(
+            {k: (v if not callable(v) else f"<callable: {getattr(v, '__name__', type(v).__name__)}>") for k, v in self.items()}
+        )
 
     def __str__(self) -> str:
-        return str({k: v for k, v in self.items() if not callable(v)})
+        return str(
+            {k: (v if not callable(v) else f"<callable: {getattr(v, '__name__', type(v).__name__)}>") for k, v in self.items()}
+        )
+
+    def __deepcopy__(self, memo: Dict[int, Any]) -> "CFG":
+        # bypass `__init__` (subclasses may have stricter constructors,
+        # e.g. `BaseOutput` asserts required fields) and rebuild both views
+        # (dict items + mirrored attributes) explicitly; `id(self)` is
+        # registered in `memo` first, so cyclic references are safe
+        new = self.__class__.__new__(self.__class__)
+        memo[id(self)] = new
+        for k, v in self.items():
+            dict.__setitem__(new, deepcopy(k, memo), deepcopy(v, memo))
+        for k, v in self.__dict__.items():
+            object.__setattr__(new, k, deepcopy(v, memo))
+        return new
 
 
 @dataclass

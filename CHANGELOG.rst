@@ -105,6 +105,24 @@ Fixed
   non-main threads. ``test_read_event_scalars`` (downloads a real
   TensorBoard event file at test time) is now marked ``db`` so the
   core CI lane stays network-free.
+- Harden ``CFG`` in place (public API unchanged):
+  - dict-typed fields are converted with the base ``CFG`` class instead
+    of ``self.__class__``, fixing the crash of CFG subclasses with
+    stricter constructors (documented as ``_KNOWN_ISSUES`` in
+    ``components/outputs.py``: ``ClassificationOutput(..., d={"d": 1})``
+    used to raise ``AssertionError``); the issue notes are removed
+  - keys that would shadow the dict API (``keys``/``items``/``get``/...)
+    are now rejected with a ``ValueError`` instead of silently breaking
+    the container
+  - ``update`` deep-copies mapping values that replace non-mapping ones
+    (e.g. ``None``), so the updated config no longer shares mutable
+    values with the config it was updated from
+  - ``__repr__``/``__str__`` keep callable values as ``<callable: ...>``
+    placeholders instead of silently hiding them
+  - explicit ``__deepcopy__`` that bypasses subclass ``__init__`` and
+    rebuilds both the item and the attribute views; the pickle format is
+    untouched, so previously saved checkpoints still load
+rash, reserved keys, update)
 - ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
   two ``multiprocessing.Pool`` instances per forward call (each forward
   now takes milliseconds instead of process-pool startup costs, and the

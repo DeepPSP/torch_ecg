@@ -164,3 +164,4 @@ log
 tmp*
 
 .github/copilot-instructions.md
+test/logs/
