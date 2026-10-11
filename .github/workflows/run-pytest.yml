@@ -5,7 +5,9 @@ name: Run Test with PyTest and Codecov
 
 on:
   push:
-    branches: [ dev ]
+    # master pushes (i.e. PR merges) re-run the core lane on the true merge
+    # commit and refresh the codecov baseline of the master branch
+    branches: [ dev, master ]
   pull_request:
     branches: [ master ]
   schedule:
@@ -86,6 +88,9 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Clear unnecessary system components
+      # freeing ~30 GB is only needed by the full lane (real database
+      # downloads); the core lane fits comfortably in the default disk
+      if: ${{ env.SUITE == 'full' }}
       run: |
         echo "Free space:"
         df -h
@@ -100,6 +105,10 @@ jobs:
         sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 git -y
         if command -v aws &> /dev/null; then aws --version; else echo "aws cli not found"; fi
     - name: Set up Ruby
+      # only used by `gem install nsrr` in the SHHS download step below,
+      # which is gated by the same condition (currently dormant: flip
+      # SHHS_DATA_AVAILABLE at the workflow level to activate it)
+      if: ${{ env.SHHS_DATA_AVAILABLE == 'true' && env.SUITE == 'full' }}
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0' # Not needed with a .ruby-version file
@@ -118,7 +127,6 @@ jobs:
         python -m pip install -r requirements.txt
         python -m pip install pytest pytest-xdist pytest-cov # Testing packages
         python -m pip uninstall torch-ecg --yes # Remove if already installed
-        python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
     - name: List installed Python packages
