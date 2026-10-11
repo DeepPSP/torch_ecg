@@ -436,12 +436,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SS</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">wfdb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyedflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdfReader</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..cfg</span><span class="w"> </span><span class="kn">import</span> <span class="n">_DATA_CACHE</span><span class="p">,</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ecg_arrhythmia_knowledge</span> <span class="k">as</span> <span class="n">EAK</span>  <span class="c1"># noqa : F401</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.download</span><span class="w"> </span><span class="kn">import</span> <span class="n">http_get</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CitationMixin</span><span class="p">,</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">dict_to_str</span><span class="p">,</span> <span class="n">get_record_list_recursive</span><span class="p">,</span> <span class="n">init_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._edf</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EdfReader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.aux_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_physionet_dbs</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -1472,7 +1472,7 @@
         <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">"open"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span> <span class="o">=</span> <span class="n">EdfReader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">full_file_path</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span> <span class="o">=</span> <span class="n">_EdfReader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">full_file_path</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">"close"</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">file_opened</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>

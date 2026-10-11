@@ -405,7 +405,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -1700,7 +1702,8 @@
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout">[docs]</a>
 <span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">timeout</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""A context manager that raises a</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A context manager that raises a</span>
 <span class="sd">    :class:`TimeoutError` after a specified time (in seconds).</span>
 
 <span class="sd">    Parameters</span>
@@ -1721,10 +1724,27 @@
         <span class="k">yield</span>
         <span class="k">return</span>
 
+    <span class="k">if</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span> <span class="ow">is</span> <span class="n">threading</span><span class="o">.</span><span class="n">main_thread</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s2">"setitimer"</span><span class="p">):</span>
+        <span class="c1"># On POSIX main threads, use a synchronous signal-based timer:</span>
+        <span class="c1"># SIGALRM interrupts blocking C calls (e.g. `time.sleep`) directly.</span>
+        <span class="c1"># The thread-based async-exception injection used below as the</span>
+        <span class="c1"># fallback can deadlock with the interpreter's exception machinery</span>
+        <span class="c1"># under some CPython versions (observed hanging on 3.11).</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_sigalrm_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"block timedout after `</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">` seconds"</span><span class="p">)</span>
+
+        <span class="n">old_handler</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">_sigalrm_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">setitimer</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">ITIMER_REAL</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">setitimer</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">ITIMER_REAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">old_handler</span><span class="p">)</span>
+        <span class="k">return</span>
+
     <span class="c1"># signal.alarm is not available on Windows</span>
     <span class="c1"># so we use threading.Timer to raise TimeoutError</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_raise_timeout_exception</span><span class="p">(</span><span class="n">tid</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Raise TimeoutError in the target thread."""</span>

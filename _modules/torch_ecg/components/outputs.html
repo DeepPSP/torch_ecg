@@ -422,81 +422,6 @@
 <span class="p">]</span>
 
 
-<span class="n">_KNOWN_ISSUES</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">    NOTE</span>
-<span class="s2">    ----</span>
-<span class="s2">    Known issues:</span>
-
-<span class="s2">        - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example</span>
-
-<span class="s2">        .. code-block:: python</span>
-
-<span class="s2">        </span><span class="si">{}</span>
-<span class="s2">    """</span>
-<span class="n">_ClassificationOutput_ISSUE_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">            &gt;&gt;&gt; output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})</span>
-<span class="s2">            &gt;&gt;&gt; output</span>
-<span class="s2">            {'classes': ['AF', 'N', 'SPB'],</span>
-<span class="s2">                'prob': array([[1., 1., 1.]]),</span>
-<span class="s2">                'pred': array([[1., 1., 1.]]),</span>
-<span class="s2">                'd': {'d': 1}}</span>
-<span class="s2">            &gt;&gt;&gt; output.d  # has to access via `output["d"]`</span>
-<span class="s2">            AttributeError: 'ClassificationOutput' object has no attribute 'd'</span>
-<span class="s2">    """</span>
-<span class="n">_MultiLabelClassificationOutput_ISSUE_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">            &gt;&gt;&gt; output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})</span>
-<span class="s2">            &gt;&gt;&gt; output</span>
-<span class="s2">            {'classes': ['AF', 'N', 'SPB'],</span>
-<span class="s2">                'prob': array([[1., 1., 1.]]),</span>
-<span class="s2">                'pred': array([[1., 1., 1.]]),</span>
-<span class="s2">                'thr': 0.5,</span>
-<span class="s2">                'd': {'d': 1}}</span>
-<span class="s2">            &gt;&gt;&gt; output.d  # has to access via `output["d"]`</span>
-<span class="s2">            AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'</span>
-<span class="s2">    """</span>
-<span class="n">_SequenceTaggingOutput_ISSUE_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">            &gt;&gt;&gt; output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})</span>
-<span class="s2">            &gt;&gt;&gt; output</span>
-<span class="s2">            {'classes': ['AF', 'N', 'SPB'],</span>
-<span class="s2">                'prob': array([[[1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.]]]),</span>
-<span class="s2">                'pred': array([[[1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.]]]),</span>
-<span class="s2">                'thr': 0.5,</span>
-<span class="s2">                'd': {'d': 1}}</span>
-<span class="s2">            &gt;&gt;&gt; output.d  # has to access via `output["d"]`</span>
-<span class="s2">            AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'</span>
-<span class="s2">    """</span>
-<span class="n">_WaveDelineationOutput_ISSUE_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">            &gt;&gt;&gt; output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, mask=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})</span>
-<span class="s2">            &gt;&gt;&gt; output</span>
-<span class="s2">            {'classes': ['AF', 'N', 'SPB'],</span>
-<span class="s2">                'prob': array([[[1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.]]]),</span>
-<span class="s2">                'mask': array([[[1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.]]]),</span>
-<span class="s2">                'd': {'d': 1}}</span>
-<span class="s2">            &gt;&gt;&gt; output.d  # has to access via `output["d"]`</span>
-<span class="s2">            AttributeError: 'WaveDelineationOutput' object has no attribute 'd'</span>
-<span class="s2">    """</span>
-<span class="n">_RPeaksDetectionOutput_ISSUE_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">            &gt;&gt;&gt; output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})</span>
-<span class="s2">            &gt;&gt;&gt; output</span>
-<span class="s2">            {'rpeak_indices': [[2]],</span>
-<span class="s2">                'prob': array([[[1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.],</span>
-<span class="s2">                        [1., 1., 1.]]]),</span>
-<span class="s2">                'thr': 0.5,</span>
-<span class="s2">                'd': {'d': 1}}</span>
-<span class="s2">            &gt;&gt;&gt; output.d  # has to access via `output["d"]`</span>
-<span class="s2">            AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'</span>
-<span class="s2">    """</span>
-
-
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseOutput</span><span class="p">(</span><span class="n">CFG</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Base class for all outputs.</span>
 
@@ -563,7 +488,6 @@
 
 <div class="viewcode-block" id="ClassificationOutput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.ClassificationOutput.html#torch_ecg.components.ClassificationOutput">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_KNOWN_ISSUES</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_ClassificationOutput_ISSUE_EXAMPLE</span><span class="p">),</span> <span class="s2">"append"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ClassificationOutput</span><span class="p">(</span><span class="n">BaseOutput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that maintains the output of a (typically single-label) classification task.</span>
@@ -618,7 +542,6 @@
 
 <div class="viewcode-block" id="MultiLabelClassificationOutput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.MultiLabelClassificationOutput.html#torch_ecg.components.MultiLabelClassificationOutput">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_KNOWN_ISSUES</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_MultiLabelClassificationOutput_ISSUE_EXAMPLE</span><span class="p">),</span> <span class="s2">"append"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiLabelClassificationOutput</span><span class="p">(</span><span class="n">BaseOutput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that maintains the output of a multi-label classification task.</span>
@@ -681,7 +604,6 @@
 
 <div class="viewcode-block" id="SequenceTaggingOutput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.SequenceTaggingOutput.html#torch_ecg.components.SequenceTaggingOutput">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_KNOWN_ISSUES</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_SequenceTaggingOutput_ISSUE_EXAMPLE</span><span class="p">),</span> <span class="s2">"append"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SequenceTaggingOutput</span><span class="p">(</span><span class="n">BaseOutput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Class that maintains the output of a sequence tagging task.</span>
 
@@ -746,7 +668,6 @@
 
 <div class="viewcode-block" id="WaveDelineationOutput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.WaveDelineationOutput.html#torch_ecg.components.WaveDelineationOutput">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_KNOWN_ISSUES</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_WaveDelineationOutput_ISSUE_EXAMPLE</span><span class="p">),</span> <span class="s2">"append"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveDelineationOutput</span><span class="p">(</span><span class="n">SequenceTaggingOutput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Class that maintains the output of a wave delineation task.</span>
 
@@ -822,7 +743,6 @@
 
 <div class="viewcode-block" id="RPeaksDetectionOutput">
 <a class="viewcode-back" href="../../../api/generated/torch_ecg.components.RPeaksDetectionOutput.html#torch_ecg.components.RPeaksDetectionOutput">[docs]</a>
-<span class="nd">@add_docstring</span><span class="p">(</span><span class="n">_KNOWN_ISSUES</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_RPeaksDetectionOutput_ISSUE_EXAMPLE</span><span class="p">),</span> <span class="s2">"append"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RPeaksDetectionOutput</span><span class="p">(</span><span class="n">BaseOutput</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that maintains the output of an R peaks detection task.</span>

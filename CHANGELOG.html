@@ -435,6 +435,22 @@ symlink/hardlink escapes).</p></li>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Drop support for Python 3.9 (end-of-life since 2025-10; the latest
+torch already requires &gt;=3.10) and add Python 3.14:
+<code class="docutils literal notranslate"><span class="pre">requires-python</span> <span class="pre">&gt;=</span> <span class="pre">3.10</span></code>, classifiers 3.10-3.14, and the CI matrix
+becomes <code class="docutils literal notranslate"><span class="pre">3.10</span> <span class="pre">/</span> <span class="pre">3.11</span> <span class="pre">/</span> <span class="pre">3.12</span> <span class="pre">/</span> <span class="pre">3.13</span> <span class="pre">/</span> <span class="pre">3.14</span></code> (3.11 was previously
+missing from the matrix; 3.13/3.14 were tested but not listed in the
+classifiers).</p></li>
+<li><p>Replace the <code class="docutils literal notranslate"><span class="pre">pyEDFlib</span></code> dependency with the actively maintained
+pure-Python <code class="docutils literal notranslate"><span class="pre">edfio</span></code> (pyEDFlib’s last PyPI release was 2025-06, with
+no wheels for newer Python versions). The EDF reading used by the
+NSRR readers (e.g. SHHS) now goes through a small
+<code class="docutils literal notranslate"><span class="pre">pyedflib.EdfReader</span></code>-compatible adapter on top of <code class="docutils literal notranslate"><span class="pre">edfio</span></code>
+(<code class="docutils literal notranslate"><span class="pre">torch_ecg.databases._edf</span></code>), so no reader code changes and no
+behavior changes; verified by a round-trip test in <code class="docutils literal notranslate"><span class="pre">test_base.py</span></code>.
+This also unblocks Python 3.14 (pyEDFlib was the only dependency
+without compatible wheels). <code class="docutils literal notranslate"><span class="pre">Cython</span></code>, which was only needed to
+build <code class="docutils literal notranslate"><span class="pre">pyEDFlib</span></code> from source, is dropped from the dependencies.</p></li>
 <li><p>Unify all randomness of the augmenters on <code class="docutils literal notranslate"><span class="pre">DEFAULTS.RNG</span></code>
 (<code class="docutils literal notranslate"><span class="pre">mixup</span></code>, <code class="docutils literal notranslate"><span class="pre">cutmix</span></code>, <code class="docutils literal notranslate"><span class="pre">random_masking</span></code>, <code class="docutils literal notranslate"><span class="pre">stretch_compress</span></code>,
 <code class="docutils literal notranslate"><span class="pre">baseline_wander</span></code> and the <code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code> used to draw from the
@@ -461,7 +477,7 @@ up as “cancelled”.</p></li>
 </section>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
-<ul class="simple">
+<ul>
 <li><p>Harden the safe tar extraction in <code class="docutils literal notranslate"><span class="pre">download.py</span></code>, completing the
 CVE-2007-4559 mitigation introduced in 2022 (commit 8f22086a), which
 correctly blocked the primary <code class="docutils literal notranslate"><span class="pre">..</span></code>/absolute-path vectors: the
@@ -485,16 +501,50 @@ path now uses <code class="docutils literal notranslate"><span class="pre">getat
 <code class="docutils literal notranslate"><span class="pre">cinc2020</span></code>/<code class="docutils literal notranslate"><span class="pre">cinc2021</span></code>/<code class="docutils literal notranslate"><span class="pre">cpsc2021</span></code>/<code class="docutils literal notranslate"><span class="pre">sph</span></code>/<code class="docutils literal notranslate"><span class="pre">ludb</span></code>. Behavior is
 unchanged except that invalid names now raise the documented errors
 instead of executing arbitrary expressions.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code> is fully vectorized and no longer spawns
-two <code class="docutils literal notranslate"><span class="pre">multiprocessing.Pool</span></code> instances per forward call (each forward
+<li><p><code class="docutils literal notranslate"><span class="pre">misc.timeout</span></code> now uses a synchronous SIGALRM-based timer on POSIX
+main threads. The previous <code class="docutils literal notranslate"><span class="pre">threading.Timer</span></code> +
+<code class="docutils literal notranslate"><span class="pre">PyThreadState_SetAsyncExc</span></code> injection delivers the exception only
+at bytecode boundaries and could deadlock with the interpreter’s
+exception machinery (first observed hanging CI on Python 3.11 for
+hours); the thread-injection fallback is kept for Windows and
+non-main threads. <code class="docutils literal notranslate"><span class="pre">test_read_event_scalars</span></code> (downloads a real
+TensorBoard event file at test time) is now marked <code class="docutils literal notranslate"><span class="pre">db</span></code> so the
+core CI lane stays network-free.</p></li>
+<li><p>Harden <code class="docutils literal notranslate"><span class="pre">CFG</span></code> in place (public API unchanged):
+- dict-typed fields are converted with the base <code class="docutils literal notranslate"><span class="pre">CFG</span></code> class instead</p>
+<blockquote>
+<div><p>of <code class="docutils literal notranslate"><span class="pre">self.__class__</span></code>, fixing the crash of CFG subclasses with
+stricter constructors (documented as <code class="docutils literal notranslate"><span class="pre">_KNOWN_ISSUES</span></code> in
+<code class="docutils literal notranslate"><span class="pre">components/outputs.py</span></code>: <code class="docutils literal notranslate"><span class="pre">ClassificationOutput(...,</span> <span class="pre">d={&quot;d&quot;:</span> <span class="pre">1})</span></code>
+used to raise <code class="docutils literal notranslate"><span class="pre">AssertionError</span></code>); the issue notes are removed</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>keys that would shadow the dict API (<code class="docutils literal notranslate"><span class="pre">keys</span></code>/<code class="docutils literal notranslate"><span class="pre">items</span></code>/<code class="docutils literal notranslate"><span class="pre">get</span></code>/…)
+are now rejected with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of silently breaking
+the container</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update</span></code> deep-copies mapping values that replace non-mapping ones
+(e.g. <code class="docutils literal notranslate"><span class="pre">None</span></code>), so the updated config no longer shares mutable
+values with the config it was updated from</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__repr__</span></code>/<code class="docutils literal notranslate"><span class="pre">__str__</span></code> keep callable values as <code class="docutils literal notranslate"><span class="pre">&lt;callable:</span> <span class="pre">...&gt;</span></code>
+placeholders instead of silently hiding them</p></li>
+<li><p>explicit <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code> that bypasses subclass <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and
+rebuilds both the item and the attribute views; the pickle format is
+untouched, so previously saved checkpoints still load</p></li>
+</ul>
+</li>
+</ul>
+<p>rash, reserved keys, update)
+- <code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code> is fully vectorized and no longer spawns</p>
+<blockquote>
+<div><p>two <code class="docutils literal notranslate"><span class="pre">multiprocessing.Pool</span></code> instances per forward call (each forward
 now takes milliseconds instead of process-pool startup costs, and the
 fork-related duplication of random streams and Windows <code class="docutils literal notranslate"><span class="pre">spawn</span></code>
 incompatibilities are gone). The baseline wander amplitude and the
 Gaussian noise are now scaled by the ECG amplitude as documented
 (<code class="docutils literal notranslate"><span class="pre">ampl_ratio</span></code> are ratios of the signal amplitude); they used to be
 used as absolute values, with the per-lead amplitude computed but
-never used.</p></li>
-</ul>
+never used.</p>
+</div></blockquote>
 </section>
 </section>
 <section id="id1">

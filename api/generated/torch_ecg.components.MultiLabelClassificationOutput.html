@@ -614,26 +614,6 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Known issues:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>fields of type <cite>dict</cite> are not well supported due to the limitations of the base class <cite>CFG</cite>, for example</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">MultiLabelClassificationOutput</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="p">[</span><span class="s2">"AF"</span><span class="p">,</span> <span class="s2">"N"</span><span class="p">,</span> <span class="s2">"SPB"</span><span class="p">],</span> <span class="n">thr</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pred</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="n">prob</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s2">"d"</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span>
-<span class="go">{'classes': ['AF', 'N', 'SPB'],</span>
-<span class="go">    'prob': array([[1., 1., 1.]]),</span>
-<span class="go">    'pred': array([[1., 1., 1.]]),</span>
-<span class="go">    'thr': 0.5,</span>
-<span class="go">    'd': {'d': 1}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="o">.</span><span class="n">d</span>  <span class="c1"># has to access via `output["d"]`</span>
-<span class="go">AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.components.MultiLabelClassificationOutput.compute_metrics">
 <span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">macro</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics" title="torch_ecg.components.metrics.ClassificationMetrics"><span class="pre">ClassificationMetrics</span></a></span></span><a class="reference internal" href="../../_modules/torch_ecg/components/outputs.html#MultiLabelClassificationOutput.compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.components.MultiLabelClassificationOutput.compute_metrics" title="Link to this definition">#</a></dt>
