@@ -8,7 +8,7 @@ Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...HEAD>`__
+`0.0.33 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...v0.0.33>`__ - 2026-10-11
 ----------------------------------------------------------------------------
 
 Added
@@ -31,6 +31,16 @@ Added
 Changed
 ~~~~~~~
 
+- CI workflow fixes: the docs workflow's concurrency group is now scoped
+  per ref (the previous global ``pages`` group with ``cancel-in-progress``
+  let any PR's docs build cancel the docs builds of master/dev and of
+  every other open PR); the test workflow also triggers on master pushes
+  (validates the true merge commit and refreshes the codecov baseline);
+  an ``ubuntu-24.04`` canary job paves the way for the ``ubuntu-22.04``
+  runner deprecation (full removal 2027-04); various workflow cleanups
+  (obsolete ``setup.py install_egg_info`` workaround removed, dead
+  ``importlib-metadata`` pin dropped, unused Hatch install removed,
+  archived ``actions-ecosystem`` action replaced with the ``gh`` CLI).
 - Drop support for Python 3.9 (end-of-life since 2025-10; the latest
   torch already requires >=3.10) and add Python 3.14:
   ``requires-python >= 3.10``, classifiers 3.10-3.14, and the CI matrix
