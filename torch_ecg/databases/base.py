@@ -36,12 +36,12 @@ import requests
 import scipy.signal as SS
 import wfdb
 from numpy.typing import NDArray
-from pyedflib import EdfReader
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
 from ..utils.download import http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
+from ._edf import _EdfReader
 from .aux_data import get_physionet_dbs
 
 __all__ = [
@@ -1050,7 +1050,7 @@ class NSRRDataBase(_DataBase):
         if operation == "open":
             if self.file_opened is not None:
                 self.file_opened._close()
-            self.file_opened = EdfReader(str(full_file_path))
+            self.file_opened = _EdfReader(str(full_file_path))
         elif operation == "close":
             if self.file_opened is not None:
                 self.file_opened._close()

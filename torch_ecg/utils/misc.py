@@ -5,7 +5,9 @@ import inspect
 import logging
 import os
 import re
+import signal
 import sys
+import threading
 import time
 import types
 import warnings
@@ -1250,7 +1252,8 @@ def remove_parameters_returns_from_docstring(
 
 @contextmanager
 def timeout(duration: Union[float, int]):
-    """A context manager that raises a
+    """
+    A context manager that raises a
     :class:`TimeoutError` after a specified time (in seconds).
 
     Parameters
@@ -1271,10 +1274,27 @@ def timeout(duration: Union[float, int]):
         yield
         return
 
+    if threading.current_thread() is threading.main_thread() and hasattr(signal, "setitimer"):
+        # On POSIX main threads, use a synchronous signal-based timer:
+        # SIGALRM interrupts blocking C calls (e.g. `time.sleep`) directly.
+        # The thread-based async-exception injection used below as the
+        # fallback can deadlock with the interpreter's exception machinery
+        # under some CPython versions (observed hanging on 3.11).
+        def _sigalrm_handler(signum, frame):
+            raise TimeoutError(f"block timedout after `{duration}` seconds")
+
+        old_handler = signal.signal(signal.SIGALRM, _sigalrm_handler)
+        signal.setitimer(signal.ITIMER_REAL, duration)
+        try:
+            yield
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, old_handler)
+        return
+
     # signal.alarm is not available on Windows
     # so we use threading.Timer to raise TimeoutError
     import ctypes
-    import threading
 
     def _raise_timeout_exception(tid):
         """Raise TimeoutError in the target thread."""

@@ -31,6 +31,22 @@ Added
 Changed
 ~~~~~~~
 
+- Drop support for Python 3.9 (end-of-life since 2025-10; the latest
+  torch already requires >=3.10) and add Python 3.14:
+  ``requires-python >= 3.10``, classifiers 3.10-3.14, and the CI matrix
+  becomes ``3.10 / 3.11 / 3.12 / 3.13 / 3.14`` (3.11 was previously
+  missing from the matrix; 3.13/3.14 were tested but not listed in the
+  classifiers).
+- Replace the ``pyEDFlib`` dependency with the actively maintained
+  pure-Python ``edfio`` (pyEDFlib's last PyPI release was 2025-06, with
+  no wheels for newer Python versions). The EDF reading used by the
+  NSRR readers (e.g. SHHS) now goes through a small
+  ``pyedflib.EdfReader``-compatible adapter on top of ``edfio``
+  (``torch_ecg.databases._edf``), so no reader code changes and no
+  behavior changes; verified by a round-trip test in ``test_base.py``.
+  This also unblocks Python 3.14 (pyEDFlib was the only dependency
+  without compatible wheels). ``Cython``, which was only needed to
+  build ``pyEDFlib`` from source, is dropped from the dependencies.
 - Unify all randomness of the augmenters on ``DEFAULTS.RNG``
   (``mixup``, ``cutmix``, ``random_masking``, ``stretch_compress``,
   ``baseline_wander`` and the ``AugmenterManager`` used to draw from the
@@ -80,6 +96,15 @@ Fixed
   ``cinc2020``/``cinc2021``/``cpsc2021``/``sph``/``ludb``. Behavior is
   unchanged except that invalid names now raise the documented errors
   instead of executing arbitrary expressions.
+- ``misc.timeout`` now uses a synchronous SIGALRM-based timer on POSIX
+  main threads. The previous ``threading.Timer`` +
+  ``PyThreadState_SetAsyncExc`` injection delivers the exception only
+  at bytecode boundaries and could deadlock with the interpreter's
+  exception machinery (first observed hanging CI on Python 3.11 for
+  hours); the thread-injection fallback is kept for Windows and
+  non-main threads. ``test_read_event_scalars`` (downloads a real
+  TensorBoard event file at test time) is now marked ``db`` so the
+  core CI lane stays network-free.
 - ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
   two ``multiprocessing.Pool`` instances per forward call (each forward
   now takes milliseconds instead of process-pool startup costs, and the

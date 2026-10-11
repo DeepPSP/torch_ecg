@@ -1,6 +1,5 @@
 numpy
 scipy
-Cython
 pandas < 3.0.0
 pyarrow
 scikit-learn
@@ -12,9 +11,9 @@ torchsummary
 tensorboardX
 tqdm
 deprecated
+edfio
 deprecate-kwargs
 safetensors
-pyEDFlib
 PyWavelets
 torch-optimizer
 requests
