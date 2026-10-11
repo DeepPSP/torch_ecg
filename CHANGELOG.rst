@@ -73,6 +73,14 @@ Changed
 Fixed
 ~~~~~
 
+- Fix an import-time race in the one-time ``database_citation.csv``
+  migration in ``CitationMixin``: the ``unlink()`` after merging is now
+  ``missing_ok=True``. On Python 3.14+ the Linux default multiprocessing
+  start method is forkserver (not fork), so ``DataLoader`` workers
+  re-import the package concurrently; two workers could both pass the
+  ``exists()`` check and both delete the file, and the loser crashed
+  with ``FileNotFoundError`` at import (observed as ``DataLoader worker
+  exited unexpectedly`` failing CI on 3.14).
 - Harden the safe tar extraction in ``download.py``, completing the
   CVE-2007-4559 mitigation introduced in 2022 (commit 8f22086a), which
   correctly blocked the primary ``..``/absolute-path vectors: the
