@@ -193,3 +193,37 @@ jobs:
         cd ~/tmp/ && du -sh $(ls -A) || true
         rm -rf ~/tmp/nsrr-data/
         cd ~/tmp/ && du -sh $(ls -A) || true
+
+  # Ubuntu 24.04 canary: the ubuntu-22.04 image is being deprecated
+  # (brownouts since 2026-09-17, full removal 2027-04-17).  Keep one
+  # core-lane build on 24.04 ahead of a fleet-wide switch so that
+  # breakage surfaces early.  Agreed rollout order: run-pytest first,
+  # docs last (TeX/pandoc are the riskiest).  Coverage is not uploaded
+  # so the experimental runner cannot perturb the codecov baselines.
+  canary:
+    if: github.repository_owner == 'DeepPSP' && needs.nightly-gate.outputs.run == 'true'
+    needs: nightly-gate
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Install system libraries
+      run: |
+        sudo apt update
+        sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 git -y
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        python -m pip install -r requirements.txt
+        python -m pip install pytest pytest-xdist pytest-cov
+        python -m pip uninstall torch-ecg --yes # no-op (exit 0) if not installed
+        python -m pip install -e .[dev]
+    - name: Run core test suite with pytest
+      run: pytest -m "not db" --cov
