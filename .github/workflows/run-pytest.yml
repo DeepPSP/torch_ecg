@@ -84,7 +84,13 @@ jobs:
       # `full` = the whole suite.  PRs and dev pushes only need the fast lane;
       # the full suite runs nightly and on manual dispatch, so that slow or
       # flaky database downloads cannot eat the whole CI budget.
-      SUITE: ${{ (github.event_name == 'schedule') && 'full' || (github.event_name == 'workflow_dispatch') && inputs.suite || 'core' }}
+      # The nightly full suite runs on a SUBSET of versions only
+      # (3.10/3.12/3.14): db-download-heavy full runs on all five versions
+      # exceeded the 350-minute job timeout on slow nights (2026-10-11:
+      # 4/5 jobs killed mid-pytest; GitHub's hard per-job cap is 360 min, so
+      # the timeout cannot be raised further).  Manual dispatch with
+      # suite=full still runs the full suite on ALL versions.
+      SUITE: ${{ (github.event_name == 'workflow_dispatch') && inputs.suite || (github.event_name == 'schedule') && (contains(fromJSON('["3.10", "3.12", "3.14"]'), matrix.python-version) && 'full' || 'core') || 'core' }}
     steps:
     - uses: actions/checkout@v7
     - name: Clear unnecessary system components
