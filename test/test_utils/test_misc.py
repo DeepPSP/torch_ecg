@@ -432,9 +432,11 @@ def test_citation_migration_race(tmp_path):
         subprocess.Popen(
             [sys.executable, "-c", _MIGRATION_SUBPROCESS, str(sandbox), str(pkg_dir), str(n_proc)],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            # keep the stderr files in the sandbox so that a failing
+            # importer can be diagnosed from the pytest tmp dir
+            stderr=(sandbox / f"stderr.{i}").open("wb"),
         )
-        for _ in range(n_proc)
+        for i in range(n_proc)
     ]
     returncodes = [p.wait() for p in procs]
     assert returncodes == [0] * n_proc, "an importer crashed during the migration"
