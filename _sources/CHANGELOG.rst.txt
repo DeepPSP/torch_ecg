@@ -8,6 +8,20 @@ Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
+`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.33...HEAD>`__
+----------------------------------------------------------------------------
+
+Fixed
+~~~~~
+
+- Fix a second race in the one-time ``database_citation.csv`` migration
+  (the first one, the ``unlink`` race, was fixed in 0.0.33): when several
+  processes import the package concurrently, one could ``read_csv`` the
+  citation cache while a sibling was still writing it, crashing at import
+  with a parse error (observed on the ubuntu-24.04 CI canary). The cache
+  is now written atomically (temp file + ``os.replace``) and a partially
+  written cache is treated as empty instead of raising.
+
 `0.0.33 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...v0.0.33>`__ - 2026-10-11
 ----------------------------------------------------------------------------
 
