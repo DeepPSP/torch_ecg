@@ -881,14 +881,27 @@ class CitationMixin(_CitationMixin):
             df_old = pd.DataFrame(columns=["doi", "citation"])
         df_old = df_old[["doi", "citation"]]
         if _CitationMixin.citation_cache.exists():
-            df = pd.read_csv(_CitationMixin.citation_cache, encoding="utf-8", encoding_errors="replace", on_bad_lines="warn")
+            try:
+                df = pd.read_csv(
+                    _CitationMixin.citation_cache, encoding="utf-8", encoding_errors="replace", on_bad_lines="warn"
+                )
+            except (pd.errors.EmptyDataError, pd.errors.ParserError, ValueError, UnicodeDecodeError):
+                # a sibling process may be running this same migration
+                # concurrently (see the comment on the `unlink` below);
+                # a partially-written cache must not crash the import --
+                # treat it as empty and let our own (complete) write win
+                df = pd.DataFrame(columns=["doi", "citation"])
         else:
             df = pd.DataFrame(columns=["doi", "citation"])
         # merge the old and new tables and drop duplicates
         df = pd.concat([df, df_old], axis=0, ignore_index=True)
         df = df.drop_duplicates(subset="doi", keep="first")
         df = df.reset_index(drop=True)
-        df.to_csv(_CitationMixin.citation_cache, index=False)
+        # write atomically (write to a temp file, then rename), so that a
+        # concurrently-importing sibling never reads a partial cache file
+        _tmp_cache = _CitationMixin.citation_cache.with_suffix(_CitationMixin.citation_cache.suffix + ".tmp")
+        df.to_csv(_tmp_cache, index=False)
+        os.replace(_tmp_cache, _CitationMixin.citation_cache)
         del df_old, df
         # delete the old cache; `missing_ok` is required because this class
         # body runs at import time, and on Python 3.14+ multiprocessing
