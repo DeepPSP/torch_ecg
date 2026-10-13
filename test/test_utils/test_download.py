@@ -172,25 +172,17 @@ def test_http_get(monkeypatch):
     if github_file.exists():
         github_file.unlink()
 
-    # test downloading from Google Drive
+    # test downloading from Google Drive: URL validation only (no network).
+    # The real downloads moved to `test_http_get_gdrive` (marked `db`):
+    # Google enforces per-file download quotas, and downloading the same
+    # file on every PR x 5 versions used to flake the core lane.
     file_id = "1Yys567-MZIMf3eXGJd8bGrsWIvDatbsZ"
-    url = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
     url_no_scheme = f"drive.google.com/file/d/{file_id}/view?usp=sharing"
     url_xxx_schme = f"xxx://drive.google.com/file/d/{file_id}/view?usp=sharing"
     with pytest.raises(AssertionError, match="filename can not be inferred from Google Drive URL"):
         dl.http_get(url_no_scheme, _TMP_DIR)
     with pytest.raises(ValueError, match="Unsupported URL scheme"):
         dl.http_get(url_xxx_schme, _TMP_DIR, extract=False, filename="torch-ecg-paper.bib")
-    gdrive_file = _TMP_DIR / "torch-ecg-paper.bib"
-    dl.http_get(url, _TMP_DIR, filename="torch-ecg-paper.bib", extract=False)
-    if gdrive_file.exists():
-        gdrive_file.unlink()
-    dl._download_from_google_drive(file_id, gdrive_file)
-    if gdrive_file.exists():
-        gdrive_file.unlink()
-    dl._download_from_google_drive(url_no_scheme, gdrive_file)
-    if gdrive_file.exists():
-        gdrive_file.unlink()
 
     # test downloading from AWS S3 (by default using AWS CLI)
     ludb_dir = _TMP_DIR / "ludb"
@@ -207,6 +199,28 @@ def test_http_get(monkeypatch):
         dl.http_get("s3://xxx", ludb_dir)
 
     assert dl._stem(b"https://example.com/path/to/file.tar.gz") == "file"
+
+
+@pytest.mark.db
+def test_http_get_gdrive():
+    """Real Google-Drive downloads (the ``gdown`` path).  Marked ``db``
+    because Google enforces per-file download quotas; the nightly full
+    suite covers this once a day, which is enough for an integration
+    check of a third-party service.
+    """
+    file_id = "1Yys567-MZIMf3eXGJd8bGrsWIvDatbsZ"
+    url = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
+    url_no_scheme = f"drive.google.com/file/d/{file_id}/view?usp=sharing"
+    gdrive_file = _TMP_DIR / "torch-ecg-paper.bib"
+    dl.http_get(url, _TMP_DIR, filename="torch-ecg-paper.bib", extract=False)
+    if gdrive_file.exists():
+        gdrive_file.unlink()
+    dl._download_from_google_drive(file_id, gdrive_file)
+    if gdrive_file.exists():
+        gdrive_file.unlink()
+    dl._download_from_google_drive(url_no_scheme, gdrive_file)
+    if gdrive_file.exists():
+        gdrive_file.unlink()
 
 
 def test_url_is_reachable(monkeypatch):
