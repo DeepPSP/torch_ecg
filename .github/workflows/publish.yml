@@ -86,6 +86,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_DIR }}
       - name: Build Changelog
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v6
@@ -126,3 +131,6 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           body: ${{ steps.changelog.outputs.changelog }}
+          # attach the sdist to the release (numpy-style: source on GitHub,
+          # wheels stay PyPI-only); glob matches torch_ecg-<ver>.tar.gz only
+          files: ${{ env.ARTIFACT_DIR }}/*.tar.gz
