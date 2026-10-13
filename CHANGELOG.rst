@@ -11,6 +11,16 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 `Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.33...HEAD>`__
 ----------------------------------------------------------------------------
 
+Changed
+~~~~~~~
+
+- GitHub releases now carry the **sdist** as an asset (numpy-style: source
+  on GitHub, wheels stay on PyPI); previously releases attached no files.
+- The legacy-checkpoint test asset of ``test_seq_lab_net`` moved from
+  Google Drive to this repository's release assets (``test-assets-v1``):
+  gdrive quota errors made the test flaky (``gdown`` failures escape
+  as-is instead of the expected ``RuntimeError``).
+
 Fixed
 ~~~~~
 

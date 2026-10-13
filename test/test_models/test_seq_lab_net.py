@@ -64,7 +64,11 @@ def test_ecg_seq_lab_net():
 
     with pytest.raises(RuntimeError, match="Failed to load the checkpoint"):
         ECG_SEQ_LAB_NET.from_remote(
-            url="https://drive.google.com/uc?id=18Jta73DjqXVarEYjN_CWeYqM8rH7I3An",
+            # a 2021 legacy checkpoint (saved under torch/numpy 1), hosted on
+            # Google Drive originally; re-hosted as a release asset because
+            # gdrive quota errors made this test flaky (gdown failures
+            # escape as-is instead of the expected RuntimeError)
+            url="https://github.com/DeepPSP/torch_ecg/releases/download/test-assets-v1/legacy-ecg-seq-lab-net-cpsc2019-v2.pth",
             model_dir=_TMP_DIR,
             filename="best_model.pth",
             weights_only="auto",
