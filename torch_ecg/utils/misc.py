@@ -902,9 +902,7 @@ class CitationMixin(_CitationMixin):
         # the temp name must be unique per process, otherwise a sibling's
         # `os.replace` consumes ours and our own replace then fails with
         # FileNotFoundError (observed as 3/6 concurrent importers crashing)
-        _tmp_cache = _CitationMixin.citation_cache.with_name(
-            f"{_CitationMixin.citation_cache.name}.{os.getpid()}.tmp"
-        )
+        _tmp_cache = _CitationMixin.citation_cache.with_name(f"{_CitationMixin.citation_cache.name}.{os.getpid()}.tmp")
         df.to_csv(_tmp_cache, index=False)
         os.replace(_tmp_cache, _CitationMixin.citation_cache)
         del df_old, df
