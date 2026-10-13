@@ -31,6 +31,11 @@ Fixed
   with a parse error (observed on the ubuntu-24.04 CI canary). The cache
   is now written atomically (temp file + ``os.replace``) and a partially
   written cache is treated as empty instead of raising.
+- The atomic-rename temp file of that same migration now carries the
+  process id in its name: with a single shared name, a concurrent
+  importer's ``os.replace`` consumed the temp file and the remaining
+  importers' replaces failed with ``FileNotFoundError`` (3/6 concurrent
+  importers crashed in the nightly full suite).
 
 `0.0.33 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...v0.0.33>`__ - 2026-10-11
 ----------------------------------------------------------------------------

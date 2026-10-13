@@ -439,7 +439,15 @@ def test_citation_migration_race(tmp_path):
         for i in range(n_proc)
     ]
     returncodes = [p.wait() for p in procs]
-    assert returncodes == [0] * n_proc, "an importer crashed during the migration"
+    if returncodes != [0] * n_proc:
+        # the runner's tmp dir is gone by the time one inspects a failure,
+        # so inline the crashed importers' stderr tails into the assertion
+        details = "\n".join(
+            f"--- stderr.{i} (exit {rc}) ---\n{(sandbox / f'stderr.{i}').read_text(errors='replace')[-2000:]}"
+            for i, rc in enumerate(returncodes)
+            if rc != 0
+        )
+        raise AssertionError(f"an importer crashed during the migration:\n{details}")
     assert not (data_cache / "database_citation.csv").exists(), "legacy csv not consumed"
     merged = [p for p in sandbox.glob("*.csv") if _MIGRATION_DOI in p.read_text(encoding="utf-8", errors="replace")]
     assert merged, "legacy csv was deleted without being merged"
