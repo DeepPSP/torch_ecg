@@ -624,6 +624,36 @@ _BACKEND_PRIORITY = [
 ]
 
 
+# audio loader functions live at module level on purpose: they are stored
+# on the reader instances (`self._audio_load_func`) and must be picklable --
+# Python 3.14 changed the default multiprocessing start method to
+# forkserver/spawn, so DataLoader workers pickle the dataset, and local
+# (nested) functions used to crash with PicklingError
+def torchaudio_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
+    try:
+        data, new_fs = torchaudio.load(file, normalize=True)
+    except Exception:
+        data, new_fs = torchaudio.load(file, normalization=True)
+    return data, new_fs
+
+
+def librosa_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
+    data, _ = librosa.load(file, sr=fs, mono=False)
+    return torch.from_numpy(data.reshape((-1, data.shape[-1]))), fs
+
+
+def scipy_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
+    new_fs, data = sio_wav.read(file)
+    data = (data / (2**15)).astype(BaseCfg.np_dtype)[np.newaxis, :]
+    return torch.from_numpy(data), new_fs
+
+
+def wfdb_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
+    record = wfdb.rdrecord(file, physical=True)  # channel last
+    sig = record.p_signal.T.astype(BaseCfg.np_dtype)
+    return torch.from_numpy(sig), record.fs[0]
+
+
 class PCGDataBase(PhysioNetDataBase):
     """ """
 
@@ -672,41 +702,16 @@ class PCGDataBase(PhysioNetDataBase):
                 RuntimeWarning,
             )
         if self.audio_backend == "torchaudio":
-
-            def torchaudio_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
-                try:
-                    data, new_fs = torchaudio.load(file, normalize=True)
-                except Exception:
-                    data, new_fs = torchaudio.load(file, normalization=True)
-                return data, new_fs
-
             self._audio_load_func = torchaudio_load
         elif self.audio_backend == "librosa":
-
-            def librosa_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
-                data, _ = librosa.load(file, sr=fs, mono=False)
-                return torch.from_numpy(data.reshape((-1, data.shape[-1]))), fs
-
             self._audio_load_func = librosa_load
         elif self.audio_backend == "scipy":
-
-            def scipy_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
-                new_fs, data = sio_wav.read(file)
-                data = (data / (2**15)).astype(self.dtype)[np.newaxis, :]
-                return torch.from_numpy(data), new_fs
-
             self._audio_load_func = scipy_load
         elif self.audio_backend == "wfdb":
             warnings.warn(
                 "loading result using wfdb is inconsistent with other backends",
                 RuntimeWarning,
             )
-
-            def wfdb_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:
-                record = wfdb.rdrecord(file, physical=True)  # channel last
-                sig = record.p_signal.T.astype(self.dtype)
-                return torch.from_numpy(sig), record.fs[0]
-
             self._audio_load_func = wfdb_load
         self.data_ext = None
         self.ann_ext = None
