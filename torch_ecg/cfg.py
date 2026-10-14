@@ -114,6 +114,25 @@ class CFG(dict):
 
     __setitem__ = __setattr__
 
+    def __getattr__(self, name: str) -> Any:
+        """Called only when regular attribute lookup fails.
+
+        Implements the lazy ``device`` of ``DEFAULTS``: probing the CUDA
+        driver at import time costs time in every Python 3.14+
+        multiprocessing worker (forkserver/spawn re-import the package)
+        and freezes the device before ``CUDA_VISIBLE_DEVICES`` could be
+        set; the first ``DEFAULTS.device`` access detects and caches it.
+        """
+        if name == "device":
+            value = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+            # cache through both views (attribute and dict item), like a
+            # regular `__setattr__` would; primitives avoid re-entering
+            # the conversion logic above
+            object.__setattr__(self, name, value)
+            dict.__setitem__(self, name, value)
+            return value
+        raise AttributeError(f"{type(self).__name__!r} object has no attribute {name!r}")
+
     def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:  # type: ignore
         """The new hierarchical update method.
 
@@ -256,8 +275,8 @@ DEFAULTS.str_dtype = str(DEFAULTS.DTYPE.TORCH).replace("torch.", "")
 DEFAULTS.np_dtype = np.dtype(DEFAULTS.str_dtype)
 DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH
 
-DEFAULTS.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
+# `device` is NOT set eagerly here on purpose: see `CFG.__getattr__` for the
+# lazy detection, which keeps `import torch_ecg` free of CUDA driver probes.
 DEFAULTS.eps = 1e-7
 
 DEFAULTS.SEED = 42

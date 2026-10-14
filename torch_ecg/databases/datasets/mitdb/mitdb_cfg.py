@@ -18,9 +18,6 @@ MITDBTrainCfg.db_dir = None
 MITDBTrainCfg.log_dir = DEFAULTS.log_dir / _NAME
 MITDBTrainCfg.model_dir = DEFAULTS.model_dir / _NAME
 MITDBTrainCfg.checkpoints = DEFAULTS.checkpoints / _NAME
-MITDBTrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
-MITDBTrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
-MITDBTrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 # MITDBTrainCfg.test_data_dir = _BASE_DIR / "working_dir" / "sample_data"
 
 MITDBTrainCfg.fs = 360

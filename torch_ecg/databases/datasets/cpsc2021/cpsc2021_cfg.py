@@ -16,9 +16,6 @@ CPSC2021TrainCfg.db_dir = None
 CPSC2021TrainCfg.log_dir = DEFAULTS.log_dir / _NAME
 CPSC2021TrainCfg.model_dir = DEFAULTS.model_dir / _NAME
 CPSC2021TrainCfg.checkpoints = DEFAULTS.checkpoints / _NAME
-CPSC2021TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
-CPSC2021TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
-CPSC2021TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 # CPSC2021TrainCfg.test_data_dir = _BASE_DIR / "working_dir" / "sample_data"
 
 CPSC2021TrainCfg.fs = 200

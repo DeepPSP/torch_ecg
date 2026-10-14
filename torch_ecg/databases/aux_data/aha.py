@@ -11,6 +11,11 @@ import io
 
 import pandas as pd
 
+# `future.no_silent_downcasting` changes the downcasting behavior of
+# `ffill`/`fillna`, which the parsing of the tables below relies on.
+# Save the user's value and restore it after parsing instead of mutating
+# the process-global pandas options at import time.
+_prev_no_silent_downcasting = pd.get_option("future.no_silent_downcasting")
 pd.set_option("future.no_silent_downcasting", True)
 
 __all__ = [
@@ -350,3 +355,4 @@ General Modifier Code,May (May Not) Accompany These Primary Codes or May Be Betw
 df_general_modifier_primary_statement_pairing_rules["Location"] = df_general_modifier_primary_statement_pairing_rules[
     "Location"
 ].apply(lambda location: location.replace("b", "before").replace("a", "after").replace("i", "between"))
+pd.set_option("future.no_silent_downcasting", _prev_no_silent_downcasting)
