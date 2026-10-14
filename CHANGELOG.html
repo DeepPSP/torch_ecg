@@ -417,6 +417,17 @@ Versioning</a>.</p>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Import-time side effects removed (import purity): the AHA aux-data
+module no longer leaves <code class="docutils literal notranslate"><span class="pre">future.no_silent_downcasting</span></code> flipped in
+the process-global pandas options (saved and restored around the
+table parsing); <code class="docutils literal notranslate"><span class="pre">DEFAULTS.device</span></code> is detected lazily on first
+access instead of probing the CUDA driver at import (matters for
+Python 3.14+ multiprocessing workers, which re-import the package,
+and freezes the device before <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES</span></code> can be set);
+the <code class="docutils literal notranslate"><span class="pre">TrainCfg</span></code> modules of the 6 datasets no longer create their
+log/checkpoint/model directories at import – every consumer
+(trainer, loggers, <code class="docutils literal notranslate"><span class="pre">CkptMixin.save</span></code>, <code class="docutils literal notranslate"><span class="pre">http_get</span></code>) creates them on
+demand.</p></li>
 <li><p>GitHub releases now carry the <strong>sdist</strong> as an asset (numpy-style: source
 on GitHub, wheels stay on PyPI); previously releases attached no files.</p></li>
 <li><p>The legacy-checkpoint test asset of <code class="docutils literal notranslate"><span class="pre">test_seq_lab_net</span></code> moved from
