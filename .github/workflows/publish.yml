@@ -68,15 +68,18 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_DIR }}
       - name: Publish package to TestPyPI  # to test, use https://test.pypi.org/
+        # no `password`: authenticates via Trusted Publishing (OIDC), using
+        # the job-level `environment: release` + `id-token: write` above;
+        # the publisher is registered on test.pypi.org for this repo /
+        # workflow / environment.  With no token, `attestations` also
+        # takes effect (PEP 740 provenance signatures).
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.TEST_PYPI_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
           packages-dir: ${{ env.ARTIFACT_DIR }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_TORCH_ECG_TOKEN }}
           packages-dir: ${{ env.ARTIFACT_DIR }}
 
   github-release:
