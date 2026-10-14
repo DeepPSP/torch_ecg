@@ -1,113 +1,42 @@
-"""
-(CRNN) models training
+"""The CINC2021 trainer."""
 
-Training strategy:
-------------------
-1. the following pairs of classes will be treated the same:
-
-2. the following classes will be determined by the special detectors:
-    PR, LAD, RAD, LQRSV, Brady,
-    (potentially) SB, STach
-
-3. models will be trained for each tranche separatly:
-
-4. one model will be trained using the whole dataset (consider excluding tranche C? good news is that tranche C mainly consists of "Brady" and "STach", which can be classified using the special detectors)
-
-References: (mainly tips for faster and better training)
------------
-1. https://efficientdl.com/faster-deep-learning-in-pytorch-a-guide/
-2. (optim) https://www.fast.ai/2018/07/02/adam-weight-decay/
-3. (lr) https://spell.ml/blog/lr-schedulers-and-adaptive-optimizers-YHmwMhAAACYADm6F
-4. more....
-"""
-
-import argparse
 import logging
-import os
-import sys
 import textwrap
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
-from torch import nn
-from torch.nn.parallel import DataParallel as DP
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
-from torch.utils.data import DataLoader
-from torch.utils.data.dataset import Dataset
+from torch.utils.data import DataLoader, Dataset
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
-
-from cfg import BaseCfg, ModelCfg, TrainCfg
-from dataset import CINC2021
-from model import ECG_CRNN_CINC2021
-from scoring_metrics import evaluate_scores
-
-from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.cfg import CFG
 from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset
+from torch_ecg.databases.physionet_databases.cinc2021 import compute_metrics as compute_cinc2021_metrics
+from torch_ecg.utils import worker_init_fn
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
-CINC2021.__DEBUG__ = False
-ECG_CRNN_CINC2021.__DEBUG__ = False
-
-if BaseCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
+__all__ = [
+    "CINC2021Trainer",
+]
 
 
 class CINC2021Trainer(BaseTrainer):
-    """ """
+    """BaseTrainer wired to CINC2021Dataset and the challenge metric."""
 
     __name__ = "CINC2021Trainer"
 
     def __init__(
         self,
-        model: nn.Module,
-        model_config: dict,
-        train_config: dict,
+        model: torch.nn.Module,
+        model_config: CFG,
+        train_config: CFG,
         device: Optional[torch.device] = None,
         lazy: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        model: Module,
-            the model to be trained
-        model_config: dict,
-            the configuration of the model,
-            used to keep a record in the checkpoints
-        train_config: dict,
-            the configuration of the training,
-            including configurations for the data loader, for the optimization, etc.
-            will also be recorded in the checkpoints.
-            `train_config` should at least contain the following keys:
-                "monitor": str,
-                "loss": str,
-                "n_epochs": int,
-                "batch_size": int,
-                "learning_rate": float,
-                "lr_scheduler": str,
-                    "lr_step_size": int, optional, depending on the scheduler
-                    "lr_gamma": float, optional, depending on the scheduler
-                    "max_lr": float, optional, depending on the scheduler
-                "optimizer": str,
-                    "decay": float, optional, depending on the optimizer
-                    "momentum": float, optional, depending on the optimizer
-        device: torch.device, optional,
-            the device to be used for training
-        lazy: bool, default True,
-            whether to initialize the data loader lazily
-
-        """
         super().__init__(
             model=model,
-            dataset_cls=CINC2021,
+            dataset_cls=CINC2021Dataset,
             model_config=model_config,
             train_config=train_config,
             device=device,
@@ -119,17 +48,6 @@ class CINC2021Trainer(BaseTrainer):
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
     ) -> None:
-        """
-        setup the dataloaders for training and validation
-
-        Parameters
-        ----------
-        train_dataset: Dataset, optional,
-            the training dataset
-        val_dataset: Dataset, optional,
-            the validation dataset
-
-        """
         if train_dataset is None:
             train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
@@ -140,8 +58,11 @@ class CINC2021Trainer(BaseTrainer):
         if val_dataset is None:
             val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
-        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-        num_workers = 4
+        # `worker_init_fn` reseeds DEFAULTS.RNG per worker: without it, all
+        # workers inherit a copy of the parent's RNG and produce identical
+        # augmentation streams (guaranteed identical under Python 3.14+,
+        # whose forkserver/spawn workers re-import the package)
+        num_workers = self.train_config.get("num_workers", 4 if torch.cuda.is_available() else 0)
 
         self.train_loader = DataLoader(
             dataset=train_dataset,
@@ -151,6 +72,7 @@ class CINC2021Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
         if self.train_config.debug:
@@ -162,6 +84,7 @@ class CINC2021Trainer(BaseTrainer):
                 pin_memory=True,
                 drop_last=False,
                 collate_fn=collate_fn,
+                worker_init_fn=worker_init_fn if num_workers > 0 else None,
             )
         else:
             self.val_train_loader = None
@@ -173,25 +96,10 @@ class CINC2021Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
     def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Parameters
-        ----------
-        data: tuple of Tensors,
-            the data to be processed for training one step (batch),
-            should be of the following order:
-            signals, labels, *extra_tensors
-
-        Returns
-        -------
-        preds: Tensor,
-            the predictions of the model for the given data
-        labels: Tensor,
-            the labels of the given data
-
-        """
         signals, labels = data
         signals = signals.to(self.device)
         labels = labels.to(self.device)
@@ -200,7 +108,7 @@ class CINC2021Trainer(BaseTrainer):
 
     @torch.no_grad()
     def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
-        """ """
+        """Evaluate with the official CINC2021 challenge metric."""
         self.model.eval()
 
         all_scalar_preds = []
@@ -252,7 +160,7 @@ class CINC2021Trainer(BaseTrainer):
             f_beta_measure,
             g_beta_measure,
             challenge_metric,
-        ) = evaluate_scores(
+        ) = compute_cinc2021_metrics(
             classes=classes,
             truth=all_labels,
             scalar_pred=all_scalar_preds,
@@ -268,7 +176,6 @@ class CINC2021Trainer(BaseTrainer):
             challenge_metric=challenge_metric,
         )
 
-        # in case possible memeory leakage?
         del all_scalar_preds, all_bin_preds, all_labels
 
         self.model.train()
@@ -277,14 +184,10 @@ class CINC2021Trainer(BaseTrainer):
 
     @property
     def batch_dim(self) -> int:
-        """
-        batch dimension, for CinC2021, it is 0,
-        """
         return 0
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """ """
         return []
 
     @property
@@ -293,129 +196,3 @@ class CINC2021Trainer(BaseTrainer):
 
     def extra_log_suffix(self) -> str:
         return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
-
-
-def get_args(**kwargs: Any):
-    """ """
-    cfg = deepcopy(kwargs)
-    parser = argparse.ArgumentParser(
-        description="Train the Model on CINC2021",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument("-l", "--leads", type=int, default=12, help="number of leads", dest="n_leads")
-    parser.add_argument(
-        "-t",
-        "--tranches",
-        type=str,
-        default="",
-        help="the tranches for training",
-        dest="tranches_for_training",
-    )
-    parser.add_argument(
-        "-b",
-        "--batch-size",
-        type=int,
-        default=128,
-        help="the batch size for training",
-        dest="batch_size",
-    )
-    parser.add_argument(
-        "-c",
-        "--cnn-name",
-        type=str,
-        default="multi_scopic_leadwise",
-        help="choice of cnn feature extractor",
-        dest="cnn_name",
-    )
-    parser.add_argument(
-        "-r",
-        "--rnn-name",
-        type=str,
-        default="none",
-        help="choice of rnn structures",
-        dest="rnn_name",
-    )
-    parser.add_argument(
-        "-a",
-        "--attn-name",
-        type=str,
-        default="se",
-        help="choice of attention structures",
-        dest="attn_name",
-    )
-    parser.add_argument(
-        "--keep-checkpoint-max",
-        type=int,
-        default=20,
-        help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max",
-    )
-    # parser.add_argument(
-    #     "--optimizer", type=str, default="adam",
-    #     help="training optimizer",
-    #     dest="train_optimizer")
-    parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        help="train with more debugging information",
-        dest="debug",
-    )
-
-    args = vars(parser.parse_args())
-
-    cfg.update(args)
-
-    return CFG(cfg)
-
-
-if __name__ == "__main__":
-    train_config = get_args(**TrainCfg)
-
-    tranches = train_config.tranches_for_training
-    if tranches:
-        classes = train_config.tranche_classes[tranches]
-    else:
-        classes = train_config.classes
-
-    if train_config.n_leads == 12:
-        model_config = deepcopy(ModelCfg.twelve_leads)
-    elif train_config.n_leads == 6:
-        model_config = deepcopy(ModelCfg.six_leads)
-    elif train_config.n_leads == 4:
-        model_config = deepcopy(ModelCfg.four_leads)
-    elif train_config.n_leads == 3:
-        model_config = deepcopy(ModelCfg.three_leads)
-    elif train_config.n_leads == 2:
-        model_config = deepcopy(ModelCfg.two_leads)
-    model_config.cnn.name = train_config.cnn_name
-    model_config.rnn.name = train_config.rnn_name
-    model_config.attn.name = train_config.attn_name
-
-    ECG_CRNN_CINC2021.__DEBUG__ = False
-    model = ECG_CRNN_CINC2021(
-        classes=classes,
-        n_leads=train_config.n_leads,
-        config=model_config,
-    )
-
-    if torch.cuda.device_count() > 1:
-        model = DP(model)
-        # model = DDP(model)
-    model.to(device=DEFAULTS.device)
-
-    trainer = CINC2021Trainer(
-        model=model,
-        model_config=model_config,
-        train_config=train_config,
-        device=DEFAULTS.device,
-        lazy=False,
-    )
-
-    try:
-        best_model_state_dict = trainer.train()
-    except KeyboardInterrupt:
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
