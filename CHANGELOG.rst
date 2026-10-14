@@ -14,6 +14,18 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 Changed
 ~~~~~~~
 
+- Import-time side effects removed (import purity): the AHA aux-data
+  module no longer leaves ``future.no_silent_downcasting`` flipped in
+  the process-global pandas options (saved and restored around the
+  table parsing); ``DEFAULTS.device`` is detected lazily on first
+  access instead of probing the CUDA driver at import (matters for
+  Python 3.14+ multiprocessing workers, which re-import the package,
+  and freezes the device before ``CUDA_VISIBLE_DEVICES`` can be set);
+  the ``TrainCfg`` modules of the 6 datasets no longer create their
+  log/checkpoint/model directories at import -- every consumer
+  (trainer, loggers, ``CkptMixin.save``, ``http_get``) creates them on
+  demand.
+
 - GitHub releases now carry the **sdist** as an asset (numpy-style: source
   on GitHub, wheels stay on PyPI); previously releases attached no files.
 - The legacy-checkpoint test asset of ``test_seq_lab_net`` moved from

@@ -22,9 +22,6 @@ CPSC2019TrainCfg.db_dir = None
 CPSC2019TrainCfg.log_dir = DEFAULTS.log_dir / _NAME
 CPSC2019TrainCfg.checkpoints = DEFAULTS.checkpoints / _NAME
 CPSC2019TrainCfg.model_dir = DEFAULTS.model_dir / _NAME
-CPSC2019TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
-CPSC2019TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
-CPSC2019TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 
 CPSC2019TrainCfg.bias_thr = 0.075 * CPSC2019TrainCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,

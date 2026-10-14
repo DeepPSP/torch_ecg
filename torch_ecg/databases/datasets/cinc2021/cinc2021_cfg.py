@@ -86,11 +86,8 @@ CINC2021TrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 # configs of files
 CINC2021TrainCfg.db_dir = None
 CINC2021TrainCfg.log_dir = DEFAULTS.log_dir / _NAME
-CINC2021TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
 CINC2021TrainCfg.checkpoints = DEFAULTS.checkpoints / _NAME
-CINC2021TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 CINC2021TrainCfg.model_dir = DEFAULTS.model_dir / _NAME
-CINC2021TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 
 CINC2021TrainCfg.final_model_name = None
 CINC2021TrainCfg.keep_checkpoint_max = 20

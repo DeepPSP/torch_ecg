@@ -39,9 +39,6 @@ LUDBTrainCfg.db_dir = None
 LUDBTrainCfg.log_dir = DEFAULTS.log_dir / _NAME
 LUDBTrainCfg.model_dir = DEFAULTS.model_dir / _NAME
 LUDBTrainCfg.checkpoints = DEFAULTS.checkpoints / _NAME
-LUDBTrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
-LUDBTrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
-LUDBTrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 LUDBTrainCfg.keep_checkpoint_max = 20
 
 LUDBTrainCfg.bias_thr = int(0.075 * LUDBTrainCfg.fs)  # TODO: renew this const
