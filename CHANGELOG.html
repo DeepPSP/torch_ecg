@@ -435,6 +435,11 @@ citation cache while a sibling was still writing it, crashing at import
 with a parse error (observed on the ubuntu-24.04 CI canary). The cache
 is now written atomically (temp file + <code class="docutils literal notranslate"><span class="pre">os.replace</span></code>) and a partially
 written cache is treated as empty instead of raising.</p></li>
+<li><p>The atomic-rename temp file of that same migration now carries the
+process id in its name: with a single shared name, a concurrent
+importer’s <code class="docutils literal notranslate"><span class="pre">os.replace</span></code> consumed the temp file and the remaining
+importers’ replaces failed with <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code> (3/6 concurrent
+importers crashed in the nightly full suite).</p></li>
 </ul>
 </section>
 </section>
