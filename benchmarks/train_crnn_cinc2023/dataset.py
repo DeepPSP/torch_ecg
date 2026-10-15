@@ -8,8 +8,6 @@ from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 import torch
-from cfg import BaseCfg, TrainCfg
-from data_reader import CINC2023Reader
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -17,6 +15,9 @@ from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import stratified_train_test_split
+
+from .cfg import BaseCfg, TrainCfg
+from .data_reader import CINC2023Reader
 
 __all__ = [
     "CinC2023Dataset",

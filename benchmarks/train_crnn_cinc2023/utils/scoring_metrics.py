@@ -1,9 +1,10 @@
 from typing import Dict, Sequence, Tuple
 
 import numpy as np
-from cfg import BaseCfg
-from helper_code import is_nan
-from outputs import CINC2023Outputs
+
+from ..cfg import BaseCfg
+from ..helper_code import is_nan
+from ..outputs import CINC2023Outputs
 
 __all__ = [
     "compute_challenge_metrics",
