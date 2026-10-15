@@ -17,12 +17,12 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from cfg import ModelCfg
-
 from torch_ecg.cfg import CFG
-from torch_ecg.components.outputs import MultiLableClassificationOutput, SequenceLabellingOutput
+from torch_ecg.components.outputs import MultiLabelClassificationOutput, SequenceLabellingOutput
 from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
 from torch_ecg.utils.utils_data import mask_to_intervals
+
+from .cfg import ModelCfg
 
 __all__ = [
     "ECG_CRNN_CPSC2020",
@@ -59,7 +59,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         input: Union[Sequence[float], np.ndarray, Tensor],
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
-    ) -> MultiLableClassificationOutput:
+    ) -> MultiLabelClassificationOutput:
         """
         auxiliary function to `forward`, for CPSC2020,
 
@@ -104,7 +104,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
             prob["pred"] = ""
             for row_idx in range(len(prob)):
                 prob.at[row_idx, "pred"] = np.array(self.classes)[np.where(pred == 1)[0]].tolist()
-        return MultiLableClassificationOutput(
+        return MultiLabelClassificationOutput(
             classes=self.classes,
             thr=bin_pred_thr,
             prob=prob,
@@ -117,7 +117,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         input: Union[np.ndarray, Tensor],
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
-    ) -> MultiLableClassificationOutput:
+    ) -> MultiLabelClassificationOutput:
         """
         alias for `self.inference`
         """
