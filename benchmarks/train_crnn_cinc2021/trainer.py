@@ -25,6 +25,12 @@ class CINC2021Trainer(BaseTrainer):
 
     __name__ = "CINC2021Trainer"
 
+    # class-level knobs so that sibling benchmarks which are strict
+    # subsets of this challenge (e.g. CINC2020, whose data is a subset of
+    # CINC2021's) can reuse the whole trainer by overriding just these
+    _dataset_cls = CINC2021Dataset
+    _compute_metrics = staticmethod(compute_cinc2021_metrics)
+
     def __init__(
         self,
         model: torch.nn.Module,
@@ -36,7 +42,7 @@ class CINC2021Trainer(BaseTrainer):
     ) -> None:
         super().__init__(
             model=model,
-            dataset_cls=CINC2021Dataset,
+            dataset_cls=self._dataset_cls,
             model_config=model_config,
             train_config=train_config,
             device=device,
@@ -160,7 +166,7 @@ class CINC2021Trainer(BaseTrainer):
             f_beta_measure,
             g_beta_measure,
             challenge_metric,
-        ) = compute_cinc2021_metrics(
+        ) = self._compute_metrics(
             classes=classes,
             truth=all_labels,
             scalar_pred=all_scalar_preds,
