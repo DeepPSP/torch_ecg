@@ -31,15 +31,16 @@ try:
 except Exception:
     sio_wav = None
 import IPython
-from cfg import BaseCfg
 from tqdm.auto import tqdm
-from utils.schmidt_spike_removal import schmidt_spike_removal
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases.base import DataBaseInfo, PhysioNetDataBase
 from torch_ecg.utils.download import http_get
 from torch_ecg.utils.misc import ReprMixin, add_docstring, get_record_list_recursive, get_record_list_recursive3, list_sum
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
+
+from .cfg import BaseCfg
+from .utils.schmidt_spike_removal import schmidt_spike_removal
 
 __all__ = [
     "PCGDataBase",

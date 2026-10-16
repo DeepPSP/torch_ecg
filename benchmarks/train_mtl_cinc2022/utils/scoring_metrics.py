@@ -5,11 +5,12 @@ metrics from the official scoring repository
 from typing import Dict, List, Sequence, Tuple, Union
 
 import numpy as np
-from cfg import BaseCfg
 from deprecated import deprecated
-from outputs import CINC2022Outputs
 
 from torch_ecg.utils.utils_metrics import _one_hot_pair
+
+from ..cfg import BaseCfg
+from ..outputs import CINC2022Outputs
 
 __all__ = [
     "compute_challenge_metrics",

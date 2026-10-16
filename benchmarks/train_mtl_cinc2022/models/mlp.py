@@ -7,13 +7,14 @@ from typing import Any, Optional, Union
 
 import numpy as np
 import torch
-from cfg import ModelCfg
 from torch import Tensor
 
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
 from torch_ecg.models._nets import MLP
 from torch_ecg.utils import CkptMixin, add_docstring
+
+from ..cfg import ModelCfg
 
 __all__ = ["OutComeMLP"]
 
