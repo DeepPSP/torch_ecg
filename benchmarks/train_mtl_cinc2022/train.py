@@ -48,7 +48,7 @@ _TASK_MODEL_NAMES = {
 }
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train the models on the CinC2022 (Circulatory Sounds) database.")
     parser.add_argument("--db-dir", type=str, required=True, help="path to the Circulatory Sounds database")
     parser.add_argument(
@@ -69,7 +69,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--outdir", type=str, default=None, help="where to put logs/checkpoints/models")
     parser.add_argument("--smoke", action="store_true", help="tiny 2-epoch debug run, as in CI")
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def _set_task(task: str, config: dict) -> None:
@@ -85,8 +85,8 @@ def _set_task(task: str, config: dict) -> None:
         config[item] = config[task][item]
 
 
-def main() -> dict:
-    args = parse_args()
+def main(argv=None) -> dict:
+    args = parse_args(argv)
 
     # ONE seeding point for everything (python/numpy/torch/DEFAULTS.RNG);
     # DataLoader workers are reseeded via `worker_init_fn` in the trainer

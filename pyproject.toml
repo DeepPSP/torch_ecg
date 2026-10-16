@@ -137,7 +137,7 @@ include = [
 # configuration for pytest and coverage
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-vv -s --cov=torch_ecg --ignore=test/test_pipelines"
+addopts = "-vv -s --cov=torch_ecg"
 testpaths = ["test"]
 markers = [
     "db: tests that download real database files (deselect with `-m \"not db\"`)",

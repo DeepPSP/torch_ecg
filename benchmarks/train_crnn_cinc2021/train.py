@@ -21,7 +21,7 @@ from .model import ECG_CRNN_CINC2021
 from .trainer import CINC2021Trainer
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train an ECG_CRNN on CINC2021.")
     parser.add_argument("--db-dir", type=str, required=True, help="path to the CINC2021 database")
     parser.add_argument(
@@ -41,11 +41,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--outdir", type=str, default=None, help="where to put logs/checkpoints/models")
     parser.add_argument("--smoke", action="store_true", help="tiny 2-epoch debug run, as in CI")
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> dict:
-    args = parse_args()
+def main(argv=None) -> dict:
+    args = parse_args(argv)
 
     # ONE seeding point for everything (python/numpy/torch/DEFAULTS.RNG);
     # DataLoader workers are reseeded via `worker_init_fn` in the trainer
