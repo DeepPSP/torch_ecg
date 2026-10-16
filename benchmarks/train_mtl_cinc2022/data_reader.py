@@ -30,7 +30,10 @@ try:
     import scipy.io.wavfile as sio_wav
 except Exception:
     sio_wav = None
-import IPython
+try:
+    import IPython
+except ModuleNotFoundError:
+    IPython = None
 from tqdm.auto import tqdm
 
 from torch_ecg.cfg import DEFAULTS
