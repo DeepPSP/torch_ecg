@@ -1,9 +1,12 @@
 """
-auxiliary metrics for the task of qrs detection
+Auxiliary metrics for the CPSC2021 benchmark.
 
-References
-----------
-[1] http://2019.icbeb.org/Challenge.html
+`compute_rr_metric` and `compute_main_task_metric` imitate the challenge
+metric of CPSC2021 for the rr_lstm and the main (seq_lab / unet) tasks
+respectively. The official challenge score itself lives in the library at
+``torch_ecg.databases.cpsc_databases.cpsc2021`` (``compute_metrics``), and
+the R-peak (QRS detection) score is identical to the CPSC2019 challenge
+metric, also available from the library.
 """
 
 import multiprocessing as mp
@@ -12,109 +15,16 @@ from typing import Dict, Optional, Sequence, Union
 import numpy as np
 import torch
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
-
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_data import mask_to_intervals
 
 __all__ = [
-    "compute_rpeak_metric",
     "compute_rr_metric",
     "compute_main_task_metric",
 ]
 
 
 _MBCE = MaskedBCEWithLogitsLoss()
-
-
-def compute_rpeak_metric(
-    rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
-    rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
-    fs: int,
-    thr: float = 0.075,
-    verbose: int = 0,
-) -> Dict[str, float]:
-    """
-
-    Parameters
-    ----------
-    rpeaks_truths: sequence,
-        sequence of ground truths of rpeaks locations (indices) from multiple records
-    rpeaks_preds: sequence,
-        predictions of ground truths of rpeaks locations (indices) for multiple records
-    fs: int,
-        sampling frequency of ECG signal
-    thr: float, default 0.075,
-        threshold for a prediction to be truth positive,
-        with units in seconds,
-    verbose: int, default 0,
-        print verbosity
-
-    Returns
-    -------
-    rec_acc: float,
-        accuracy of predictions
-    """
-    assert len(rpeaks_truths) == len(
-        rpeaks_preds
-    ), f"number of records does not match, truth indicates {len(rpeaks_truths)}, while pred indicates {len(rpeaks_preds)}"
-    n_records = len(rpeaks_truths)
-    record_flags = np.ones((len(rpeaks_truths),), dtype=float)
-    thr_ = thr * fs
-    if verbose >= 1:
-        print(f"number of records = {n_records}")
-        print(f"threshold in number of sample points = {thr_}")
-    for idx, (truth_arr, pred_arr) in enumerate(zip(rpeaks_truths, rpeaks_preds)):
-        false_negative = 0
-        false_positive = 0
-        true_positive = 0
-        extended_truth_arr = np.concatenate((truth_arr.astype(int), [int(9.5 * fs)]))
-        for j, t_ind in enumerate(extended_truth_arr[:-1]):
-            next_t_ind = extended_truth_arr[j + 1]
-            loc = np.where(np.abs(pred_arr - t_ind) <= thr_)[0]
-            if j == 0:
-                err = np.where((pred_arr >= 0.5 * fs + thr_) & (pred_arr <= t_ind - thr_))[0]
-            else:
-                err = np.array([], dtype=int)
-            err = np.append(
-                err,
-                np.where((pred_arr >= t_ind + thr_) & (pred_arr <= next_t_ind - thr_))[0],
-            )
-
-            false_positive += len(err)
-            if len(loc) >= 1:
-                true_positive += 1
-                false_positive += len(loc) - 1
-            elif len(loc) == 0:
-                false_negative += 1
-
-        if false_negative + false_positive > 1:
-            record_flags[idx] = 0
-        elif false_negative == 1 and false_positive == 0:
-            record_flags[idx] = 0.3
-        elif false_negative == 0 and false_positive == 1:
-            record_flags[idx] = 0.7
-
-        if verbose >= 2:
-            print(
-                f"for the {idx}-th record,\ntrue positive = {true_positive}\nfalse positive = {false_positive}\nfalse negative = {false_negative}"
-            )
-
-    rec_acc = round(np.sum(record_flags) / n_records, 4)
-
-    if verbose >= 1:
-        print(f"QRS_acc: {rec_acc}")
-        print("Scoring complete.")
-
-    metrics = {"qrs_score": rec_acc}
-
-    return metrics
 
 
 def compute_rr_metric(
@@ -262,32 +172,3 @@ def compute_main_task_metric(
         "neg_masked_bce": neg_masked_bce,
     }
     return metrics
-
-
-# class WeightedBoundaryLoss(nn.Module):
-#     """
-#     """
-#     __name__ = "WeightedBoundaryLoss"
-
-#     def __init__(self, weight_map:Dict[int, Union[int, float]], sigma:float, w:float) -> None:
-#         """
-#         """
-#         self.weight_map = weight_map
-#         self.sigma = sigma
-#         self.w = w
-
-#     def forward(self, input:Tensor, target:Tensor) -> Tensor:
-#         """
-#         """
-#         _device = input.device
-#         _dtype = input.dtype
-#         weight_mask = torch.zeros_like(input, dtype=_dtype, device=_device)
-#         if target.shape[-1] == 1:
-#             w = torch.full_like(input, self.weight_map[0], dtype=_dtype, device=_device)
-#             weight_mask.add_((target < 0.5)*w)
-#             w = torch.full_like(input, self.weight_map[1], dtype=_dtype, device=_device)
-#             weight_mask.add_((target > 0.5)*w)
-#         else:
-#             for i in range(input.shape[-1]):
-#                 w = torch.full(input.shape[:-1], self.weight_map[i], dtype=_dtype, device=_device)
-#                 weight_mask[...,i].add_((target[...,i] > 0.5)*w)

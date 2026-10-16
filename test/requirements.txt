@@ -5,6 +5,8 @@ pytest-xdist
 pytest-cov
 pcg-springer-features
 librosa
+einops
+transformers
 torchaudio
 torch_audiomentations
 tensorboard

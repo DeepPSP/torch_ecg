@@ -12,16 +12,17 @@ import numpy as np
 import pandas as pd
 import scipy.signal as SS
 import wfdb
-from cfg import BaseCfg
 from diff_binom_confint import make_risk_report
 from tqdm.auto import tqdm
-from utils.misc import load_unofficial_phase_metadata, url_is_reachable
-from utils.sqi import compute_sqi
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases.base import DataBaseInfo, PhysioNetDataBase
 from torch_ecg.utils.download import _untar_file, _unzip_file, http_get
 from torch_ecg.utils.misc import add_docstring, get_record_list_recursive3
+
+from .cfg import BaseCfg
+from .utils.misc import load_unofficial_phase_metadata, url_is_reachable
+from .utils.sqi import compute_sqi
 
 __all__ = [
     "CINC2023Reader",

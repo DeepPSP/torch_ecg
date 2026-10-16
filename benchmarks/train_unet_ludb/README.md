@@ -1,21 +1,31 @@
-# ECG UNET
+# LUDB: ECG_UNET wave-delineation benchmark
 
-Re-production of the model proposed in Reference \[[1](#ref1)\] using LUDB
+Benchmark example for [LUDB](https://physionet.org/content/ludb/1.0.1/)
+(ECG wave delineation: P/QRS/T onset & offset detection), built directly
+on the library: the reader, dataset (`LUDBDataset`), UNet backbone and
+the delineation metrics all come from `torch_ecg`; this folder only
+contains what is specific to the task.
 
-## Training
+Reference: Moskalenko, Zolotykh, Osipov. "Deep Learning for ECG
+Segmentation." Neuroinformatics, 2019.
 
-A typical experiment of training a U-Net model for wave delineation
+| file | content |
+|---|---|
+| `cfg.py` | training config (from the library's `LUDBTrainCfg`) + the UNet model config |
+| `model.py` | `ECG_UNET_LUDB` — `ECG_UNET` with mask-decoding inference |
+| `trainer.py` | `LUDBTrainer` — `BaseTrainer` wired to `LUDBDataset` and the delineation metrics |
+| `train.py` | CLI entry |
 
-Curves of train loss and validation f1 score | Curves of the mean error and standard deviation
-:-------------------------------------------:|:-----------------------------------------------:
-<img src="images/ludb-unet-score-loss.svg" alt="score-loss" width="400"/>  |  <img src="images/ludb-unet-me-std.svg" alt="me-std" width="400"/>
+## Usage
 
-## Evaluation
+Run from the repository root:
 
-An example of a trained wave delineation U-Net model evaluated on a 10s segment from the validation set
+```bash
+python -m benchmarks.train_unet_ludb.train --db-dir ~/data/ludb
 
-<img src="images/ludb-unet-val-example.svg" alt="val-example" width="800"/>
+# quick end-to-end check (2 epochs, debug mode)
+python -m benchmarks.train_unet_ludb.train --db-dir <path> --smoke
+```
 
-## References
-
-1. <a name="ref1"></a> Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
+`train.py` seeds everything through `torch_ecg.utils.seed_everything`
+and the trainer reseeds DataLoader workers via `worker_init_fn`.

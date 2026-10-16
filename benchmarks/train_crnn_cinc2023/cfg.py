@@ -7,18 +7,16 @@ from copy import deepcopy
 
 import numpy as np
 import torch
-from cfg_models import ModelArchCfg
-from sklearn.model_selection import ParameterGrid
 
 from torch_ecg.cfg import CFG
 from torch_ecg.components.inputs import InputConfig
+from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 __all__ = [
     "BaseCfg",
     "TrainCfg",
     "ModelCfg",
-    "MLCfg",
 ]
 
 
@@ -218,6 +216,12 @@ _BASE_MODEL_CONFIG = CFG()
 _BASE_MODEL_CONFIG.torch_dtype = BaseCfg.torch_dtype
 
 
+# mostly follow from torch_ecg.model_configs.ecg_crnn
+ModelArchCfg = CFG()
+ModelArchCfg.classification = CFG()
+ModelArchCfg.classification.crnn = deepcopy(ECG_CRNN_CONFIG)
+
+
 ModelCfg = deepcopy(_BASE_MODEL_CONFIG)
 
 # adjust filter lengths, > 1 for enlarging, < 1 for shrinking
@@ -251,105 +255,3 @@ for t in TrainCfg.tasks:
         ModelCfg[t][mn].cnn.name = ModelCfg[t].cnn_name
         ModelCfg[t][mn].rnn.name = ModelCfg[t].rnn_name
         ModelCfg[t][mn].attn.name = ModelCfg[t].attn_name
-
-
-# machine learning model configurations
-
-MLCfg = CFG()
-MLCfg.db_dir = None
-MLCfg.log_dir = BaseCfg.log_dir
-MLCfg.model_dir = BaseCfg.model_dir
-MLCfg.log_step = 20
-# MLCfg.task = "classification"  # "classification", "regression"
-# MLCfg.output_target = None
-MLCfg.output_target = BaseCfg.output_target
-if MLCfg.output_target == "cpc":
-    MLCfg.classes = deepcopy(BaseCfg.cpc)
-    MLCfg.class_map = deepcopy(BaseCfg.cpc_map)
-elif MLCfg.output_target == "outcome":
-    MLCfg.classes = deepcopy(BaseCfg.outcome)
-    MLCfg.class_map = deepcopy(BaseCfg.outcome_map)
-# MLCfg.x_cols_cate = [  # categorical features
-#     "Sex",
-#     "OHCA",
-#     "VFib",
-#     "TTM",
-# ]
-# MLCfg.x_cols_cont = [  # continuous features
-#     "Age",
-#     "ROSC",
-# ]
-# MLCfg.x_cols = MLCfg.x_cols_cate + MLCfg.x_cols_cont
-MLCfg.feature_list = [
-    "age",  # continuous
-    "sex_female",  # binarized
-    "sex_male",  # binarized
-    "sex_other",  # binarized
-    "rosc",  # continuous
-    "ohca",  # binary
-    "vfib",  # binary, from "Shockable Rhythm" (official phase)
-    "ttm",  # continuous (indeed, categorical)
-]
-MLCfg.cont_features = ["age", "rosc", "ttm"]
-MLCfg.cont_scaler = "standard"  # "minmax", "standard"
-MLCfg.grids = CFG()
-MLCfg.grids.rf = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "criterion": ["gini", "entropy"],
-        "min_samples_split": [2, 3, 4],
-        "max_features": ["auto", "sqrt", "log2"],
-        "bootstrap": [True, False],
-        "oob_score": [True, False],
-        "warm_start": [True, False],
-        "class_weight": ["balanced", "balanced_subsample", None],
-    }
-)
-MLCfg.grids.xgb = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "reg_alpha": [0.0, 0.1, 0.5, 1.0],
-        "reg_lambda": [0.0, 0.1, 0.5, 1.0],
-        "max_depth": [3, 5, 8],
-        "verbosity": [0],
-    }
-)
-MLCfg.grids.gdbt = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "loss": ["deviance", "exponential"],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "criterion": ["friedman_mse", "mse"],
-        "min_samples_split": [2, 3, 4],
-        "max_features": ["auto", "sqrt", "log2"],
-        "warm_start": [True, False],
-        "ccp_alpha": [0.0, 0.1, 0.5, 1.0],
-    }
-)
-MLCfg.grids.svc = ParameterGrid(
-    {
-        "C": [0.1, 0.5, 1, 10],
-        "kernel": ["linear", "poly", "rbf", "sigmoid"],
-        "degree": [2, 3, 5],  # for "poly" kernel
-        "gamma": [
-            "scale",
-            "auto",
-        ],  # Kernel coefficient for 'rbf', 'poly' and 'sigmoid'
-        "coef0": [0.0, 0.2, 0.5, 1.0],  # for 'poly' and 'sigmoid'
-        "class_weight": ["balanced", None],
-        "probability": [True],
-        "shrinking": [True, False],
-    }
-)
-MLCfg.grids.bagging = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "max_features": [0.1, 0.2, 0.5, 0.9, 1.0],
-        "bootstrap": [True, False],
-        "bootstrap_features": [True, False],
-        "oob_score": [True, False],
-        "warm_start": [True, False],
-    }
-)
-MLCfg.monitor = "outcome_score"

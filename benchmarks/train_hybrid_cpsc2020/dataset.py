@@ -65,29 +65,13 @@ from scipy import signal as SS
 from scipy.io import loadmat, savemat
 from torch.utils.data.dataset import Dataset
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
-
-import signal_processing as SP
-from cfg import ModelCfg, PreprocCfg
-
-# from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.augmenters.baseline_wander import gen_baseline_wander
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import ReprMixin, get_record_list_recursive3, list_sum
 from torch_ecg.utils.utils_data import mask_to_intervals
 
-if ModelCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = np.float64
-else:
-    _DTYPE = np.float32
-
+from .signal_processing import ecg_denoise
 
 __all__ = [
     "CPSC2020",
@@ -115,17 +99,14 @@ class CPSC2020(ReprMixin, Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config: CFG, training: bool = True) -> None:
+    def __init__(self, config: CFG, training: bool = True, prepare: bool = False) -> None:
+        """ """
         super().__init__()
         self.config = deepcopy(config)
         assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = Path(self.config.db_dir)
         self.reader = CR(db_dir=self.config.db_dir)
-        if ModelCfg.torch_dtype.lower() == "double":
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
-        self.allowed_preproc = PreprocCfg.preproc
+        self.dtype = self.config.np_dtype if hasattr(self.config, "np_dtype") else np.float32
 
         self.all_classes = self.config.classes
         self.n_classes = len(self.config.classes)
@@ -137,15 +118,9 @@ class CPSC2020(ReprMixin, Dataset):
         self.seglen = self.config.input_len  # alias, for simplicity
 
         # create directories if needed
-        # preprocess_dir stores pre-processed signals
-        self.preprocess_dir = self.config.db_dir / "preprocessed"
-        self.preprocess_dir.mkdir(parents=True, exist_ok=True)
         # segments_dir for sliced segments
         self.segments_dir = self.config.db_dir / "segments"
         self.segments_dir.mkdir(parents=True, exist_ok=True)
-        # rpeaks_dir for detected r peaks, for optional use
-        self.rpeaks_dir = self.config.db_dir / "rpeaks"
-        self.rpeaks_dir.mkdir(parents=True, exist_ok=True)
 
         if self.config.model_name.lower() in ["crnn", "seq_lab"]:
             # for classification, or for sequence labeling
@@ -164,14 +139,10 @@ class CPSC2020(ReprMixin, Dataset):
         else:
             raise NotImplementedError(f"data generator for model \042{self.config.model_name}\042 not implemented")
 
-        if self.config.bw:
-            self._n_bw_choices = len(self.config.bw_ampl_ratio)
-            self._n_gn_choices = len(self.config.bw_gaussian)
-
-        if len(self) == 0:
+        if len(self) == 0 and not prepare:
             raise ValueError(
                 "No segments found, please check the data directory, "
-                "or call the `persistence` method to preprocess and slice the recordings into segments."
+                "or call the `persistence` method to slice the recordings into segments."
             )
 
     def _ls_segments(self) -> None:
@@ -209,25 +180,19 @@ class CPSC2020(ReprMixin, Dataset):
                 seg=seg_name,
                 reduction=self.config.seq_lab_reduction,
             )
-        # seg_ampl = np.max(seg_data) - np.min(seg_data)
-        seg_ampl = self._get_seg_ampl(seg_data)
-        # spb_indices = ann["SPB_indices"]
-        # pvc_indices = ann["PVC_indices"]
         if self.__data_aug:
             if self.config.bw:
-                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices - 1)]
-                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices - 1)]
-                bw_ampl = ar * seg_ampl
-                g_ampl = gm * seg_ampl
+                # the modern (vectorized) `gen_baseline_wander` samples the
+                # amplitude / gaussian rows internally and scales by the
+                # amplitude of the signal itself
                 bw = gen_baseline_wander(
-                    siglen=self.seglen,
+                    sig=torch.as_tensor(seg_data.reshape(1, 1, -1), dtype=torch.float32),
                     fs=self.config.fs,
                     bw_fs=self.config.bw_fs,
-                    amplitude=bw_ampl,
-                    amplitude_mean=gm,
-                    amplitude_std=gs,
+                    ampl_ratio=self.config.bw_ampl_ratio,
+                    gaussian=self.config.bw_gaussian,
                 )
-                seg_data = seg_data + bw
+                seg_data = seg_data + bw.numpy()[0, 0]
             if len(self.config.flip) > 0:
                 sign = sample(self.config.flip, 1)[0]
                 seg_data *= sign
@@ -297,7 +262,7 @@ class CPSC2020(ReprMixin, Dataset):
 
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
+        fp = self.segments_dir / "data" / rec / f"{seg}.{self.reader.rec_ext}"
         return fp
 
     def _get_seg_ann_path(self, seg: str) -> Path:
@@ -315,7 +280,7 @@ class CPSC2020(ReprMixin, Dataset):
 
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
+        fp = self.segments_dir / "ann" / rec / f"{seg}.{self.reader.rec_ext}"
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
@@ -395,7 +360,7 @@ class CPSC2020(ReprMixin, Dataset):
         bias_thr = int(round(self.config.bias_thr / reduction))
         seq_lab = np.zeros(
             shape=(self.seglen // reduction, self.n_classes),
-            dtype=_DTYPE,
+            dtype=self.dtype,
         )
         for p in seg_beat_ann["SPB_indices"]:
             start_idx = max(0, p - bias_thr)
@@ -425,134 +390,10 @@ class CPSC2020(ReprMixin, Dataset):
             Verbosity level for logging messages.
 
         """
-        # if force_recompute:
-        #     self.__all_segments = CFG({rec: [] for rec in self.reader.all_records})
-        self._preprocess_data(
-            self.allowed_preproc,
-            force_recompute=force_recompute,
-            verbose=verbose,
-        )
         self._slice_data(
             force_recompute=force_recompute,
             verbose=verbose,
         )
-
-    def _preprocess_data(self, preproc: List[str], force_recompute: bool = False, verbose: int = 0) -> None:
-        """Preprocesses the ecg data in advance for further use,
-        offline for `self.persistence`.
-
-        Parameters
-        ----------
-        preproc : list of str
-            Type of preprocesses to perform,
-            should be sublist of `self.allowed_preproc`
-        force_recompute : bool, default False
-            If True, recompute regardless of possible existing files.
-        verbose : int, default 0
-            Verbosity level for logging messages.
-
-        """
-        preproc = self._normalize_preprocess_names(preproc, True)
-        config = deepcopy(PreprocCfg)
-        config.preproc = preproc
-        for idx, rec in enumerate(self.reader.all_records):
-            self._preprocess_one_record(
-                rec=rec,
-                config=config,
-                force_recompute=force_recompute,
-                verbose=verbose,
-            )
-            if verbose >= 1:
-                print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
-
-    def _preprocess_one_record(
-        self,
-        rec: Union[int, str],
-        config: dict,
-        force_recompute: bool = False,
-        verbose: int = 0,
-    ) -> None:
-        """Preprocesses the ecg data in advance for further use,
-        offline for `self.persistence`.
-
-        Parameters
-        ----------
-        rec : int or str
-            Number of the record, NOTE that rec_no starts from 1,
-            or the record name.
-        config : dict
-            Configurations of preprocessing
-        force_recompute : bool, default False
-            If True, recompute regardless of possible existing files
-        verbose : int, default 0
-            Verbosity level for logging messages.
-
-        """
-        # format save path
-        save_fp = CFG()
-        rec_name = self.reader._get_rec_name(rec)
-        suffix = self._get_rec_suffix(config.preproc)
-        save_fp.data = self.preprocess_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
-        save_fp.rpeaks = self.rpeaks_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
-        if (not force_recompute) and save_fp.data.is_file() and save_fp.rpeaks.is_file():
-            return
-        # perform pre-process
-        pps = SP.parallel_preprocess_signal(
-            self.reader.load_data(rec, data_format="flat"),
-            fs=self.reader.fs,
-            config=config,
-            verbose=verbose,
-        )
-        # `rpeaks_skip_dist` useless for `seq_lab_detect`, as already set internally
-        # pps['rpeaks'] = pps['rpeaks'][np.where( (pps['rpeaks']>=config.rpeaks_skip_dist) & (pps['rpeaks']<len(pps['filtered_ecg'])-config.rpeaks_skip_dist) )[0]]
-        # save mat, keep in accordance with original mat files
-        savemat(save_fp.data, {"ecg": np.atleast_2d(pps["filtered_ecg"]).T}, format="5")
-        savemat(save_fp.rpeaks, {"rpeaks": np.atleast_2d(pps["rpeaks"]).T}, format="5")
-
-    def _normalize_preprocess_names(self, preproc: List[str], ensure_nonempty: bool) -> List[str]:
-        """Transform all preproc into lower case,
-        and keep them in a specific ordering.
-
-        Parameters
-        ----------
-        preproc : list of str
-            List of preprocesses types,
-            should be sublist of `self.allowd_features`.
-        ensure_nonempty : bool,
-            If True, when the passed `preproc` is empty,
-            `self.allowed_preproc` will be returned.
-
-        Returns
-        -------
-        list of str
-            Normalized list of preprocess types.
-
-        """
-        _p = [item.lower() for item in preproc] if preproc else []
-        if ensure_nonempty:
-            _p = _p or self.allowed_preproc
-        # ensure ordering
-        _p = [item for item in self.allowed_preproc if item in _p]
-        # assert all([item in self.allowed_preproc for item in _p])
-        return _p
-
-    def _get_rec_suffix(self, operations: List[str]) -> str:
-        """Get the suffix of the filename of the preprocessed ECG signal.
-
-        Parameters
-        ----------
-        operations : list of str
-            Names of operations to perform (or has performed),
-            should be sublist of `self.allowed_preproc`.
-
-        Returns
-        -------
-        suffix : str
-            Suffix of the filename of the preprocessed ECG signal.
-
-        """
-        suffix = "-".join(sorted([item.lower() for item in operations]))
-        return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """Slice all records into segments of length `self.config.input_len`, i.e. `self.seglen`,
@@ -603,7 +444,7 @@ class CPSC2020(ReprMixin, Dataset):
             Verbosity level for logging messages.
 
         """
-        rec_name = self.reader._get_rec_name(rec)
+        rec_name = rec if isinstance(rec, str) else self.reader.all_records[rec]
         self.segments_dirs.data[rec_name].mkdir(parents=True, exist_ok=True)
         self.segments_dirs.ann[rec_name].mkdir(parents=True, exist_ok=True)
         if (not force_recompute) and len(self.__all_segments[rec_name]) > 0:
@@ -665,10 +506,10 @@ class CPSC2020(ReprMixin, Dataset):
             n_original += 1
             while start_idx < itv[1]:
                 # stretch and compress the signal
-                if self.config.stretch_compress != 0:
+                if self.config.stretch_compress_ratio != 0:
                     sign = sample([-1, 1] + [0] * 4, 1)[0]
                     if sign != 0:
-                        sc_ratio = self.config.stretch_compress
+                        sc_ratio = self.config.stretch_compress_ratio
                         sc_ratio = 1 + (uniform(sc_ratio / 4, sc_ratio) * sign) / 100
                         sc_len = int(round(sc_ratio * self.seglen))
                         end_idx = start_idx + sc_len
@@ -717,12 +558,12 @@ class CPSC2020(ReprMixin, Dataset):
         for i, ind in enumerate(seg_inds):
             save_fp = CFG()
             seg_name = f"{rec_name.replace('A', 'S')}_{i:07d}"
-            save_fp.data = self.segments_dirs.data[rec_name] / f"{seg_name}{self.reader.rec_ext}"
-            save_fp.ann = self.segments_dirs.ann[rec_name] / f"{seg_name}{self.reader.rec_ext}"
+            save_fp.data = self.segments_dirs.data[rec_name] / f"{seg_name}.{self.reader.rec_ext}"
+            save_fp.ann = self.segments_dirs.ann[rec_name] / f"{seg_name}.{self.reader.rec_ext}"
             seg = segments[ind, ...]
             # if self._get_seg_ampl(seg) < 0.1:  # drop out flat segments
             #     continue
-            if SP.ecg_denoise(seg, self.reader.fs, config={"ampl_min": 0.15}) != [[0, self.seglen]]:
+            if ecg_denoise(seg, self.reader.fs, config={"ampl_min": 0.15}) != [[0, self.seglen]]:
                 continue
             savemat(str(save_fp.data), {"ecg": seg}, format="5")
             seg_label = labels[ind, ...]

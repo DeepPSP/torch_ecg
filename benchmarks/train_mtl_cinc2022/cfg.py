@@ -2,23 +2,20 @@
 
 import pathlib
 from copy import deepcopy
-from typing import Sequence, Union
 
 import numpy as np
 import torch
-from cfg_models import ModelArchCfg
-from inputs import InputConfig
-from sklearn.model_selection import ParameterGrid
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+
+from .cfg_models import ModelArchCfg
+from .inputs import InputConfig
 
 __all__ = [
     "BaseCfg",
     "TrainCfg",
     "ModelCfg",
-    "OutcomeCfg",
-    "remove_extra_heads",
 ]
 
 
@@ -452,10 +449,6 @@ TrainCfg.multi_task.head_weights = CFG(
 TrainCfg.multi_task.freeze_backbone_at = int(0.6 * TrainCfg.n_epochs)
 
 
-def set_entry_test_flag(test_flag: bool):
-    TrainCfg.entry_test_flag = test_flag
-
-
 ###############################################################################
 # configurations for building deep learning models
 # terminologies of stanford ecg repo. will be adopted
@@ -516,163 +509,3 @@ ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(TrainCfg.multi_task.los
 
 
 # model for the outcome (final diagnosis)
-
-OutcomeCfg = CFG()
-OutcomeCfg.db_dir = None
-OutcomeCfg.log_dir = BaseCfg.log_dir
-OutcomeCfg.model_dir = BaseCfg.model_dir
-OutcomeCfg.split_col = "Patient ID"  # for train-test split
-OutcomeCfg.y_col = "Outcome"
-OutcomeCfg.classes = deepcopy(BaseCfg.outcomes)
-OutcomeCfg.class_map = {c: i for i, c in enumerate(OutcomeCfg.classes)}
-OutcomeCfg.x_cols_cate = [
-    "Age",
-    "Sex",
-    "Pregnancy status",
-    "Locations",
-    "Murmur locations",
-]
-OutcomeCfg.x_cols_cont = [
-    "Height",
-    "Weight",
-]
-OutcomeCfg.cont_scaler = "standard"  # "minmax", "standard"
-OutcomeCfg.x_cols = OutcomeCfg.x_cols_cate + OutcomeCfg.x_cols_cont
-OutcomeCfg.ordinal_mappings = {
-    "Age": {
-        "Neonate": 0,
-        "Infant": 1,
-        "Child": 2,
-        "Adolescent": 3,
-        "NA": 4,
-        # the public database has no "Young adult"
-        "Young adult": 4,
-        "Young Adult": 4,
-        "default": 4,
-    },
-    "Sex": {
-        "Female": 0,
-        "Male": 1,
-        "default": 0,
-    },
-}
-# OutcomeCfg.location_list = ["PV", "AV", "MV", "TV", "Phc"]
-# only 2 subjects have "Phc" location audio recordings
-# hence this location is ignored
-OutcomeCfg.location_list = ["PV", "AV", "MV", "TV"]
-OutcomeCfg.feature_list = ["Age", "Sex", "Height", "Weight", "Pregnancy status"] + [
-    f"Location-{loc}" for loc in OutcomeCfg.location_list
-]
-OutcomeCfg.grids = CFG()
-OutcomeCfg.grids.rf = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "criterion": ["gini", "entropy"],
-        "min_samples_split": [2, 3, 4],
-        "max_features": ["auto", "sqrt", "log2"],
-        "bootstrap": [True, False],
-        "oob_score": [True, False],
-        "warm_start": [True, False],
-        "class_weight": ["balanced", "balanced_subsample", {0: 5, 1: 1}, None],
-    }
-)
-OutcomeCfg.grids.xgb = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "reg_alpha": [0.0, 0.1, 0.5, 1.0],
-        "reg_lambda": [0.0, 0.1, 0.5, 1.0],
-        "max_depth": [3, 5, 8],
-        "verbosity": [0],
-    }
-)
-OutcomeCfg.grids.gdbt = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "loss": ["deviance", "exponential"],
-        "learning_rate": [0.01, 0.05, 0.1],
-        "criterion": ["friedman_mse", "mse"],
-        "min_samples_split": [2, 3, 4],
-        "max_features": ["auto", "sqrt", "log2"],
-        "warm_start": [True, False],
-        "ccp_alpha": [0.0, 0.1, 0.5, 1.0],
-    }
-)
-OutcomeCfg.grids.svc = ParameterGrid(
-    {
-        "C": [0.1, 0.5, 1, 10],
-        "kernel": ["linear", "poly", "rbf", "sigmoid"],
-        "degree": [2, 3, 5],  # for "poly" kernel
-        "gamma": [
-            "scale",
-            "auto",
-        ],  # Kernel coefficient for 'rbf', 'poly' and 'sigmoid'
-        "coef0": [0.0, 0.2, 0.5, 1.0],  # for 'poly' and 'sigmoid'
-        "class_weight": ["balanced", None],
-        "probability": [True],
-        "shrinking": [True, False],
-    }
-)
-OutcomeCfg.grids.bagging = ParameterGrid(
-    {
-        "n_estimators": [10, 15, 20, 50, 100],
-        "max_features": [0.1, 0.2, 0.5, 0.9, 1.0],
-        "bootstrap": [True, False],
-        "bootstrap_features": [True, False],
-        "oob_score": [True, False],
-        "warm_start": [True, False],
-    }
-)
-# OutcomeCfg.grids.sk_mlp =
-#     ParameterGrid({
-#         "hidden_layer_sizes": [(50,), (100,), (50, 100), (50, 100, 50)],
-#         "activation": ["logistic", "tanh", "relu"],
-#         "solver": ["lbfgs", "sgd", "adam"],
-#         "alpha": [0.0001, 0.001, 0.01],
-#         "learning_rate": ["constant", "invscaling", "adaptive"],
-#         "learning_rate_init": [
-#             0.001,
-#             0.01,
-#         ],
-#         "warm_start": [True, False],
-#     })
-OutcomeCfg.monitor = "outcome_cost"  # the lower the better
-
-
-def remove_extra_heads(train_config: CFG, model_config: CFG, heads: Union[str, Sequence[str]]) -> None:
-    """
-    remove extra heads from **task-specific** train config and model config,
-    e.g. `TrainCfg.classification` and `ModelCfg.classification`
-
-    Parameters
-    ----------
-    train_config : CFG
-        train config
-    model_config : CFG
-        model config
-    heads : str or sequence of str,
-        names of heads to remove
-
-    """
-    if heads in ["", None, []]:
-        return
-    if isinstance(heads, str):
-        heads = [heads]
-    assert set(heads) <= set(["outcome", "outcomes", "segmentation"])
-    for head in heads:
-        if head.lower() in ["outcome", "outcomes"]:
-            train_config.outcomes = None
-            train_config.outcome_map = None
-            train_config.loss.pop("outcome", None)
-            train_config.loss_kw.pop("outcome", None)
-            train_config.head_weights = {"murmur": 1.0}
-            train_config.monitor = "murmur_weighted_accuracy"
-            model_config.outcomes = None
-            model_config.outcome_head = None
-        if head.lower() in ["segmentation"]:
-            train_config.states = None
-            train_config.state_map = None
-            train_config.loss.pop("segmentation", None)
-            train_config.loss_kw.pop("segmentation", None)
-            model_config.states = None
-            model_config.segmentation_head = None

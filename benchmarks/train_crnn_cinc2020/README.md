@@ -1,24 +1,23 @@
-# [PhysioNet/CinC Challenge 2020](https://moody-challenge.physionet.org/2020/)
+# CINC2020: ECG_CRNN benchmark
 
-Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
+Benchmark example for the [PhysioNet/Computing in Cardiology Challenge
+2020](https://physionetchallenges.org/2020/) (12-lead multi-label ECG
+classification).
 
-## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) searching `Challenge` sessions on this page)
+CINC2020's data is a **strict subset of CINC2021's** and the challenge
+is 12-lead only, so this benchmark is a thin variant of the
+[CINC2021 benchmark](../train_crnn_cinc2021): the model and the trainer
+machinery are imported from there; only the dataset (`CINC2020Dataset`)
+and the official metric (the 2020 challenge metric, without the 2021
+load-balancing multiplier) differ.
 
-- [prna](http://www.cinc.org/archives/2020/pdf/CinC2020-107.pdf):  Transformer (+ CNN + Manual (statitical) features)
-- [Between a ROC and a heart place](http://www.cinc.org/archives/2020/pdf/CinC2020-112.pdf):  Adaptive lead weighted ResNet
-- [HeartBeats](http://www.cinc.org/archives/2020/pdf/CinC2020-281.pdf):  SE-ResNet
-- [Triage](http://www.cinc.org/archives/2020/pdf/CinC2020-133.pdf):  ResNet and Scatter Transform
-- [Sharif AI Team](http://www.cinc.org/archives/2020/pdf/CinC2020-445.pdf): Branched CNN (each branch being VGG-like) and RNN
-- [DSAIL_SNU](http://www.cinc.org/archives/2020/pdf/CinC2020-328.pdf):  Bag of Tricks (data augmentation?) for Electrocardiogram Classification with DNN
-- [UMCUVA](http://www.cinc.org/archives/2020/pdf/CinC2020-253.pdf): Exponentially Dilated Causal CNN
-- [CQUPT_ECG](http://www.cinc.org/archives/2020/pdf/CinC2020-085.pdf):  Multi-scale SE-Net
-- [ECU](http://www.cinc.org/archives/2020/pdf/CinC2020-161.pdf):  CRNN + NAS
-- [PALab](http://www.cinc.org/archives/2020/pdf/CinC2020-035.pdf):  SE-ResNet
-- [BUTTeam](http://www.cinc.org/archives/2020/pdf/CinC2020-189.pdf):  CNN (modified resnet) With Global Skip Connections and Custom Loss Function
-- [SpaceOn Flattop](http://www.cinc.org/archives/2020/pdf/CinC2020-007.pdf):  Modified (how modified?) ResNet
-- [ISIBrno](http://www.cinc.org/archives/2020/pdf/CinC2020-032.pdf):  Residual CNN-GRU with Attention Mechanism
-- other teams:  Modified EfficientNet; Class Activation Map; Graph Convolutional Network (GCN); etc.
+## Usage
 
-Final rankings can be found [here](https://github.com/physionetchallenges/evaluation-2020/blob/master/Results/physionet_2020_official_scores.csv)
+Run from the repository root:
 
-## [original repository](https://github.com/DeepPSP/cinc2020)
+```bash
+python -m benchmarks.train_crnn_cinc2020.train --db-dir ~/data/cinc2020
+
+# quick end-to-end check (2 epochs, debug tranches)
+python -m benchmarks.train_crnn_cinc2020.train --db-dir <path> --smoke
+```

@@ -9,19 +9,24 @@ from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import torch
-from data_reader import CINC2016Reader, CINC2022Reader, CompositeReader, EPHNOGRAMReader
 from torch.utils.data import Dataset
 from tqdm.auto import tqdm
 from transformers import BatchFeature, Wav2Vec2Config, Wav2Vec2FeatureExtractor
 from transformers.models.wav2vec2.modeling_wav2vec2 import _compute_mask_indices, _sample_negative_indices
-from transformers.pytorch_utils import torch_int_div
 
 from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import stratified_train_test_split
 
+from ..data_reader import CINC2016Reader, CINC2022Reader, CompositeReader, EPHNOGRAMReader
 from .pretraining_cfg import PreTrainModelCfg
+
+
+def torch_int_div(a, b):
+    """integer division (floor), replacement of the helper removed from `transformers`"""
+    return torch.div(a, b, rounding_mode="floor")
+
 
 __all__ = [
     "DataCollatorForWav2Vec2Pretraining",

@@ -1,11 +1,13 @@
-""" """
+"""
+Configurations for the CPSC2020 benchmark (premature beat detection
+from long-term single-lead ECGs).
+"""
 
 from copy import deepcopy
 from itertools import repeat
 from pathlib import Path
 
 import numpy as np
-import pywt
 
 try:
     import torch_ecg  # noqa: F401
@@ -17,83 +19,26 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG, DEFAULTS
 
 __all__ = [
-    "BaseCfg",
-    "PreprocCfg",
-    "FeatureCfg",
-    "ModelCfg",
     "TrainCfg",
-    "PlotCfg",
+    "ModelCfg",
 ]
 
 
-_BASE_DIR = Path(__file__).parent.absolute()
+_BASE_DIR = Path(__file__).absolute().parent
 
 
 BaseCfg = CFG()
-BaseCfg.fs = 400  # Hz, CPSC2020 data fs
-BaseCfg.classes = ["N", "S", "V"]
-BaseCfg.class_map = {c: idx for idx, c in enumerate(BaseCfg.classes)}
 BaseCfg.db_dir = None
-
-BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # keep the same with `THR` in `CPSC202_score.py`
-BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
-BaseCfg.beat_winL = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
-BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
-
+BaseCfg.fs = 400  # Hz, CPSC2020 data fs
+BaseCfg.classes = ["N", "S", "V"]  # normal, supraventricular premature beat, premature ventricular contraction
+BaseCfg.class_map = {c: idx for idx, c in enumerate(BaseCfg.classes)}
+BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # keep the same with the official challenge scoring function
 BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 
-PreprocCfg = CFG()
-PreprocCfg.fs = BaseCfg.fs
-# sequential, keep correct ordering, to add "motion_artefact"
-PreprocCfg.preproc = [
-    "bandpass",
-]  # "baseline",
-# for 200 ms and 600 ms, ref. (`ecg_classification` in `reference`)
-PreprocCfg.baseline_window1 = int(0.2 * PreprocCfg.fs)  # 200 ms window
-PreprocCfg.baseline_window2 = int(0.6 * PreprocCfg.fs)  # 600 ms window
-PreprocCfg.filter_band = [0.5, 45]
-PreprocCfg.parallel_epoch_len = 600  # second
-PreprocCfg.parallel_epoch_overlap = 10  # second
-PreprocCfg.parallel_keep_tail = True
-PreprocCfg.rpeaks = "seq_lab"  # "xqrs"
-# or "gqrs", or "hamilton", "ssf", "christov", "engzee", "gamboa"
-# or empty string "" if not detecting rpeaks
-"""
-for qrs detectors:
-    `xqrs` sometimes detects s peak (valley) as r peak,
-    but according to Jeethan, `xqrs` has the best performance
-"""
-# least distance of an valid R peak to two ends of ECG signals
-PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
-
-
-# FeatureCfg only for ML models, deprecated
-FeatureCfg = CFG()
-FeatureCfg.fs = BaseCfg.fs
-FeatureCfg.features = [
-    "wavelet",
-    "rr",
-    "morph",
-]
-
-FeatureCfg.wt_family = "db1"
-FeatureCfg.wt_level = 3
-FeatureCfg.beat_winL = BaseCfg.beat_winL
-FeatureCfg.beat_winR = BaseCfg.beat_winR
-FeatureCfg.wt_feature_len = pywt.wavedecn_shapes(
-    shape=(1 + FeatureCfg.beat_winL + FeatureCfg.beat_winR,),
-    wavelet=FeatureCfg.wt_family,
-    level=FeatureCfg.wt_level,
-)[0][0]
-
-FeatureCfg.rr_local_range = 10  # 10 r peaks
-FeatureCfg.rr_global_range = 5 * 60 * FeatureCfg.fs  # 5min, units in number of points
-FeatureCfg.rr_normalize_radius = 30  # number of beats (rpeaks)
-
-FeatureCfg.morph_intervals = [[0, 45], [85, 95], [110, 120], [170, 200]]
-
-
+# two model families:
+# - "crnn": segment-level classification (N / S / V)
+# - "seq_lab": beat-level sequence labelling (S / V localization)
 ModelCfg = CFG()
 ModelCfg.fs = BaseCfg.fs
 ModelCfg.n_leads = 1
@@ -225,10 +170,6 @@ ModelCfg.crnn.rnn.linear.bias = True
 ModelCfg.crnn.rnn.linear.dropouts = 0.2
 ModelCfg.crnn.rnn.linear.activation = "mish"
 
-# ModelCfg.crnn.rnn.lstm = deepcopy(lstm)
-# ModelCfg.crnn.rnn.attention = deepcopy(attention)
-# ModelCfg.crnn.rnn.linear = deepcopy(linear)
-
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
 ModelCfg.crnn.global_pool = "max"  # "avg", "attentive"
@@ -244,13 +185,7 @@ ModelCfg.seq_lab.class_map = {c: v for c, v in BaseCfg.class_map.items() if c !=
 ModelCfg.seq_lab.cnn = ModelCfg.crnn.cnn.copy()
 
 ModelCfg.seq_lab.rnn = CFG()
-# ModelCfg.seq_lab.rnn.name = "lstm"  # "none"
 ModelCfg.seq_lab.rnn.name = "none"  # "lstm"
-# ModelCfg.seq_lab.rnn.lstm = CFG()
-# ModelCfg.seq_lab.rnn.lstm.hidden_sizes = [256, 256]
-# ModelCfg.seq_lab.rnn.lstm.bias = True
-# ModelCfg.seq_lab.rnn.lstm.dropout = 0
-# ModelCfg.seq_lab.rnn.lstm.bidirectional = True
 ModelCfg.seq_lab.attn = CFG()
 ModelCfg.seq_lab.attn.name = "se"  # "gc"
 ModelCfg.seq_lab.attn.se = CFG()
@@ -285,20 +220,20 @@ TrainCfg.bias_thr = BaseCfg.bias_thr
 
 TrainCfg.test_rec_num = 1
 
-TrainCfg.normalize_data = True
-
-# data augmentation
+# data augmentation (on the fly)
 TrainCfg.label_smoothing = 0.1
 TrainCfg.random_mask = int(TrainCfg.fs * 0.0)  # 1.0s, 0 for no masking
-TrainCfg.stretch_compress = 5  # stretch or compress in time axis, units in percentage (0 - inf)
+# NOTE: named `stretch_compress_ratio` (not `stretch_compress`) since the
+# augmentation here is done inside the dataset, not by the library
+# AugmenterManager (whose config keys collide with registered names)
+TrainCfg.stretch_compress_ratio = 5  # stretch or compress in time axis, units in percentage (0 - inf), offline
 TrainCfg.random_normalize = True  # (re-)normalize to random mean and std
 # valid segments has
 # median of mean appr. 0, mean of mean 0.038
 # median of std 0.13, mean of std 0.18
 TrainCfg.random_normalize_mean = [-0.05, 0.1]
 TrainCfg.random_normalize_std = [0.08, 0.32]
-TrainCfg.baseline_wander = True  # randomly shifting the baseline
-TrainCfg.bw = TrainCfg.baseline_wander  # alias
+TrainCfg.bw = True  # randomly shifting the baseline (done inside the dataset)
 TrainCfg.bw_fs = np.array([0.33, 0.1, 0.05, 0.01])
 TrainCfg.bw_ampl_ratio = np.array(
     [
@@ -321,22 +256,20 @@ TrainCfg.bw_gaussian = np.array(
     ]
 )
 TrainCfg.flip = [-1] + [1] * 4  # making the signal upside down, with probability 1/(1+4)
-# TODO: explore and add more data augmentations
 
 TrainCfg.seq_lab_reduction = 2**3  # TODO: automatic adjust via model config
 
 # configs of training epochs, batch, etc.
 TrainCfg.n_epochs = 300
 TrainCfg.batch_size = 128
-# TrainCfg.max_batches = 500500
 
 # configs of optimizers and lr_schedulers
-TrainCfg.train_optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
+TrainCfg.optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
 TrainCfg.momentum = 0.949  # default values for corresponding PyTorch optimizers
 TrainCfg.betas = (0.9, 0.999)  # default values for corresponding PyTorch optimizers
 TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 
-TrainCfg.learning_rate = 1e-3  # 1e-4
+TrainCfg.learning_rate = 1e-3
 TrainCfg.lr = TrainCfg.learning_rate
 
 TrainCfg.lr_scheduler = None  # "one_cycle", "plateau", "burn_in", "step", None
@@ -344,27 +277,22 @@ TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 TrainCfg.max_lr = 1e-2  # for "one_cycle" scheduler, to adjust via expriments
 
-TrainCfg.burn_in = 400
-TrainCfg.steps = [5000, 10000]
-
 TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 TrainCfg.early_stopping.patience = 6
 
 # model selection
-TrainCfg.model_name = "crnn"  # "seq_lab", "unet"
+TrainCfg.model_name = "crnn"  # "seq_lab"
 TrainCfg.classes = deepcopy(ModelCfg[TrainCfg.model_name].classes)
 TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 
 # configs of loss function
 TrainCfg.loss = "BCEWithLogitsLoss"
-# TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
-TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+TrainCfg.loss_kw = CFG()
+TrainCfg.flooding_level = 0.0  # flooding performed if positive
 
 TrainCfg.log_step = 20
-TrainCfg.eval_every = 20
 
-
-PlotCfg = CFG()
-PlotCfg.winL = 0.06  # second
-PlotCfg.winR = 0.08  # second
+# monitor for determining the best model:
+# "f_beta_measure" for the crnn model, "challenge_score" for the seq_lab model
+TrainCfg.monitor = "f_beta_measure"

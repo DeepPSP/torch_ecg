@@ -13,7 +13,7 @@ from tqdm.auto import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from cfg import BaseCfg  # noqa: E402
+from ..cfg import BaseCfg  # noqa: E402
 
 _URLS = {
     "summary": "https://moody-challenge.physionet.org/2022/results/summary.tsv",

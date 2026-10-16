@@ -60,7 +60,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
 
         Usage
         -----
-        >>> from cfg import ModelCfg
+        >>> from .cfg import ModelCfg
         >>> task = "qrs_detection"  # or "main"
         >>> model_cfg = deepcopy(ModelCfg[task])
         >>> model_cfg.model_name = "seq_lab"
@@ -237,7 +237,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             episode_len_thr=episode_len_thr,
         )
         return SequenceTaggingOutput(
-            classes=self.class_names,
+            classes=self.classes,
             prob=prob,
             pred=af_mask,
             af_episodes=af_episodes,
@@ -261,7 +261,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
 
         Usage
         -----
-        >>> from cfg import ModelCfg
+        >>> from .cfg import ModelCfg
         >>> task = "qrs_detection"  # or "main"
         >>> model_cfg = deepcopy(ModelCfg[task])
         >>> model_cfg.model_name = "unet"
@@ -460,7 +460,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
 
         Usage
         -----
-        >>> from cfg import ModelCfg
+        >>> from .cfg import ModelCfg
         >>> task = "qrs_detection"  # or "main"
         >>> model_cfg = deepcopy(ModelCfg[task])
         >>> model_cfg.model_name = "unet"
@@ -659,7 +659,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
 
         Usage
         -----
-        >>> from cfg import ModelCfg
+        >>> from .cfg import ModelCfg
         >>> task = "rr_lstm"
         >>> model_cfg = deepcopy(ModelCfg[task])
         >>> model_cfg.model_name = "rr_lstm"

@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from typing import Optional, Sequence
 
 import numpy as np
-from cfg import BaseCfg
 
 from torch_ecg.components.outputs import ClassificationOutput
+
+from .cfg import BaseCfg
 
 __all__ = [
     "CINC2023Outputs",

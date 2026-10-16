@@ -1,61 +1,84 @@
+# CPSC2020: premature beat detection benchmark
 
-# [CPSC2020](http://www.icbeb.org/CSPC2020)
+Benchmark example for the [3rd China Physiological Signal Challenge
+2020](http://www.icbeb.org/CSPC2020) — searching for premature
+ventricular contractions (PVC) and supraventricular premature beats
+(SPB) from long-term single-lead ECGs — built on the library: the
+reader and the official challenge score come from `torch_ecg`
+(`torch_ecg.databases.CPSC2020` and
+`torch_ecg.databases.cpsc_databases.cpsc2020.compute_metrics`);
+this folder keeps the challenge-specific dataset, models and metrics.
 
-Searching for Premature Ventricular Contraction and Supraventricular Premature Beat from Long-term ECGs: The 3rd China Physiological Signal Challenge 2020
+Two model families:
 
-## Update on 2020/12/31
+- `crnn` — segment-level classification (N / S / V), `ECG_CRNN` with
+  a multi-scopic CNN, evaluated by the official AUROC / AUPRC /
+  accuracy / F-measure / F-beta / G-beta measures;
+- `seq_lab` — beat-level sequence labelling (S / V localization),
+  `ECG_SEQ_LAB_NET`, evaluated by the official challenge score.
 
-Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.mat` in [this folder](sample_data/)) of a subject with frequent PVC.
+| file | content |
+|---|---|
+| `cfg.py` | training config + the two model configs (hand-tuned multi-scopic CNN) |
+| `dataset.py` | `CPSC2020` dataset: slices records into 10 s segments with overlap around premature beats, on-the-fly augmentations |
+| `model.py` | `ECG_CRNN_CPSC2020` and `ECG_SEQ_LAB_NET_CPSC2020` with SPB/PVC inference |
+| `metrics.py` | official classification metrics for the `crnn` branch |
+| `signal_processing/` | `ecg_denoise` helper used to drop flat / motion-artefact segments |
+| `trainer.py` | `CPSC2020Trainer` — `BaseTrainer` wired to the dataset, one branch per model family |
+| `train.py` | CLI entry |
 
-* r peak detections are done using [this function](https://github.com/DeepPSP/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33).
-* PVC beats are labeled using red vertical lines.
-* missed PVC beats are labeled using yellow boxes.
+## Usage
+
+Run from the repository root:
+
+```bash
+# segment-level classification model
+python -m benchmarks.train_hybrid_cpsc2020.train --db-dir ~/data/cpsc2020
+
+# beat-level sequence labelling model
+python -m benchmarks.train_hybrid_cpsc2020.train --db-dir ~/data/cpsc2020 --model-name seq_lab
+```
+
+`train.py` seeds everything through `torch_ecg.utils.seed_everything`
+and the trainer reseeds DataLoader workers via `worker_init_fn`, so a
+given `--seed` fully determines a run. On first use the records are
+sliced into segments offline (`CPSC2020.persistence()`, idempotent).
+
+## Notes from the original contest entry (2020)
+
+Tests on a 60s segment of a subject with frequent PVC (updated on
+2020/12/31):
+
+* PVC beats are labeled using red vertical lines; missed PVC beats
+  are labeled using yellow boxes.
+* the first image is the result by a modified version of machine
+  learning algorithms (XGBoost with RR features and wavelet features);
+* the second / third images are results of the sequence labelling
+  model with probability threshold 0.3 / 0.5, filtered by a
+  classifier.
+
 ![pred_ml](images/pred_ml.png)
 ![pred_dl_0.3](images/pred_dl_0.3_filtered.png)
 ![pred_dl_0.5](images/pred_dl_0.5_filtered.png)
-* the first image is the result by a <strong>modified version</strong> of machine learning algorithms from [this repo](https://github.com/mondejar/ecg-classification) using rr features and wavelet features, with post-processing using clinical rules. Note that [phase_one_legacy](phase_one_legacy/) is one such modified version, which uses XGBoost instead of SVM and without clinical post-processing.
-* the second image is the result of the sequence labeling deep learning model with probability threshold 0.3, and filtered by a deep learning classifier. The missed PVC beats are caused by this classifier.
-* the last image is the result of the sequence labeling deep learning model with probability threshold 0.5, and filtered by a deep learning classifier.
 
-### Observations
+Observations:
 
-* an effective and robust rpeak (qrs complex) detector is crucial.
-* the sequence labeling deep learning model (trained only for a dozen epochs because of the approaching deadline) tends to make false positive predictions but seldom has false negatives; while the deep learning classifier (trained only for several hundred epochs) has few false positives but has slightly higher probability to have false negatives.
-* given a good rpeak detector, machine learning models might well be competitive against deep learning models.
-* changing the threshold of the sequence labeling deep learning model from 0.5 to 0.3 can largely reduce the PVCerr score (punishment); further removing the post-filtering of the deep learning classifier might further reduce the scores, raising more false positives while reducing false negatives, considering that false negative has punishment 5 times as the punishment of false positives.
+* an effective and robust rpeak (qrs complex) detector is crucial;
+* the sequence labelling model tends to make false positive
+  predictions but seldom has false negatives; lowering its threshold
+  from 0.5 to 0.3 largely reduces the challenge penalty (false
+  negatives are punished 5 times as heavily as false positives);
+* given a good rpeak detector, machine learning models might well be
+  competitive against deep learning models.
 
 ## Evaluation result
 
-[Evaluation result](http://www.icbeb.org/CSPC2020) on the final full hidden test set
-
-not fully listed
+[Evaluation result](http://www.icbeb.org/CSPC2020) on the final full
+hidden test set (not fully listed)
 
 ![final_eval_img](images/CPSC2020_final_result.png)
 
 ## References
 
-[1] [ecg-classification](https://github.com/mondejar/ecg-classification)
-
-[2] [BioSPPy](https://github.com/PIA-Group/BioSPPy)
-
-[3] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
-
-[4] [torch_ecg](https://github.com/DeepPSP/torch_ecg)
-
-## TODO
-
-[1] more robust qrs detector (finished)
-
-[2] feature engineering (deprecated)
-
-[3] deep learning model structure design (ongoing)
-
-[4] use SNR to deal with (eliminate?) too noisy segments?
-
-[5] etc....
-
-## [original repository](https://github.com/DeepPSP/cpsc2020)
-
-## NOTE
-
-if you find [this function](https://github.com/DeepPSP/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33) useful, please cite Reference [3]
+1. [ecg-classification](https://github.com/mondejar/ecg-classification)
+2. [BioSPPy](https://github.com/PIA-Group/BioSPPy)

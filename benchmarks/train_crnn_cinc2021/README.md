@@ -1,64 +1,34 @@
-# [PhysioNet/CinC Challenge 2021](https://moody-challenge.physionet.org/2021/)
+# CINC2021: ECG_CRNN benchmark
 
-Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021
+Benchmark example for the [PhysioNet/Computing in Cardiology Challenge
+2021](https://physionetchallenges.org/2021/) (multi-label ECG
+classification over the five Challenge lead sets), built directly on
+the library: the reader, dataset, trainer machinery, backbones and
+challenge metric all come from `torch_ecg`; this folder only contains
+what is specific to the challenge.
 
-![docker-ci](https://github.com/DeepPSP/cinc2021/actions/workflows/docker-image.yml/badge.svg)
+| file | content |
+|---|---|
+| `cfg.py` | training config + per-lead-set model configs (systematically generated from the lead count) |
+| `model.py` | `ECG_CRNN_CINC2021` — `ECG_CRNN` with the challenge's NSR-fallback inference rule |
+| `trainer.py` | `CINC2021Trainer` — `BaseTrainer` wired to `CINC2021Dataset` and the official challenge metric |
+| `train.py` | CLI entry |
 
-## Digest of Top Solutions (ranked by [final challenge score](https://docs.google.com/spreadsheets/d/1cTLRmSLS1_TOwx-XnY-QVoUyO2rFyPUGTHRzNm3u8EM/edit?usp=sharing))
+## Usage
 
-1. [ISIBrno-AIMT](https://www.cinc.org/2021/Program/accepted/14_Preprint.pdf): Custom ResNet + MultiHeadAttention + Custom Loss
-2. [DSAIL_SNU](https://www.cinc.org/2021/Program/accepted/80_Preprint.pdf): SE-ResNet + Custom Loss (from Asymmetric Loss)
-3. [NIMA](https://www.cinc.org/2021/Program/accepted/352_Preprint.pdf): Time-Freq Domain + Custom CNN
-4. [cardiochallenger](https://www.cinc.org/2021/Program/accepted/234_Preprint.pdf): Inception-ResNet + Channel Self-Attention + Custom Loss
-5. [USST_Med](https://www.cinc.org/2021/Program/accepted/105_Preprint.pdf): SE-ResNet + Focal Loss + Data Re-labeling Model
-6. [CeZIS](https://www.cinc.org/2021/Program/accepted/78_Preprint.pdf): ResNet50 + FlowMixup
-7. [SMS+1](https://www.cinc.org/2021/Program/accepted/24_Preprint.pdf): Custom CNN + Hand-crafted Features + Asymmetric Loss
-8. [DataLA_NUS](https://www.cinc.org/2021/Program/accepted/122_Preprint.pdf): EfficientNet + SE-ResNet + Custom Loss
+Run from the repository root:
 
-Other teams that are not among official entries, but among [unofficial entries](https://docs.google.com/spreadsheets/d/1iMKPXDvqfyQlwhsd4N6CjKZccikhsIkSDygLEsICqsw/edit?usp=sharing):
+```bash
+# 12-lead model on the real database
+python -m benchmarks.train_crnn_cinc2021.train --db-dir ~/data/cinc2021 --lead-set twelve_leads
 
-1. [HeartBeats](https://www.cinc.org/2021/Program/accepted/63_Preprint.pdf): SE-ResNet + Sign Loss + Model Ensemble
-
-`Aizip-ECG-team` and `Proton` had high score on the hidden test set, but [did not submitted papers](https://docs.google.com/spreadsheets/d/1sSKA9jMp8oT2VqyX4CTirIT3m5lSohIuk5GWf-Cq8FU/edit?usp=sharing), hence not described here.
-
-## Conference Website and Conference Programme
-
-[Website](http://www.cinc2021.org/), [Programme](https://cinc.org/archives/2021/), [IEEE Xplore](https://ieeexplore.ieee.org/xpl/conhome/9662654/proceeding), [Poster](images/CinC2021_poster.pdf)
-
-## Data Preparation
-
-One can download training data from [GCP](https://console.cloud.google.com/storage/browser/physionetchallenge2021-public-datasets),
-and use `python prepare_dataset -i {data_directory} -v` to prepare the data for training
-
-## Deep Models
-
-Deep learning models are constructed using [torch_ecg](https://github.com/DeepPSP/torch_ecg), which has already been added as a submodule.
-
-## Final Results
-
-Final results are on the [leaderboard page of the challenge official website](https://physionetchallenges.org/2021/leaderboard/) or one can find in the [offical_results folder](official_results/).
-
-## Citation
-
-```latex
-@inproceedings{wen_cinc2021,
-      title = {{Hybrid Arrhythmia Detection on Varying-Dimensional Electrocardiography: Combining Deep Neural Networks and Clinical Rules}},
-     author = {Hao Wen and Jingsu Kang},
-  booktitle = {{2021 Computing in Cardiology (CinC)}},
-        doi = {10.23919/cinc53138.2021.9662801},
-       year = {2021},
-      month = {9},
-  publisher = {{IEEE}},
-}
-@article{Kang_2022_cinc2021_iop,
-     author = {Jingsu Kang and Hao Wen},
-      title = {{A Study on Several Critical Problems on Arrhythmia Detection using Varying-Dimensional Electrocardiography}},
-    journal = {Physiological Measurement},
-        doi = {10.1088/1361-6579/ac6aa3},
-       year = {2022},
-      month = {4},
-  publisher = {{IOP} Publishing}
-}
+# quick end-to-end check over all five lead sets (2 epochs, debug tranches)
+python -m benchmarks.train_crnn_cinc2021.train --db-dir <path> --lead-set all --smoke
 ```
 
-## [Original Repository](https://github.com/DeepPSP/cinc2021)
+`train.py` seeds everything through `torch_ecg.utils.seed_everything`
+and the trainer reseeds DataLoader workers via `worker_init_fn`, so a
+given `--seed` fully determines a run.
+
+The historical contest artifacts (original entry results in `results/`
+and the figures in `images/`) are kept for reference.

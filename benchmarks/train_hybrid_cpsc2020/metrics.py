@@ -1,190 +1,20 @@
-""" """
+"""
+Metrics for the classification branch of the CPSC2020 benchmark.
 
-from typing import List, Sequence, Tuple, Union
+`eval_score` computes the official challenge metrics (AUROC, AUPRC,
+accuracy, F-measure, F-beta and G-beta measures) for segment-level
+classification. The official event-level (SPB/PVC) challenge score for
+the sequence-labelling branch ships in the library:
+``torch_ecg.databases.cpsc_databases.cpsc2020.compute_metrics``.
+"""
+
+from typing import List, Sequence, Tuple
 
 import numpy as np
-from cfg import BaseCfg
-
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.misc import dict_to_str
 
 __all__ = [
-    "CPSC2020_loss",
-    "CPSC2020_score",
     "eval_score",
 ]
-
-
-def CPSC2020_loss(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
-    y_indices: np.ndarray,
-    dtype: type = str,
-    verbose: int = 0,
-) -> int:
-    """finished, updated with the latest (updated on 2020.8.31) official function
-
-    Parameters
-    ----------
-    y_true: ndarray,
-        array of ground truth of beat types
-    y_true: ndarray,
-        array of predictions of beat types
-    y_indices: ndarray,
-        indices of beat (rpeak) in the original ecg signal
-    dtype: type, default str,
-        dtype of `y_true` and `y_pred`
-
-    Returns
-    -------
-    total_loss: int,
-        the total loss of all ectopic beat types (SPB, PVC)
-    """
-    classes = ["S", "V"]
-
-    truth_arr = {}
-    pred_arr = {}
-    if dtype == str:
-        for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true == c)[0]]
-            pred_arr[c] = y_indices[np.where(y_pred == c)[0]]
-    elif dtype == int:
-        for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true == BaseCfg.class_map[c])[0]]
-            pred_arr[c] = y_indices[np.where(y_pred == BaseCfg.class_map[c])[0]]
-
-    true_positive = {c: 0 for c in classes}
-
-    for c in classes:
-        for tc in truth_arr[c]:
-            pc = np.where(abs(pred_arr[c] - tc) <= BaseCfg.bias_thr)[0]
-            if pc.size > 0:
-                true_positive[c] += 1
-
-    false_positive = {c: len(pred_arr[c]) - true_positive[c] for c in classes}
-    false_negative = {c: len(truth_arr[c]) - true_positive[c] for c in classes}
-
-    false_positive_loss = {c: 1 for c in classes}
-    false_negative_loss = {c: 5 for c in classes}
-
-    if verbose >= 1:
-        print(f"true_positive = {dict_to_str(true_positive)}")
-        print(f"false_positive = {dict_to_str(false_positive)}")
-        print(f"false_negative = {dict_to_str(false_negative)}")
-
-    total_loss = sum([false_positive[c] * false_positive_loss[c] + false_negative[c] * false_negative_loss[c] for c in classes])
-
-    return total_loss
-
-
-def CPSC2020_score(
-    spb_true: List[np.ndarray],
-    pvc_true: List[np.ndarray],
-    spb_pred: List[np.ndarray],
-    pvc_pred: List[np.ndarray],
-    verbose: int = 0,
-) -> Union[Tuple[int], dict]:
-    """
-
-    Score Function for all (test) records
-
-    Parameters
-    ----------
-    spb_true, pvc_true, spb_pred, pvc_pred: list of ndarray,
-    verbose: int
-
-    Returns
-    -------
-    retval: tuple or dict,
-        tuple of (negative) scores for each ectopic beat type (SPB, PVC), or
-        dict of more scoring details, including
-        - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
-        - true_positive: number of true positives of each ectopic beat type
-        - false_positive: number of false positives of each ectopic beat type
-        - false_negative: number of false negatives of each ectopic beat type
-    """
-    s_score = np.zeros(
-        [
-            len(spb_true),
-        ],
-        dtype=int,
-    )
-    v_score = np.zeros(
-        [
-            len(spb_true),
-        ],
-        dtype=int,
-    )
-    true_positive = CFG({"S": 0, "V": 0})
-    false_positive = CFG({"S": 0, "V": 0})
-    false_negative = CFG({"S": 0, "V": 0})
-    # Scoring
-    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(spb_true, pvc_true, spb_pred, pvc_pred)):
-        s_tp = 0
-        s_fp = 0
-        s_fn = 0
-        v_tp = 0
-        v_fp = 0
-        v_fn = 0
-        # SPB
-        if s_ref.size == 0:
-            s_fp = len(s_pos)
-        else:
-            for m, ans in enumerate(s_ref):
-                s_pos_cand = np.where(abs(s_pos - ans) <= BaseCfg.bias_thr)[0]
-                if s_pos_cand.size == 0:
-                    s_fn += 1
-                else:
-                    s_tp += 1
-                    s_fp += len(s_pos_cand) - 1
-        # PVC
-        if v_ref.size == 0:
-            v_fp = len(v_pos)
-        else:
-            for m, ans in enumerate(v_ref):
-                v_pos_cand = np.where(abs(v_pos - ans) <= BaseCfg.bias_thr)[0]
-                if v_pos_cand.size == 0:
-                    v_fn += 1
-                else:
-                    v_tp += 1
-                    v_fp += len(v_pos_cand) - 1
-        # calculate the score
-        s_score[i] = s_fp * (-1) + s_fn * (-5)
-        v_score[i] = v_fp * (-1) + v_fn * (-5)
-
-        if verbose >= 3:
-            print(f"for the {i}-th record")
-            print(f"s_tp = {s_tp}, s_fp = {s_fp}, s_fn = {s_fn}")
-            print(f"v_tp = {v_tp}, v_fp = {v_fp}, v_fn = {v_fn}")
-            print(f"s_score[{i}] = {s_score[i]}, v_score[{i}] = {v_score[i]}")
-
-        true_positive.S += s_tp
-        true_positive.V += v_tp
-        false_positive.S += s_fp
-        false_positive.V += v_fp
-        false_negative.S += s_fn
-        false_negative.V += v_fn
-
-    Score1 = np.sum(s_score)
-    Score2 = np.sum(v_score)
-
-    if verbose >= 1:
-        retval = CFG(
-            total_loss=-(Score1 + Score2),
-            class_loss={"S": -Score1, "V": -Score2},
-            true_positive=true_positive,
-            false_positive=false_positive,
-            false_negative=false_negative,
-        )
-    else:
-        retval = Score1, Score2
-
-    return retval
-
-
-# -------------------------------------------------------
-# the following are borrowed from CINC2020
-# for classification of segments of ECGs using ECG_CRNN
 
 
 def eval_score(classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence) -> Tuple[float]:

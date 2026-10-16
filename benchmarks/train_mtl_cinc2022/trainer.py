@@ -1,35 +1,25 @@
 """ """
 
-import argparse
-import os
-import sys
 import textwrap
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-from cfg import BaseCfg, ModelCfg, TrainCfg
-from dataset import CinC2022Dataset
-from models import CRNN_CINC2022, SEQ_LAB_NET_CINC2022, UNET_CINC2022, HFWav2Vec2_CINC2022, Wav2Vec2_CINC2022  # noqa: F401
 from torch import nn
-from torch.nn.parallel import DataParallel as DP
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader, Dataset
 from tqdm.auto import tqdm
-from utils.augmentations import AugmenterManager
-from utils.scoring_metrics import compute_challenge_metrics  # noqa: F401
 
-from torch_ecg.cfg import CFG
 from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.models.loss import AsymmetricLoss, BCEWithLogitsWithClassWeightLoss, FocalLoss, MaskedBCEWithLogitsLoss
-from torch_ecg.utils.misc import str2bool
+from torch_ecg.utils import worker_init_fn
 from torch_ecg.utils.utils_data import mask_to_intervals  # noqa: F401
 from torch_ecg.utils.utils_nn import default_collate_fn
 
-if BaseCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-
+from .cfg import BaseCfg, ModelCfg, TrainCfg  # noqa: F401
+from .dataset import CinC2022Dataset
+from .models import CRNN_CINC2022, SEQ_LAB_NET_CINC2022, UNET_CINC2022, HFWav2Vec2_CINC2022, Wav2Vec2_CINC2022  # noqa: F401
+from .utils.augmentations import AugmenterManager
+from .utils.scoring_metrics import compute_challenge_metrics  # noqa: F401
 
 __all__ = [
     "CINC2022Trainer",
@@ -128,11 +118,7 @@ class CINC2022Trainer(BaseTrainer):
                 lazy=False,
             )
 
-        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-        if self.device == torch.device("cpu"):
-            num_workers = 1
-        else:
-            num_workers = 4
+        num_workers = self.train_config.get("num_workers", 4 if torch.cuda.is_available() else 0)
 
         self.train_loader = DataLoader(
             dataset=train_dataset,
@@ -142,6 +128,7 @@ class CINC2022Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
         if self.train_config.debug:
@@ -153,6 +140,7 @@ class CINC2022Trainer(BaseTrainer):
                 pin_memory=True,
                 drop_last=False,
                 collate_fn=collate_fn,
+                worker_init_fn=worker_init_fn if num_workers > 0 else None,
             )
         else:
             self.val_train_loader = None
@@ -164,6 +152,7 @@ class CINC2022Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
     def _setup_augmenter_manager(self) -> None:
@@ -486,128 +475,3 @@ def collate_fn(
         return {k: collated[i] for i, k in enumerate(keys)}
     else:
         return default_collate_fn(batch)
-
-
-def get_args(**kwargs: Any):
-    """NOT checked,"""
-    cfg = deepcopy(kwargs)
-    parser = argparse.ArgumentParser(
-        description="Train the Model on CINC2022 database",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "-b",
-        "--batch-size",
-        type=int,
-        default=64,
-        help="the batch size for training",
-        dest="batch_size",
-    )
-    # parser.add_argument(
-    #     "-c", "--cnn-name",
-    #     type=str, default="multi_scopic_leadwise",
-    #     help="choice of cnn feature extractor",
-    #     dest="cnn_name")
-    # parser.add_argument(
-    #     "-r", "--rnn-name",
-    #     type=str, default="none",
-    #     help="choice of rnn structures",
-    #     dest="rnn_name")
-    # parser.add_argument(
-    #     "-a", "--attn-name",
-    #     type=str, default="se",
-    #     help="choice of attention structures",
-    #     dest="attn_name")
-    parser.add_argument(
-        "--keep-checkpoint-max",
-        type=int,
-        default=10,
-        help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max",
-    )
-    # parser.add_argument(
-    #     "--optimizer", type=str, default="adam",
-    #     help="training optimizer",
-    #     dest="train_optimizer")
-    parser.add_argument(
-        "--debug",
-        type=str2bool,
-        default=False,
-        help="train with more debugging information",
-        dest="debug",
-    )
-
-    args = vars(parser.parse_args())
-
-    cfg.update(args)
-
-    return CFG(cfg)
-
-
-_MODEL_MAP = {
-    "wav2vec2": Wav2Vec2_CINC2022,
-    "wav2vec2_hf": HFWav2Vec2_CINC2022,
-    "crnn": CRNN_CINC2022,
-    "seq_lab": SEQ_LAB_NET_CINC2022,
-    "unet": UNET_CINC2022,
-}
-
-
-def _set_task(task: str, config: CFG) -> None:
-    """"""
-    assert task in config.tasks
-    config.task = task
-    for item in [
-        "classes",
-        "monitor",
-        "final_model_name",
-        "loss",
-    ]:
-        config[item] = config[task][item]
-
-
-if __name__ == "__main__":
-    # WARNING: most training were done in notebook,
-    # NOT in cli
-    train_config = get_args(**TrainCfg)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # TODO: adjust for CINC2022
-    for task in train_config.tasks:
-        _set_task(task, train_config)
-        model_config = deepcopy(ModelCfg[task])
-        model_config = deepcopy(ModelCfg[task])
-
-        # adjust model choices if needed
-        model_name = model_config.model_name = train_config[task].model_name
-        if "cnn" in model_config[model_name]:
-            model_config[model_name].cnn.name = train_config[task].cnn_name
-        if "rnn" in model_config[model_name]:
-            model_config[model_name].rnn.name = train_config[task].rnn_name
-        if "attn" in model_config[model_name]:
-            model_config[model_name].attn.name = train_config[task].attn_name
-
-        model_cls = _MODEL_MAP[train_config[task].model_name]
-        model_cls.__DEBUG__ = False
-        model = model_cls(config=model_config)
-
-        if torch.cuda.device_count() > 1:
-            model = DP(model)
-            # model = DDP(model)
-        model.to(device=device)
-
-        trainer = CINC2022Trainer(
-            model=model,
-            model_config=model_config,
-            train_config=train_config,
-            device=device,
-            lazy=False,
-        )
-
-        try:
-            best_model_state_dict = trainer.train()
-        except KeyboardInterrupt:
-            try:
-                sys.exit(0)
-            except SystemExit:
-                os._exit(0)

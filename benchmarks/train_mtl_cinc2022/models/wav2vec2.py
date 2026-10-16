@@ -7,16 +7,11 @@ from typing import Any, Dict, Optional, Tuple, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from cfg import ModelCfg
 from einops.layers.torch import Rearrange
-from outputs import CINC2022Outputs
 from torch import Tensor
 from transformers import Wav2Vec2Model as HFWav2Vec2Model
 from transformers import Wav2Vec2PreTrainedModel as HFWav2Vec2PreTrainedModel
 from transformers.models.wav2vec2.modeling_wav2vec2 import _HIDDEN_STATES_START_POSITION as _HF_HIDDEN_STATES_START_POSITION
-from wav2vec2_hf import PreTrainModelCfg as HFPreTrainModelCfg
-from wav2vec2_ta import Wav2Vec2Model
-from wav2vec2_ta import components as w2v2_components
 
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import ClassificationOutput, SequenceLabellingOutput
@@ -27,6 +22,11 @@ from torch_ecg.models.cnn.resnet import ResNet
 from torch_ecg.models.cnn.vgg import VGG16
 from torch_ecg.utils import CkptMixin, SizeMixin, add_docstring
 
+from ..cfg import ModelCfg
+from ..outputs import CINC2022Outputs
+from ..wav2vec2_hf import PreTrainModelCfg as HFPreTrainModelCfg
+from ..wav2vec2_ta import Wav2Vec2Model
+from ..wav2vec2_ta import components as w2v2_components
 from .heads import MultiTaskHead
 
 __all__ = [
