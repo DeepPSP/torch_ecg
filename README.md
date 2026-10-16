@@ -193,7 +193,7 @@ After migration, all should be tested again, the progression:
 | CPSC2021      | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: |
 | SPH           | [Figshare](https://doi.org/10.6084/m9.figshare.c.5779802.v1)     | :heavy_check_mark: |
 
-NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021).
+NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the `CPSC2021Dataset` in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021).
 
 One can use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets) as follows
 
@@ -414,23 +414,24 @@ This is a collection of traditional (non deep learning) algorithms for R peaks d
 
 See case studies in the [benchmarks folder](benchmarks/).
 
-a large part of the case studies are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
+all benchmarks are rewritten as polished usage examples on the modern `torch_ecg` APIs (library datasets / readers / metrics, `seed_everything` + `worker_init_fn`, `python -m benchmarks.train_*.train` CLIs)
 
-| Benchmark                                      | Architecture              | Source                                                  | Finished           | Updated            | Tested             |
-| ---------------------------------------------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| [CinC2020](benchmarks/train_crnn_cinc2020/)    | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CinC2021](benchmarks/train_crnn_cinc2021/)    | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CinC2022](benchmarks/train_mtl_cinc2022/)[^1] | Multi Task Learning (MTL) | [DeepPSP/cinc2022](https://github.com/DeepPSP/cinc2022) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CPSC2019](benchmarks/train_multi_cpsc2019/)   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CPSC2020](benchmarks/train_hybrid_cpsc2020/)  | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
-| [CPSC2021](benchmarks/train_hybrid_cpsc2021/)  | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [LUDB](benchmarks/train_unet_ludb/)            | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Benchmark                                      | Architecture              | Contest entry                                          | Smoke-tested        |
+| ---------------------------------------------- | ------------------------- | ------------------------------------------------------ | ------------------- |
+| [CinC2020](benchmarks/train_crnn_cinc2020/)    | CRNN                      | thin variant of the CINC2021 benchmark                 | :heavy_check_mark: |
+| [CinC2021](benchmarks/train_crnn_cinc2021/)    | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: |
+| [CinC2022](benchmarks/train_mtl_cinc2022/)[^1] | Multi Task Learning (MTL) | [DeepPSP/cinc2022](https://github.com/DeepPSP/cinc2022) | :heavy_check_mark: |
+| [CPSC2019](benchmarks/train_multi_cpsc2019/)   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: |
+| [CPSC2020](benchmarks/train_hybrid_cpsc2020/)  | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: |
+| [CPSC2021](benchmarks/train_hybrid_cpsc2021/)  | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: |
+| [CinC2023](benchmarks/train_crnn_cinc2023/)    | CRNN                      | [DeepPSP/cinc2023](https://github.com/wenh06/cinc2023) | :heavy_check_mark: |
+| [LUDB](benchmarks/train_unet_ludb/)            | U-Net                     | NA                                                      | :heavy_check_mark: |
 
 [^1]: Although `CinC2022` dealt with acoustic cardiac signals (phonocardiogram, PCG), the tasks and signals can be treated similarly.
 
 Taking [CPSC2021](benchmarks/train_hybrid_cpsc2021) for example, the steps are
 
-1. Write a [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. Or directly use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets). In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
+1. Write a `Dataset` to fit the training data for the model(s) and the training workflow, or directly use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets) (the example uses the built-in `CPSC2021Dataset`). 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
 
     ```python
     def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
