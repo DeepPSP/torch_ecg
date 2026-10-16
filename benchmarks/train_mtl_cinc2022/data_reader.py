@@ -232,7 +232,7 @@ class PCGDataBase(PhysioNetDataBase):
         print("DO NOT USE THIS FUNCTION for a PCG database!")
 
     @abstractmethod
-    def play(self, rec: str, **kwargs) -> IPython.display.Audio:
+    def play(self, rec: str, **kwargs) -> "IPython.display.Audio":
         """ """
         raise NotImplementedError
 
@@ -1010,7 +1010,7 @@ class CINC2022Reader(PCGDataBase):
             "Diastolic murmur quality",
         ]
 
-    def play(self, rec: Union[str, int], **kwargs) -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], **kwargs) -> "IPython.display.Audio":
         """
         play the record `rec` in a Juptyer Notebook
 
@@ -1381,7 +1381,7 @@ class CINC2016Reader(PCGDataBase):
         """
         return wfdb.rdheader(self.get_absolute_path(rec)).comments[0]
 
-    def play(self, rec: Union[str, int], **kwargs) -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], **kwargs) -> "IPython.display.Audio":
         """ """
         audio_file = self.get_absolute_path(rec, self.data_ext)
         return IPython.display.Audio(filename=str(audio_file))
@@ -1672,7 +1672,7 @@ class EPHNOGRAMReader(PCGDataBase):
         """
         raise NotImplementedError("No annotation for this database")
 
-    def play(self, rec: Union[str, int], channel: str = "PCG") -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], channel: str = "PCG") -> "IPython.display.Audio":
         """ """
         data = self.load_data(rec, channels=channel)[0]
         return IPython.display.Audio(data=data, rate=8000)

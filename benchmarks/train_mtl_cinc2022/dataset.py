@@ -15,9 +15,8 @@ from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import ensure_siglen, stratified_train_test_split
 
-from .cfg import BaseCfg, ModelCfg, TrainCfg  # noqa: F401
+from .cfg import BaseCfg, TrainCfg
 from .data_reader import CINC2022Reader, PCGDataBase
-from .inputs import InputConfig, MelSpectrogramInput, MFCCInput, SpectralInput, SpectrogramInput, WaveformInput  # noqa: F401
 
 __all__ = [
     "CinC2022Dataset",
