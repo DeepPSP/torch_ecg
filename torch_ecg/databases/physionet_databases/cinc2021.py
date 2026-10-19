@@ -541,13 +541,18 @@ class CINC2021(PhysioNetDataBase):
                 _stats_to_save[k] = _stats_to_save[k].apply(lambda lst: list_sep.join(lst))
             _stats_to_save.to_csv(stats_file_fp, index=False)
             self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
-        else:
+        elif all(k in self._stats.columns for k in ["diagnosis", "diagnosis_scored"]):
             self.logger.info("converting dtypes of columns `diagnosis` and `diagnosis_scored`...")
             for k in [
                 "diagnosis",
                 "diagnosis_scored",
             ]:
                 self._stats[k] = self._stats[k].apply(lambda row: list(filter(lambda v: len(v) > 0, row.split(list_sep))))
+        else:
+            # no cached stats file (or incomplete columns) and fast=True:
+            # keep the empty stats as-is, exactly as the previous no-op did;
+            # call `_aggregate_stats(fast=False)` to build the stats from scratch
+            self.logger.debug("no cached stats found, `df_stats` stays empty")
 
     @property
     def all_records(self) -> Dict[str, List[str]]:
