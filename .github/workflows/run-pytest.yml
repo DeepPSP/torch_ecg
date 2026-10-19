@@ -130,6 +130,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
+        # PyTorch ships wheels one CPython release behind: a freshly
+        # released Python may have no cp<XY> torch wheel on PyPI yet
+        # (2026-10: latest torch 2.14.1 ships cp310-cp314 only, so the
+        # 3.15 lane cannot run yet).  Skip such lanes with a visible
+        # notice instead of failing every PR; the lane lights up by
+        # itself once the wheels appear.
+        torch_check() { python -m pip index versions torch > /dev/null 2>&1; }
+        if ! torch_check && ! torch_check; then
+          echo "::notice title=torch unavailable on Python ${{ matrix.python-version }}::No torch wheel for this Python version on PyPI yet; skipping this lane until PyTorch publishes one."
+          echo "TORCH_SKIP=true" >> "$GITHUB_ENV"
+          exit 0
+        fi
         python -m pip install -r requirements.txt
         python -m pip install pytest pytest-xdist pytest-cov # Testing packages
         python -m pip uninstall torch-ecg --yes # Remove if already installed
@@ -174,6 +186,7 @@ jobs:
       #   rm -rf ~/tmp/nsrr-data/
       #   cd ~/tmp/ && du -sh $(ls -A)
     - name: Run test with pytest and collect coverage
+      if: ${{ env.TORCH_SKIP != 'true' }}
       run: |
         echo "SHHS_DATA_AVAILABLE at test step: $SHHS_DATA_AVAILABLE"
         echo "SUITE at test step: $SUITE"
@@ -193,7 +206,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }} # required
         flags: ${{ env.SUITE }}
     - name: Upload test results to Codecov
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && env.TORCH_SKIP != 'true' }}
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
