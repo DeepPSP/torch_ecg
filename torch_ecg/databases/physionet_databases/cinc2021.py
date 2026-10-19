@@ -499,7 +499,11 @@ class CINC2021(PhysioNetDataBase):
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                self._stats[k] = ""  # otherwise cells in the first row would be str instead of list
+                # initialize with empty lists, so that the column has object
+                # dtype from the start (a str-initialized column would break
+                # under pandas' Arrow-backed (inferred) string dtype when list
+                # values are assigned into it)
+                self._stats[k] = [[] for _ in range(len(self._stats))]
             with tqdm(
                 self._stats.iterrows(),
                 total=len(self._stats),
@@ -543,8 +547,7 @@ class CINC2021(PhysioNetDataBase):
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                for idx, row in self._stats.iterrows():
-                    self._stats.at[idx, k] = list(filter(lambda v: len(v) > 0, row[k].split(list_sep)))
+                self._stats[k] = self._stats[k].apply(lambda row: list(filter(lambda v: len(v) > 0, row.split(list_sep))))
 
     @property
     def all_records(self) -> Dict[str, List[str]]:
