@@ -5,9 +5,7 @@ from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
-from cfg import ModelCfg
 from einops import rearrange
-from outputs import CINC2022Outputs
 from torch import Tensor
 
 from torch_ecg.cfg import CFG
@@ -15,6 +13,8 @@ from torch_ecg.components.outputs import ClassificationOutput, SequenceLabelling
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.utils import add_docstring
 
+from ..cfg import ModelCfg
+from ..outputs import CINC2022Outputs
 from .heads import MultiTaskHead
 
 __all__ = ["CRNN_CINC2022"]

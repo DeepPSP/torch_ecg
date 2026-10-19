@@ -1,54 +1,71 @@
-# CinC2022
+# CinC2022: heart murmur detection benchmark (MTL)
 
-![docker-ci](https://github.com/wenh06/cinc2022/actions/workflows/docker-image.yml/badge.svg?branch=docker-ci)
-![format-check](https://github.com/wenh06/cinc2022/actions/workflows/check-formatting.yml/badge.svg)
+Benchmark example for the [George B. Moody PhysioNet Challenge
+2022](https://physionetchallenges.org/2022/) — heart murmur detection
+from phonocardiogram (PCG) recordings of the Circulatory Sounds
+database — built on the library: the CRNN / sequence-labelling /
+U-Net backbones, trainer machinery and output containers come from
+`torch_ecg`; this folder keeps the challenge-specific data reader,
+dataset, audio inputs and augmentations (torch_audiomentations), the
+multi-task heads, the official challenge metrics, and two wav2vec2
+pretraining subprojects for PCG.
 
-Heart Murmur Detection from Phonocardiogram Recordings: The George B. Moody PhysioNet Challenge 2022
+Three training tasks:
 
-<!-- toc -->
+- `classification` — murmur classification (with an optional clinical
+  outcome head), CRNN or wav2vec2 backbones;
+- `segmentation` — heart-state sequence segmentation (S1, systole,
+  S2, diastole), sequence labelling or U-Net;
+- `multi_task` — the CRNN with murmur, outcome and segmentation heads
+  trained jointly.
 
-- [Knowledge about Heart Murmur](#knowledge)
-- [The Conference](#the-conference)
-  - [Conference Paper](#conference-paper)
-  - [Conference Poster](#conference-poster)
-- [Final Scores](#final-scores)
-- [Top Team Papers](#top-team-papers)
-- [Official Phase Leaderboards](#official-phase-leaderboards)
-- [Miscellaneous](#miscellaneous)
+| file / folder | content |
+|---|---|
+| `cfg.py`, `cfg_models.py` | training config + per-task model configs |
+| `data_reader.py` | Circulatory Sounds reader (records, metadata, download) |
+| `dataset.py` | `CinC2022Dataset` with on-the-fly preprocessing and augmentations |
+| `inputs.py` | input configurations (waveform / spectrogram / mel / MFCC) |
+| `models/` | `CRNN_CINC2022` (+ heads), `SEQ_LAB_NET_CINC2022`, `UNET_CINC2022`, `Wav2Vec2_CINC2022` (two implementations) |
+| `outputs.py` | `CINC2022Outputs` — murmur / outcome / segmentation output container |
+| `trainer.py` | `CINC2022Trainer` — `BaseTrainer` wired to the dataset and the official challenge metrics |
+| `train.py` | CLI entry |
+| `utils/` | challenge metrics (`scoring_metrics`), audio augmentations, Springer PCG features, plotting, murmur knowledge base |
+| `wav2vec2_hf/`, `wav2vec2_ta/` | wav2vec2 pretraining on PCG (HuggingFace and torch-audio implementations) |
 
-<!-- tocstop -->
+## Usage
 
-## <a name="knowledge"></a> Knowledge about Heart Murmur
+Run from the repository root:
 
-[utils/HeartMurmur.md](utils/HeartMurmur.md) contains knowledge about heart murmur collected from various sources.
+```bash
+# murmur classification task
+python -m benchmarks.train_mtl_cinc2022.train --db-dir ~/data/circulatory-sounds --task classification
+
+# heart-state segmentation, with the U-Net model
+python -m benchmarks.train_mtl_cinc2022.train --db-dir ~/data/circulatory-sounds --task segmentation --model-name unet
+
+# the multi-task model (all heads)
+python -m benchmarks.train_mtl_cinc2022.train --db-dir ~/data/circulatory-sounds --task multi_task
+```
+
+`train.py` seeds everything through `torch_ecg.utils.seed_everything`
+and the trainer reseeds DataLoader workers via `worker_init_fn`, so a
+given `--seed` fully determines a run.
+
+## Knowledge about Heart Murmur
+
+[utils/HeartMurmur.md](utils/HeartMurmur.md) contains knowledge about
+heart murmur collected from various sources.
 
 ## The Conference
 
-[Conference Website](https://events.tuni.fi/cinc2022/)
-
-[Conference Program](https://cinc.org/prelim_program_2022/)
-
-### Conference Paper
-
-<details>
-<summary>Click to view!</summary>
-
-~~Folder [tex](tex) contains latex source code for the CinC2022 conference paper, written using [Overleaf](https://www.overleaf.com/).~~
-
-Moved to another repository as the size of the whole repository exceeds the limit of [Overleaf](https://www.overleaf.com/).
-
-</details>
+[Conference Website](https://events.tuni.fi/cinc2022/) | [Conference Program](https://cinc.org/prelim_program_2022/)
 
 [Preprint](https://cinc.org/2022/Program/accepted/130_Preprint.pdf)
 
-### Conference Poster
-
-Poster created with `baposter` using the [Overleaf template](https://www.overleaf.com/latex/examples/poster-for-conference-niweek-2014-example/pzbtqgpvdbfh#.V7xgS02LRaQ)
-
 <details>
-<summary>Click to view!</summary>
+<summary>Click to view the conference poster</summary>
 
-<img src="images/cinc2022_poster.svg" alt="poster" width="900"/>
+<img src="images/cinc2022_poster.svg" alt="Conference Poster" width="500"/>
 
 </details>
 
@@ -61,10 +78,6 @@ which was uploaded into [Google Sheets](https://docs.google.com/spreadsheets/d/1
 
 <details>
 <summary>Click to expand!</summary>
-
-~~Final score files would keep on changing for some time as unofficial teams are having their rebuttals against the organizers.~~
-
-Final score files were frozen from 2022/09/18 (Updated again....).
 
 One can load the 5 tables all at once via
 
@@ -104,62 +117,13 @@ get_team_digest("Revenger", fmt="tex", latest=True)  # latex format (string)
 
 [Outcome](https://docs.google.com/spreadsheets/u/0/d/e/2PACX-1vRNBATogMRsfio3938bU4r6fcAad85jNzTbSRtRhQ74xHw9shuYoP4uxkK6uKV1zw8CKjPC3AMm33qn/pubhtml/sheet?headers=false&gid=1883863848)
 
-<details>
-<summary>Click to expand!</summary>
+## Notes
 
-The leaderboards can be loaded via
-
-```python
-# beautifulsoup4 and html5lib required
-import pandas as pd
-
-outcome_url = "https://docs.google.com/spreadsheets/u/0/d/e/2PACX-1vRNBATogMRsfio3938bU4r6fcAad85jNzTbSRtRhQ74xHw9shuYoP4uxkK6uKV1zw8CKjPC3AMm33qn/pubhtml/sheet?headers=false&gid=1883863848"
-murmur_url = "https://docs.google.com/spreadsheets/u/0/d/e/2PACX-1vRNBATogMRsfio3938bU4r6fcAad85jNzTbSRtRhQ74xHw9shuYoP4uxkK6uKV1zw8CKjPC3AMm33qn/pubhtml/sheet?headers=false&gid=0"
-
-df_outcome = pd.read_html(outcome_url, flavor="bs4", header=[1], index_col=[0])[0].reset_index(drop=True).dropna()
-df_outcome.Rank = df_outcome.Rank.astype(int)
-# df_outcome.set_index("Rank", inplace=True)  # Rank has duplicates
-df_murmur = pd.read_html(murmur_url, flavor="bs4", header=[1], index_col=[0])[0].reset_index(drop=True).dropna()
-df_murmur.Rank = df_murmur.Rank.astype(int)
-# df_murmur.set_index("Rank", inplace=True)  # Rank has duplicates
-```
-
-pattern for the content of email announcing the submission scores:
-
-```python
-from string import punctuation
-
-team_name_pattern = f"""[\\w\\s{punctuation}]+"""
-email_pattern = (
-    f"""We processed an entry from Team (?P<team_name>{team_name_pattern}) """
-    """for the Official phase of the George B\\. Moody PhysioNet Challenge 2022\\. """
-    """This entry was submitted on (?P<submission_time>[\\d]{1,2}/[\\d]{1,2}/2022 [\\d]{1,2}:[\\d]{1,2}:[\\d]{1,2} ET) """
-    f"""with ID (?P<submission_id>{team_name_pattern}_[\\d]{{1,5}}_[\\d]{{1,3}})\\.[\\n]+"""
-    """We successfully evaluated your entry, which received the score (?P<outcome_cost>[\\d\\.]+) and """
-    """(?P<murmur_weighted_accuracy>[\\d\\.]+) using the Challenge evaluation metric on the validation set\\. """
-    """This entry was your team's (?P<submission_number>[\\d]{1,2})/10 entry for the Official phase\\."""
-)
-# usage:
-# list(re.finditer(email_pattern, email_content))[0].groupdict()
-```
-
-</details>
-
-## Miscellaneous
-
-<details>
-<summary>Click to view!</summary>
-
-### Test Files
-
-The file [`test_docker.py`](test_docker.py) along with the [docker CI and Test action](https://github.com/DeepPSP/cinc2022/blob/master/.github/workflows/docker-test.yml) can almost guarantee that the Challenge submissions won't raise errors, except for CUDA (GPU) errors. For possible CUDA errors, detect with [`test_local.py`](https://github.com/DeepPSP/cinc2022/blob/master/test_local.py).
-
-### <a name="springer"></a> Python Re-Implementation of Springer's PCG Features Extractor
-
-[`pcg_springer_features`](https://github.com/DeepPSP/pcg_springer_features) re-implements the feature extraction part of [David Springer's logistic regression-HSMM-based reart sound segmentation algorithm](https://physionet.org/content/hss/1.0/).
-
-Inside [utils](utils) there's also a copy of `pcg_springer_features`.
-
-</details>
-
-## [original repository](https://github.com/DeepPSP/cinc2022)
+- The original contest entry (`team_code.py`, the Docker packaging and
+  its entry test, and the metadata-only ML outcome model) is dropped
+  in this rewrite; the example focuses on the DL pipelines.
+- [`pcg_springer_features`](https://github.com/DeepPSP/pcg_springer_features)
+  re-implements the feature extraction part of
+  [David Springer's logistic regression-HSMM-based heart sound
+  segmentation algorithm](https://physionet.org/content/hss/1.0/);
+  a copy lives inside [utils](utils).

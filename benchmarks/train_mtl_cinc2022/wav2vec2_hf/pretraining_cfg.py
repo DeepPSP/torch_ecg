@@ -4,10 +4,11 @@ from copy import deepcopy
 from pathlib import Path
 from typing import List
 
-from cfg import BaseCfg, TrainCfg
 from transformers import Wav2Vec2Config, Wav2Vec2FeatureExtractor
 
 from torch_ecg.cfg import CFG
+
+from ..cfg import BaseCfg, TrainCfg
 
 __all__ = [
     "PreTrainCfg",

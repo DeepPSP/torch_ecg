@@ -1,19 +1,42 @@
-# CinC2023
+# CinC2023: neurological recovery prediction benchmark
 
-[![docker-ci-and-test](https://github.com/wenh06/cinc2023/actions/workflows/docker-test.yml/badge.svg?branch=docker-test)](https://github.com/wenh06/cinc2023/actions/workflows/docker-test.yml)
-[![format-check](https://github.com/wenh06/cinc2023/actions/workflows/check-formatting.yml/badge.svg)](https://github.com/wenh06/cinc2023/actions/workflows/check-formatting.yml)
+Benchmark example for the [George B. Moody PhysioNet Challenge
+2023](https://cinc2023.org/) — predicting neurological recovery from
+coma after cardiac arrest (CPC level, or the binary Good / Poor
+outcome) from bipolar EEG segments of the
+[I-CARE database](https://physionet.org/content/i-care/1.0/) — built on
+the library: the waveform CRNN backbone, trainer machinery and output
+containers come from `torch_ecg`; this folder keeps the
+challenge-specific data reader, dataset, outputs and the official
+challenge metrics.
 
-Predicting Neurological Recovery from Coma After Cardiac Arrest: The George B. Moody PhysioNet Challenge 2023
+| file | content |
+|---|---|
+| `cfg.py` | training config + the CRNN model config (the `ModelArchCfg` merged in) |
+| `data_reader.py` | I-CARE reader (records, metadata, download) |
+| `dataset.py` | `CinC2023Dataset` — bipolar EEG segments with on-the-fly preprocessing |
+| `model.py` | `CRNN_CINC2023` — the library CRNN over 18 bipolar EEG channels, CPC / outcome heads |
+| `outputs.py` | `CINC2023Outputs` — challenge output container with the cpc→outcome mapping |
+| `trainer.py` | `CINC2023Trainer` — `BaseTrainer` wired to the dataset and the official challenge metrics |
+| `train.py` | CLI entry |
+| `helper_code.py` | official challenge helper functions |
+| `utils/` | challenge metrics (`scoring_metrics`), SQI computation, misc helpers, and the unofficial-phase `artifact_pipeline` |
 
-<!-- toc -->
+## Usage
 
-- [The Conference](#the-conference)
-- [Description of the files/folders(modules)](#description-of-the-filesfoldersmodules)
-- [Distributions of the EEG data against clinical information of the patients](#corr)
-- [External Resources Used](#external-resources-used)
-  - [SQI (Signal Quality Index) Calculation](#sqi)
+Run from the repository root:
 
-<!-- tocstop -->
+```bash
+# CPC-level (5 classes) prediction
+python -m benchmarks.train_crnn_cinc2023.train --db-dir ~/data/i-care
+
+# binary outcome (Good / Poor) prediction
+python -m benchmarks.train_crnn_cinc2023.train --db-dir ~/data/i-care --output-target outcome
+```
+
+`train.py` seeds everything through `torch_ecg.utils.seed_everything`
+and the trainer reseeds DataLoader workers via `worker_init_fn`, so a
+given `--seed` fully determines a run.
 
 ## The Conference
 
@@ -26,40 +49,9 @@ Predicting Neurological Recovery from Coma After Cardiac Arrest: The George B. M
 
 </details>
 
-Conference paper: [GitHub](https://github.com/wenh06/cinc2023_paper) | [IEEE Xplore](https://ieeexplore.ieee.org/document/10364014) | \[CinC Papers On-line\](https://cinc.org/archives/2023/pdf/CinC2023-060.pdf)
+Conference paper: [IEEE Xplore](https://ieeexplore.ieee.org/document/10364014) | [CinC Papers On-line](https://cinc.org/archives/2023/pdf/CinC2023-060.pdf)
 
-:point_right: [Back to TOC](#cinc2023)
-
-## Description of the files/folders(modules)
-
-### Files
-
-<details>
-<summary>Click to view the details</summary>
-
-- [README.md](README.md): this file, serves as the documentation of the project.
-- [cfg_models.py](cfg_models.py), [cfg.py](cfg.py): configuration files (the former for configuration of models, the latter for configuration of the whole project)
-- [data_reader.py](data_reader.py): data reader, including data downloading, file listing, data loading, etc.
-- [dataset.py](dataset.py): dataset class, which feeds data to the models.
-- [Dockerfile](Dockerfile): docker file for building the docker image for submissions.
-- [requirements.txt](requirements.txt), [requirements-docker.txt](requirements-docker.txt), [requirements-no-torch.txt](requirements-no-torch.txt): requirements files for different purposes.
-- [trainer.py](trainer.py): trainer class, which trains the models.
-
-</details>
-
-### Folders(Modules)
-
-<details>
-<summary>Click to view the details</summary>
-
-- [models](models): folder for model definitions, including [CRNN models](models/crnn.py), and [traditional ML models](models/ml.py). The latter serves as a minimal garantee model using patient metadata only, which is used when no (EEG) data is available. It is indeed a wrapper containing model construction, training, hyperparameter tuning via grid search, model saving/loading, and end-to-end inference (from raw input to the form of output that the challenge requires).
-- [utils](utils): various utility functions, as well as some intermediate data files (e.g. train-val split files, etc.). SQI computation code, as mentioned in the unofficial phase (and also the [v1 version of the I-CARE database](https://physionet.org/content/i-care/1.0/)). This will be described in detail in the [External Resources Used](#external-resources-used) section.
-
-</details>
-
-:point_right: [Back to TOC](#cinc2023)
-
-## <a name="corr"></a> Distributions of the EEG data against clinical information of the patients
+## Distributions of the EEG data against clinical information of the patients
 
 <p align="middle">
   <img src="images/outcome-hospital-corr.svg" width="30%" />
@@ -69,26 +61,22 @@ Conference paper: [GitHub](https://github.com/wenh06/cinc2023_paper) | [IEEE Xpl
   <img src="images/cpc-vfib-corr.svg" width="30%" />
 </p>
 
-:point_right: [Back to TOC](#cinc2023)
-
 ## External Resources Used
 
-### <a name="sqi"></a> SQI (Signal Quality Index) Calculation
+### SQI (Signal Quality Index) Calculation
 
-[Source Code](utils/sqi.py) integrated from [bdsp-core/icare-dl](https://github.com/bdsp-core/icare-dl/blob/main/Artifact_pipeline.zip).
+See [`utils/sqi.py`](utils/sqi.py) and the
+[`utils/artifact_pipeline`](utils/artifact_pipeline) folder, as used in
+the unofficial phase (and the
+[v1 version of the I-CARE database](https://physionet.org/content/i-care/1.0/)).
 
-As stated in the `Artfiact Screening (Signal Quality)` subsection of the `Data Description` section of the
-[I-CARE database version 1.0 hosted at PhysioNet](https://physionet.org/content/i-care/1.0/), the SQI is calculated as follows:
-<blockquote>
-...This artifact score is based on how many 10-second epochs within a 5-minute EEG window are contaminated by artifacts. Each 10-second epoch was scored for the presence of the following artifacts including: 1) flat signal, 2) extreme high or low values, 3) muscle artifact, 4) non-physiological spectra, and 5) implausibly fast rising or decreasing signal amplitude...
-</blockquote>
+## Notes
 
-Precomputed SQI (5min window (epoch), 1min step length) for all EEGs: [Google Drive](https://drive.google.com/u/0/uc?id=1yPeLkL7WmHzXfSi5XK7hzWTfcAvrL8_q) | [Alternative](https://deep-psp.tech/Data/CinC2023-SQI.zip)
-
-Distribution of SQI for all 5min windows (epochs):
-
-<img src="images/sqi-stats.svg" alt="SQI Distribution" width="500"/>
-
-:point_right: [Back to TOC](#cinc2023)
-
-[CinC2020](https://github.com/DeepPSP/cinc2020) | [CinC2021](https://github.com/DeepPSP/cinc2021) | [CinC2022](https://github.com/DeepPSP/cinc2022)
+- The original contest entry shipped a `models/` folder (with an ML
+  fallback model using patient metadata only) and Docker packaging;
+  these were never committed here. The ML part and the Docker files
+  are dropped in this rewrite; the example focuses on the CRNN
+  pipeline.
+- The I-CARE database is credentialed; no local sample data is bundled
+  with this benchmark, so CI exercises the model / outputs / metrics
+  chain rather than a full training run.

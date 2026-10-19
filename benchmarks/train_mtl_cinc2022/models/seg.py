@@ -5,8 +5,6 @@ from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
-from cfg import ModelCfg
-from outputs import CINC2022Outputs
 from torch import Tensor
 
 from torch_ecg.cfg import CFG
@@ -14,6 +12,9 @@ from torch_ecg.components.outputs import SequenceLabellingOutput
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils import add_docstring
+
+from ..cfg import ModelCfg
+from ..outputs import CINC2022Outputs
 
 __all__ = [
     "SEQ_LAB_NET_CINC2022",

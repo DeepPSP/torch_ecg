@@ -30,16 +30,20 @@ try:
     import scipy.io.wavfile as sio_wav
 except Exception:
     sio_wav = None
-import IPython
-from cfg import BaseCfg
+try:
+    import IPython
+except ModuleNotFoundError:
+    IPython = None
 from tqdm.auto import tqdm
-from utils.schmidt_spike_removal import schmidt_spike_removal
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases.base import DataBaseInfo, PhysioNetDataBase
 from torch_ecg.utils.download import http_get
 from torch_ecg.utils.misc import ReprMixin, add_docstring, get_record_list_recursive, get_record_list_recursive3, list_sum
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
+
+from .cfg import BaseCfg
+from .utils.schmidt_spike_removal import schmidt_spike_removal
 
 __all__ = [
     "PCGDataBase",
@@ -228,7 +232,7 @@ class PCGDataBase(PhysioNetDataBase):
         print("DO NOT USE THIS FUNCTION for a PCG database!")
 
     @abstractmethod
-    def play(self, rec: str, **kwargs) -> IPython.display.Audio:
+    def play(self, rec: str, **kwargs) -> "IPython.display.Audio":
         """ """
         raise NotImplementedError
 
@@ -1006,7 +1010,7 @@ class CINC2022Reader(PCGDataBase):
             "Diastolic murmur quality",
         ]
 
-    def play(self, rec: Union[str, int], **kwargs) -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], **kwargs) -> "IPython.display.Audio":
         """
         play the record `rec` in a Juptyer Notebook
 
@@ -1377,7 +1381,7 @@ class CINC2016Reader(PCGDataBase):
         """
         return wfdb.rdheader(self.get_absolute_path(rec)).comments[0]
 
-    def play(self, rec: Union[str, int], **kwargs) -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], **kwargs) -> "IPython.display.Audio":
         """ """
         audio_file = self.get_absolute_path(rec, self.data_ext)
         return IPython.display.Audio(filename=str(audio_file))
@@ -1668,7 +1672,7 @@ class EPHNOGRAMReader(PCGDataBase):
         """
         raise NotImplementedError("No annotation for this database")
 
-    def play(self, rec: Union[str, int], channel: str = "PCG") -> IPython.display.Audio:
+    def play(self, rec: Union[str, int], channel: str = "PCG") -> "IPython.display.Audio":
         """ """
         data = self.load_data(rec, channels=channel)[0]
         return IPython.display.Audio(data=data, rate=8000)

@@ -1,44 +1,26 @@
-""" """
+"""Trainer of the CPSC2021 benchmark (paroxysmal AF event detection)."""
 
-import argparse
-import os
-import sys
-from copy import deepcopy
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from torch.nn.parallel import DataParallel as DP
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader, Dataset
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.databases.cpsc_databases.cpsc2019 import compute_metrics as compute_cpsc2019_metrics
+from torch_ecg.databases.datasets.cpsc2021 import CPSC2021Dataset
+from torch_ecg.utils import worker_init_fn
+from torch_ecg.utils.utils_data import mask_to_intervals
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
-from aux_metrics import compute_main_task_metric, compute_rpeak_metric, compute_rr_metric
-from cfg import BaseCfg, ModelCfg, TrainCfg
-from dataset import CPSC2021
-from model import (  # noqa: F401
+from .aux_metrics import compute_main_task_metric, compute_rr_metric
+from .model import (  # noqa: F401
     ECG_SEQ_LAB_NET_CPSC2021,
     ECG_SUBTRACT_UNET_CPSC2021,
     ECG_UNET_CPSC2021,
     RR_LSTM_CPSC2021,
-    _qrs_detection_post_process,
 )
-
-from torch_ecg.cfg import CFG
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.misc import str2bool
-from torch_ecg.utils.utils_data import mask_to_intervals
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-
-if BaseCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-
 
 __all__ = [
     "CPSC2021Trainer",
@@ -93,7 +75,7 @@ class CPSC2021Trainer(BaseTrainer):
         """
         super().__init__(
             model=model,
-            dataset_cls=CPSC2021,
+            dataset_cls=CPSC2021Dataset,
             model_config=model_config,
             train_config=train_config,
             device=device,
@@ -136,8 +118,7 @@ class CPSC2021Trainer(BaseTrainer):
                 lazy=False,
             )
 
-        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-        num_workers = 4
+        num_workers = self.train_config.get("num_workers", 4 if torch.cuda.is_available() else 0)
 
         self.train_loader = DataLoader(
             dataset=train_dataset,
@@ -147,6 +128,7 @@ class CPSC2021Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
         if self.train_config.debug:
@@ -158,6 +140,7 @@ class CPSC2021Trainer(BaseTrainer):
                 pin_memory=True,
                 drop_last=False,
                 collate_fn=collate_fn,
+                worker_init_fn=worker_init_fn if num_workers > 0 else None,
             )
         else:
             self.val_train_loader = None
@@ -169,6 +152,7 @@ class CPSC2021Trainer(BaseTrainer):
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
+            worker_init_fn=worker_init_fn if num_workers > 0 else None,
         )
 
     def run_one_step(self, *data: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -200,8 +184,6 @@ class CPSC2021Trainer(BaseTrainer):
             weight_masks = weight_masks.to(device=self.device, dtype=self.dtype)
         signals = signals.to(device=self.device, dtype=self.dtype)
         labels = labels.to(device=self.device, dtype=self.dtype)
-        # print(f"signals: {signals.shape}")
-        # print(f"labels: {labels.shape}")
         preds = self.model(signals)
         if self.train_config.task == "qrs_detection":
             return preds, labels
@@ -239,12 +221,15 @@ class CPSC2021Trainer(BaseTrainer):
                     torch.cuda.synchronize()
                 model_output = self._model.inference(signals)
                 all_rpeak_preds += model_output.rpeak_indices
-            eval_res = compute_rpeak_metric(
-                rpeaks_truths=all_rpeak_labels,
-                rpeaks_preds=all_rpeak_preds,
-                fs=self.train_config.fs,
-                thr=self.train_config.qrs_mask_bias / self.train_config.fs,
-            )
+            # the R-peak score is identical to the CPSC2019 challenge metric
+            eval_res = {
+                "qrs_score": compute_cpsc2019_metrics(
+                    rpeaks_truths=all_rpeak_labels,
+                    rpeaks_preds=all_rpeak_preds,
+                    fs=self.train_config.fs,
+                    thr=self.train_config.qrs_mask_bias / self.train_config.fs,
+                ),
+            }
             # in case possible memeory leakage?
             del all_rpeak_preds, all_rpeak_labels
         elif self.train_config.task == "rr_lstm":
@@ -337,62 +322,6 @@ class CPSC2021Trainer(BaseTrainer):
             return f"task-{self.train_config.task}_{super().extra_log_suffix()}_{self.model_config.cnn_name}"
 
 
-def get_args(**kwargs: Any):
-    """NOT checked,"""
-    cfg = deepcopy(kwargs)
-    parser = argparse.ArgumentParser(
-        description="Train the Model on CPSC2021",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "-b",
-        "--batch-size",
-        type=int,
-        default=128,
-        help="the batch size for training",
-        dest="batch_size",
-    )
-    # parser.add_argument(
-    #     "-c", "--cnn-name",
-    #     type=str, default="multi_scopic_leadwise",
-    #     help="choice of cnn feature extractor",
-    #     dest="cnn_name")
-    # parser.add_argument(
-    #     "-r", "--rnn-name",
-    #     type=str, default="none",
-    #     help="choice of rnn structures",
-    #     dest="rnn_name")
-    # parser.add_argument(
-    #     "-a", "--attn-name",
-    #     type=str, default="se",
-    #     help="choice of attention structures",
-    #     dest="attn_name")
-    parser.add_argument(
-        "--keep-checkpoint-max",
-        type=int,
-        default=20,
-        help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max",
-    )
-    # parser.add_argument(
-    #     "--optimizer", type=str, default="adam",
-    #     help="training optimizer",
-    #     dest="train_optimizer")
-    parser.add_argument(
-        "--debug",
-        type=str2bool,
-        default=False,
-        help="train with more debugging information",
-        dest="debug",
-    )
-
-    args = vars(parser.parse_args())
-
-    cfg.update(args)
-
-    return CFG(cfg)
-
-
 _MODEL_MAP = {
     "seq_lab": ECG_SEQ_LAB_NET_CPSC2021,
     "unet": ECG_UNET_CPSC2021,
@@ -401,8 +330,8 @@ _MODEL_MAP = {
 }
 
 
-def _set_task(task: str, config: CFG) -> None:
-    """ """
+def _set_task(task: str, config: dict) -> None:
+    """Set the fields of `config` that vary per task (classes, monitor, loss, etc.)."""
     assert task in config.tasks
     config.task = task
     for item in [
@@ -412,40 +341,3 @@ def _set_task(task: str, config: CFG) -> None:
         "loss",
     ]:
         config[item] = config[task][item]
-
-
-if __name__ == "__main__":
-    # WARNING: most training were done in notebook,
-    # NOT in cli
-    train_config = get_args(**TrainCfg)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # TODO: adjust for CPSC2021
-    for task in train_config.tasks:
-        model_cls = _MODEL_MAP[train_config[task].model_name]
-        model_cls.__DEBUG__ = False
-        _set_task(task, train_config)
-        model_config = deepcopy(ModelCfg[task])
-        model = model_cls(config=model_config)
-        if torch.cuda.device_count() > 1 and task not in [
-            "rr_lstm",
-        ]:
-            model = DP(model)
-            # model = DDP(model)
-        model.to(device=device)
-
-        trainer = CPSC2021Trainer(
-            model=model,
-            model_config=model_config,
-            train_config=train_config,
-            device=device,
-            lazy=False,
-        )
-
-        try:
-            best_model_state_dict = trainer.train()
-        except KeyboardInterrupt:
-            try:
-                sys.exit(0)
-            except SystemExit:
-                os._exit(0)

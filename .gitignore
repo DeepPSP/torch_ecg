@@ -165,3 +165,7 @@ tmp*
 
 .github/copilot-instructions.md
 test/logs/
+
+# runtime caches written into the bundled sample data by datasets
+sample-data/**/records.json
+sample-data/**/train_test_split_*.json

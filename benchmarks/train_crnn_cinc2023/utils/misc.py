@@ -13,12 +13,13 @@ import requests
 import scipy as sp
 import wfdb
 import yaml
-from cfg import BaseCfg
-from helper_code import get_end_time, load_text_file
 from tqdm.auto import tqdm
 
 from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.misc import get_record_list_recursive3
+
+from ..cfg import BaseCfg
+from ..helper_code import get_end_time, load_text_file
 
 __all__ = [
     "load_challenge_eeg_data",
