@@ -39,7 +39,7 @@ from numpy.typing import NDArray
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
-from ..utils.download import http_get
+from ..utils.download import get_latest_version_from_physionet_s3, http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from ._edf import _EdfReader
 from .aux_data import get_physionet_dbs
@@ -858,11 +858,23 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._version = wfdb_get_version(self.db_name)
         except Exception:
-            warnings.warn(
-                "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",
-                RuntimeWarning,
-            )
-            self._version = "1.0.0"
+            # the PhysioNet website is unreachable; try inferring the latest
+            # version from the S3 bucket (a separate endpoint) before falling
+            # back to "1.0.0", because downloading an outdated version may
+            # produce an on-disk layout this reader cannot parse
+            # (e.g. LUDB 1.0.0 vs 1.0.1)
+            try:
+                self._version = get_latest_version_from_physionet_s3(self.db_name)
+                warnings.warn(
+                    f"Cannot get the version number from PhysioNet! Inferred version {self._version} from the S3 bucket.",
+                    RuntimeWarning,
+                )
+            except Exception:
+                warnings.warn(
+                    "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",
+                    RuntimeWarning,
+                )
+                self._version = "1.0.0"
         return self._version
 
     @property

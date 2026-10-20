@@ -875,7 +875,11 @@ class CitationMixin(_CitationMixin):
             df_old = pd.read_csv(
                 _DATA_CACHE / "database_citation.csv", encoding="utf-8", encoding_errors="replace", on_bad_lines="warn"
             )
-        except pd.errors.EmptyDataError:
+        except (pd.errors.EmptyDataError, FileNotFoundError):
+            # a sibling process may be running this same migration
+            # concurrently and have consumed (unlinked) the legacy csv
+            # between the `exists()` check above and this read -- treat it
+            # as no legacy data; that sibling performs the merge
             df_old = pd.DataFrame(columns=["doi", "citation"])
         if set(df_old.columns) != set(["doi", "citation"]):
             df_old = pd.DataFrame(columns=["doi", "citation"])
