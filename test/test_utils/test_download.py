@@ -367,6 +367,30 @@ def test_download_from_aws_s3_using_boto3_empty_bucket(monkeypatch, tmp_path):
         dl._download_from_aws_s3_using_boto3("s3://fake-bucket/prefix/", tmp_path / "out")
 
 
+def test_download_from_aws_s3_using_boto3_small_prefix(tmp_path):
+    """Real (tiny) S3 download: the prefix must be stripped from the local
+    paths (the ``aws s3 sync`` layout that the database readers expect),
+    and a second run must skip the existing files without errors.
+    """
+    if not dl.url_is_reachable("https://physionet-open.s3.amazonaws.com/ludb/1.0.1/RECORDS"):
+        pytest.skip("physionet-open S3 unreachable")
+
+    # single-file prefix
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/RECORDS", tmp_path)
+    assert (tmp_path / "RECORDS").is_file(), "prefix must be stripped from the local path"
+
+    # nested multi-file prefix: several small annotation files of record 1
+    nested = tmp_path / "nested"
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/data/1.a", nested)
+    assert nested.is_dir()
+    files = sorted(p.name for p in nested.iterdir())
+    assert len(files) > 1, files
+    assert all(p.is_file() for p in nested.iterdir())
+    # resume: re-download skips files with matching size, no error, no dup
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/data/1.a", nested)
+    assert sorted(p.name for p in nested.iterdir()) == files
+
+
 def test_download_from_aws_s3_using_awscli_subprocess_fail(monkeypatch, tmp_path):
     """Force awscli sync subprocess to exit with non-zero code -> CalledProcessError."""
     # Pretend aws exists
