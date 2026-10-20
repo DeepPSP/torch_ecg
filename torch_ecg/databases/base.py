@@ -921,6 +921,7 @@ class PhysioNetDataBase(_DataBase):
         else:
             new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
             print(f"{url} is not available, try {new_url} instead")
+            self._url_compressed = new_url
         return self._url_compressed
 
     def download(self, compressed: bool = True, use_s3: bool = True) -> None:
