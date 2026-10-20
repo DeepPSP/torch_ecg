@@ -910,7 +910,13 @@ class PhysioNetDataBase(_DataBase):
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
-        if requests.head(url).headers.get("Content-Type") == "application/zip":
+        try:
+            is_zip = requests.head(url, timeout=10).headers.get("Content-Type") == "application/zip"
+        except requests.exceptions.RequestException:
+            # physionet.org unreachable; the direct static zip cannot be
+            # verified -- take the `get-zip` fallback path below
+            is_zip = False
+        if is_zip:
             self._url_compressed = url
         else:
             new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
