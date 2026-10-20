@@ -722,17 +722,6 @@ def _download_from_aws_s3_using_boto3(
     prefix = match.group("prefix")
     if prefix.startswith("files/"):
         prefix = prefix[len("files/") :]
-    # local paths are relative to the last directory component of the
-    # prefix, mirroring `aws s3 sync s3://bucket/pre/fix/ dst_dir`; this
-    # also places partial prefixes (e.g. ".../data/1.a" matching
-    # 1.avf, 1.avl, ...) and single-object prefixes correctly
-    if prefix.endswith("/"):
-        prefix_dir = prefix
-    elif "/" in prefix:
-        prefix_dir = prefix.rsplit("/", 1)[0] + "/"
-    else:
-        prefix_dir = ""
-    strip = len(prefix_dir)
 
     s3 = boto3.client(
         "s3",
@@ -744,6 +733,23 @@ def _download_from_aws_s3_using_boto3(
         ),
     )
     paginator = s3.get_paginator("list_objects_v2")
+    # local paths are relative to the prefix root, mirroring
+    # `aws s3 sync s3://bucket/pre/fix/ dst_dir`; a prefix written without
+    # a trailing slash may still be a directory, so probe one object under
+    # "<prefix>/" -- if none exists it is a partial key prefix (e.g.
+    # ".../data/1.a" matching 1.avf, 1.avl, ...) and files are placed
+    # relative to its parent directory instead
+    if prefix.endswith("/"):
+        prefix_dir = prefix
+    else:
+        probe = paginator.paginate(Bucket=bucket_name, Prefix=prefix + "/", PaginationConfig={"MaxItems": 1})
+        if any(page.get("Contents") for page in probe):
+            prefix_dir = prefix + "/"
+        elif "/" in prefix:
+            prefix_dir = prefix.rsplit("/", 1)[0] + "/"
+        else:
+            prefix_dir = ""
+    strip = len(prefix_dir)
     try:
         objects = []
         for page in paginator.paginate(Bucket=bucket_name, Prefix=prefix):
