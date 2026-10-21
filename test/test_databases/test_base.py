@@ -4,6 +4,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import requests
 
 from torch_ecg.databases import AFDB, list_databases
 from torch_ecg.databases.base import (
@@ -72,8 +73,14 @@ def test_get_arrhythmia_knowledge():
 
 
 def test_database_meta():
-    with pytest.warns(RuntimeWarning, match="`db_dir` is not specified"):
-        reader = AFDB()
+    try:
+        with pytest.warns(RuntimeWarning, match="`db_dir` is not specified"):
+            reader = AFDB()
+    except requests.exceptions.RequestException as err:
+        # `AFDB()` with no `db_dir` populates the default cache dir,
+        # which needs physionet.org; transient outages should skip,
+        # not fail the lane
+        pytest.skip(f"physionet.org unreachable: {err}")
 
     assert reader.db_dir == Path("~").expanduser() / ".cache" / "torch_ecg" / "data" / "afdb"
 
@@ -94,8 +101,11 @@ def test_database_meta():
 
 
 def test_database_info():
-    with pytest.warns(RuntimeWarning, match="`db_dir` is not specified"):
-        reader = AFDB()
+    try:
+        with pytest.warns(RuntimeWarning, match="`db_dir` is not specified"):
+            reader = AFDB()
+    except requests.exceptions.RequestException as err:
+        pytest.skip(f"physionet.org unreachable: {err}")
 
     assert isinstance(reader.database_info, DataBaseInfo)
 

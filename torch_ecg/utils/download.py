@@ -639,6 +639,44 @@ def count_aws_s3_bucket(bucket_name: str, prefix: str = "") -> int:
     return object_count
 
 
+def get_latest_version_from_physionet_s3(db_name: str) -> str:
+    """Infer the latest published version of a PhysioNet database from the
+    layout of the ``s3://physionet-open`` bucket (anonymous listing of the
+    version prefixes under ``<db_name>/``).
+
+    This is a fallback for when the PhysioNet website is unreachable but the
+    S3 bucket (a separate endpoint) still is, so that :meth:`download` does
+    not silently fall back to an outdated version whose on-disk layout the
+    reader may not support (e.g. LUDB 1.0.0 vs 1.0.1).
+
+    Parameters
+    ----------
+    db_name : str
+        Name of the database, e.g. "ludb".
+
+    Returns
+    -------
+    str
+        The latest version string, e.g. "1.0.1".
+
+    """
+    s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+    paginator = s3.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket="physionet-open", Prefix=f"{db_name}/", Delimiter="/")
+    versions = []
+    try:
+        for page in page_iterator:
+            for common_prefix in page.get("CommonPrefixes", []):
+                version = common_prefix["Prefix"].rstrip("/").rsplit("/", 1)[-1]
+                if re.fullmatch(r"v?\d+(\.\d+)*", version):
+                    versions.append(version.lstrip("v"))
+    finally:
+        s3.close()
+    if not versions:
+        raise ValueError(f"No version prefix found in s3://physionet-open/{db_name}/")
+    return max(versions, key=lambda v: [int(item) for item in v.split(".")])
+
+
 def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.PathLike]) -> None:
     """Download a file from AWS S3 using boto3.
 
@@ -685,7 +723,7 @@ def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.Pa
                     dst_file = Path(dst_dir) / key  # type: ignore
                     if not dst_file.parent.exists():
                         dst_file.parent.mkdir(parents=True, exist_ok=True)
-                        s3.download_file(bucket_name, key, str(dst_file))
+                    s3.download_file(bucket_name, key, str(dst_file))
                     pbar.update(1)
 
     s3.close()

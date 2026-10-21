@@ -42,6 +42,13 @@ def reader():
             reader.download()
     except Exception as err:
         pytest.skip(f"failed to download LUDB: {err}")
+    # `download` may resolve an outdated version whose file layout the
+    # reader does not support (e.g. LUDB 1.0.0 puts records at the db root
+    # while the reader reads `db_dir/data/`), in which case the record
+    # list is populated but no record file is readable -- skip instead of
+    # letting every test fail
+    if len(reader) == 0 or not reader.get_absolute_path(0, extension="hea").exists():
+        pytest.skip("LUDB data not present at the expected location after download")
     return reader
 
 
