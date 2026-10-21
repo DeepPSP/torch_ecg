@@ -793,6 +793,8 @@ def compute_metrics(
         dtype=int,
     )
     # Scoring
+    # counters accumulated over all records, for the detailed (verbose) retval
+    totals = CFG({"S": {"tp": 0, "fp": 0, "fn": 0}, "V": {"tp": 0, "fp": 0, "fn": 0}})
     for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(sbp_true, pvc_true, sbp_pred, pvc_pred)):
         s_tp = 0
         s_fp = 0
@@ -825,11 +827,17 @@ def compute_metrics(
         # calculate the score
         s_score[i] = s_fp * (-1) + s_fn * (-5)
         v_score[i] = v_fp * (-1) + v_fn * (-5)
+        totals["S"]["tp"] += s_tp
+        totals["S"]["fp"] += s_fp
+        totals["S"]["fn"] += s_fn
+        totals["V"]["tp"] += v_tp
+        totals["V"]["fp"] += v_fp
+        totals["V"]["fn"] += v_fn
 
         if verbose >= 1:
             print(f"for the {i}-th record")
             print(f"s_tp = {s_tp}, s_fp = {s_fp}, s_fn = {s_fn}")
-            print(f"v_tp = {v_tp}, v_fp = {v_fp}, s_fn = {v_fn}")
+            print(f"v_tp = {v_tp}, v_fp = {v_fp}, v_fn = {v_fn}")
             print(f"s_score[{i}] = {s_score[i]}, v_score[{i}] = {v_score[i]}")
 
     Score1 = np.sum(s_score)
@@ -839,9 +847,9 @@ def compute_metrics(
         retval = CFG(
             total_loss=-(Score1 + Score2),
             class_loss={"S": -Score1, "V": -Score2},
-            true_positive={"S": s_tp, "V": v_tp},
-            false_positive={"S": s_fp, "V": v_fp},
-            false_negative={"S": s_fn, "V": v_fn},
+            true_positive={"S": totals["S"]["tp"], "V": totals["V"]["tp"]},
+            false_positive={"S": totals["S"]["fp"], "V": totals["V"]["fp"]},
+            false_negative={"S": totals["S"]["fn"], "V": totals["V"]["fn"]},
         )
     else:
         retval = Score1, Score2

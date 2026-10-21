@@ -39,7 +39,7 @@ from numpy.typing import NDArray
 
 from ..cfg import _DATA_CACHE, CFG, DEFAULTS
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
-from ..utils.download import http_get
+from ..utils.download import get_latest_version_from_physionet_s3, http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from ._edf import _EdfReader
 from .aux_data import get_physionet_dbs
@@ -858,11 +858,23 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._version = wfdb_get_version(self.db_name)
         except Exception:
-            warnings.warn(
-                "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",
-                RuntimeWarning,
-            )
-            self._version = "1.0.0"
+            # the PhysioNet website is unreachable; try inferring the latest
+            # version from the S3 bucket (a separate endpoint) before falling
+            # back to "1.0.0", because downloading an outdated version may
+            # produce an on-disk layout this reader cannot parse
+            # (e.g. LUDB 1.0.0 vs 1.0.1)
+            try:
+                self._version = get_latest_version_from_physionet_s3(self.db_name)
+                warnings.warn(
+                    f"Cannot get the version number from PhysioNet! Inferred version {self._version} from the S3 bucket.",
+                    RuntimeWarning,
+                )
+            except Exception:
+                warnings.warn(
+                    "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",
+                    RuntimeWarning,
+                )
+                self._version = "1.0.0"
         return self._version
 
     @property
@@ -898,11 +910,18 @@ class PhysioNetDataBase(_DataBase):
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
-        if requests.head(url).headers.get("Content-Type") == "application/zip":
+        try:
+            is_zip = requests.head(url, timeout=10).headers.get("Content-Type") == "application/zip"
+        except requests.exceptions.RequestException:
+            # physionet.org unreachable; the direct static zip cannot be
+            # verified -- take the `get-zip` fallback path below
+            is_zip = False
+        if is_zip:
             self._url_compressed = url
         else:
             new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
             print(f"{url} is not available, try {new_url} instead")
+            self._url_compressed = new_url
         return self._url_compressed
 
     def download(self, compressed: bool = True, use_s3: bool = True) -> None:
@@ -918,7 +937,8 @@ class PhysioNetDataBase(_DataBase):
             Whether to download the database from AWS S3.
             NOTE: files on AWS S3 are not compressed (larger total size);
             `use_s3` has **higher** priority than `compressed`;
-            if AWS client is not available, the database will be downloaded from PhysioNet.
+            the `aws` CLI is used when available, otherwise a slower
+            pure-Python `boto3` backend (neither needs an AWS account).
 
             .. versionadded:: 0.0.31
 
@@ -927,9 +947,10 @@ class PhysioNetDataBase(_DataBase):
         None
 
         """
-        if shutil.which("aws") is None:
-            use_s3 = False
-            self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")  # type: ignore
+        if use_s3 and shutil.which("aws") is None:
+            self.logger.warning(  # type: ignore
+                "AWS CLI is not available! Downloading from S3 via the (slower) pure-Python boto3 backend..."
+            )
         if use_s3:
             http_get(self.s3_url, self.db_dir)
         elif compressed and self.url_ is not None:

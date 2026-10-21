@@ -367,6 +367,30 @@ def test_download_from_aws_s3_using_boto3_empty_bucket(monkeypatch, tmp_path):
         dl._download_from_aws_s3_using_boto3("s3://fake-bucket/prefix/", tmp_path / "out")
 
 
+def test_download_from_aws_s3_using_boto3_small_prefix(tmp_path):
+    """Real (tiny) S3 download: the prefix must be stripped from the local
+    paths (the ``aws s3 sync`` layout that the database readers expect),
+    and a second run must skip the existing files without errors.
+    """
+    if not dl.url_is_reachable("https://physionet-open.s3.amazonaws.com/ludb/1.0.1/RECORDS"):
+        pytest.skip("physionet-open S3 unreachable")
+
+    # single-file prefix
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/RECORDS", tmp_path)
+    assert (tmp_path / "RECORDS").is_file(), "prefix must be stripped from the local path"
+
+    # nested multi-file prefix: several small annotation files of record 1
+    nested = tmp_path / "nested"
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/data/1.a", nested)
+    assert nested.is_dir()
+    files = sorted(p.name for p in nested.iterdir())
+    assert len(files) > 1, files
+    assert all(p.is_file() for p in nested.iterdir())
+    # resume: re-download skips files with matching size, no error, no dup
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/ludb/1.0.1/data/1.a", nested)
+    assert sorted(p.name for p in nested.iterdir()) == files
+
+
 def test_download_from_aws_s3_using_awscli_subprocess_fail(monkeypatch, tmp_path):
     """Force awscli sync subprocess to exit with non-zero code -> CalledProcessError."""
     # Pretend aws exists
@@ -615,3 +639,134 @@ def test_awscli_non_ci_branch(monkeypatch, tmp_path):
     monkeypatch.setattr(dl, "count_aws_s3_bucket", lambda bucket, prefix: 0)
 
     dl._download_from_aws_s3_using_awscli("s3://bucket/prefix/", tmp_path, show_progress=False)
+
+
+def test_get_latest_version_from_physionet_s3(monkeypatch):
+    """Version inference from the S3 bucket layout (all offline)."""
+
+    class FakePaginator:
+        def paginate(self, **kwargs):
+            assert kwargs["Bucket"] == "physionet-open"
+            assert kwargs["Prefix"] == "ludb/"
+            return iter(
+                [
+                    {
+                        "CommonPrefixes": [
+                            {"Prefix": "ludb/1.0.0/"},
+                            {"Prefix": "ludb/1.0.1/"},
+                            {"Prefix": "ludb/scripts/"},  # non-version prefix, filtered out
+                        ]
+                    }
+                ]
+            )
+
+    class FakeClient:
+        def get_paginator(self, name):
+            return FakePaginator()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(dl, "boto3", types.SimpleNamespace(client=lambda *a, **k: FakeClient()))
+    assert dl.get_latest_version_from_physionet_s3("ludb") == "1.0.1"
+
+
+def test_get_latest_version_from_physionet_s3_no_versions(monkeypatch):
+    class FakePaginator:
+        def paginate(self, **kwargs):
+            return iter([{"CommonPrefixes": [{"Prefix": "ludb/scripts/"}]}])
+
+    class FakeClient:
+        def get_paginator(self, name):
+            return FakePaginator()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(dl, "boto3", types.SimpleNamespace(client=lambda *a, **k: FakeClient()))
+    with pytest.raises(ValueError, match="No version prefix found"):
+        dl.get_latest_version_from_physionet_s3("ludb")
+
+
+def test_http_get_s3_routes_by_awscli_presence(monkeypatch, tmp_path):
+    """s3:// URLs use the awscli backend when `aws` is on PATH, else boto3."""
+    calls = []
+    monkeypatch.setattr(dl, "_download_from_aws_s3_using_awscli", lambda url, dst: calls.append(("awscli", url)))
+    monkeypatch.setattr(dl, "_download_from_aws_s3_using_boto3", lambda url, dst: calls.append(("boto3", url)))
+
+    monkeypatch.setattr(dl.shutil, "which", lambda name: "/usr/bin/aws" if name == "aws" else None)
+    dl.http_get("s3://physionet-open/ludb/1.0.1/", tmp_path)
+    monkeypatch.setattr(dl.shutil, "which", lambda name: None)
+    dl.http_get("s3://physionet-open/ludb/1.0.1/", tmp_path)
+
+    assert calls == [
+        ("awscli", "s3://physionet-open/ludb/1.0.1/"),
+        ("boto3", "s3://physionet-open/ludb/1.0.1/"),
+    ]
+
+
+def test_download_from_aws_s3_using_boto3_prefix_layout_and_resume(monkeypatch, tmp_path):
+    """Offline check of the prefix handling: trailing-slash normalization,
+    `files/` stripping, prefix-marker skipping, and size-based resume.
+    """
+    listed_prefixes = []
+    downloaded = []
+    objects = [
+        {"Key": "db/1.0.0/", "Size": 0},  # the prefix marker itself, skipped
+        {"Key": "db/1.0.0/RECORDS", "Size": 10},
+        {"Key": "db/1.0.0/data/1.hea", "Size": 20},
+    ]
+    sizes = {"db/1.0.0/RECORDS": 10, "db/1.0.0/data/1.hea": 20}
+
+    class FakePaginator:
+        def paginate(self, **kwargs):
+            listed_prefixes.append(kwargs["Prefix"])
+            return iter([{"Contents": objects}])
+
+    class FakeClient:
+        def get_paginator(self, name):
+            return FakePaginator()
+
+        def download_file(self, bucket, key, dst):
+            downloaded.append(key)
+            Path(dst).write_bytes(b"x" * sizes[key])
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(dl, "boto3", types.SimpleNamespace(client=lambda *a, **k: FakeClient()))
+
+    # no trailing slash on the prefix -> normalized for path stripping
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/db/1.0.0", tmp_path)
+    assert (tmp_path / "RECORDS").is_file()
+    assert (tmp_path / "data" / "1.hea").is_file()
+    assert sorted(downloaded) == ["db/1.0.0/RECORDS", "db/1.0.0/data/1.hea"]
+
+    # resume: existing files with matching sizes are skipped entirely
+    downloaded.clear()
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/db/1.0.0/", tmp_path)
+    assert downloaded == []
+
+    # the files/ alias of the prefix is stripped before listing
+    dl._download_from_aws_s3_using_boto3("s3://physionet-open/files/db/1.0.0/", tmp_path)
+    assert listed_prefixes[-1] == "db/1.0.0/"
+
+
+def test_download_from_aws_s3_using_boto3_error_propagates(monkeypatch, tmp_path):
+    class FakePaginator:
+        def paginate(self, **kwargs):
+            return iter([{"Contents": [{"Key": "db/1.0.0/RECORDS", "Size": 10}]}])
+
+    class FakeClient:
+        def get_paginator(self, name):
+            return FakePaginator()
+
+        def download_file(self, bucket, key, dst):
+            raise ConnectionError("boom")
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(dl, "boto3", types.SimpleNamespace(client=lambda *a, **k: FakeClient()))
+    with pytest.raises(ConnectionError, match="boom"):
+        dl._download_from_aws_s3_using_boto3("s3://physionet-open/db/1.0.0/", tmp_path)
