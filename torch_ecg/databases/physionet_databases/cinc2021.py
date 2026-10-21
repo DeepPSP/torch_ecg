@@ -499,7 +499,11 @@ class CINC2021(PhysioNetDataBase):
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                self._stats[k] = ""  # otherwise cells in the first row would be str instead of list
+                # initialize with empty lists, so that the column has object
+                # dtype from the start (a str-initialized column would break
+                # under pandas' Arrow-backed (inferred) string dtype when list
+                # values are assigned into it)
+                self._stats[k] = [[] for _ in range(len(self._stats))]
             with tqdm(
                 self._stats.iterrows(),
                 total=len(self._stats),
@@ -537,14 +541,18 @@ class CINC2021(PhysioNetDataBase):
                 _stats_to_save[k] = _stats_to_save[k].apply(lambda lst: list_sep.join(lst))
             _stats_to_save.to_csv(stats_file_fp, index=False)
             self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
-        else:
+        elif all(k in self._stats.columns for k in ["diagnosis", "diagnosis_scored"]):
             self.logger.info("converting dtypes of columns `diagnosis` and `diagnosis_scored`...")
             for k in [
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                for idx, row in self._stats.iterrows():
-                    self._stats.at[idx, k] = list(filter(lambda v: len(v) > 0, row[k].split(list_sep)))
+                self._stats[k] = self._stats[k].apply(lambda row: list(filter(lambda v: len(v) > 0, row.split(list_sep))))
+        else:
+            # no cached stats file (or incomplete columns) and fast=True:
+            # keep the empty stats as-is, exactly as the previous no-op did;
+            # call `_aggregate_stats(fast=False)` to build the stats from scratch
+            self.logger.debug("no cached stats found, `df_stats` stays empty")
 
     @property
     def all_records(self) -> Dict[str, List[str]]:
