@@ -921,6 +921,7 @@ class PhysioNetDataBase(_DataBase):
         else:
             new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
             print(f"{url} is not available, try {new_url} instead")
+            self._url_compressed = new_url
         return self._url_compressed
 
     def download(self, compressed: bool = True, use_s3: bool = True) -> None:
@@ -936,7 +937,8 @@ class PhysioNetDataBase(_DataBase):
             Whether to download the database from AWS S3.
             NOTE: files on AWS S3 are not compressed (larger total size);
             `use_s3` has **higher** priority than `compressed`;
-            if AWS client is not available, the database will be downloaded from PhysioNet.
+            the `aws` CLI is used when available, otherwise a slower
+            pure-Python `boto3` backend (neither needs an AWS account).
 
             .. versionadded:: 0.0.31
 
@@ -945,9 +947,10 @@ class PhysioNetDataBase(_DataBase):
         None
 
         """
-        if shutil.which("aws") is None:
-            use_s3 = False
-            self.logger.warning("AWS CLI is not available! Downloading the database from PhysioNet...")  # type: ignore
+        if use_s3 and shutil.which("aws") is None:
+            self.logger.warning(  # type: ignore
+                "AWS CLI is not available! Downloading from S3 via the (slower) pure-Python boto3 backend..."
+            )
         if use_s3:
             http_get(self.s3_url, self.db_dir)
         elif compressed and self.url_ is not None:

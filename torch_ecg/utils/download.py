@@ -7,6 +7,7 @@ for downloading the data files.
 """
 
 import collections
+import concurrent.futures
 import os
 import re
 import shlex
@@ -159,7 +160,12 @@ def http_get(
     assert extract in [True, False, "auto"], "extract must be True, False, or 'auto'."
 
     if url_parsed.scheme == "s3":
-        _download_from_aws_s3_using_awscli(url, dst_dir)
+        if shutil.which("aws") is None:
+            # no AWS CLI on this machine; boto3 is a hard dependency, so
+            # keep downloading from S3 via the pure-Python backend
+            _download_from_aws_s3_using_boto3(url, dst_dir)
+        else:
+            _download_from_aws_s3_using_awscli(url, dst_dir)
         return Path(dst_dir)  # type: ignore
 
     if url_parsed.netloc == "www.dropbox.com" and url_parsed.query == "dl=0":
@@ -677,18 +683,31 @@ def get_latest_version_from_physionet_s3(db_name: str) -> str:
     return max(versions, key=lambda v: [int(item) for item in v.split(".")])
 
 
-def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.PathLike]) -> None:
-    """Download a file from AWS S3 using boto3.
+def _download_from_aws_s3_using_boto3(
+    url: str,
+    dst_dir: Union[str, bytes, os.PathLike],
+    max_workers: int = 8,
+) -> None:
+    """Download all objects under an S3 prefix using boto3 (pure Python).
 
-    Currently, much slower than using awscli.
+    Fallback of :func:`http_get` for ``s3://`` URLs when the `aws` CLI is
+    not on PATH (boto3 is already a hard dependency, so machines without
+    the AWS CLI still download from S3 instead of falling back to some
+    other host). Slower than ``aws s3 sync``, but downloads in a thread
+    pool and skips files that already exist locally with the same size,
+    so interrupted downloads resume where they stopped.
 
     Parameters
     ----------
     url : str
-        The URL of the file.
-        For example, "s3://bucket-name/files/pre-fix".
+        The URL of the prefix ("directory"),
+        for example, "s3://bucket-name/pre/fix".
     dst_dir : `path-like`
-        The output directory.
+        The output directory; keys are placed relative to the prefix,
+        mirroring ``aws s3 sync s3://bucket-name/pre/fix/ dst_dir``
+        (the prefix itself is stripped from the local paths).
+    max_workers : int, default 8
+        Number of concurrent download threads.
 
     Returns
     -------
@@ -702,31 +721,64 @@ def _download_from_aws_s3_using_boto3(url: str, dst_dir: Union[str, bytes, os.Pa
     bucket_name = match.group("bucket_name")
     prefix = match.group("prefix")
     if prefix.startswith("files/"):
-        prefix = prefix.replace("files/", "")
+        prefix = prefix[len("files/") :]
 
-    s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+    s3 = boto3.client(
+        "s3",
+        config=Config(
+            signature_version=UNSIGNED,
+            connect_timeout=10,
+            read_timeout=60,
+            retries={"max_attempts": 5, "mode": "adaptive"},
+        ),
+    )
     paginator = s3.get_paginator("list_objects_v2")
-    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
-    object_count = 0
-    for page in page_iterator:
-        if "Contents" in page:
-            object_count += len(page["Contents"])
-    if object_count == 0:
-        raise ValueError(f"No objects found in S3 bucket: {bucket_name}")
-    print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {object_count}")
+    # local paths are relative to the prefix root, mirroring
+    # `aws s3 sync s3://bucket/pre/fix/ dst_dir`; a prefix written without
+    # a trailing slash may still be a directory, so probe one object under
+    # "<prefix>/" -- if none exists it is a partial key prefix (e.g.
+    # ".../data/1.a" matching 1.avf, 1.avl, ...) and files are placed
+    # relative to its parent directory instead
+    if prefix.endswith("/"):
+        prefix_dir = prefix
+    else:
+        probe = paginator.paginate(Bucket=bucket_name, Prefix=prefix + "/", PaginationConfig={"MaxItems": 1})
+        if any(page.get("Contents") for page in probe):
+            prefix_dir = prefix + "/"
+        elif "/" in prefix:
+            prefix_dir = prefix.rsplit("/", 1)[0] + "/"
+        else:
+            prefix_dir = ""
+    strip = len(prefix_dir)
+    try:
+        objects = []
+        for page in paginator.paginate(Bucket=bucket_name, Prefix=prefix):
+            for obj in page.get("Contents", []):
+                if len(obj["Key"]) > strip:  # skip the prefix marker itself
+                    objects.append((obj["Key"][strip:], obj["Size"]))
+        if not objects:
+            raise ValueError(f"No objects found in S3 bucket: {bucket_name}, prefix: {prefix}")
+        print(f"Downloading from S3 bucket: {bucket_name}, prefix: {prefix}, total files: {len(objects)}")
 
-    with tqdm(total=object_count, dynamic_ncols=True, mininterval=1.0) as pbar:
-        for page in page_iterator:
-            if "Contents" in page:
-                for obj in page["Contents"]:
-                    key = obj["Key"]
-                    dst_file = Path(dst_dir) / key  # type: ignore
-                    if not dst_file.parent.exists():
-                        dst_file.parent.mkdir(parents=True, exist_ok=True)
-                    s3.download_file(bucket_name, key, str(dst_file))
+        dst_dir_path = Path(dst_dir)
+        dst_dir_path.mkdir(parents=True, exist_ok=True)
+
+        def _download_one(rel_path: str, expected_size: int) -> bool:
+            dst_file = dst_dir_path / rel_path
+            if dst_file.exists() and dst_file.stat().st_size == expected_size:
+                return False
+            dst_file.parent.mkdir(parents=True, exist_ok=True)
+            s3.download_file(bucket_name, prefix_dir + rel_path, str(dst_file))
+            return True
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            with tqdm(total=len(objects), dynamic_ncols=True, mininterval=1.0) as pbar:
+                futures = [executor.submit(_download_one, rel_path, size) for rel_path, size in objects]
+                for future in concurrent.futures.as_completed(futures):
+                    future.result()  # re-raise download errors
                     pbar.update(1)
-
-    s3.close()
+    finally:
+        s3.close()
 
 
 def _download_from_aws_s3_using_awscli(

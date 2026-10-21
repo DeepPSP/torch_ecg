@@ -1,5 +1,7 @@
 """ """
 
+import types
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -176,3 +178,69 @@ def test_edf_reader_roundtrip(tmp_path):
 
     with pytest.raises(ValueError, match="Illegal operation"):
         db.safe_edf_file_operation("reopen")
+
+
+def _make_afdb(tmp_path):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return AFDB(tmp_path / "afdb", verbose=0)
+
+
+def test_version_fallback_to_s3(monkeypatch, tmp_path):
+    """physionet.org down -> version inferred from the S3 bucket layout."""
+    import torch_ecg.databases.base as tb
+
+    monkeypatch.setattr(tb, "wfdb_get_version", lambda db_name: (_ for _ in ()).throw(ConnectionError("site down")))
+    monkeypatch.setattr(tb, "get_latest_version_from_physionet_s3", lambda db_name: "1.0.1")
+    reader = _make_afdb(tmp_path)
+    with pytest.warns(RuntimeWarning, match="Inferred version 1.0.1 from the S3 bucket"):
+        assert reader.version == "1.0.1"
+
+
+def test_version_fallback_default(monkeypatch, tmp_path):
+    """physionet.org and S3 both down -> default version '1.0.0'."""
+    import torch_ecg.databases.base as tb
+
+    monkeypatch.setattr(tb, "wfdb_get_version", lambda db_name: (_ for _ in ()).throw(ConnectionError("site down")))
+    monkeypatch.setattr(
+        tb, "get_latest_version_from_physionet_s3", lambda db_name: (_ for _ in ()).throw(ConnectionError("s3 down"))
+    )
+    reader = _make_afdb(tmp_path)
+    with pytest.warns(RuntimeWarning, match="Defaults to '1.0.0'"):
+        assert reader.version == "1.0.0"
+
+
+def test_url_get_zip_fallback(monkeypatch, tmp_path):
+    """url_ falls back to the get-zip endpoint when the static zip probe
+    fails (timeout) or reports a non-zip content type, and caches it."""
+    import torch_ecg.databases.base as tb
+
+    monkeypatch.setattr(tb, "wfdb_get_version", lambda db_name: "1.0.0")
+    reader = _make_afdb(tmp_path)
+
+    # probe crashes (e.g. physionet.org unreachable)
+    monkeypatch.setattr(
+        tb.requests, "head", lambda url, **kwargs: (_ for _ in ()).throw(requests.exceptions.ConnectTimeout("down"))
+    )
+    url = reader.url_
+    assert url is not None and url.endswith("/get-zip/1.0.0"), url
+
+    # probe answers, but the static zip does not exist
+    reader._url_compressed = None
+    monkeypatch.setattr(tb.requests, "head", lambda url, **kwargs: types.SimpleNamespace(headers={"Content-Type": "text/html"}))
+    url = reader.url_
+    assert url is not None and url.endswith("/get-zip/1.0.0"), url
+
+
+def test_download_without_awscli_stays_on_s3(monkeypatch, tmp_path):
+    """Without the aws binary, download() keeps use_s3 and lets http_get
+    route to the boto3 backend (instead of dropping back to physionet)."""
+    import torch_ecg.databases.base as tb
+
+    calls = []
+    monkeypatch.setattr(tb, "http_get", lambda url, dst_dir, **kwargs: calls.append(url))
+    monkeypatch.setattr(tb.shutil, "which", lambda name: None)
+    reader = _make_afdb(tmp_path)
+    monkeypatch.setattr(tb, "wfdb_get_version", lambda db_name: "1.0.0")
+    reader.download()
+    assert calls == [reader.s3_url]
