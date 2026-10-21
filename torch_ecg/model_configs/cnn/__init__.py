@@ -2,10 +2,8 @@
 configs for the basic cnn layers and blocks
 """
 
-from .cpsc import cpsc_2018_leadwise  # cpsc2018 SOTA
-from .cpsc import cpsc_2018, cpsc_block_basic, cpsc_block_mish, cpsc_block_swish
-from .densenet import densenet_leadwise  # vanilla densenet; custom densenet
-from .densenet import densenet_vanilla
+from .cpsc import cpsc_2018, cpsc_2018_leadwise, cpsc_block_basic, cpsc_block_mish, cpsc_block_swish  # cpsc2018 SOTA
+from .densenet import densenet_leadwise, densenet_vanilla  # vanilla densenet; custom densenet
 from .mobilenet import mobilenet_v1_vanilla, mobilenet_v2_vanilla, mobilenet_v3_small  # vanilla mobilenets
 from .multi_scopic import multi_scopic, multi_scopic_block, multi_scopic_leadwise
 from .regnet import (
@@ -66,8 +64,7 @@ from .resnet import (  # building blocks; vanilla resnet; cpsc2018 resnet; small
     tresnetXL,
 )
 from .vgg import vgg16, vgg16_leadwise, vgg_block_basic, vgg_block_mish, vgg_block_swish
-from .xception import xception_leadwise  # vanilla xception; custom xception
-from .xception import xception_vanilla
+from .xception import xception_leadwise, xception_vanilla  # vanilla xception; custom xception
 
 __all__ = [
     # vgg
