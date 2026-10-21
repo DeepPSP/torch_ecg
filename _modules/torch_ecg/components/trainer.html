@@ -1298,6 +1298,11 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
                 <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
                 <span class="n">train_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_config</span><span class="p">,</span>
+                <span class="c1"># persist the full outer config so `from_checkpoint` can</span>
+                <span class="c1"># reconstruct the model with `cls(config=...)`; the default</span>
+                <span class="c1"># (`self._model.config`) is usually an inner architecture</span>
+                <span class="c1"># config without the top-level `classes` / `n_leads` fields</span>
+                <span class="n">model_config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_config</span><span class="p">,</span>
                 <span class="n">extra_items</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">"optimizer_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
                     <span class="s2">"epoch"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
@@ -1378,7 +1383,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
     <br/>
   </p>
 </div>

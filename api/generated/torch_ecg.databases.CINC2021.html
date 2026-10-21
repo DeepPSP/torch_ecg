@@ -800,7 +800,17 @@ or at least one moves the subsets Chapman_Shaoxing (WFDB_ChapmanShaoxing) and Ni
 </aside>
 </aside>
 <p class="rubric">Citation</p>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">https://doi.org/10.13026/jz9p-0m02</span><span class="p">,</span>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@inproceedings</span><span class="p">{</span><span class="nl">Reyna_2021</span><span class="p">,</span>
+<span class="w">      </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021}</span><span class="p">,</span>
+<span class="w">     </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Reyna, Matthew A and Sadr, Nadi and Alday, Erick A Perez and Gu, Annie and Shah, Amit J and Robichaux, Chad and Rad, Ali Bahrami and Elola, Andoni and Seyedi, Salman and Ansari, Sardar and Ghanbari, Hamid and Li, Qiao and Sharma, Ashish and Clifford, Gari D}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">booktitle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2021 Computing in Cardiology (CinC)}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.23919/cinc53138.2021.9662687}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{IEEE}</span><span class="p">,</span>
+<span class="w">       </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2021}</span><span class="p">,</span>
+<span class="w">      </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Sept}</span><span class="p">,</span>
+<span class="w">      </span><span class="na">pages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{1–4}</span>
+<span class="p">}</span>
+<span class="nc">@misc</span><span class="p">{</span><span class="nl">https://doi.org/10.13026/jz9p-0m02</span><span class="p">,</span>
 <span class="w">      </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021}</span><span class="p">,</span>
 <span class="w">     </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Reyna, Matthew and Sadr, Nadi and Gu, Annie and Perez Alday, Erick Andres and Liu, Chengyu and Seyedi, Salman and Shah, Amit and Clifford, Gari D.}</span><span class="p">,</span>
 <span class="w">        </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.13026/JZ9P-0M02}</span><span class="p">,</span>
@@ -859,7 +869,8 @@ If not specified, data will be fetched from Physionet.</p></li>
 <li><p><strong>use_s3</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>default True</em>) – <p>Whether to download the database from AWS S3.
 NOTE: files on AWS S3 are not compressed (larger total size);
 <cite>use_s3</cite> has <strong>higher</strong> priority than <cite>compressed</cite>;
-if AWS client is not available, the database will be downloaded from PhysioNet.</p>
+the <cite>aws</cite> CLI is used when available, otherwise a slower
+pure-Python <cite>boto3</cite> backend (neither needs an AWS account).</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 0.0.31.</span></p>
 </div>
@@ -1361,7 +1372,7 @@ If not modifying this number, at most 40 seconds of signal could be plotted once
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
     <br/>
   </p>
 </div>

@@ -1549,20 +1549,43 @@
 <span class="sd">    Any</span>
 <span class="sd">        The safe dictionary, which will be a plain `dict` for `CFG` or `dict` objects.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Fields that cannot be represented in a saved config (non-builtin,</span>
+<span class="sd">    non-torch types; and, with ``remove_paths=True``, values that look like</span>
+<span class="sd">    filesystem paths, including strings that happen to exist on disk) are</span>
+<span class="sd">    dropped.  A silently missing config key (e.g. ``db_dir``) is hard to</span>
+<span class="sd">    diagnose from a loaded checkpoint, so a :class:`RuntimeWarning` lists</span>
+<span class="sd">    the dropped fields.</span>
+
 <span class="sd">    """</span>
+    <span class="n">dropped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sg</span> <span class="o">=</span> <span class="n">_make_safe_globals</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">dropped</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dropped</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"`make_safe_globals` dropped the following fields from the config "</span>
+            <span class="s2">"(non-serializable or path-like values); they will be missing from the "</span>
+            <span class="sa">f</span><span class="s2">"saved config: </span><span class="si">{</span><span class="s1">'; '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dropped</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">sg</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_safe_globals</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dropped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Recursive worker of :func:`make_safe_globals`, recording dropped fields into `dropped`."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">CFG</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
-        <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_make_safe_globals</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">dropped</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        <span class="n">sg</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="p">[</span><span class="n">_make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span> <span class="n">dropped</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">sg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
-        <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">}</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">_make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">{{</span><span class="si">{</span><span class="n">item</span><span class="si">!r}</span><span class="se">}}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dropped</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">}</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">):</span>
-        <span class="n">sg</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">})</span>
+        <span class="n">sg</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">_make_safe_globals</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">remove_paths</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">{{</span><span class="si">{</span><span class="n">item</span><span class="si">!r}</span><span class="se">}}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dropped</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">})</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">_safe_globals</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">))):</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="n">obj</span>
@@ -1571,11 +1594,14 @@
     <span class="k">elif</span> <span class="n">is_stdtypes</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="n">obj</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="n">dropped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'&lt;root&gt;'</span><span class="si">}</span><span class="s2"> (type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
         <span class="n">sg</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">remove_paths</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">):</span>
+            <span class="n">dropped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'&lt;root&gt;'</span><span class="si">}</span><span class="s2"> (path-like)"</span><span class="p">)</span>
             <span class="n">sg</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sg</span><span class="p">):</span>
+            <span class="n">dropped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'&lt;root&gt;'</span><span class="si">}</span><span class="s2"> (existing path: </span><span class="si">{</span><span class="n">sg</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
             <span class="n">sg</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">sg</span>  <span class="c1"># type: ignore</span>
 
@@ -1784,6 +1810,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
         <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">,</span>
+        <span class="n">model_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">extra_items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_safetensors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">safetensors_single_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1803,6 +1830,16 @@
 <span class="sd">        train_config : CFG</span>
 <span class="sd">            Config for training the model,</span>
 <span class="sd">            used when one restores the model.</span>
+<span class="sd">        model_config : CFG, optional</span>
+<span class="sd">            The full (outer) model config to persist, from which the model</span>
+<span class="sd">            can be reconstructed by :meth:`from_checkpoint` via</span>
+<span class="sd">            ``cls(config=...)``.  Defaults to ``self.config`` (the model's</span>
+<span class="sd">            own config), which for models that wrap a backbone is usually</span>
+<span class="sd">            an inner architecture config missing the top-level</span>
+<span class="sd">            ``classes`` / ``n_leads`` fields -- pass the full config</span>
+<span class="sd">            (e.g. the trainer's ``model_config``) whenever available.</span>
+
+<span class="sd">            .. versionadded:: 0.0.34</span>
 <span class="sd">        extra_items : dict, optional</span>
 <span class="sd">            Extra items to save along with the model.</span>
 <span class="sd">            The values should be serializable: can be saved as a json file,</span>
@@ -1848,7 +1885,7 @@
         <span class="k">if</span> <span class="n">use_safetensors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">use_safetensors</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">excluded_suffixes</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
 
-        <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">_model_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">model_config</span> <span class="k">if</span> <span class="n">model_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">_train_config</span> <span class="o">=</span> <span class="n">make_safe_globals</span><span class="p">(</span><span class="n">train_config</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">excluded_suffixes</span><span class="p">):</span>
@@ -1971,7 +2008,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
     <br/>
   </p>
 </div>

@@ -1310,7 +1310,11 @@
             <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
                 <span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">"database_citation.csv"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">encoding_errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">,</span> <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">"warn"</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">):</span>
+            <span class="c1"># a sibling process may be running this same migration</span>
+            <span class="c1"># concurrently and have consumed (unlinked) the legacy csv</span>
+            <span class="c1"># between the `exists()` check above and this read -- treat it</span>
+            <span class="c1"># as no legacy data; that sibling performs the merge</span>
             <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"doi"</span><span class="p">,</span> <span class="s2">"citation"</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_old</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">"doi"</span><span class="p">,</span> <span class="s2">"citation"</span><span class="p">]):</span>
             <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"doi"</span><span class="p">,</span> <span class="s2">"citation"</span><span class="p">])</span>
@@ -2360,7 +2364,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
     <br/>
   </p>
 </div>

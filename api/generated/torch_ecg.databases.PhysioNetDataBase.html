@@ -639,7 +639,8 @@ If is None, <cite>wfdb</cite> will fetch data from PhysioNet.</p></li>
 <li><p><strong>use_s3</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>default True</em>) – <p>Whether to download the database from AWS S3.
 NOTE: files on AWS S3 are not compressed (larger total size);
 <cite>use_s3</cite> has <strong>higher</strong> priority than <cite>compressed</cite>;
-if AWS client is not available, the database will be downloaded from PhysioNet.</p>
+the <cite>aws</cite> CLI is used when available, otherwise a slower
+pure-Python <cite>boto3</cite> backend (neither needs an AWS account).</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 0.0.31.</span></p>
 </div>
@@ -889,7 +890,7 @@ Returned if <cite>return_fs</cite> is True.</p></li>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
     <br/>
   </p>
 </div>
