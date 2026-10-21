@@ -38,10 +38,7 @@ from math import ceil
 from random import randint
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import AutoMinorLocator
 from numpy.typing import NDArray
 
 __all__ = ["ecg_plot"]
@@ -212,7 +209,14 @@ def ecg_plot(
 
     """
 
+    # deferred so that `import torch_ecg` does not pull matplotlib;
+    # the Agg backend is forced before pyplot is first imported
+    import matplotlib
+
     matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import AutoMinorLocator
+
     randindex = randint(0, 99)
     random_sampler = random.uniform(-0.05, 0.004)
 

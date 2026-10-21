@@ -26,7 +26,6 @@ import numpy as np
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
-from biosppy.signals.tools import filter_signal
 from numpy.typing import NDArray
 from scipy.ndimage.filters import median_filter
 
@@ -205,6 +204,9 @@ def preprocess_single_lead_signal(
 
     # filter signal
     if band_fs:
+        # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+        from biosppy.signals.tools import filter_signal
+
         filtered_ecg = filter_signal(
             signal=filtered_ecg,
             ftype="FIR",

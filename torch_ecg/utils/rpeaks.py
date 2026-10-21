@@ -18,7 +18,6 @@ References:
 
 from typing import Union
 
-import biosppy.signals.ecg as BSE
 from numpy.typing import NDArray
 from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
@@ -47,6 +46,9 @@ def xqrs_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     kw = dict(sampfrom=0, sampto="end", conf=None, learn=True, verbose=False)
     kw = {k: kwargs.get(k, v) for k, v in kw.items()}
     rpeaks = _xqrs_detect(sig, fs, **kw)
@@ -72,6 +74,9 @@ def gqrs_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     kw = dict(
         d_sig=None,
         adc_gain=None,
@@ -113,6 +118,9 @@ def hamilton_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     # segment
     (rpeaks,) = BSE.hamilton_segmenter(signal=sig, sampling_rate=fs)
 
@@ -140,6 +148,9 @@ def ssf_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     (rpeaks,) = BSE.ssf_segmenter(
         signal=sig,
         sampling_rate=fs,
@@ -170,6 +181,9 @@ def christov_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     (rpeaks,) = BSE.christov_segmenter(signal=sig, sampling_rate=fs)
     # correct R-peak locations
     (rpeaks,) = BSE.correct_rpeaks(
@@ -198,6 +212,9 @@ def engzee_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     (rpeaks,) = BSE.engzee_segmenter(
         signal=sig,
         sampling_rate=fs,
@@ -225,6 +242,9 @@ def gamboa_detect(sig: NDArray, fs: Union[float, int], **kwargs) -> NDArray:
 
     """
     sig = sig.copy()  # to avoid changing the original signal
+    # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+    import biosppy.signals.ecg as BSE
+
     (rpeaks,) = BSE.gamboa_segmenter(
         signal=sig,
         sampling_rate=fs,

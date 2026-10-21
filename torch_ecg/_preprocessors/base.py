@@ -5,7 +5,6 @@ from itertools import repeat
 from typing import List, Literal, Optional, Tuple, Union
 
 import numpy as np
-from biosppy.signals.tools import filter_signal
 from numpy.typing import NDArray
 from scipy.ndimage import median_filter
 
@@ -159,6 +158,9 @@ def preprocess_multi_lead_signal(
         else:
             raise AssertionError("Invalid frequency band")
         if filter_type.lower() == "fir":
+            # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+            from biosppy.signals.tools import filter_signal
+
             filtered_ecg = filter_signal(
                 signal=filtered_ecg,
                 ftype="FIR",
@@ -259,6 +261,9 @@ def preprocess_single_lead_signal(
         else:
             raise AssertionError("Invalid frequency band")
         if filter_type.lower() == "fir":
+            # deferred so that `import torch_ecg` does not pull biosppy (and matplotlib via it)
+            from biosppy.signals.tools import filter_signal
+
             filtered_ecg = filter_signal(
                 signal=filtered_ecg,
                 ftype="FIR",
