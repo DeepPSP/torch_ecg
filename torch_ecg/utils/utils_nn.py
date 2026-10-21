@@ -1110,20 +1110,43 @@ def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
     Any
         The safe dictionary, which will be a plain `dict` for `CFG` or `dict` objects.
 
+    Notes
+    -----
+    Fields that cannot be represented in a saved config (non-builtin,
+    non-torch types; and, with ``remove_paths=True``, values that look like
+    filesystem paths, including strings that happen to exist on disk) are
+    dropped.  A silently missing config key (e.g. ``db_dir``) is hard to
+    diagnose from a loaded checkpoint, so a :class:`RuntimeWarning` lists
+    the dropped fields.
+
     """
+    dropped: List[str] = []
+    sg = _make_safe_globals(obj, remove_paths, "", dropped)
+    if dropped:
+        warnings.warn(
+            "`make_safe_globals` dropped the following fields from the config "
+            "(non-serializable or path-like values); they will be missing from the "
+            f"saved config: {'; '.join(sorted(dropped))}",
+            RuntimeWarning,
+        )
+    return sg  # type: ignore
+
+
+def _make_safe_globals(obj: Any, remove_paths: bool, path: str, dropped: List[str]) -> Any:
+    """Recursive worker of :func:`make_safe_globals`, recording dropped fields into `dropped`."""
     if isinstance(obj, (CFG, dict)):
-        sg = {k: make_safe_globals(v) for k, v in obj.items()}
+        sg = {k: _make_safe_globals(v, remove_paths, f"{path}.{k}" if path else str(k), dropped) for k, v in obj.items()}
         sg = {k: v for k, v in sg.items() if v is not None}
     elif isinstance(obj, (list, tuple)):
-        sg = [make_safe_globals(item) for item in obj]
+        sg = [_make_safe_globals(item, remove_paths, f"{path}[{idx}]", dropped) for idx, item in enumerate(obj)]
         sg = [item for item in sg if item is not None]
         if isinstance(obj, tuple):
             sg = tuple(sg)
     elif isinstance(obj, set):
-        sg = {make_safe_globals(item) for item in obj}
+        sg = {_make_safe_globals(item, remove_paths, f"{path}{{{item!r}}}", dropped) for item in obj}
         sg = {item for item in sg if item is not None}
     elif isinstance(obj, frozenset):
-        sg = frozenset({make_safe_globals(item) for item in obj})
+        sg = frozenset({_make_safe_globals(item, remove_paths, f"{path}{{{item!r}}}", dropped) for item in obj})
         sg = frozenset({item for item in sg if item is not None})
     elif isinstance(obj, tuple(item for item in _safe_globals if isinstance(item, type))):
         sg = obj
@@ -1132,11 +1155,14 @@ def make_safe_globals(obj: Any, remove_paths: bool = True) -> Any:
     elif is_stdtypes(obj):
         sg = obj
     else:
+        dropped.append(f"{path or '<root>'} (type {type(obj).__name__})")
         sg = None
     if remove_paths:
         if isinstance(sg, os.PathLike):
+            dropped.append(f"{path or '<root>'} (path-like)")
             sg = None
         elif isinstance(sg, (str, bytes)) and os.path.exists(sg):
+            dropped.append(f"{path or '<root>'} (existing path: {sg})")
             sg = None
     return sg  # type: ignore
 
@@ -1335,6 +1361,7 @@ class CkptMixin(object):
         self,
         path: Union[str, bytes, os.PathLike],
         train_config: CFG,
+        model_config: Optional[CFG] = None,
         extra_items: Optional[dict] = None,
         use_safetensors: Optional[bool] = None,
         safetensors_single_file: bool = True,
@@ -1354,6 +1381,16 @@ class CkptMixin(object):
         train_config : CFG
             Config for training the model,
             used when one restores the model.
+        model_config : CFG, optional
+            The full (outer) model config to persist, from which the model
+            can be reconstructed by :meth:`from_checkpoint` via
+            ``cls(config=...)``.  Defaults to ``self.config`` (the model's
+            own config), which for models that wrap a backbone is usually
+            an inner architecture config missing the top-level
+            ``classes`` / ``n_leads`` fields -- pass the full config
+            (e.g. the trainer's ``model_config``) whenever available.
+
+            .. versionadded:: 0.0.34
         extra_items : dict, optional
             Extra items to save along with the model.
             The values should be serializable: can be saved as a json file,
@@ -1399,7 +1436,7 @@ class CkptMixin(object):
         if use_safetensors is None:
             use_safetensors = path.name.endswith(excluded_suffixes) is False
 
-        _model_config = make_safe_globals(self.config)  # type: ignore
+        _model_config = make_safe_globals(model_config if model_config is not None else self.config)  # type: ignore
         _train_config = make_safe_globals(train_config)
 
         if path.name.endswith(excluded_suffixes):

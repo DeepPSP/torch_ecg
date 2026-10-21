@@ -876,6 +876,11 @@ class BaseTrainer(ReprMixin, ABC):
             return self._model.save(
                 path=path,
                 train_config=self.train_config,
+                # persist the full outer config so `from_checkpoint` can
+                # reconstruct the model with `cls(config=...)`; the default
+                # (`self._model.config`) is usually an inner architecture
+                # config without the top-level `classes` / `n_leads` fields
+                model_config=self.model_config,
                 extra_items={
                     "optimizer_state_dict": self.optimizer.state_dict(),
                     "epoch": self.epoch,
