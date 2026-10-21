@@ -44,3 +44,19 @@ examples on modern `torch_ecg` (one branch, one PR). Net change:
   retired (superseded by the `run-pytest` lanes)
 - `test/requirements.txt`: `einops`, `transformers` added (needed by
   the cinc2022 benchmark import chain)
+
+### checkpoints: fix the save/load config asymmetry (0.0.32 regression)
+
+- `CkptMixin.save` gains a `model_config` parameter: the full outer
+  config to persist for `from_checkpoint`'s `cls(config=...)`
+  reconstruction.  `BaseTrainer.save_checkpoint` now passes the
+  trainer's `model_config`, so trainer-written checkpoints again
+  contain the full config (top-level `classes`, `n_leads`, ...) as
+  the 0.0.31 `torch.save` path did; the 0.0.32 safetensors path
+  silently stored only the model's inner `self.config`, which broke
+  loading models whose `__init__` reads e.g. `config.classes`
+  (observed in the cinc2023 / cinc2024 challenge repos)
+- `make_safe_globals` now emits a `RuntimeWarning` listing every
+  dropped config field (non-serializable values, path-like values,
+  and -- with `remove_paths=True` -- strings that happen to exist on
+  disk); previously these fields vanished silently (e.g. `db_dir`)

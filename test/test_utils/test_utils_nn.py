@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
+from safetensors.torch import safe_open
 from tqdm.auto import tqdm
 
 from torch_ecg.cfg import CFG, DEFAULTS, FLOAT32
@@ -692,3 +693,65 @@ def test_make_safe_globals():
         pass
 
     assert make_safe_globals(Unsafe()) is None
+
+
+def test_make_safe_globals_dropped_fields_warning(tmp_path):
+    """Dropped fields (non-serializable / path-like) are listed in a warning."""
+    cfg = CFG(
+        keep=1,
+        legit_none=None,
+        func=lambda x: x,  # non-serializable
+        dir1=Path("/definitely/not/existing/db"),  # path-like value
+        db_dir=str(tmp_path),  # a string that happens to exist on disk
+    )
+    with pytest.warns(RuntimeWarning) as record:
+        safe_cfg = make_safe_globals(cfg)
+    msg = str(record[0].message)
+    for key in ("func", "dir1", "db_dir"):
+        assert key in msg, f"dropped key {key!r} not listed in warning: {msg}"
+    # legitimate None values are not reported as dropped
+    assert "legit_none" not in msg
+    assert safe_cfg == {"keep": 1}
+
+
+def test_ckpt_save_full_model_config_roundtrip():
+    """`CkptMixin.save(model_config=...)` persists the full outer config that
+    `from_checkpoint` reconstructs the model from (the 0.0.32/0.0.33
+    safetensors path silently persisted only the model's inner `self.config`,
+    losing top-level fields like `classes`).
+    """
+    import json
+    import shutil
+
+    tmp = Path(__file__).resolve().parents[1] / "tmp" / "ckpt_full_cfg"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True)
+
+    model = Model1D(12, CFG(out_channels=128))
+    full_config = CFG(classes=["A", "B", "C"], n_leads=12, out_channels=128)
+    train_config = CFG(n_leads=12)
+
+    # default (no model_config) keeps the old behavior: self.config is saved
+    single = model.save(tmp / "inner", train_config)
+    _, aux = Model1D.from_checkpoint(single)
+    assert aux["n_leads"] == 12
+    with safe_open(str(single), framework="pt") as f:  # type: ignore
+        meta = f.metadata() or {}
+    inner = json.loads(meta["model_config"])
+    assert inner == {"out_channels": 128}
+    single.unlink()
+
+    # explicit model_config: the full outer config is persisted and restored
+    single = model.save(tmp / "full", train_config, model_config=full_config)
+    loaded, _ = Model1D.from_checkpoint(single)
+    assert loaded.config["classes"] == ["A", "B", "C"]
+    assert loaded.config["out_channels"] == 128
+    single.unlink()
+
+    # directory format writes model_config.json with the full config
+    ckpt_dir = model.save(tmp / "dir", train_config, model_config=full_config, safetensors_single_file=False)
+    assert json.loads((ckpt_dir / "model_config.json").read_text())["classes"] == ["A", "B", "C"]
+    loaded, _ = Model1D.from_checkpoint(ckpt_dir)
+    assert loaded.config["classes"] == ["A", "B", "C"]
+    shutil.rmtree(tmp)
