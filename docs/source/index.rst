@@ -66,6 +66,7 @@ The system design is depicted as follows
    API Reference <api/index>
    Examples <examples>
    Changelog <CHANGELOG>
+   Version history <history>
 
 Citation
 =========
