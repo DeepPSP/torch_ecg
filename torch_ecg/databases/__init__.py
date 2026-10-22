@@ -75,6 +75,11 @@ Miscellaneous
     :recursive:
 
     BeatAnn
+    DataBaseInfo
+    list_databases
+    WFDB_Beat_Annotations
+    WFDB_Non_Beat_Annotations
+    WFDB_Rhythm_Annotations
 
 """
 
