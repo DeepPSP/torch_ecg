@@ -140,6 +140,8 @@ __all__ = [
 
 
 def list_databases() -> list:
+    """List the names of all database reader classes available in this
+    module (base classes excluded)."""
     return [
         db
         for db in __all__

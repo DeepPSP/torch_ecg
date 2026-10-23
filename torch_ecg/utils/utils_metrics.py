@@ -774,7 +774,7 @@ def compute_wave_delineation_metrics(
     mask_format: str = "channel_first",
     tol: float = 0.15,
 ) -> Dict[str, Dict[str, float]]:
-    f"""
+    """
     Compute metrics for the task of ECG wave delineation
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
     for multiple evaluations.
@@ -792,7 +792,7 @@ def compute_wave_delineation_metrics(
         of the same shapes.
     class_map : dict
         Class map, mapping names to waves to numbers from 0 to n_classes-1,
-        the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
+        the keys should contain "pwave", "qrs", "twave".
     fs : int
         Sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
