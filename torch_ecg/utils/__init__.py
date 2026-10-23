@@ -64,6 +64,8 @@ Data operations
     stratified_train_test_split
     one_hot_encode
     generate_weight_mask
+    ECGWaveForm
+    ECGWaveFormNames
 
 Interval operations
 -------------------
@@ -142,6 +144,24 @@ Visualization functions
 
     ecg_plot
 
+Random number utilities
+-----------------------
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    seed_everything
+    worker_init_fn
+    get_rng
+
+Download utilities
+------------------
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    http_get
+
 Miscellaneous
 -------------
 .. autosummary::
@@ -157,6 +177,7 @@ Miscellaneous
     np_topk
     select_k
     Registry
+    make_serializable
 
 """
 

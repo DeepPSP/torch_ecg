@@ -24,7 +24,14 @@ __all__ = [
 
 
 class PreProcessor(ReprMixin, ABC):
-    """Base class for preprocessors."""
+    """Base class for preprocessors.
+
+    A preprocessor wraps a preprocessing function together with its
+    hyper-parameters (:attr:`config`) and applies it to single-lead or
+    multi-lead ECG segments via :meth:`__call__` / :meth:`apply`;
+    :func:`preprocess_multi_lead_signal` and
+    :func:`preprocess_single_lead_signal` compose them.
+    """
 
     __name__ = "PreProcessor"
 

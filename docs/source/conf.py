@@ -15,16 +15,8 @@ import sys
 from pathlib import Path
 
 import pydata_sphinx_theme  # noqa: F401
-import sphinx_book_theme
-import sphinx_rtd_theme
-import sphinx_theme
-
-# import recommonmark  # noqa: F401
-# from recommonmark.transform import AutoStructify
-
 
 project_root = Path(__file__).resolve().parents[2]
-src_root = project_root / "torch_ecg"
 docs_root = Path(__file__).resolve().parents[0]
 
 sys.path.insert(0, str(project_root))
@@ -37,7 +29,8 @@ copyright = "2021, WEN Hao, KANG Jingsu"
 author = "WEN Hao, KANG Jingsu"
 
 # The full version, including alpha/beta/rc tags
-version = Path(src_root / "version.py").read_text().split("=")[1].strip()[1:-1]
+from torch_ecg.version import __version__ as version  # noqa: E402
+
 release = version
 
 today_fmt = "%Y/%m/%d"
@@ -56,10 +49,9 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
     "sphinx_design",
-    "nbsphinx",
+    "myst_parser",
     # "recommonmark",
     # 'sphinx.ext.autosectionlabel',
-    "sphinx_multiversion",
     "sphinx_emoji_favicon",
     # "sphinx_toolbox.collapse",  # replaced by dropdown of sphinx_design
     # "numpydoc",
@@ -121,60 +113,27 @@ napoleon_custom_sections = [
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-_theme_name = "pydata_sphinx_theme"  # "stanford_theme" "sphinx_book_theme", etc.
-
-if _theme_name == "stanford_theme":
-    html_theme = "stanford_theme"
-    html_theme_path = [sphinx_theme.get_html_theme_path("stanford-theme")]
-    html_theme_options = {
-        "collapse_navigation": False,
-        "display_version": True,
-    }
-elif _theme_name == "sphinx_rtd_theme":
-    html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    html_theme_options = {
-        "collapse_navigation": False,
-        "display_version": True,
-    }
-elif _theme_name == "sphinx_book_theme":
-    html_theme = "sphinx_book_theme"
-    html_theme_path = [sphinx_book_theme.get_html_theme_path()]
-    html_theme_options = {
-        "repository_url": "https://github.com/DeepPSP/torch_ecg",
-        "use_repository_button": True,
-        "use_issues_button": True,
-        "use_edit_page_button": True,
-        "use_download_button": True,
-        "use_fullscreen_button": True,
-        "path_to_docs": "docs/source",
-        "repository_branch": "master",
-    }
-elif _theme_name == "pydata_sphinx_theme":
-    html_theme = "pydata_sphinx_theme"
-    html_logo = "_static/images/deep-psp-logo.png"
-    html_sidebars = {"index": ["search-button-field"], "**": ["search-button-field", "sidebar-nav-bs"]}
-    html_theme_options = {
-        "collapse_navigation": False,
-        "header_links_before_dropdown": 6,
-        # "display_version": True,
-        "icon_links": [
-            {
-                "name": "GitHub",
-                "url": "https://github.com/DeepPSP/torch_ecg",
-                "icon": "fa-brands fa-github",
-            },
-        ],
-        "logo": {
-            "text": "torch-ecg",
+html_theme = "pydata_sphinx_theme"
+html_logo = "_static/images/deep-psp-logo.png"
+html_sidebars = {"index": ["search-button-field"], "**": ["search-button-field", "sidebar-nav-bs"]}
+html_theme_options = {
+    "collapse_navigation": False,
+    "header_links_before_dropdown": 6,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/DeepPSP/torch_ecg",
+            "icon": "fa-brands fa-github",
         },
-        "navbar_start": ["navbar-logo"],
-        "navbar_end": ["theme-switcher", "navbar-icon-links"],
-        "navbar_persistent": [],
-        "secondary_sidebar_items": ["page-toc"],
-    }
-else:
-    raise ValueError(f"Unknown theme name: {_theme_name}")
+    ],
+    "logo": {
+        "text": "torch-ecg",
+    },
+    "navbar_start": ["navbar-logo"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_persistent": [],
+    "secondary_sidebar_items": ["page-toc"],
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -189,7 +148,7 @@ html_css_files = [
 
 master_doc = "index"
 
-emoji_favicon = ":cœur_battant:"
+emoji_favicon = ":beating_heart:"
 
 
 def setup(app):

@@ -47,6 +47,23 @@ Saliency analysis
 
     GradCam
 
+Transformer backbones
+---------------------
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    Transformer
+
+Registries
+----------
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    MODELS
+    BACKBONES
+
 """
 
 from . import _nets, loss
