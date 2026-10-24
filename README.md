@@ -15,7 +15,6 @@ ECG Deep Learning Framework Implemented using PyTorch.
 Documentation (under development):
 
 - [GitHub Pages](https://deeppsp.github.io/torch_ecg/)  [![gh-page status](https://github.com/DeepPSP/torch_ecg/actions/workflows/docs-publish.yml/badge.svg?branch=doc)](https://github.com/DeepPSP/torch_ecg/actions/workflows/docs-publish.yml)
-- [Read the Docs](http://torch-ecg.rtfd.io/)  [![RTD status](https://readthedocs.org/projects/torch-ecg/badge/?version=latest)](https://torch-ecg.readthedocs.io/en/latest/?badge=latest)
 - [latest version](https://deep-psp.tech/torch-ecg-docs-dev/)
 
 The system design is depicted as follows
