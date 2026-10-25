@@ -1,5 +1,10 @@
-Changelog
-=========
+Version history (through 0.0.33)
+=================================
+
+Frozen history; releases up to and including 0.0.33.  Newer entries
+live in the ``CHANGELOG.md`` at the repository root (rendered on the
+:ref:`Changelog <changelog>` page).
+
 
 All notable changes to this project will be documented in this file.
 
@@ -7,48 +12,6 @@ The format is based on `Keep a
 Changelog <https://keepachangelog.com/en/1.1.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
-
-`Unreleased <https://github.com/DeepPSP/torch_ecg/compare/v0.0.33...HEAD>`__
-----------------------------------------------------------------------------
-
-Changed
-~~~~~~~
-
-- Import-time side effects removed (import purity): the AHA aux-data
-  module no longer leaves ``future.no_silent_downcasting`` flipped in
-  the process-global pandas options (saved and restored around the
-  table parsing); ``DEFAULTS.device`` is detected lazily on first
-  access instead of probing the CUDA driver at import (matters for
-  Python 3.14+ multiprocessing workers, which re-import the package,
-  and freezes the device before ``CUDA_VISIBLE_DEVICES`` can be set);
-  the ``TrainCfg`` modules of the 6 datasets no longer create their
-  log/checkpoint/model directories at import -- every consumer
-  (trainer, loggers, ``CkptMixin.save``, ``http_get``) creates them on
-  demand.
-
-- GitHub releases now carry the **sdist** as an asset (numpy-style: source
-  on GitHub, wheels stay on PyPI); previously releases attached no files.
-- The legacy-checkpoint test asset of ``test_seq_lab_net`` moved from
-  Google Drive to this repository's release assets (``test-assets-v1``):
-  gdrive quota errors made the test flaky (``gdown`` failures escape
-  as-is instead of the expected ``RuntimeError``).
-
-Fixed
-~~~~~
-
-- Fix a second race in the one-time ``database_citation.csv`` migration
-  (the first one, the ``unlink`` race, was fixed in 0.0.33): when several
-  processes import the package concurrently, one could ``read_csv`` the
-  citation cache while a sibling was still writing it, crashing at import
-  with a parse error (observed on the ubuntu-24.04 CI canary). The cache
-  is now written atomically (temp file + ``os.replace``) and a partially
-  written cache is treated as empty instead of raising.
-- The atomic-rename temp file of that same migration now carries the
-  process id in its name: with a single shared name, a concurrent
-  importer's ``os.replace`` consumed the temp file and the remaining
-  importers' replaces failed with ``FileNotFoundError`` (3/6 concurrent
-  importers crashed in the nightly full suite).
-
 `0.0.33 <https://github.com/DeepPSP/torch_ecg/compare/v0.0.32...v0.0.33>`__ - 2026-10-11
 ----------------------------------------------------------------------------
 
@@ -181,7 +144,6 @@ Fixed
   - explicit ``__deepcopy__`` that bypasses subclass ``__init__`` and
     rebuilds both the item and the attribute views; the pickle format is
     untouched, so previously saved checkpoints still load
-rash, reserved keys, update)
 - ``BaselineWanderAugmenter`` is fully vectorized and no longer spawns
   two ``multiprocessing.Pool`` instances per forward call (each forward
   now takes milliseconds instead of process-pool startup costs, and the

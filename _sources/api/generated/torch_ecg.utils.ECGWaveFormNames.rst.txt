@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.ECGWaveFormNames
+=================================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autodata:: ECGWaveFormNames

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-62-65-61-74-69-6e-67-5f-68-65-61-72-74-3a.png">
     <title>Tutorial &#8212; torch-ecg 0.0.33 documentation</title>
   
   
@@ -27,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -38,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
     <script src="_static/documentation_options.js?v=565bc8c8"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
@@ -50,14 +49,14 @@
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/codeblock.js?v=82bf629b"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="api/index.html" />
-    <link rel="prev" title="Installation instructions" href="install.html" />
+    <link rel="prev" title="Evaluation and metrics" href="user_guide/evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.33" />
   
@@ -107,7 +106,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -156,8 +155,15 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
 <li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
     Tutorial
   </a>
 </li>
@@ -183,6 +189,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="history.html">
+    Version history
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -195,15 +208,15 @@
         <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -228,6 +241,10 @@
   
   
 
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
   
 </div>
 
@@ -262,8 +279,15 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
 <li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
     Tutorial
   </a>
 </li>
@@ -289,6 +313,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="history.html">
+    Version history
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -302,15 +333,15 @@
           <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -336,7 +367,7 @@
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -404,7 +435,57 @@
                   
   <section id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">#</a></h1>
-<p>Under construction…</p>
+<p>A five-minute tour of the main building blocks.  The complete, runnable
+versions of these patterns live in the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">examples</span></a>.</p>
+<section id="read-a-database">
+<h2>1. Read a database<a class="headerlink" href="#read-a-database" title="Link to this heading">#</a></h2>
+<p>Every supported database has a reader class in <a class="reference internal" href="api/databases.html#module-torch_ecg.databases" title="torch_ecg.databases"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.databases</span></code></a>
+that handles local caching, record listing and signal/annotation loading:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.databases</span><span class="w"> </span><span class="kn">import</span> <span class="n">LUDB</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="n">LUDB</span><span class="p">(</span><span class="s2">"~/data/ludb"</span><span class="p">)</span>      <span class="c1"># local storage path</span>
+<span class="n">reader</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>                  <span class="c1"># from the physionet-open S3 bucket</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># (n_leads, n_samples) array</span>
+<span class="n">ann</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">load_ann</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># waveform annotations</span>
+</pre></div>
+</div>
+</section>
+<section id="wrap-it-in-a-dataset">
+<h2>2. Wrap it in a dataset<a class="headerlink" href="#wrap-it-in-a-dataset" title="Link to this heading">#</a></h2>
+<p>Datasets pair readers with a training configuration (leads, classes,
+segment length, …) and yield tensors:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.databases.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">LUDBDataset</span><span class="p">,</span> <span class="n">LUDBTrainCfg</span>
+
+<span class="n">train_cfg</span> <span class="o">=</span> <span class="n">LUDBTrainCfg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">train_cfg</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="s2">"~/data/ludb"</span>
+<span class="n">train_cfg</span><span class="o">.</span><span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">ds_train</span> <span class="o">=</span> <span class="n">LUDBDataset</span><span class="p">(</span><span class="n">train_cfg</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="pick-a-model">
+<h2>3. Pick a model<a class="headerlink" href="#pick-a-model" title="Link to this heading">#</a></h2>
+<p>Models take a config from <a class="reference internal" href="api/models.html#module-torch_ecg.model_configs" title="torch_ecg.model_configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.model_configs</span></code></a> (or your own
+CFG) plus the number of classes / leads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.model_configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN_CONFIG</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">ECG_CRNN_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">config</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"resnet_block_leadwise"</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="train-and-reload">
+<h2>4. Train and reload<a class="headerlink" href="#train-and-reload" title="Link to this heading">#</a></h2>
+<p>Subclass <a class="reference internal" href="api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer" title="torch_ecg.components.trainer.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a> (or reuse one
+of the benchmark trainers) and call <code class="code docutils literal notranslate"><span class="pre">train()</span></code>.  Checkpoints written
+by the trainer contain the full model config, so a trained model is a
+one-liner to reload:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">train_config</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="s2">"path/to/checkpoint_dir"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -418,12 +499,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="install.html"
+       href="user_guide/evaluation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Installation instructions</p>
+        <p class="prev-next-title">Evaluation and metrics</p>
       </div>
     </a>
     <a class="right-next"
@@ -442,6 +523,27 @@
             
             
               
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-a-database">1. Read a database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrap-it-in-a-dataset">2. Wrap it in a dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pick-a-model">3. Pick a model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-and-reload">4. Train and reload</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
             
           </div>
           <footer class="bd-footer-content">
@@ -453,8 +555,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -475,7 +577,6 @@
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
-    <br/>
   </p>
 </div>
       
@@ -488,7 +589,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
 </p></div>
       
     </div>

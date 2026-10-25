@@ -1,0 +1,6 @@
+﻿torch\_ecg.databases.WFDB\_Beat\_Annotations
+============================================
+
+.. currentmodule:: torch_ecg.databases
+
+.. autodata:: WFDB_Beat_Annotations

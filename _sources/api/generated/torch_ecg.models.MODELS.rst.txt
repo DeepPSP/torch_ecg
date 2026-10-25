@@ -1,0 +1,6 @@
+﻿torch\_ecg.models.MODELS
+========================
+
+.. currentmodule:: torch_ecg.models
+
+.. autodata:: MODELS

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-63-153-75-72-5f-62-61-74-74-61-6e-74-3a.png">
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-62-65-61-74-69-6e-67-5f-68-65-61-72-74-3a.png">
     <title>VGG16 &#8212; torch-ecg 0.0.33 documentation</title>
   
   
@@ -27,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=97348ffd" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
     <script src="../../_static/documentation_options.js?v=565bc8c8"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -50,7 +49,6 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/codeblock.js?v=82bf629b"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/torch_ecg.models.VGG16';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -58,6 +56,7 @@
     <link rel="next" title="Xception" href="torch_ecg.models.Xception.html" />
     <link rel="prev" title="RegNet" href="torch_ecg.models.RegNet.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.0.33" />
   
@@ -107,7 +106,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -157,6 +156,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorial.html">
     Tutorial
   </a>
@@ -183,6 +189,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../history.html">
+    Version history
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -195,15 +208,15 @@
         <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -229,7 +242,7 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -267,6 +280,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorial.html">
     Tutorial
   </a>
@@ -293,6 +313,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../history.html">
+    Version history
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -306,15 +333,15 @@
           <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -340,7 +367,7 @@
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -375,13 +402,18 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.CACHET_CADB.html">CACHET_CADB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.SPH.html">SPH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.BeatAnn.html">BeatAnn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.DataBaseInfo.html">DataBaseInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.list_databases.html">torch_ecg.databases.list_databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.WFDB_Beat_Annotations.html">torch_ecg.databases.WFDB_Beat_Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.WFDB_Non_Beat_Annotations.html">torch_ecg.databases.WFDB_Non_Beat_Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.databases.WFDB_Rhythm_Annotations.html">torch_ecg.databases.WFDB_Rhythm_Annotations</a></li>
 </ul>
 </details></li>
 
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../models.html">torch_ecg.models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ResNet.html">ResNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.RegNet.html">RegNet</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">VGG16</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">VGG16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.Xception.html">Xception</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.DenseNet.html">DenseNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MobileNetV1.html">MobileNetV1</a></li>
@@ -394,8 +426,12 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.ECG_SEQ_LAB_NET.html">ECG_SEQ_LAB_NET</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.RR_LSTM.html">RR_LSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.GradCam.html">GradCam</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.Transformer.html">Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.MODELS.html">torch_ecg.models.MODELS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.BACKBONES.html">torch_ecg.models.BACKBONES</a></li>
 </ul>
 </details></li>
+
 <li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">torch_ecg.models.loss</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a></li>
@@ -486,6 +522,8 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.stratified_train_test_split.html">torch_ecg.utils.stratified_train_test_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.one_hot_encode.html">torch_ecg.utils.one_hot_encode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ECGWaveForm.html">ECGWaveForm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ECGWaveFormNames.html">torch_ecg.utils.ECGWaveFormNames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.overlaps.html">torch_ecg.utils.overlaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.validate_interval.html">torch_ecg.utils.validate_interval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.in_interval.html">torch_ecg.utils.in_interval</a></li>
@@ -521,6 +559,10 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.nildent.html">torch_ecg.utils.nildent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_date_str.html">torch_ecg.utils.get_date_str</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.ecg_plot.html">torch_ecg.utils.ecg_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.seed_everything.html">torch_ecg.utils.seed_everything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.worker_init_fn.html">torch_ecg.utils.worker_init_fn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.get_rng.html">torch_ecg.utils.get_rng</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.http_get.html">torch_ecg.utils.http_get</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.list_sum.html">torch_ecg.utils.list_sum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.dicts_equal.html">torch_ecg.utils.dicts_equal</a></li>
@@ -530,6 +572,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.np_topk.html">torch_ecg.utils.np_topk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.select_k.html">torch_ecg.utils.select_k</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.Registry.html">Registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_ecg.utils.make_serializable.html">torch_ecg.utils.make_serializable</a></li>
 </ul>
 </details></li>
 </ul>
@@ -757,8 +800,8 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -779,7 +822,6 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
-    <br/>
   </p>
 </div>
       
@@ -792,7 +834,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
 </p></div>
       
     </div>

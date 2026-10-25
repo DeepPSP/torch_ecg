@@ -1,0 +1,6 @@
+﻿torch\_ecg.databases.list\_databases
+====================================
+
+.. currentmodule:: torch_ecg.databases
+
+.. autofunction:: list_databases

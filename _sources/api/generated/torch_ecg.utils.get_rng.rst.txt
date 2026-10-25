@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.get\_rng
+=========================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: get_rng

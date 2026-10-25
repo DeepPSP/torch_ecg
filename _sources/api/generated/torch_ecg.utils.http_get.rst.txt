@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.http\_get
+==========================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: http_get

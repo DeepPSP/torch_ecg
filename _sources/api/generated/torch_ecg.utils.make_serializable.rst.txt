@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.make\_serializable
+===================================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: make_serializable

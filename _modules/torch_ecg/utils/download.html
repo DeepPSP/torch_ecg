@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torch_ecg.utils.download &#8212; torch-ecg 0.0.33 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/codeblock.css?v=d29e50c4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=97348ffd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../_static/documentation_options.js?v=565bc8c8"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/codeblock.js?v=82bf629b"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torch_ecg/utils/download';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.33" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/deep-psp-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/deep-psp-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">torch-ecg</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../CHANGELOG.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../history.html">
+    Version history
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../CHANGELOG.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../history.html">
+    Version history
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torch_ecg.utils.download</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for torch_ecg.utils.download</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
+<span class="sd">utilities for downloading and extracting compressed data files</span>
+
+<span class="sd">For most PhysioNet databases, the WFDB package already has a method `dl_database`</span>
+<span class="sd">for downloading the data files.</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shlex</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tarfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNSIGNED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">botocore.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">str2bool</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"http_get"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="n">PHYSIONET_DB_VERSION_PATTERN</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">d+</span><span class="se">\\</span><span class="s2">.</span><span class="se">\\</span><span class="s2">d+</span><span class="se">\\</span><span class="s2">.</span><span class="se">\\</span><span class="s2">d+"</span>
+
+<span class="c1"># number of retries and interval (in seconds) for downloads that the server</span>
+<span class="c1"># keeps replying 202 (Accepted) with an empty body, e.g. figshare portal domains</span>
+<span class="n">_ASYNC_DOWNLOAD_RETRIES</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">_ASYNC_DOWNLOAD_RETRY_INTERVAL</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_requests_retry_session</span><span class="p">(</span>
+    <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">backoff_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">status_forcelist</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">,</span> <span class="mi">403</span><span class="p">),</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get a requests session with retry strategy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    retries : int, default 5</span>
+<span class="sd">        Number of total retries to allow.</span>
+<span class="sd">    backoff_factor : float, default 0.5</span>
+<span class="sd">        A backoff factor to apply between attempts.</span>
+<span class="sd">        A backoff factor of 0.5 will sleep for [0.5s, 1s, 2s, ...] between retries.</span>
+<span class="sd">    status_forcelist : tuple, default (429, 500, 502, 503, 504, 403)</span>
+<span class="sd">        A set of HTTP status codes that we should force a retry on.</span>
+<span class="sd">    session : requests.Session, optional</span>
+<span class="sd">        An existing requests session.</span>
+<span class="sd">        If None, a new session will be created.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    requests.Session</span>
+<span class="sd">        A requests session with retry strategy.</span>
+
+<span class="sd">    """</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">requests.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPAdapter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">requests.packages.urllib3.util.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Retry</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">retry</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span>
+        <span class="n">total</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+        <span class="n">read</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+        <span class="n">connect</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+        <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+        <span class="n">status_forcelist</span><span class="o">=</span><span class="n">status_forcelist</span><span class="p">,</span>
+        <span class="n">allowed_methods</span><span class="o">=</span><span class="nb">frozenset</span><span class="p">([</span><span class="s2">"HEAD"</span><span class="p">,</span> <span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"OPTIONS"</span><span class="p">]),</span>
+        <span class="n">raise_on_redirect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">raise_on_status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retry</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">"https://"</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">"http://"</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">session</span>
+
+
+<div class="viewcode-block" id="http_get">
+<a class="viewcode-back" href="../../../api/generated/torch_ecg.utils.http_get.html#torch_ecg.utils.http_get">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">http_get</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+    <span class="n">proxies</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">extract</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">),</span>
+    <span class="n">verify_length</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Download contents of a URL and save to a file.</span>
+
+<span class="sd">    This function is a modified version of the `download_file` function in</span>
+<span class="sd">    `transformers.file_utils` [1]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        URL to download file from.</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        Directory to save the file.</span>
+<span class="sd">        If `extract` is ``True``, the extracted content will be saved to `dst_dir`.</span>
+<span class="sd">    proxies : dict, optional</span>
+<span class="sd">        Dictionary of proxy settings.</span>
+<span class="sd">    extract : {True, False, "auto"}, default "auto"</span>
+<span class="sd">        Whether to extract the downloaded file.</span>
+<span class="sd">        "auto" will extract if the file is a `zip` file or a compressed `tar` file.</span>
+<span class="sd">    filename : str, optional</span>
+<span class="sd">        Name of the downloaded file.</span>
+<span class="sd">        If None, the filename will be the basename of the URL.</span>
+<span class="sd">        If `extract` is ``True``, the filename will NOT affect the extracted folder name,</span>
+<span class="sd">        which is set to `dst_dir`, and `filename` is only the downloaded file name.</span>
+
+<span class="sd">        .. versionadded:: 0.0.20</span>
+<span class="sd">    timeout : float or tuple, default (5.0, 60.0)</span>
+<span class="sd">        How many seconds to wait for the server to send data</span>
+<span class="sd">        before giving up, as a float, or a (connect timeout, read timeout) tuple.</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
+<span class="sd">    verify_length : bool, default True</span>
+<span class="sd">        Whether to verify the length of the downloaded file</span>
+<span class="sd">        with the `Content-Length` header in the HTTP response.</span>
+
+<span class="sd">        .. versionadded:: 0.0.32</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    final_dst : pathlib.Path</span>
+<span class="sd">        Path to the downloaded file or the extracted folder.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py</span>
+
+<span class="sd">    """</span>
+    <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s2">"file already exists"</span><span class="p">)</span>
+    <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+        <span class="c1"># assume https by default</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"http"</span><span class="p">,</span> <span class="s2">"https"</span><span class="p">,</span> <span class="s2">"s3"</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported URL scheme </span><span class="si">{</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">extract</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">],</span> <span class="s2">"extract must be True, False, or 'auto'."</span>
+
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">"s3"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">"aws"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># no AWS CLI on this machine; boto3 is a hard dependency, so</span>
+            <span class="c1"># keep downloading from S3 via the pure-Python backend</span>
+            <span class="n">_download_from_aws_s3_using_boto3</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_download_from_aws_s3_using_awscli</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span> <span class="o">==</span> <span class="s2">"www.dropbox.com"</span> <span class="ow">and</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">query</span> <span class="o">==</span> <span class="s2">"dl=0"</span><span class="p">:</span>
+        <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">"dl=1"</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+    <span class="c1"># for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"</span>
+    <span class="c1"># produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"</span>
+    <span class="n">pure_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">geturl</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span> <span class="o">==</span> <span class="s2">"drive.google.com"</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"filename can not be inferred from Google Drive URL."</span>
+    <span class="k">if</span> <span class="n">extract</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
+        <span class="c1"># determine whether to extract based on the file extension</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_compressed_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                <span class="n">extract</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">extract</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">is_compressed_file</span><span class="p">(</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">extract</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extract</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span> <span class="o">==</span> <span class="s2">"drive.google.com"</span><span class="p">:</span>
+        <span class="n">downloaded_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="n">dst_dir</span><span class="p">,</span>
+            <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_download_from_google_drive</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">df_suffix</span> <span class="o">=</span> <span class="n">_suffix</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">downloaded_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Downloading </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_compressed_file</span><span class="p">(</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">extract</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_compressed_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">"filename is given, and it is not a `zip` file or a compressed `tar` file. "</span>
+                        <span class="s2">"Automatic decompression is turned off."</span><span class="p">,</span>
+                        <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">extract</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">"URL must be pointing to a `zip` file or a compressed `tar` file. "</span>
+                    <span class="s2">"Automatic decompression is turned off. "</span>
+                    <span class="s2">"The user is responsible for decompressing the file manually."</span><span class="p">,</span>
+                    <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">extract</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>  <span class="c1"># type: ignore</span>
+        <span class="n">df_suffix</span> <span class="o">=</span> <span class="n">_suffix</span><span class="p">(</span><span class="n">pure_url</span><span class="p">)</span> <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_suffix</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">downloaded_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="n">df_suffix</span><span class="p">,</span>
+            <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># req = requests.get(url, stream=True, proxies=proxies)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">_requests_retry_session</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># some hosting services (e.g. figshare portal domains) put direct file</span>
+            <span class="c1"># URLs behind an asynchronous queue and reply 202 (Accepted) with an</span>
+            <span class="c1"># empty body; retry a few times before giving up</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_ASYNC_DOWNLOAD_RETRIES</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">202</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">_ASYNC_DOWNLOAD_RETRY_INTERVAL</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">snippet</span> <span class="o">=</span> <span class="s2">""</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># best effort: enrich the error with a body snippet;</span>
+                    <span class="c1"># the RuntimeError below is raised regardless</span>
+                    <span class="n">snippet</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">300</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to download </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">, status=</span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, body[:300]=</span><span class="si">{</span><span class="n">snippet</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">202</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Failed to download </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">: the server keeps replying 202 (Accepted) with an empty body. "</span>
+                    <span class="s2">"This is typical of hosting services that queue downloads (e.g. figshare portal domains). "</span>
+                    <span class="s2">"Try a direct file URL instead, e.g. `ndownloader.figshare.com/files/...` "</span>
+                    <span class="s2">"instead of `&lt;portal&gt;.figshare.com/ndownloader/files/...`."</span>
+                <span class="p">)</span>
+
+            <span class="n">content_length</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Content-Length"</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">content_length</span><span class="p">)</span> <span class="k">if</span> <span class="n">content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="c1"># when the target is expected to be an archive, an HTML response body</span>
+            <span class="c1"># usually indicates an error/interstitial page rather than real data,</span>
+            <span class="c1"># e.g. a bandwidth-limited or dead link on some file hosting services</span>
+            <span class="k">if</span> <span class="n">extract</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"text/html"</span><span class="p">):</span>
+                <span class="n">snippet</span> <span class="o">=</span> <span class="s2">""</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># best effort: enrich the error with a body snippet;</span>
+                    <span class="c1"># the RuntimeError below is raised regardless</span>
+                    <span class="n">snippet</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">300</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Failed to download </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">: expected an archive file, but got an HTML page "</span>
+                    <span class="sa">f</span><span class="s2">"(body[:300]=</span><span class="si">{</span><span class="n">snippet</span><span class="si">!r}</span><span class="s2">). This usually means the link is broken, expired, "</span>
+                    <span class="s2">"or rate-limited by the hosting service."</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">str2bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CI"</span><span class="p">)):</span>
+                <span class="n">mininterval</span> <span class="o">=</span> <span class="mf">10.0</span>
+                <span class="n">disable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mininterval</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="n">disable</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">"B"</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mininterval</span><span class="o">=</span><span class="n">mininterval</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="n">disable</span>
+            <span class="p">)</span>
+            <span class="n">downloaded_size</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>  <span class="c1"># filter out keep-alive new chunks</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
+                    <span class="n">downloaded_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                    <span class="n">downloaded_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">downloaded_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">downloaded_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Downloaded file from </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> is empty (0 bytes). "</span> <span class="s2">"The server probably did not serve the actual file content."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">verify_length</span> <span class="ow">and</span> <span class="n">total</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">downloaded_size</span> <span class="o">!=</span> <span class="n">total</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Size mismatch for </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">. Expected </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> bytes, got </span><span class="si">{</span><span class="n">downloaded_size</span><span class="si">}</span><span class="s2"> bytes."</span><span class="p">)</span>
+
+    <span class="c1"># add a delay to avoid the error "process cannot access the file because it is being used by another process"</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">extract</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">".zip"</span> <span class="ow">in</span> <span class="n">df_suffix</span><span class="p">:</span>
+            <span class="n">_unzip_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">))</span>
+        <span class="c1"># elif ".tar" in df_suffix:  # tar files</span>
+        <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">.(tar(</span><span class="se">\\</span><span class="s2">.(gz|bz2|lz|xz|tz|zst))?|tgz|tbz2|tlz|txz|tzst)$"</span><span class="p">,</span> <span class="n">df_suffix</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_untar_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported (compressed) archived file type </span><span class="si">{</span><span class="n">df_suffix</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="c1"># avoid the case the compressed file is a folder with the same name</span>
+        <span class="c1"># DO NOT use _stem(Path(pure_url))</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">_suffix</span><span class="p">(</span><span class="n">url</span><span class="p">),</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_folder</span> <span class="o">=</span> <span class="n">_stem</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">_folder</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
+            <span class="n">tmp_folder</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_tmp"</span>
+            <span class="c1"># move (rename) the dst_dir to a temporary folder</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">tmp_folder</span><span class="p">)</span>
+            <span class="c1"># move (rename) the extracted folder to the destination folder</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tmp_folder</span><span class="p">)</span> <span class="o">/</span> <span class="n">_folder</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmp_folder</span><span class="p">)</span>
+        <span class="n">final_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">final_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">pure_url</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">filename</span>  <span class="c1"># type: ignore</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">final_dst</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">downloaded_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">final_dst</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_stem</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get filename without extension, especially for .tar.xx files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : `path-like`</span>
+<span class="sd">        Path to the file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Filename without extension.</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">".tar"</span><span class="p">,</span> <span class="s2">".gz"</span><span class="p">,</span> <span class="s2">".tz"</span><span class="p">,</span> <span class="s2">".lz"</span><span class="p">,</span> <span class="s2">".bz2"</span><span class="p">,</span> <span class="s2">".xz"</span><span class="p">,</span> <span class="s2">".zip"</span><span class="p">,</span> <span class="s2">".7z"</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">_stem</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">ignore_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">PHYSIONET_DB_VERSION_PATTERN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get file extension, including all suffixes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : `path-like`</span>
+<span class="sd">        Path to the file.</span>
+<span class="sd">    ignore_pattern : str, optional</span>
+<span class="sd">        Pattern to ignore in the filename,</span>
+<span class="sd">        by default `PHYSIONET_DB_VERSION_PATTERN`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The full file extension.</span>
+
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ignore_pattern</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span><span class="o">.</span><span class="n">suffixes</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_compressed_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Check if the path points to a valid compressed file.</span>
+
+<span class="sd">    NOTE: a `.pth.tar` file is NOT considered a compressed file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : `path-like`</span>
+<span class="sd">        Path to the file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if the file is a valid compressed file,</span>
+<span class="sd">        False otherwise.</span>
+
+<span class="sd">    """</span>
+    <span class="c1"># compressed_file_pattern = "(\\.zip)|(\\.tar)"</span>
+    <span class="n">compressed_file_pattern</span> <span class="o">=</span> <span class="s2">"^(?!.*</span><span class="se">\\</span><span class="s2">.pth</span><span class="se">\\</span><span class="s2">.tar$).*</span><span class="se">\\</span><span class="s2">.(zip|7z|tar(</span><span class="se">\\</span><span class="s2">.(gz|bz2|lz|xz|tz|zst))?|tgz|tbz2|tlz|txz|tzst)$"</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">compressed_file_pattern</span><span class="p">,</span> <span class="n">_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unzip_file</span><span class="p">(</span><span class="n">path_to_zip_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Unzips a .zip file to folder path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_to_zip_file : `path-like`</span>
+<span class="sd">        Path to the .zip file.</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        Path to the destination folder.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Extracting file </span><span class="si">{</span><span class="n">path_to_zip_file</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dst_dir</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path_to_zip_file</span><span class="p">))</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+        <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_untar_file</span><span class="p">(</span><span class="n">path_to_tar_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Decompress a .tar.xx file to folder path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_to_tar_file : `path-like`</span>
+<span class="sd">        Path to the .tar.xx file.</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        Path to the destination folder.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Extracting file </span><span class="si">{</span><span class="n">path_to_tar_file</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dst_dir</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_to_tar_file</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"r:"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"tar"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path_to_tar_file</span><span class="p">),</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar_ref</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="c1"># tar_ref.extractall(str(dst_dir))</span>
+        <span class="c1"># CVE-2007-4559 (related to  CVE-2001-1267):</span>
+        <span class="c1"># directory traversal vulnerability in `extract` and `extractall` in `tarfile` module</span>
+        <span class="n">_safe_tar_extract</span><span class="p">(</span><span class="n">tar_ref</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_within_directory</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Check if the target is within the directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : `path-like`</span>
+<span class="sd">        Directory to check.</span>
+<span class="sd">    target : `path-like`</span>
+<span class="sd">        Path to the target.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if the target is within the directory,</span>
+<span class="sd">        False otherwise.</span>
+
+<span class="sd">    """</span>
+    <span class="c1"># `os.path.realpath` (not `abspath`) so that symlinks created by earlier</span>
+    <span class="c1"># members of the same archive are resolved as well; `commonpath` (not</span>
+    <span class="c1"># `commonprefix`) so that sibling directories like `/dst_evil` cannot</span>
+    <span class="c1"># bypass the check, which string-prefix comparison allowed.</span>
+    <span class="n">abs_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+    <span class="n">abs_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">abs_directory</span><span class="p">,</span> <span class="n">abs_target</span><span class="p">])</span> <span class="o">==</span> <span class="n">abs_directory</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ancestor_names</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the normalized ancestor directory names of a path, e.g.</span>
+<span class="sd">    ``"a/b/c"`` -&gt; ``{"a", "a/b"}``."""</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">))}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_safe_tar_extract</span><span class="p">(</span>
+    <span class="n">tar</span><span class="p">:</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">,</span>
+    <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+    <span class="n">members</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">tarfile</span><span class="o">.</span><span class="n">TarInfo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">numeric_owner</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Extract members from a tarfile **safely** to a destination directory.</span>
+
+<span class="sd">    This function prevents path traversal attacks, by checking that the</span>
+<span class="sd">    extracted files are within the destination directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tar : tarfile.TarFile</span>
+<span class="sd">        The tarfile to extract from.</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        The destination directory</span>
+<span class="sd">    members : Iterable[tarfile.TarInfo], optional</span>
+<span class="sd">        The members to extract</span>
+<span class="sd">        If is None, extract all members,</span>
+<span class="sd">        otherwise, must be a subset of the list</span>
+<span class="sd">        returned by :func:`tar.getmembers`.</span>
+<span class="sd">    numeric_owner : bool, default False</span>
+<span class="sd">        If True, only the numbers for user/group names are used</span>
+<span class="sd">        and not the names. For more information,</span>
+<span class="sd">        see :func:`tarfile.TarFile.extractall`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">members</span><span class="p">)</span> <span class="k">if</span> <span class="n">members</span> <span class="k">else</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">()</span>
+    <span class="n">link_member_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">issym</span><span class="p">()</span> <span class="ow">or</span> <span class="n">m</span><span class="o">.</span><span class="n">islnk</span><span class="p">()}</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>
+        <span class="n">member_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_within_directory</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">member_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Attempted Path Traversal in Tar File"</span><span class="p">)</span>
+        <span class="c1"># `extractall` creates members in order; a link member created earlier</span>
+        <span class="c1"># would make the current member be written through the link, possibly</span>
+        <span class="c1"># outside `dst_dir` (realpath of the not-yet-existing link cannot</span>
+        <span class="c1"># catch this in the check above), so refuse to extract through links</span>
+        <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="n">_ancestor_names</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="n">link_member_names</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Attempted Path Traversal in Tar File "</span> <span class="sa">f</span><span class="s2">"(member `</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` extracted through link `</span><span class="si">{</span><span class="n">ancestor</span><span class="si">}</span><span class="s2">`)"</span>
+                <span class="p">)</span>
+        <span class="c1"># link members themselves must point inside the destination</span>
+        <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">issym</span><span class="p">():</span>
+            <span class="n">link_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">member_path</span><span class="p">),</span> <span class="n">member</span><span class="o">.</span><span class="n">linkname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_within_directory</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">link_target</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Attempted Path Traversal in Tar File (link `</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` -&gt; `</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">linkname</span><span class="si">}</span><span class="s2">`)"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">member</span><span class="o">.</span><span class="n">islnk</span><span class="p">():</span>
+            <span class="c1"># hardlink targets are member names, relative to the archive root</span>
+            <span class="n">link_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">member</span><span class="o">.</span><span class="n">linkname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_within_directory</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">link_target</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Attempted Path Traversal in Tar File (link `</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">` -&gt; `</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">linkname</span><span class="si">}</span><span class="s2">`)"</span><span class="p">)</span>
+
+    <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">members</span><span class="p">,</span> <span class="n">numeric_owner</span><span class="o">=</span><span class="n">numeric_owner</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">url_is_reachable</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Check if a URL is reachable.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        The URL.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to :meth:`requests.head`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the URL is reachable.</span>
+
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"timeout"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># successful responses and redirection messages</span>
+        <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#information_responses</span>
+        <span class="c1"># Informational responses (100 – 199)</span>
+        <span class="c1"># Successful responses (200 – 299)</span>
+        <span class="c1"># Redirection messages (300 – 399)</span>
+        <span class="c1"># Client error responses (400 – 499)</span>
+        <span class="c1"># Server error responses (500 – 599)</span>
+        <span class="k">return</span> <span class="mi">100</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">400</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_download_from_google_drive</span><span class="p">(</span><span class="n">url_or_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Download a file from Google Drive.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url_or_id : str</span>
+<span class="sd">        The URL of the file or the file ID.</span>
+<span class="sd">    output : `path-like`</span>
+<span class="sd">        The output file path.</span>
+<span class="sd">    quiet : bool, default False</span>
+<span class="sd">        Whether to suppress the output.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">gdown</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ModuleNotFoundError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">"gdown is required to download from Google Drive."</span><span class="p">)</span>
+    <span class="n">file_id_pattern</span> <span class="o">=</span> <span class="s2">"^1[A-Za-z0-9-_]</span><span class="si">{32}</span><span class="s2">$"</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file_id_pattern</span><span class="p">,</span> <span class="n">url_or_id</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">url_or_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"https://drive.google.com/u/0/uc?id=</span><span class="si">{</span><span class="n">url_or_id</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url_or_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">""</span> <span class="ow">and</span> <span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+        <span class="c1"># no scheme is given, e.g. drive.google.com/file/d/xxx/view?usp=sharing</span>
+        <span class="n">url_or_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">url_or_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url_or_id</span><span class="p">)</span>
+    <span class="c1"># remove trailing query string</span>
+    <span class="n">url_or_id</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">"/view</span><span class="se">\\</span><span class="s2">?.*$"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">url_or_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">"^https://drive</span><span class="se">\\</span><span class="s2">.google.com/file/d/"</span><span class="p">,</span> <span class="n">url_or_id</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">url_or_id</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="s2">"^https://drive</span><span class="se">\\</span><span class="s2">.google</span><span class="se">\\</span><span class="s2">.com/file/d/"</span><span class="p">,</span>
+            <span class="s2">"https://drive.google.com/u/0/uc?id="</span><span class="p">,</span>
+            <span class="n">url_or_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Redirecting to </span><span class="si">{</span><span class="n">url_or_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">gdown</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">url_or_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">),</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">count_aws_s3_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Count the number of objects in an AWS S3 bucket.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bucket_name : str</span>
+<span class="sd">        The bucket name.</span>
+<span class="sd">    prefix : str, optional</span>
+<span class="sd">        The prefix to filter the objects,</span>
+<span class="sd">        for example, "ludb/1.0.1/".</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The number of objects in the bucket.</span>
+
+<span class="sd">    """</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">"s3"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="n">signature_version</span><span class="o">=</span><span class="n">UNSIGNED</span><span class="p">))</span>
+    <span class="n">paginator</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_paginator</span><span class="p">(</span><span class="s2">"list_objects_v2"</span><span class="p">)</span>
+    <span class="n">page_iterator</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
+
+    <span class="n">object_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">page_iterator</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"Contents"</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
+                <span class="n">object_count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Contents"</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">s3</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">object_count</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_latest_version_from_physionet_s3</span><span class="p">(</span><span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Infer the latest published version of a PhysioNet database from the</span>
+<span class="sd">    layout of the ``s3://physionet-open`` bucket (anonymous listing of the</span>
+<span class="sd">    version prefixes under ``&lt;db_name&gt;/``).</span>
+
+<span class="sd">    This is a fallback for when the PhysioNet website is unreachable but the</span>
+<span class="sd">    S3 bucket (a separate endpoint) still is, so that :meth:`download` does</span>
+<span class="sd">    not silently fall back to an outdated version whose on-disk layout the</span>
+<span class="sd">    reader may not support (e.g. LUDB 1.0.0 vs 1.0.1).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    db_name : str</span>
+<span class="sd">        Name of the database, e.g. "ludb".</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The latest version string, e.g. "1.0.1".</span>
+
+<span class="sd">    """</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">"s3"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="n">signature_version</span><span class="o">=</span><span class="n">UNSIGNED</span><span class="p">))</span>
+    <span class="n">paginator</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_paginator</span><span class="p">(</span><span class="s2">"list_objects_v2"</span><span class="p">)</span>
+    <span class="n">page_iterator</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s2">"physionet-open"</span><span class="p">,</span> <span class="n">Prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">/"</span><span class="p">,</span> <span class="n">Delimiter</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">page_iterator</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">common_prefix</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CommonPrefixes"</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">common_prefix</span><span class="p">[</span><span class="s2">"Prefix"</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">"v?\d+(\.\d+)*"</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+                    <span class="n">versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"v"</span><span class="p">))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">s3</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">versions</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No version prefix found in s3://physionet-open/</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">/"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">versions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_download_from_aws_s3_using_boto3</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Download all objects under an S3 prefix using boto3 (pure Python).</span>
+
+<span class="sd">    Fallback of :func:`http_get` for ``s3://`` URLs when the `aws` CLI is</span>
+<span class="sd">    not on PATH (boto3 is already a hard dependency, so machines without</span>
+<span class="sd">    the AWS CLI still download from S3 instead of falling back to some</span>
+<span class="sd">    other host). Slower than ``aws s3 sync``, but downloads in a thread</span>
+<span class="sd">    pool and skips files that already exist locally with the same size,</span>
+<span class="sd">    so interrupted downloads resume where they stopped.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        The URL of the prefix ("directory"),</span>
+<span class="sd">        for example, "s3://bucket-name/pre/fix".</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        The output directory; keys are placed relative to the prefix,</span>
+<span class="sd">        mirroring ``aws s3 sync s3://bucket-name/pre/fix/ dst_dir``</span>
+<span class="sd">        (the prefix itself is stripped from the local paths).</span>
+<span class="sd">    max_workers : int, default 8</span>
+<span class="sd">        Number of concurrent download threads.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">"^s3://(?P&lt;bucket_name&gt;[^/]+)/(?P&lt;prefix&gt;.+)$"</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid S3 URL: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">bucket_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"bucket_name"</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"prefix"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"files/"</span><span class="p">):</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"files/"</span><span class="p">)</span> <span class="p">:]</span>
+
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+        <span class="s2">"s3"</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
+            <span class="n">signature_version</span><span class="o">=</span><span class="n">UNSIGNED</span><span class="p">,</span>
+            <span class="n">connect_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">read_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="p">{</span><span class="s2">"max_attempts"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"mode"</span><span class="p">:</span> <span class="s2">"adaptive"</span><span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">paginator</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_paginator</span><span class="p">(</span><span class="s2">"list_objects_v2"</span><span class="p">)</span>
+    <span class="c1"># local paths are relative to the prefix root, mirroring</span>
+    <span class="c1"># `aws s3 sync s3://bucket/pre/fix/ dst_dir`; a prefix written without</span>
+    <span class="c1"># a trailing slash may still be a directory, so probe one object under</span>
+    <span class="c1"># "&lt;prefix&gt;/" -- if none exists it is a partial key prefix (e.g.</span>
+    <span class="c1"># ".../data/1.a" matching 1.avf, 1.avl, ...) and files are placed</span>
+    <span class="c1"># relative to its parent directory instead</span>
+    <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"/"</span><span class="p">):</span>
+        <span class="n">prefix_dir</span> <span class="o">=</span> <span class="n">prefix</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">probe</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Prefix</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="s2">"/"</span><span class="p">,</span> <span class="n">PaginationConfig</span><span class="o">=</span><span class="p">{</span><span class="s2">"MaxItems"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Contents"</span><span class="p">)</span> <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">probe</span><span class="p">):</span>
+            <span class="n">prefix_dir</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">"/"</span>
+        <span class="k">elif</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">prefix_dir</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"/"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prefix_dir</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">strip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix_dir</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Contents"</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Key"</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">strip</span><span class="p">:</span>  <span class="c1"># skip the prefix marker itself</span>
+                    <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Key"</span><span class="p">][</span><span class="n">strip</span><span class="p">:],</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Size"</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">objects</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No objects found in S3 bucket: </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s2">, prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Downloading from S3 bucket: </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s2">, prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, total files: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">dst_dir_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span>
+        <span class="n">dst_dir_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_download_one</span><span class="p">(</span><span class="n">rel_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expected_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="n">dst_file</span> <span class="o">=</span> <span class="n">dst_dir_path</span> <span class="o">/</span> <span class="n">rel_path</span>
+            <span class="k">if</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">expected_size</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">dst_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">s3</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix_dir</span> <span class="o">+</span> <span class="n">rel_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst_file</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">),</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_download_one</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+                    <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>  <span class="c1"># re-raise download errors</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">s3</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_download_from_aws_s3_using_awscli</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dst_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Download a file from AWS S3 using awscli.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        The URL of the file.</span>
+<span class="sd">        For example, "s3://bucket-name/files/pre-fix".</span>
+<span class="sd">    dst_dir : `path-like`</span>
+<span class="sd">        The output directory.</span>
+<span class="sd">    show_progress : bool, default True</span>
+<span class="sd">        Whether to display tqdm progress bar.</span>
+<span class="sd">    env : dict, optional</span>
+<span class="sd">        Custom environment.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">"aws"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"AWS cli is required to download from S3 (please install AWS CLI v2)."</span><span class="p">)</span>
+
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">"^s3://(?P&lt;bucket_name&gt;[^/]+)/(?P&lt;prefix&gt;.+)$"</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid S3 URL: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">bucket_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"bucket_name"</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"prefix"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"files/"</span><span class="p">):</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"files/"</span><span class="p">)</span> <span class="p">:]</span>
+    <span class="n">total_files</span> <span class="o">=</span> <span class="n">count_aws_s3_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">total_files</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[S3 sync] No objects found at </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, skipping."</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Downloading from S3 bucket: </span><span class="si">{</span><span class="n">bucket_name</span><span class="si">}</span><span class="s2">, prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">, total files: </span><span class="si">{</span><span class="n">total_files</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+    <span class="n">dst_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">str2bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CI"</span><span class="p">)):</span>
+        <span class="n">mininterval</span> <span class="o">=</span> <span class="mf">10.0</span>
+        <span class="n">disable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mininterval</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">disable</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">show_progress</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">total_files</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mininterval</span><span class="o">=</span><span class="n">mininterval</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">)</span>
+    <span class="n">download_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"aws s3 sync --no-sign-request --only-show-errors </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+        <span class="n">bufsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">env</span><span class="o">=</span><span class="n">env</span> <span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="p">)</span>
+    <span class="n">debug_stdout</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>  <span class="c1"># for type checker</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">debug_stdout</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"download: s3://"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">download_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">retcode</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">retcode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span>
+                <span class="n">retcode</span><span class="p">,</span>
+                <span class="n">command</span><span class="p">,</span>
+                <span class="n">output</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">debug_stdout</span><span class="p">),</span>
+            <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">download_count</span> <span class="o">&lt;</span> <span class="n">total_files</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">total_files</span> <span class="o">-</span> <span class="n">download_count</span><span class="p">)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[S3 sync] Completed. Reported downloads: </span><span class="si">{</span><span class="n">download_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_files</span><span class="si">}</span><span class="s2"> (existing files are skipped silently)."</span><span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2021, WEN Hao, KANG Jingsu.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

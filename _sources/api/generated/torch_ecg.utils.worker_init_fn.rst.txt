@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.worker\_init\_fn
+=================================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: worker_init_fn

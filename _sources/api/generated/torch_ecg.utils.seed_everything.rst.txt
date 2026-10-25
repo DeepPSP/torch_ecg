@@ -1,0 +1,6 @@
+﻿torch\_ecg.utils.seed\_everything
+=================================
+
+.. currentmodule:: torch_ecg.utils
+
+.. autofunction:: seed_everything

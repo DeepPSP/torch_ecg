@@ -1,0 +1,6 @@
+﻿torch\_ecg.models.BACKBONES
+===========================
+
+.. currentmodule:: torch_ecg.models
+
+.. autodata:: BACKBONES
