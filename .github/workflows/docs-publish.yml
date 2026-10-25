@@ -19,7 +19,6 @@ on:
 env:
   # Enable bib-lookup
   DB_BIB_LOOKUP: true
-  PANDOC_RELEASE: 3.1.7
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -70,12 +69,11 @@ jobs:
         python -m pip list
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel ipython
+        python -m pip install --upgrade pip setuptools wheel
         python -m pip install -r requirements.txt
         python -m pip install -r docs/requirements.txt
         python -m pip uninstall torch-ecg --yes # Remove if already installed
         pip install -e .[dev]
-        pip install jupyter 'ipykernel<5.0.0' 'ipython<7.0.0'
     - name: List installed Python packages
       run: |
         python -m pip list
@@ -100,12 +98,10 @@ jobs:
           standalone
           xetex
           xecjk
-    - name: Install latexmk and pandoc and extra software
+    - name: Install latexmk and extra software
+      # pandoc was only needed by nbsphinx (removed along with it)
       run: |
         sudo apt install latexmk -y
-        wget https://github.com/jgm/pandoc/releases/download/$PANDOC_RELEASE/pandoc-$PANDOC_RELEASE-1-amd64.deb
-        sudo dpkg -i pandoc-$PANDOC_RELEASE-1-amd64.deb
-        sudo rm pandoc-$PANDOC_RELEASE-1-amd64.deb
         sudo apt install texlive-pictures texlive-latex-extra pdf2svg -y
     - name: Build docs with Sphinx
       run: |

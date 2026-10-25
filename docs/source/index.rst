@@ -62,10 +62,12 @@ The system design is depicted as follows
    :caption: Contents:
 
    Installation <install>
+   User Guide <user_guide/index>
    Tutorial <tutorial>
    API Reference <api/index>
    Examples <examples>
    Changelog <CHANGELOG>
+   Version history <history>
 
 Citation
 =========

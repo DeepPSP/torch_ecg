@@ -1024,7 +1024,13 @@ def adjust_cnn_filter_lengths(
 
 
 class SizeMixin(object):
-    """Mixin class for size related methods"""
+    """Mixin class for size related properties and methods.
+
+    Provides :attr:`module_size` (number of trainable parameters),
+    :attr:`sizeof` (memory footprint in bytes, incl. buffers), their
+    human-readable ``_``-suffixed string variants, and :attr:`dtype` /
+    :attr:`device` of the module's parameters.
+    """
 
     @property
     def module_size(self) -> int:

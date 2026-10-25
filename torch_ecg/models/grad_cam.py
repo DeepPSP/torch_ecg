@@ -88,7 +88,13 @@ class ModelOutputs(object):
 
 
 class GradCam(object):
-    """NOT finished,"""
+    """Gradient-weighted Class Activation Mapping for ECG models.
+
+    .. note::
+
+        This class is not finished; it is excluded from coverage and
+        should be considered a draft.
+    """
 
     __name__ = "GradCam"
 
