@@ -2,7 +2,11 @@ span.caption-text {
     color: #cc4878;
 }
 
-svg {
+/* shrink content figures (e.g. tikz workflow diagrams); scoped so that
+   inline SVG icons (fontawesome replacements in the theme chrome,
+   sidebar arrows, etc.) keep their intrinsic 1em sizing */
+.bd-article figure svg,
+.bd-article figure img {
     width: 80%;
 }
 
