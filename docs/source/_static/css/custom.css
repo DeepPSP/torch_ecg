@@ -12,6 +12,17 @@ span.caption-text {
     height: auto;
 }
 
+/* on wide screens, drop the primary sidebar on pages whose section
+   navigation is empty (top-level leaf pages such as install, tutorial,
+   examples, changelog, and the genindex/search pages); the flex layout
+   then lets the article span the reclaimed width.  Below 960px the
+   sidebar is the off-canvas drawer and is left alone. */
+@media (min-width: 960px) {
+  .bd-sidebar-primary:not(:has(.bd-sidenav)) {
+    display: none;
+  }
+}
+
 .math {
     text-align: left;
 }
