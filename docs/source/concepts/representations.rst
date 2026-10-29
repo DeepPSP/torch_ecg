@@ -4,9 +4,9 @@ Data representation conventions
 ===============================
 
 torch_ecg standardizes a small set of representations for signals,
-waveform annotations, intervals and labels. Sticking to them lets
-readers, datasets, augmenters and models compose freely; this page
-states the conventions once.
+waveform annotations, intervals and labels. These conventions allow
+readers, datasets, augmenters and models to interoperate; this page
+documents them.
 
 Signals: lead-first by default
 ------------------------------
@@ -78,7 +78,7 @@ over them — :func:`~torch_ecg.utils.utils_interval.intervals_union`,
 :func:`~torch_ecg.utils.utils_interval.intervals_intersection`,
 :func:`~torch_ecg.utils.utils_interval.generalized_interval_complement`,
 length helpers, and cover-finding utilities — which the dataset
-samplers use to cut training segments around annotated structures.
+samplers use to extract training segments around annotated structures.
 
 Labels
 ------
@@ -98,5 +98,5 @@ multi-label case:
 
 Models output raw logits over ``classes``; the sigmoid outputs are
 binarized at *inference* time (challenge-specific thresholds or the
-default 0.5), never inside the model. This keeps the training loss and
+default 0.5), rather than inside the model. This keeps the training loss and
 the official evaluation metrics free of hard-coded decision rules.

@@ -5,8 +5,8 @@ Concepts
 
 Explanation pages for the design decisions behind the package: how
 configuration flows through the system, how ECG data is represented,
-how models are assembled from registered building blocks, and what
-happens inside the trainer.
+how models are assembled from registered building blocks, and the
+internals of the trainer.
 
 .. toctree::
    :maxdepth: 1

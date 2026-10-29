@@ -4,14 +4,14 @@ Inside the trainer
 ==================
 
 :mod:`torch_ecg.components.trainer` provides the training loop every
-benchmark builds on. Understanding its anatomy — and its determinism
-machinery — saves hours of debugging.
+benchmark builds on. This page describes that loop, together with its
+determinism machinery.
 
 Anatomy of the training loop
 ----------------------------
 
 ``BaseTrainer`` subclasses implement ``_setup_dataloaders``,
-``run_one_step`` and ``evaluate``; the base class owns the loop. Per
+``run_one_step`` and ``evaluate``; the base class implements the loop. Per
 training step::
 
     out_tensors = self.run_one_step(*data)   # (preds, labels), no loss
@@ -20,11 +20,11 @@ training step::
 The criterion is **assembled by name** from ``train_config.loss``
 through the ``LOSSES`` registry (as are the optimizer and scheduler
 from their config entries), so a benchmark switches losses by editing
-one config field, never code. An optional ``flooding_level`` wraps the
+a single config field, without code changes. An optional ``flooding_level`` wraps the
 loss with the flooding regularizer before ``backward()``.
 
-After each epoch, the trainer validates and then walks this decision
-path:
+After each epoch, the trainer validates and then applies the
+following decision logic:
 
 - If ``train_config.monitor`` is set (an evaluation-metric name, e.g.
   ``"challenge_metric"``), a new best value promotes the just-saved
@@ -77,14 +77,15 @@ Where augmentation happens
 Online augmentation runs **inside the DataLoader workers**: the
 dataset's ``__getitem__`` applies its
 :class:`~torch_ecg.augmenters.AugmenterManager` to each sample before
-collation, so the training loop never sees unaugmented data and the
+collation, so the training loop receives only augmented data and the
 CPU work parallelizes across workers.
 
 The manager's callable takes **two** arguments — ``(sig, label)`` —
 because correct ECG augmentation must be able to keep the annotation
 in sync with the signal. Today's classification labels are multi-hot
 vectors that are invariant to signal-level transforms (nothing to
-re-permute for, say, baseline wander), but transforms that *do*
+re-permute for transforms such as baseline wander), but transforms that *do*
 reorder or reshape the signal would break if the label were not in
-the signature; the two-argument contract is what keeps waveform-level
-tasks (e.g. lead-sensitive augmenters) composable without API churn.
+the signature; the two-argument contract preserves composability for
+waveform-level tasks (e.g. lead-sensitive augmenters) without changes
+to the calling convention.

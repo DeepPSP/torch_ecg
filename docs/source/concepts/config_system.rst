@@ -3,7 +3,7 @@
 The configuration system
 ========================
 
-Everything in torch_ecg is driven by dictionary-like configuration
+All components of torch_ecg are configured through dictionary-like
 objects. This page explains the three layers of configuration, the
 :class:`~torch_ecg.cfg.CFG` class that carries them, the
 :data:`~torch_ecg.cfg.DEFAULTS` object that stores package-wide
@@ -53,8 +53,8 @@ the two configs do not share mutable values. Keys that would shadow
 the ``dict`` API (``copy``, ``get``, ``update``, ...) are rejected
 with an error rather than silently breaking the container.
 
-``copy()`` vs ``deepcopy()`` — a real pitfall
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``copy()`` versus ``deepcopy()``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``CFG`` inherits ``dict.copy``, which returns a **plain ``dict``**:
 the attribute view is gone, and so is recursive isolation. Always use
@@ -84,14 +84,14 @@ package defaults:
   stream that every stochastic component draws from.
   :func:`~torch_ecg.utils.seed_everything` reseeds it (plus the global
   ``random`` / ``numpy.random`` states and the torch CPU/CUDA
-  generators), which is what makes runs reproducible (see
+  generators), which provides run-to-run reproducibility (see
   :ref:`concepts/training_internals`).
 - **cache paths** — ``log_dir``, ``checkpoints``, ``model_dir``,
   ``working_dir`` under ``~/.cache/torch_ecg``.
 
 ``DEFAULTS.device`` is **lazy**: it is not probed at import time, but
 detected and cached on first access. Probing the CUDA driver during
-``import torch_ecg`` costs time in every Python 3.14+ multiprocessing
+``import torch_ecg`` adds overhead in every Python 3.14+ multiprocessing
 worker (the forkserver/spawn start methods re-import the package) and
 would freeze the device before ``CUDA_VISIBLE_DEVICES`` could be set.
 
@@ -112,11 +112,11 @@ gained a ``model_config`` parameter and the trainer passes its full
 ``model_config``, so trainer-written checkpoints again contain the
 complete outer config, as the pre-0.0.32 ``torch.save`` path did.
 
-The second half of the fix is a general lesson: serializing a config
+The second half of the fix generalizes beyond this case: serializing a config
 requires :func:`~torch_ecg.utils.utils_nn.make_safe_globals` to strip
 values that cannot round-trip (callables, path-like values, ...).
 Before the fix these fields **vanished silently** (a checkpoint lost
 its ``db_dir`` with no trace); now the function emits a
-``RuntimeWarning`` listing every dropped field. The pattern — turn a
-silent failure into an explicit warning — is applied throughout the
-package.
+``RuntimeWarning`` listing every dropped field. The underlying pattern,
+converting a silent failure into an explicit warning, is applied
+throughout the package.

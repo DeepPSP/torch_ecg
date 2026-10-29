@@ -6,7 +6,7 @@ Model assembly
 torch_ecg models are assembled bottom-up from registered building
 blocks. This page explains the layering, the registries that connect
 the layers, the static shape-inference contract every model honors,
-and the two output conventions you will meet in the codebase.
+and the two output conventions present in the codebase.
 
 The layering
 ------------
@@ -20,11 +20,11 @@ The layering
    references to block configs.
 2. **Backbones** — feature extractors registered in the
    ``BACKBONES`` registry; any of them can serve as the ``cnn`` of a
-   task model without touching the task model's code.
+   task model without modifying the task model's code.
 3. **Task models** — the top level in the ``MODELS`` registry
    (:class:`~torch_ecg.models.ECG_CRNN`, ``ECG_UNET``, ...); they own
    the input/output contract (leads, signal length, classes) and
-   combine backbone + attention + head into one serializable unit.
+   combine a backbone, attention and head into one serializable unit.
 
 Registries
 ----------
@@ -49,7 +49,7 @@ with a uniform ``build(name, **kwargs)`` entry point:
    * - ``PREPROCESSORS`` / ``AUGMENTERS``
      - preprocessing / online augmentation transforms
 
-Registering a custom backbone is a decorator away
+Registering a custom backbone requires only a decorator
 (``@BACKBONES.register()``); the
 :ref:`User Guide <user_guide>` shows a worked example.
 
@@ -59,9 +59,9 @@ The ``compute_output_shape`` contract
 Every model and backbone implements
 ``compute_output_shape(seq_len, batch_size=None)``, which returns the
 output shape **without running a forward pass**. This makes model
-composition verifiable at construction time — a task model asks its
-backbone for the feature shape to size its head, and you can sanity
-check a config in one line:
+composition verifiable at construction time: a task model obtains
+the feature shape from its backbone in order to size its head, and a
+configuration can be checked without executing it:
 
 .. code-block:: python
 
@@ -75,10 +75,10 @@ check a config in one line:
 The classification head globally pools over time, so the logits shape
 is ``(batch, n_classes)`` regardless of input length.
 
-Outputs: tensors today, dataclasses going forward
+Outputs: tensors and output dataclasses
 -------------------------------------------------
 
-The classic task models (``ECG_CRNN`` and friends) return plain
+The classic task models, such as ``ECG_CRNN``, return plain
 logit tensors. Newer code — the
 `benchmarks <https://github.com/DeepPSP/torch_ecg/tree/master/benchmarks>`__
 being the reference — wraps model outputs in typed dataclasses from
