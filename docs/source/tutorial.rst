@@ -3,8 +3,9 @@
 Tutorial
 ========
 
-A five-minute tour of the main building blocks.  The complete, runnable
-versions of these patterns live in the :ref:`examples <examples>`.
+A short introduction to the main building blocks.  Complete, runnable
+versions of these patterns are provided in the :ref:`examples
+<examples>`.
 
 1. Read a database
 ------------------
@@ -31,7 +32,9 @@ segment length, ...) and yield tensors:
 
     from torch_ecg.databases.datasets import LUDBDataset, LUDBTrainCfg
 
-    train_cfg = LUDBTrainCfg.copy()
+    from copy import deepcopy
+
+    train_cfg = deepcopy(LUDBTrainCfg)
     train_cfg.db_dir = "~/data/ludb"
     train_cfg.n_epochs = 10
     ds_train = LUDBDataset(train_cfg, training=True, lazy=False)
@@ -39,25 +42,27 @@ segment length, ...) and yield tensors:
 3. Pick a model
 ---------------
 
-Models take a config from :mod:`torch_ecg.model_configs` (or your own
-CFG) plus the number of classes / leads:
+Models take a config from :mod:`torch_ecg.model_configs` (or a custom
+CFG), together with the class list and the number of leads:
 
 .. code-block:: python
 
     from torch_ecg.models import ECG_CRNN
     from torch_ecg.model_configs import ECG_CRNN_CONFIG
 
-    config = ECG_CRNN_CONFIG.copy()
-    config.cnn.name = "resnet_block_leadwise"
-    model = ECG_CRNN(config, n_leads=12, n_classes=26)
+    from copy import deepcopy
+
+    config = deepcopy(ECG_CRNN_CONFIG)
+    config.cnn.name = "resnet_nature_comm_bottle_neck_se"
+    model = ECG_CRNN(classes=classes, n_leads=12, config=config)
 
 4. Train and reload
 -------------------
 
 Subclass :class:`~torch_ecg.components.trainer.BaseTrainer` (or reuse one
 of the benchmark trainers) and call :code:`train()`.  Checkpoints written
-by the trainer contain the full model config, so a trained model is a
-one-liner to reload:
+by the trainer contain the full model config, so a trained model can
+be reloaded with a single call:
 
 .. code-block:: python
 

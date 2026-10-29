@@ -6,8 +6,8 @@ Examples
 The :code:`benchmarks/` directory of the `repository
 <https://github.com/DeepPSP/torch_ecg/tree/master/benchmarks>`__ contains
 eight complete, self-contained training examples -- one per challenge /
-database -- written against the modern library API.  They double as the
-reference usage examples for the whole package: each one shows reader and
+database -- written against the modern library API.  They also serve
+as the reference usage for the whole package: each one shows reader and
 dataset usage, model construction, training with the library trainer, and
 evaluation with the official challenge metrics where applicable.
 
@@ -54,8 +54,8 @@ The examples
      - Multi-task (classification + regression) on circulatory sounds, CinC Challenge 2022
      - :code:`CRNN_CINC2022`, :code:`Wav2Vec2` variants
 
-Highlights to look for
-----------------------
+Points to note
+--------------
 
 - **Determinism**: every :code:`train.py` calls :func:`seed_everything`
   and uses :code:`worker_init_fn`; a given :code:`--seed` fully
