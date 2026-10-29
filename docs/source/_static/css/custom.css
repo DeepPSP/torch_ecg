@@ -2,8 +2,25 @@ span.caption-text {
     color: #cc4878;
 }
 
-svg {
-    width: 80%;
+/* shrink wide content figures (e.g. tikz workflow diagrams) without
+   upscaling small ones; scoped to the article body so that inline SVG
+   icons (fontawesome replacements in the theme chrome, sidebar arrows,
+   etc.) keep their intrinsic 1em sizing */
+.bd-article figure svg,
+.bd-article figure img {
+    max-width: 80%;
+    height: auto;
+}
+
+/* on wide screens, drop the primary sidebar on pages whose section
+   navigation is empty (top-level leaf pages such as install, tutorial,
+   examples, changelog, and the genindex/search pages); the flex layout
+   then lets the article span the reclaimed width.  Below 960px the
+   sidebar is the off-canvas drawer and is left alone. */
+@media (min-width: 960px) {
+  .bd-sidebar-primary:not(:has(.bd-sidenav)) {
+    display: none;
+  }
 }
 
 .math {
@@ -12,8 +29,3 @@ svg {
 .eqno {
     float: right;
 }
-
-/* fix: ship to main content while print webpage (pydata theme) */
-.skip-link {
-    position: absolute;
-  }
