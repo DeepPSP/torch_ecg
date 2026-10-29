@@ -19,7 +19,7 @@ multi-label support:
     )
 
     labels = np.array([[1, 0, 1], [0, 1, 0]])
-    probs = np.array([[0.9, 0.1, 0.4], [0.2, 0.8, 0.3]])   # scalar predictions
+    probs = np.array([[0.9, 0.1, 0.4], [0.2, 0.8, 0.3]])   # predicted probabilities
     cm = confusion_matrix(labels, probs > 0.5)
     metrics = metrics_from_confusion_matrix(labels, probs)  # sens/spec/prec/f1/auc per class + macro
 
@@ -30,8 +30,8 @@ arrays to a superset of classes.
 Official challenge metrics
 --------------------------
 
-The exact scoring functions of the challenges ship with the
-corresponding database modules -- use them instead of reimplementations:
+The exact scoring functions of the challenges are provided with the
+corresponding database modules; use them instead of reimplementations:
 
 .. code-block:: python
 
@@ -48,7 +48,7 @@ Waveform delineation
 For P/QRS/T delineation (mask output of the U-Net models),
 :func:`~torch_ecg.utils.utils_metrics.compute_wave_delineation_metrics`
 turns truth/prediction masks into sensitivities, F1 and onset/offset
-deviation statistics; LUDB additionally ships
+deviation statistics; LUDB additionally provides
 ``compute_metrics`` / ``compute_metrics_waveform`` used by its example:
 
 .. code-block:: python
@@ -72,5 +72,5 @@ locations, given as **lists of per-record arrays**:
     pred = [np.array([101, 299, 505]), np.array([82, 288, 511, 705, 900])]
     QRS_score(truth, pred, fs=500)      # 0.85
 
-The CPSC2019 module additionally ships the official challenge metric
-used by its example.
+The CPSC2019 module additionally provides the official challenge
+metric used by its example.
