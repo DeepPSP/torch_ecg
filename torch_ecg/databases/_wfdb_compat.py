@@ -80,8 +80,10 @@ def apply_wfdb_pandas3_compat() -> None:
             custom_labels = label_triplets_to_df(self.custom_labels)
         elif isinstance(self.custom_labels, pd.DataFrame):
             # Set the index just in case it doesn't already match the label_store
-            # (`label_store` is an integer column; `.values` is safe here)
-            self.custom_labels.set_index(self.custom_labels["label_store"].values, inplace=True)
+            # (`label_store` is an integer column; `.values` is safe here).
+            # Reassignment instead of inplace=True: pandas 3.1 deprecates
+            # the inplace keyword (removed in pandas 4).
+            self.custom_labels = self.custom_labels.set_index(self.custom_labels["label_store"].values)
             custom_labels = self.custom_labels
         else:
             custom_labels = None
@@ -100,13 +102,14 @@ def apply_wfdb_pandas3_compat() -> None:
         elif self.symbol is not None:
             index_vals = set(self.symbol)
             # `drop=False` keeps the column in the output, matching the
-            # behavior of the original array-index (pandas < 3) path
-            label_map.set_index("symbol", drop=False, inplace=True)
+            # behavior of the original array-index (pandas < 3) path;
+            # reassignment instead of inplace=True (deprecated in pandas 3.1)
+            label_map = label_map.set_index("symbol", drop=False)
             reset_index = True
             counts = np.unique(self.symbol, return_counts=True)
         elif self.description is not None:
             index_vals = set(self.description)
-            label_map.set_index("description", drop=False, inplace=True)
+            label_map = label_map.set_index("description", drop=False)
             reset_index = True
             counts = np.unique(self.description, return_counts=True)
         else:
@@ -121,7 +124,7 @@ def apply_wfdb_pandas3_compat() -> None:
 
         if reset_index:
             # `label_store` is an integer column; `.values` is safe here
-            contained_labels.set_index(contained_labels["label_store"].values, inplace=True)
+            contained_labels = contained_labels.set_index(contained_labels["label_store"].values)
 
         if inplace:
             self.contained_labels = contained_labels
