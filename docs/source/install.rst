@@ -1,7 +1,7 @@
 Installation instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:code:`torch_ecg` requires **Python 3.10 – 3.15** and is available through pip:
+:code:`torch_ecg` requires **Python 3.11 – 3.15** and is available through pip:
 
 .. code-block:: bash
 

@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A Deep Learning Framework for ECG Processing Tasks Based on PyTorch"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     { name = "DeepPSP", email = "wenh06@gmail.com" },
 ]
@@ -17,7 +17,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -35,7 +34,7 @@ dependencies = [
     "einops",
     "matplotlib",
     "numpy",
-    "pandas < 3.0.0",
+    "pandas >= 2.2.2",
     "pyarrow",
     "PyWavelets",
     "requests",

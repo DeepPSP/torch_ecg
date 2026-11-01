@@ -8,6 +8,16 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Changed
 
+- Python 3.10 (EOL October 2026) is dropped from the support matrix:
+  `requires-python >= 3.11`, the 3.10 classifier removed, the CI
+  matrix is now `3.11 / 3.12 / 3.13 / 3.14 / 3.15`, and the nightly
+  full-suite subset becomes `3.11 / 3.12 / 3.14 / 3.15`.
+- The pandas upper bound is removed (`pandas >= 2.2.2`): torch_ecg's
+  own code paths are verified against pandas 3.1 (no
+  `set_index(<str column>.values)` patterns, and the readers never
+  pass `summarize_labels=True` to `wfdb.rdann`); the one pandas-3
+  crash reachable from a torch_ecg workflow lives in wfdb <= 4.3.1
+  and is shimmed, see the Fixed section.
 - Import-time side effects removed (import purity): the AHA aux-data
   module no longer leaves `future.no_silent_downcasting` flipped in the
   process-global pandas options (saved and restored around the table
@@ -32,6 +42,16 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Fixed
 
+- wfdb <= 4.3.1 `Annotation.get_contained_labels` raises `TypeError`
+  under pandas >= 3 (`DataFrame.set_index` receives an
+  `ArrowStringArray` from `<string column>.values`), breaking e.g.
+  `rdann(..., summarize_labels=True)` on the annotation objects our
+  readers return.  A guarded shim in `torch_ecg.databases` now applies
+  the same fix as MIT-LCP/wfdb-python#575 (index by column name, with
+  `drop=False` to preserve the original output schema) whenever
+  pandas >= 3 is installed and the wfdb in use still contains the
+  buggy pattern; any wfdb release carrying the upstream fix disables
+  the shim automatically.
 - A second race in the one-time `database_citation.csv` migration (the
   first one, the `unlink` race, was fixed in 0.0.33): when several
   processes import the package concurrently, one could `read_csv` the
