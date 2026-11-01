@@ -742,7 +742,7 @@
 </pre></div>
 </div>
 </li>
-<li><p>the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdrecord" title="(in wfdb &quot;4.3.1&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdrecord()</span></code></a> has already done this conversion, hence greatly simplifies the data loading process. NOTE that there”s a difference when using <cite>wfdb.rdrecord</cite>: data from <cite>loadmat</cite> are in “channel_first” format, while <cite>wfdb.rdrecord.p_signal</cite> produces data in the “channel_last” format</p></li>
+<li><p>the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdrecord" title="(in wfdb v4.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdrecord()</span></code></a> has already done this conversion, hence greatly simplifies the data loading process. NOTE that there”s a difference when using <cite>wfdb.rdrecord</cite>: data from <cite>loadmat</cite> are in “channel_first” format, while <cite>wfdb.rdrecord.p_signal</cite> produces data in the “channel_last” format</p></li>
 <li><p>there are 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1): (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)</p></li>
 <li><p>in the newly (Feb., 2021) created dataset, header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. <a class="footnote-reference brackets" href="#id17" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, after uncompressing, is replacing the header files in the folder <cite>All_training_WFDB</cite> by header files from the 6 folders containing all header files from the 6 subsets.</p></li>
 </ol>
@@ -812,6 +812,19 @@
 <span class="w">       </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2020}</span><span class="p">,</span>
 <span class="w">      </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{12}</span><span class="p">,</span>
 <span class="w">      </span><span class="na">pages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{124003}</span>
+<span class="p">}</span>
+<span class="nc">@inproceedings</span><span class="p">{</span><span class="nl">Reyna_2020</span><span class="p">,</span>
+<span class="w">       </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020}</span><span class="p">,</span>
+<span class="w">      </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Reyna, Matthew and Andres Perez Alday, Erick and Gu, Annie and Liu, Chengyu and Seyedi, Salman and Bahrami Rad, Ali and Elola, Andoni and Li, Qiao and Sharma, Ashish and Clifford, Gari}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">booktitle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2020 Computing in Cardiology Conference (CinC)}</span><span class="p">,</span>
+<span class="w">      </span><span class="na">series</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{CinC2020}</span><span class="p">,</span>
+<span class="w">      </span><span class="na">volume</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{47}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">issn</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2325-887X}</span><span class="p">,</span>
+<span class="w">         </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.22489/cinc.2020.236}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Computing in Cardiology}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2020}</span><span class="p">,</span>
+<span class="w">       </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{12}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">collection</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{CinC2020}</span>
 <span class="p">}</span>
 <span class="nc">@misc</span><span class="p">{</span><span class="nl">https://doi.org/10.13026/f4ab-0814</span><span class="p">,</span>
 <span class="w">      </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Classification of 12-lead ECGs: The PhysioNet/Computing in Cardiology Challenge 2020}</span><span class="p">,</span>
