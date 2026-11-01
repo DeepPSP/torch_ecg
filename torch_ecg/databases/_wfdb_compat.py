@@ -117,9 +117,7 @@ def apply_wfdb_pandas3_compat() -> None:
         # Add the counts
         for i in range(len(counts[0])):
             contained_labels.loc[counts[0][i], "n_occurrences"] = counts[1][i]
-        contained_labels["n_occurrences"] = pd.to_numeric(
-            contained_labels["n_occurrences"], downcast="integer"
-        )
+        contained_labels["n_occurrences"] = pd.to_numeric(contained_labels["n_occurrences"], downcast="integer")
 
         if reset_index:
             # `label_store` is an integer column; `.values` is safe here
@@ -133,8 +131,7 @@ def apply_wfdb_pandas3_compat() -> None:
 
     Annotation.get_contained_labels = get_contained_labels
     _logger.debug(
-        "patched wfdb (%s) Annotation.get_contained_labels for pandas %s "
-        "(upstream fix: MIT-LCP/wfdb-python#575)",
+        "patched wfdb (%s) Annotation.get_contained_labels for pandas %s " "(upstream fix: MIT-LCP/wfdb-python#575)",
         wfdb.__version__,
         pd.__version__,
     )
