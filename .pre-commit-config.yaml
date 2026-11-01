@@ -2,10 +2,11 @@
 exclude: '^.*\.(svg|txt|json|html)$|build|dist|benchmarks\/train_crnn_cinc2023\/utils\/artifact_pipeline\/.*'
 fail_fast: false
 
-# the isort hook (10.0.0b1) requires Python >= 3.11 while the system default
-# may be older; pin the hook interpreter so local runs match pre-commit.ci
+# the isort hook (10.0.0b1) requires Python >= 3.11, which matches the
+# package's own floor (requires-python >= 3.11); the plain `python3` is
+# >= 3.11 both locally and on the check-formatting runner
 default_language_version:
-  python: python3.11
+  python: python3
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
