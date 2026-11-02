@@ -138,3 +138,4 @@ def apply_wfdb_pandas3_compat() -> None:
         wfdb.__version__,
         pd.__version__,
     )
+    return
