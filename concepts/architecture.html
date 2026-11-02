@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link id="favicon" rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/3a-62-65-61-74-69-6e-67-5f-68-65-61-72-74-3a.png">
+    <title>Model assembly &#8212; torch-ecg 0.0.33 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=db64d466" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/codeblock.css?v=d29e50c4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=db64d466" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=565bc8c8"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/codeblock.js?v=82bf629b"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'concepts/architecture';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Inside the trainer" href="training_internals.html" />
+    <link rel="prev" title="Data representation conventions" href="representations.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.33" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/deep-psp-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/deep-psp-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">torch-ecg</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Concepts
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../CHANGELOG.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../history.html">
+    Version history
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Concepts
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../CHANGELOG.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../history.html">
+    Version history
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DeepPSP/torch_ecg" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="config_system.html">The configuration system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representations.html">Data representation conventions</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Model assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_internals.html">Inside the trainer</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Concepts</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Model assembly</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="model-assembly">
+<span id="concepts-architecture"></span><h1>Model assembly<a class="headerlink" href="#model-assembly" title="Link to this heading">#</a></h1>
+<p>torch_ecg models are assembled bottom-up from registered building
+blocks. This page explains the layering, the registries that connect
+the layers, the static shape-inference contract every model honors,
+and the two output conventions present in the codebase.</p>
+<section id="the-layering">
+<h2>The layering<a class="headerlink" href="#the-layering" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Building-block configs</strong> — <a class="reference internal" href="../api/models.html#module-torch_ecg.model_configs" title="torch_ecg.model_configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.model_configs</span></code></a> holds
+ready-made <code class="xref py py-class docutils literal notranslate"><span class="pre">CFG</span></code> objects for every backbone
+family (<code class="docutils literal notranslate"><span class="pre">resnet</span></code>, <code class="docutils literal notranslate"><span class="pre">mobilenet_v1/v2/v3</span></code>, <code class="docutils literal notranslate"><span class="pre">vgg16</span></code>,
+<code class="docutils literal notranslate"><span class="pre">densenet</span></code>, <code class="docutils literal notranslate"><span class="pre">multi_scopic</span></code>, <code class="docutils literal notranslate"><span class="pre">xception</span></code>, <code class="docutils literal notranslate"><span class="pre">regnet</span></code>, plus the
+<code class="docutils literal notranslate"><span class="pre">Transformer</span></code> attention block and classifier/RNN heads), grouped
+so a full model config such as <code class="docutils literal notranslate"><span class="pre">ECG_CRNN_CONFIG</span></code> is just a few
+references to block configs.</p></li>
+<li><p><strong>Backbones</strong> — feature extractors registered in the
+<code class="docutils literal notranslate"><span class="pre">BACKBONES</span></code> registry; any of them can serve as the <code class="docutils literal notranslate"><span class="pre">cnn</span></code> of a
+task model without modifying the task model’s code.</p></li>
+<li><p><strong>Task models</strong> — the top level in the <code class="docutils literal notranslate"><span class="pre">MODELS</span></code> registry
+(<a class="reference internal" href="../api/generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN" title="torch_ecg.models.ECG_CRNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">ECG_CRNN</span></code></a>, <code class="docutils literal notranslate"><span class="pre">ECG_UNET</span></code>, …); they own
+the input/output contract (leads, signal length, classes) and
+combine a backbone, attention and head into one serializable unit.</p></li>
+</ol>
+</section>
+<section id="registries">
+<h2>Registries<a class="headerlink" href="#registries" title="Link to this heading">#</a></h2>
+<p>Registries are the package’s extension points — a name-to-class map
+with a uniform <code class="docutils literal notranslate"><span class="pre">build(name,</span> <span class="pre">**kwargs)</span></code> entry point:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Registry</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MODELS</span></code> / <code class="docutils literal notranslate"><span class="pre">BACKBONES</span></code></p></td>
+<td><p>task models / feature-extraction backbones</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ATTN_LAYERS</span></code></p></td>
+<td><p>attention blocks (<code class="docutils literal notranslate"><span class="pre">Transformer</span></code>, <code class="docutils literal notranslate"><span class="pre">SE</span></code>, …)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OPTIMIZERS</span></code> / <code class="docutils literal notranslate"><span class="pre">SCHEDULERS</span></code></p></td>
+<td><p>assembled by name from <code class="docutils literal notranslate"><span class="pre">train_config</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LOSSES</span></code></p></td>
+<td><p>criterion classes (assembled from <code class="docutils literal notranslate"><span class="pre">train_config.loss</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PREPROCESSORS</span></code> / <code class="docutils literal notranslate"><span class="pre">AUGMENTERS</span></code></p></td>
+<td><p>preprocessing / online augmentation transforms</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Registering a custom backbone requires only a decorator
+(<code class="docutils literal notranslate"><span class="pre">&#64;BACKBONES.register()</span></code>); the
+<a class="reference internal" href="../user_guide/index.html#user-guide"><span class="std std-ref">User Guide</span></a> shows a worked example.</p>
+</section>
+<section id="the-compute-output-shape-contract">
+<h2>The <code class="docutils literal notranslate"><span class="pre">compute_output_shape</span></code> contract<a class="headerlink" href="#the-compute-output-shape-contract" title="Link to this heading">#</a></h2>
+<p>Every model and backbone implements
+<code class="docutils literal notranslate"><span class="pre">compute_output_shape(seq_len,</span> <span class="pre">batch_size=None)</span></code>, which returns the
+output shape <strong>without running a forward pass</strong>. This makes model
+composition verifiable at construction time: a task model obtains
+the feature shape from its backbone in order to size its head, and a
+configuration can be checked without executing it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.model_configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN_CONFIG</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="p">[</span><span class="s2">"AF"</span><span class="p">,</span> <span class="s2">"I-AVB"</span><span class="p">,</span> <span class="s2">"LBBB"</span><span class="p">,</span> <span class="s2">"Normal"</span><span class="p">],</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="n">ECG_CRNN_CONFIG</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>     <span class="c1"># (None, 4)</span>
+</pre></div>
+</div>
+<p>The classification head globally pools over time, so the logits shape
+is <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">n_classes)</span></code> regardless of input length.</p>
+</section>
+<section id="outputs-tensors-and-output-dataclasses">
+<h2>Outputs: tensors and output dataclasses<a class="headerlink" href="#outputs-tensors-and-output-dataclasses" title="Link to this heading">#</a></h2>
+<p>The classic task models, such as <code class="docutils literal notranslate"><span class="pre">ECG_CRNN</span></code>, return plain
+logit tensors. Newer code — the
+<a class="reference external" href="https://github.com/DeepPSP/torch_ecg/tree/master/benchmarks">benchmarks</a>
+being the reference — wraps model outputs in typed dataclasses from
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.components.outputs</span></code>
+(<a class="reference internal" href="../api/generated/torch_ecg.components.ClassificationOutput.html#torch_ecg.components.ClassificationOutput" title="torch_ecg.components.outputs.ClassificationOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassificationOutput</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">MultiLabelClassificationOutput</span></code>,
+<a class="reference internal" href="../api/generated/torch_ecg.components.WaveDelineationOutput.html#torch_ecg.components.WaveDelineationOutput" title="torch_ecg.components.outputs.WaveDelineationOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveDelineationOutput</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">RPeaksDetectionOutput</span></code>, …): fields carry explicit names
+(<code class="docutils literal notranslate"><span class="pre">logits</span></code>, <code class="docutils literal notranslate"><span class="pre">bin_pred</span></code>, <code class="docutils literal notranslate"><span class="pre">pred_classes</span></code>, …), the objects
+support <code class="docutils literal notranslate"><span class="pre">+</span></code> for batching and remain plain
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CFG</span></code> dicts underneath, so checkpoints and
+logging keep working. When writing a new task model, prefer the
+dataclass contract.</p>
+</section>
+<section id="system-design">
+<h2>System design<a class="headerlink" href="#system-design" title="Link to this heading">#</a></h2>
+<p>The overall workflow of the package — data files flow through readers,
+preprocessing and augmentation into tensors, which feed the trainer
+driving the model, while the config file drives model construction
+and checkpoints enable resuming:</p>
+<div class="figure" id="id1" style="text-align: center"><p><img  src="../_images/tikz-acca1005f3810c9db1837947c3841dc52248e2d4.svg" alt="Figure made with TikZ" /></p>
+<p><span class="caption-text">Main Modules and Work Flow.</span></p>
+</div></section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="representations.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data representation conventions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="training_internals.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Inside the trainer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-layering">The layering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registries">Registries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-compute-output-shape-contract">The <code class="docutils literal notranslate"><span class="pre">compute_output_shape</span></code> contract</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#outputs-tensors-and-output-dataclasses">Outputs: tensors and output dataclasses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-design">System design</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2021, WEN Hao, KANG Jingsu.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

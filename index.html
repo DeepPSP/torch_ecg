@@ -31,10 +31,10 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=db64d466" />
     <link rel="stylesheet" type="text/css" href="_static/css/codeblock.css?v=d29e50c4" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=97348ffd" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=db64d466" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
@@ -155,13 +155,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="user_guide/index.html">
-    User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorial.html">
     Tutorial
   </a>
@@ -169,8 +162,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="concepts/index.html">
+    Concepts
   </a>
 </li>
 
@@ -183,18 +183,35 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="CHANGELOG.html">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="CHANGELOG.html">
     Changelog
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="history.html">
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="history.html">
     Version history
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -281,13 +298,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="user_guide/index.html">
-    User Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorial.html">
     Tutorial
   </a>
@@ -295,8 +305,15 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="api/index.html">
-    API Reference
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="concepts/index.html">
+    Concepts
   </a>
 </li>
 
@@ -304,6 +321,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="examples.html">
     Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
   </a>
 </li>
 
@@ -407,17 +431,17 @@
 <h1>torch-ecg documentation<a class="headerlink" href="#torch-ecg-documentation" title="Link to this heading">#</a></h1>
 <p><strong>Date</strong>: 2026/11/02 <strong>Version</strong>: 0.0.33</p>
 <p>ECG Deep Learning Framework Implemented using PyTorch.</p>
-<p>The system design is depicted as follows</p>
-<div class="figure" id="id1" style="text-align: center"><p><img  src="_images/tikz-acca1005f3810c9db1837947c3841dc52248e2d4.svg" alt="Figure made with TikZ" /></p>
-<p><span class="caption-text">Main Modules and Work Flow.</span></p>
-</div><div class="toctree-wrapper compound">
+<p>The overall system design is depicted in
+<a class="reference internal" href="concepts/architecture.html#concepts-architecture"><span class="std std-ref">Model assembly</span></a> (main modules and work flow).</p>
+<div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts/index.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">Version history</a></li>
 </ul>
 </div>
