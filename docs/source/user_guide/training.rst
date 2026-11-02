@@ -3,13 +3,14 @@
 Training
 ========
 
-The trainer in one paragraph
-----------------------------
+Overview
+--------
 
-:class:`~torch_ecg.components.trainer.BaseTrainer` owns the training
-loop (epochs, device handling, criterion setup, logging, early
-stopping, checkpoint retention, resume); you define **what** is
-trained: the datasets, one optimization step, and the evaluation.  The
+:class:`~torch_ecg.components.trainer.BaseTrainer` implements the
+training loop (epochs, device handling, criterion setup, logging,
+early stopping, checkpoint retention, resume); the subclass defines
+what is trained: the datasets, one optimization step, and the
+evaluation.  The
 complete reference implementation is
 `benchmarks/train_crnn_cinc2021/trainer.py
 <https://github.com/DeepPSP/torch_ecg/blob/master/benchmarks/train_crnn_cinc2021/trainer.py>`__,
@@ -42,7 +43,7 @@ Anatomy of a trainer subclass
 
         @torch.no_grad()
         def evaluate(self, data_loader):
-            ...                              # your inference loop (self._model.inference(...))
+            ...                              # the inference loop (self._model.inference(...))
             return {"weighted_f1": ...}      # keys must contain the monitored metric
 
 The train config
@@ -50,8 +51,9 @@ The train config
 
 A train config is a plain :class:`~torch_ecg.cfg.CFG`; the required
 fields are ``classes``, ``n_epochs``, ``batch_size``, ``log_step``,
-``optimizer``, ``lr_scheduler``, ``learning_rate`` (plus
-``extra_required_train_config_fields`` you define, e.g. ``db_dir``).
+``optimizer``, ``lr_scheduler``, ``learning_rate`` (plus any
+``extra_required_train_config_fields`` defined by the task, e.g.
+``db_dir``).
 Start from a library ``TrainCfg``, adapt, inherit the rest:
 
 .. code-block:: python
@@ -79,8 +81,8 @@ Construction and launch:
     )
     best = trainer.train()   # the best checkpoint dict; blocks until done
 
-What you get for free
----------------------
+Provided by the base class
+--------------------------
 
 - **checkpoints**: best-on-monitor and periodic checkpoints via
   ``CkptMixin.save`` with the **full** model config (``keep_checkpoint_max``
@@ -90,7 +92,7 @@ What you get for free
   set up by the base class
 - **logging**: per-run log files auto-named from the config, tensorboard
   support
-- **seeding**: pass ``worker_init_fn`` in your DataLoaders (the
+- **seeding**: pass ``worker_init_fn`` in the DataLoaders (the
   benchmark shows how) and call
   :func:`~torch_ecg.utils.seed_everything` once in ``main()``; with a
   fixed seed a run is fully determined
