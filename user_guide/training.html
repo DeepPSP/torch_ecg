@@ -469,12 +469,13 @@
                   
   <section id="training">
 <span id="ug-training"></span><h1>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h1>
-<section id="the-trainer-in-one-paragraph">
-<h2>The trainer in one paragraph<a class="headerlink" href="#the-trainer-in-one-paragraph" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer" title="torch_ecg.components.trainer.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a> owns the training
-loop (epochs, device handling, criterion setup, logging, early
-stopping, checkpoint retention, resume); you define <strong>what</strong> is
-trained: the datasets, one optimization step, and the evaluation.  The
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer" title="torch_ecg.components.trainer.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a> implements the
+training loop (epochs, device handling, criterion setup, logging,
+early stopping, checkpoint retention, resume); the subclass defines
+what is trained: the datasets, one optimization step, and the
+evaluation.  The
 complete reference implementation is
 <a class="reference external" href="https://github.com/DeepPSP/torch_ecg/blob/master/benchmarks/train_crnn_cinc2021/trainer.py">benchmarks/train_crnn_cinc2021/trainer.py</a>,
 from which this page is condensed.</p>
@@ -503,7 +504,7 @@ from which this page is condensed.</p>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_loader</span><span class="p">):</span>
-        <span class="o">...</span>                              <span class="c1"># your inference loop (self._model.inference(...))</span>
+        <span class="o">...</span>                              <span class="c1"># the inference loop (self._model.inference(...))</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">"weighted_f1"</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>      <span class="c1"># keys must contain the monitored metric</span>
 </pre></div>
 </div>
@@ -512,8 +513,9 @@ from which this page is condensed.</p>
 <h2>The train config<a class="headerlink" href="#the-train-config" title="Link to this heading">#</a></h2>
 <p>A train config is a plain <code class="xref py py-class docutils literal notranslate"><span class="pre">CFG</span></code>; the required
 fields are <code class="docutils literal notranslate"><span class="pre">classes</span></code>, <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code>, <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, <code class="docutils literal notranslate"><span class="pre">log_step</span></code>,
-<code class="docutils literal notranslate"><span class="pre">optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">lr_scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> (plus
-<code class="docutils literal notranslate"><span class="pre">extra_required_train_config_fields</span></code> you define, e.g. <code class="docutils literal notranslate"><span class="pre">db_dir</span></code>).
+<code class="docutils literal notranslate"><span class="pre">optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">lr_scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> (plus any
+<code class="docutils literal notranslate"><span class="pre">extra_required_train_config_fields</span></code> defined by the task, e.g.
+<code class="docutils literal notranslate"><span class="pre">db_dir</span></code>).
 Start from a library <code class="docutils literal notranslate"><span class="pre">TrainCfg</span></code>, adapt, inherit the rest:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.databases.datasets.cinc2021</span><span class="w"> </span><span class="kn">import</span> <span class="n">CINC2021TrainCfg</span>
@@ -538,8 +540,8 @@ Start from a library <code class="docutils literal notranslate"><span class="pre
 </pre></div>
 </div>
 </section>
-<section id="what-you-get-for-free">
-<h2>What you get for free<a class="headerlink" href="#what-you-get-for-free" title="Link to this heading">#</a></h2>
+<section id="provided-by-the-base-class">
+<h2>Provided by the base class<a class="headerlink" href="#provided-by-the-base-class" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>checkpoints</strong>: best-on-monitor and periodic checkpoints via
 <code class="docutils literal notranslate"><span class="pre">CkptMixin.save</span></code> with the <strong>full</strong> model config (<code class="docutils literal notranslate"><span class="pre">keep_checkpoint_max</span></code>
@@ -549,7 +551,7 @@ bounds disk usage; checkpoints reload anywhere via <code class="docutils literal
 set up by the base class</p></li>
 <li><p><strong>logging</strong>: per-run log files auto-named from the config, tensorboard
 support</p></li>
-<li><p><strong>seeding</strong>: pass <code class="docutils literal notranslate"><span class="pre">worker_init_fn</span></code> in your DataLoaders (the
+<li><p><strong>seeding</strong>: pass <code class="docutils literal notranslate"><span class="pre">worker_init_fn</span></code> in the DataLoaders (the
 benchmark shows how) and call
 <a class="reference internal" href="../api/generated/torch_ecg.utils.seed_everything.html#torch_ecg.utils.seed_everything" title="torch_ecg.utils.seed_everything"><code class="xref py py-func docutils literal notranslate"><span class="pre">seed_everything()</span></code></a> once in <code class="docutils literal notranslate"><span class="pre">main()</span></code>; with a
 fixed seed a run is fully determined</p></li>
@@ -604,10 +606,10 @@ fixed seed a run is fully determined</p></li>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-trainer-in-one-paragraph">The trainer in one paragraph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomy-of-a-trainer-subclass">Anatomy of a trainer subclass</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-train-config">The train config</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-get-for-free">What you get for free</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#provided-by-the-base-class">Provided by the base class</a></li>
 </ul>
   </nav></div>
 

@@ -459,8 +459,8 @@
                   
   <section id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">#</a></h1>
-<p>A five-minute tour of the main building blocks.  The complete, runnable
-versions of these patterns live in the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">examples</span></a>.</p>
+<p>A short introduction to the main building blocks.  Complete, runnable
+versions of these patterns are provided in the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">examples</span></a>.</p>
 <section id="read-a-database">
 <h2>1. Read a database<a class="headerlink" href="#read-a-database" title="Link to this heading">#</a></h2>
 <p>Every supported database has a reader class in <a class="reference internal" href="api/databases.html#module-torch_ecg.databases" title="torch_ecg.databases"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.databases</span></code></a>
@@ -480,7 +480,9 @@ that handles local caching, record listing and signal/annotation loading:</p>
 segment length, …) and yield tensors:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.databases.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">LUDBDataset</span><span class="p">,</span> <span class="n">LUDBTrainCfg</span>
 
-<span class="n">train_cfg</span> <span class="o">=</span> <span class="n">LUDBTrainCfg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">train_cfg</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">LUDBTrainCfg</span><span class="p">)</span>
 <span class="n">train_cfg</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="s2">"~/data/ludb"</span>
 <span class="n">train_cfg</span><span class="o">.</span><span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">ds_train</span> <span class="o">=</span> <span class="n">LUDBDataset</span><span class="p">(</span><span class="n">train_cfg</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -489,14 +491,16 @@ segment length, …) and yield tensors:</p>
 </section>
 <section id="pick-a-model">
 <h2>3. Pick a model<a class="headerlink" href="#pick-a-model" title="Link to this heading">#</a></h2>
-<p>Models take a config from <a class="reference internal" href="api/models.html#module-torch_ecg.model_configs" title="torch_ecg.model_configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.model_configs</span></code></a> (or your own
-CFG) plus the number of classes / leads:</p>
+<p>Models take a config from <a class="reference internal" href="api/models.html#module-torch_ecg.model_configs" title="torch_ecg.model_configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.model_configs</span></code></a> (or a custom
+CFG), together with the class list and the number of leads:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.model_configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN_CONFIG</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">ECG_CRNN_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">config</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"resnet_block_leadwise"</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ECG_CRNN_CONFIG</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"resnet_nature_comm_bottle_neck_se"</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -504,8 +508,8 @@ CFG) plus the number of classes / leads:</p>
 <h2>4. Train and reload<a class="headerlink" href="#train-and-reload" title="Link to this heading">#</a></h2>
 <p>Subclass <a class="reference internal" href="api/generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer" title="torch_ecg.components.trainer.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a> (or reuse one
 of the benchmark trainers) and call <code class="code docutils literal notranslate"><span class="pre">train()</span></code>.  Checkpoints written
-by the trainer contain the full model config, so a trained model is a
-one-liner to reload:</p>
+by the trainer contain the full model config, so a trained model can
+be reloaded with a single call:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">train_config</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="s2">"path/to/checkpoint_dir"</span><span class="p">)</span>
 </pre></div>
 </div>

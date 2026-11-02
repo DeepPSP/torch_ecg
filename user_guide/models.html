@@ -471,19 +471,21 @@
 <span id="ug-models"></span><h1>Models and configurations<a class="headerlink" href="#models-and-configurations" title="Link to this heading">#</a></h1>
 <section id="task-models">
 <h2>Task models<a class="headerlink" href="#task-models" title="Link to this heading">#</a></h2>
-<p>The task-level models take a config, the number of leads and the number
-of classes/leads-out:</p>
+<p>The task-level models take the class list, the number of leads, and a
+config:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.model_configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN_CONFIG</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">ECG_CRNN_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ECG_CRNN_CONFIG</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"resnet_nature_comm_bottle_neck_se"</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ECG_CRNN</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span> <span class="n">n_leads</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>       <span class="c1"># (2, 26)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">bs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_len</span><span class="o">=</span><span class="mi">4000</span><span class="p">)</span>   <span class="c1"># (2, 26) -- shape is computable</span>
-<span class="c1"># without running a forward pass</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>       <span class="c1"># (2, 26) for 26 classes</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>         <span class="c1"># (2, 26) -- computable without</span>
+                                            <span class="c1"># a forward pass</span>
 </pre></div>
 </div>
 <p>The full catalogue of task models (classification, sequence labeling,
@@ -497,7 +499,7 @@ and checked statically.</p>
 made block configs are catalogued in <a class="reference internal" href="../api/models.html#module-torch_ecg.model_configs" title="torch_ecg.model_configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch_ecg.model_configs</span></code></a>
 (VGG / ResNet families / TResNet / DenseNet / Xception / MobileNet /
 MultiScopic CNN / attention modules / RNN / MLP heads).  Custom backbones
-plug in through the registries:</p>
+are registered through the same registries:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKBONES</span>
 
 <span class="nd">@BACKBONES</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
@@ -512,7 +514,8 @@ plug in through the registries:</p>
 <h2>Checkpoints<a class="headerlink" href="#checkpoints" title="Link to this heading">#</a></h2>
 <p>Checkpoints written via
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code> carry the <strong>full</strong>
-model config, so a trained model is one line to reload, on any machine:</p>
+model config, so a trained model can be reloaded with a single call,
+on any machine:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"ckpt_dir"</span><span class="p">,</span> <span class="n">train_config</span><span class="o">=...</span><span class="p">,</span> <span class="n">model_config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_ecg.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ECG_CRNN</span>
