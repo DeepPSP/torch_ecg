@@ -13,15 +13,35 @@
 # combined default project status disabled.  Patch status stays
 # informational because coverage of `db`-marked tests only refreshes
 # nightly.
+#
+# The `full` project status is informational for the same reason: on a PR,
+# the full flag is carried forward from the nightly base and projected
+# onto the PR head, so any PR that adds coverable lines (the first was
+# #93: +60 lines) degrades the projected full coverage beyond the
+# threshold -- a structural false positive, since db-marked coverage
+# cannot refresh outside the nightly run.  The full flag remains an
+# enforceable signal on the nightly upload itself (visible on codecov.io
+# and in the nightly report); PRs are gated on `core`, which they upload.
 
 flag_management:
-  default_rules:
-    carryforward: true
-    statuses:
-      - name_prefix: project
-        type: project
-        target: auto
-        threshold: 0.5%
+  flag_rules:
+    - name: core
+      carryforward: true
+      statuses:
+        - name_prefix: project
+          type: project
+          target: auto
+          threshold: 0.5%
+    - name: full
+      carryforward: true
+      statuses:
+        - name_prefix: project
+          type: project
+          target: auto
+          threshold: 0.5%
+          # informational: PRs cannot refresh db-marked coverage (nightly
+          # only), so the carried-forward projection must not gate them
+          informational: true
 
 coverage:
   status:
