@@ -1,6 +1,6 @@
 numpy
 scipy
-pandas < 3.0.0
+pandas >= 2.2.2
 pyarrow
 scikit-learn
 boto3

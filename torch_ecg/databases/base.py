@@ -42,7 +42,10 @@ from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa : F401
 from ..utils.download import get_latest_version_from_physionet_s3, http_get
 from ..utils.misc import CitationMixin, ReprMixin, dict_to_str, get_record_list_recursive, init_logger
 from ._edf import _EdfReader
+from ._wfdb_compat import apply_wfdb_pandas3_compat
 from .aux_data import get_physionet_dbs
+
+apply_wfdb_pandas3_compat()
 
 __all__ = [
     "WFDB_Beat_Annotations",
