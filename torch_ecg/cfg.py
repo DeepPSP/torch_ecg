@@ -3,6 +3,8 @@
 import os
 import random
 import re
+import tempfile
+import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import partial
@@ -18,12 +20,96 @@ __all__ = [
 ]
 
 
-_PACKAGE_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
-if os.access(_PACKAGE_CACHE.parent, os.W_OK) and not _PACKAGE_CACHE.exists():
-    _PACKAGE_CACHE.mkdir(parents=True, exist_ok=True)
+_CACHE_DISABLED = False
+
+
+def _resolve_cache_root() -> Path:
+    """Resolve the package cache root without propagating filesystem errors.
+
+    Cache-directory discovery must never fail the import because no home
+    directory can be determined (``HOME`` unset for a UID without a
+    ``/etc/passwd`` entry, as occurs in minimal container images), or because
+    no permanent cache location is writable.  Candidates are tried in order:
+    ``TORCH_ECG_CACHE_DIR``, ``XDG_CACHE_HOME/torch_ecg``,
+    ``<home>/.cache/torch_ecg``, then a UID-labelled temporary directory
+    (created with restrictive permissions by ``tempfile.mkdtemp``); a
+    non-persistent sentinel path is the last resort, setting the
+    module-level ``_CACHE_DISABLED`` flag.  The no-failure guarantee is
+    import-scoped: the import sequence creates nothing in the disabled
+    state, while features that create cache subdirectories on demand (file
+    loggers, checkpoints, database downloads) are not gated by the flag.
+    Exactly one ``RuntimeWarning`` is emitted when a fallback directory is
+    selected; as with any warning, it surfaces as an error under
+    warnings-as-error settings.
+
+    Returns
+    -------
+    pathlib.Path
+        A usable cache root; path-like under all circumstances, so that the
+        module-level constants derived from it keep serving their consumers.
+
+    """
+    global _CACHE_DISABLED
+    candidates = []
+    env_dir = os.environ.get("TORCH_ECG_CACHE_DIR")
+    if env_dir:
+        candidates.append(Path(env_dir))
+    xdg_dir = os.environ.get("XDG_CACHE_HOME")
+    if xdg_dir:
+        candidates.append(Path(xdg_dir) / "torch_ecg")
+    try:
+        candidates.append(Path("~").expanduser() / ".cache" / "torch_ecg")
+    except (RuntimeError, OSError):
+        # no home directory determinable (e.g. HOME unset for a UID without
+        # a passwd entry); try the remaining candidates instead
+        pass
+    for candidate in candidates:
+        try:
+            candidate.mkdir(parents=True, exist_ok=True)
+            probe = candidate / f".write-probe-{os.getpid()}"
+            probe.touch()
+            probe.unlink()
+        except OSError:
+            continue
+        return candidate
+    uid = os.getuid() if hasattr(os, "getuid") else "windows"
+    try:
+        fallback = Path(tempfile.mkdtemp(prefix=f"torch_ecg-{uid}-"))
+    except OSError:
+        # no writable filesystem at all: return a path-like sentinel
+        # placeholder that the import sequence never creates -- mkdir'ing it
+        # would succeed for a root process on a writable root filesystem
+        # (root containers) and pollute the filesystem root -- and whose
+        # construction performs no filesystem access
+        # (`tempfile.gettempdir()` may itself raise in such an environment)
+        warnings.warn(
+            "No writable cache directory found; the package cache is disabled "
+            "at import time for this process. Set TORCH_ECG_CACHE_DIR to a "
+            "writable path to enable it. Features that create cache "
+            "subdirectories on demand (file loggers, checkpoints, database "
+            "downloads) are not gated by this state.",
+            RuntimeWarning,
+        )
+        _CACHE_DISABLED = True
+        return Path(os.sep) / f"torch_ecg-cache-disabled-{uid}"
+    warnings.warn(
+        "No permanent cache directory is writable; using the temporary "
+        "directory (its contents will not survive the process). Set "
+        "TORCH_ECG_CACHE_DIR to a writable path for a persistent cache.",
+        RuntimeWarning,
+    )
+    return fallback
+
+
+_PACKAGE_CACHE = _resolve_cache_root()
 _DATA_CACHE = _PACKAGE_CACHE / "data"
-if os.access(_DATA_CACHE.parent, os.W_OK) and not _DATA_CACHE.exists():
-    _DATA_CACHE.mkdir(parents=True, exist_ok=True)
+if not _CACHE_DISABLED:
+    try:
+        _DATA_CACHE.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # the cache root passed the write probe moments before; treat any
+        # late failure the same way: degrade at use time, not at import
+        pass
 
 
 # keys that would shadow `dict`/`dict`-like API when written onto a `CFG`
