@@ -42,6 +42,20 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Fixed
 
+- `import torch_ecg` no longer fails when no home directory can be
+  determined (`HOME` unset for a UID without a `/etc/passwd` entry, as
+  occurs in minimal container images, HPC nodes, or other environments
+  with no determinable home; `Path("~").expanduser()` raised
+  `RuntimeError` at module import).
+  Cache-directory discovery now resolves, in order: `TORCH_ECG_CACHE_DIR`,
+  `XDG_CACHE_HOME/torch_ecg`, `<home>/.cache/torch_ecg`, a UID-labelled
+  temporary directory (restrictive permissions), and a non-persistent
+  sentinel as the last resort -- discovery never propagates filesystem
+  errors.  Exactly one `RuntimeWarning` is emitted when a fallback
+  directory is selected; as with any warning, it surfaces as an error
+  under warnings-as-error settings.  `_PACKAGE_CACHE`, `_DATA_CACHE`,
+  and the `DEFAULTS.*` paths remain path-like under all outcomes, so
+  downstream consumers are unaffected.
 - wfdb <= 4.3.1 `Annotation.get_contained_labels` raises `TypeError`
   under pandas >= 3 (`DataFrame.set_index` receives an
   `ArrowStringArray` from `<string column>.values`), breaking e.g.
