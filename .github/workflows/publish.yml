@@ -92,9 +92,16 @@ jobs:
           packages-dir: ${{ env.ARTIFACT_DIR }}
 
   github-release:
-    # github release and changelog
+    # GitHub release: the release's CHANGELOG.md section as the preamble,
+    # GitHub's auto-generated "What's Changed" PR list appended (no PR labels
+    # required), and the sdist attached as an asset.  The body and the
+    # generated notes must be provided in the SAME create call
+    # (`body_path` + `generate_release_notes`): GitHub only generates
+    # "What's Changed" at creation time, and PATCHing the body of an existing
+    # release never re-appends it.
     needs: build
     runs-on: ubuntu-22.04
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -103,46 +110,38 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_DIR }}
-      - name: Build Changelog
-        id: changelog
-        uses: mikepenz/release-changelog-builder-action@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          configurationJson: |
-            {
-              "template": "# Changelog\n\n{{CHANGELOG}}\n\n<details>\n<summary>📦 Other changes</summary>\n\n{{UNCATEGORIZED}}\n\n</details>",
-              "categories": [
-                {
-                  "title": "🚀 Features",
-                  "labels": ["feature","enhancement"]
-                },
-                {
-                  "title": "🐛 Bug Fixes",
-                  "labels": ["bug","fix"]
-                },
-                {
-                  "title": "📚 Documentation",
-                  "labels": ["documentation","docs"]
-                },
-                {
-                  "title": "⬆️ Dependencies",
-                  "labels": ["dependencies"]
-                },
-                {
-                  "title": "🧰 Maintenance",
-                  "labels": ["chore","ci"]
-                }
-              ],
-              "exclude_labels": [
-                "pre-commit"
-              ]
-            }
+      - name: Extract changelog section for this release
+        # this repository keeps a Keep-a-Changelog markdown history (released
+        # sections headed `## [<version>] - <YYYY-MM-DD>`) and does not use
+        # PR labels, so the previous label-driven changelog builder produced
+        # near-empty notes; the section extraction needs no labels and no
+        # extra permissions
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          tag = os.environ["GITHUB_REF_NAME"]  # e.g. v0.0.34
+          ver = tag.lstrip("v")
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          pat = re.compile(r"^## \[(?P<v>\d[\w.]*)\] - \d{4}-\d{2}-\d{2}$", re.M)
+          matches = list(pat.finditer(text))
+          body = ""
+          for i, m in enumerate(matches):
+              if m.group("v") == ver:
+                  start = m.end()
+                  end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+                  body = text[start:end].strip()
+                  break
+          if not body:
+              body = "See [CHANGELOG.md](https://github.com/DeepPSP/torch_ecg/blob/master/CHANGELOG.md)."
+          with open("release_notes.md", "w", encoding="utf-8") as f:
+              f.write(f"# Changes in {tag}\n\n{body}\n")
+          PY
       - name: Create Release
-        id: create_release
         uses: softprops/action-gh-release@v3
         with:
-          body: ${{ steps.changelog.outputs.changelog }}
+          body_path: release_notes.md
+          generate_release_notes: true
           # attach the sdist to the release (numpy-style: source on GitHub,
           # wheels stay PyPI-only); glob matches torch_ecg-<ver>.tar.gz only
           files: ${{ env.ARTIFACT_DIR }}/*.tar.gz
