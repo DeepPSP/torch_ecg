@@ -50,8 +50,11 @@ format). Releases up to and including 0.0.33 are preserved on the
   Cache-directory discovery now resolves, in order: `TORCH_ECG_CACHE_DIR`,
   `XDG_CACHE_HOME/torch_ecg`, `<home>/.cache/torch_ecg`, a UID-labelled
   temporary directory (restrictive permissions), and a non-persistent
-  sentinel as the last resort -- discovery never propagates filesystem
-  errors.  Exactly one `RuntimeWarning` is emitted when a fallback
+  sentinel as the last resort -- the sentinel is a pure path-like
+  placeholder that is never created on disk (so it cannot pollute a
+  writable root filesystem in root containers), and it sets the
+  module-level `_CACHE_DISABLED` flag -- discovery never propagates
+  filesystem errors.  Exactly one `RuntimeWarning` is emitted when a fallback
   directory is selected; as with any warning, it surfaces as an error
   under warnings-as-error settings.  `_PACKAGE_CACHE`, `_DATA_CACHE`,
   and the `DEFAULTS.*` paths remain path-like under all outcomes, so

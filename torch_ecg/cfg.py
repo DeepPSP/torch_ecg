@@ -20,6 +20,9 @@ __all__ = [
 ]
 
 
+_CACHE_DISABLED = False
+
+
 def _resolve_cache_root() -> Path:
     """Resolve the package cache root without propagating filesystem errors.
 
@@ -30,10 +33,10 @@ def _resolve_cache_root() -> Path:
     ``TORCH_ECG_CACHE_DIR``, ``XDG_CACHE_HOME/torch_ecg``,
     ``<home>/.cache/torch_ecg``, then a UID-labelled temporary directory
     (created with restrictive permissions by ``tempfile.mkdtemp``); a
-    non-persistent sentinel path is the last resort.  Exactly one
-    ``RuntimeWarning`` is emitted when a fallback directory is selected; as
-    with any warning, it surfaces as an error under warnings-as-error
-    settings.
+    non-persistent sentinel path is the last resort, setting the
+    module-level ``_CACHE_DISABLED`` flag.  Exactly one ``RuntimeWarning``
+    is emitted when a fallback directory is selected; as with any warning,
+    it surfaces as an error under warnings-as-error settings.
 
     Returns
     -------
@@ -42,6 +45,7 @@ def _resolve_cache_root() -> Path:
         module-level constants derived from it keep serving their consumers.
 
     """
+    global _CACHE_DISABLED
     candidates = []
     env_dir = os.environ.get("TORCH_ECG_CACHE_DIR")
     if env_dir:
@@ -68,17 +72,19 @@ def _resolve_cache_root() -> Path:
     try:
         fallback = Path(tempfile.mkdtemp(prefix=f"torch_ecg-{uid}-"))
     except OSError:
-        # no writable filesystem at all: return a sentinel that is never
-        # created and whose construction performs no filesystem access
-        # (`tempfile.gettempdir()` may itself raise in such an environment),
-        # so cache-writing features degrade at use time instead of failing
-        # the import
+        # no writable filesystem at all: return a path-like sentinel
+        # placeholder that the module never creates -- mkdir'ing it would
+        # succeed for a root process on a writable root filesystem (root
+        # containers) and pollute the filesystem root -- and whose
+        # construction performs no filesystem access
+        # (`tempfile.gettempdir()` may itself raise in such an environment)
         warnings.warn(
             "No writable cache directory found; the package cache is disabled "
             "for this process. Set TORCH_ECG_CACHE_DIR to a writable path to "
             "enable it.",
             RuntimeWarning,
         )
+        _CACHE_DISABLED = True
         return Path(os.sep) / f"torch_ecg-cache-disabled-{uid}"
     warnings.warn(
         "No permanent cache directory is writable; using the temporary "
@@ -91,12 +97,13 @@ def _resolve_cache_root() -> Path:
 
 _PACKAGE_CACHE = _resolve_cache_root()
 _DATA_CACHE = _PACKAGE_CACHE / "data"
-try:
-    _DATA_CACHE.mkdir(parents=True, exist_ok=True)
-except OSError:
-    # the cache root is the disabled sentinel; cache-writing features fail
-    # at use time, not at import time
-    pass
+if not _CACHE_DISABLED:
+    try:
+        _DATA_CACHE.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # the cache root passed the write probe moments before; treat any
+        # late failure the same way: degrade at use time, not at import
+        pass
 
 
 # keys that would shadow `dict`/`dict`-like API when written onto a `CFG`

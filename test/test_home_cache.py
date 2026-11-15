@@ -36,10 +36,11 @@ _PYTHONPATH = os.pathsep.join(p for p in sys.path if p)
 _CHECK_IMPORT = """
 from pathlib import Path
 import torch_ecg
-from torch_ecg.cfg import DEFAULTS, _DATA_CACHE, _PACKAGE_CACHE
+from torch_ecg.cfg import _CACHE_DISABLED, DEFAULTS, _DATA_CACHE, _PACKAGE_CACHE
 assert isinstance(_PACKAGE_CACHE, Path), _PACKAGE_CACHE
 assert isinstance(_DATA_CACHE, Path), _DATA_CACHE
 assert isinstance(DEFAULTS.log_dir, Path), DEFAULTS.log_dir
+assert _CACHE_DISABLED is False, "cache must not be disabled in this scenario"
 print(_PACKAGE_CACHE)
 """
 
@@ -65,8 +66,9 @@ assert Path(tempfile.gettempdir()) in _PACKAGE_CACHE.parents, _PACKAGE_CACHE
 # mkdtemp and gettempdir are patched to raise, but only AFTER the third-party
 # import chain (torch -> dill calls gettempdir at import) has settled and
 # right before torch_ecg is imported; the sentinel path must then be
-# constructed without any further filesystem access and the import must
-# still succeed
+# constructed without any further filesystem access, the disabled-cache
+# state must be flagged, and no mkdir may target the sentinel -- otherwise a
+# root process (writable root filesystem in a container) would create it
 _CHECK_NO_TEMP = (
     """
 import pwd
@@ -85,11 +87,33 @@ def _no_temp_dir(*args, **kwargs):
 
 tempfile.mkdtemp = _no_temp_dir
 tempfile.gettempdir = _no_temp_dir
+
+from pathlib import Path
+
+_real_mkdir = Path.mkdir
+_mkdir_calls = []
+
+def _recording_mkdir(self, *args, **kwargs):
+    _mkdir_calls.append(str(self))
+    return _real_mkdir(self, *args, **kwargs)
+
+Path.mkdir = _recording_mkdir
 """
-    + _CHECK_IMPORT
+    + """
+from pathlib import Path
+import torch_ecg
+from torch_ecg.cfg import _CACHE_DISABLED, DEFAULTS, _DATA_CACHE, _PACKAGE_CACHE
+assert isinstance(_PACKAGE_CACHE, Path), _PACKAGE_CACHE
+assert isinstance(_DATA_CACHE, Path), _DATA_CACHE
+assert isinstance(DEFAULTS.log_dir, Path), DEFAULTS.log_dir
+"""
     + """
 import os
+assert _CACHE_DISABLED is True, "expected the disabled-cache state"
 assert _PACKAGE_CACHE == Path(os.sep) / f"torch_ecg-cache-disabled-{os.getuid()}", _PACKAGE_CACHE
+assert not any("torch_ecg-cache-disabled" in p for p in _mkdir_calls), _mkdir_calls
+assert not _PACKAGE_CACHE.exists(), _PACKAGE_CACHE
+assert not _DATA_CACHE.exists(), _DATA_CACHE
 """
 )
 
@@ -144,8 +168,9 @@ def test_no_home_no_passwd_entry():
 @_SKIP_NON_POSIX
 def test_no_writable_temp_dir():
     """No candidate succeeds and the temporary-directory machinery itself
-    raises OSError: import still succeeds with the disabled-cache sentinel,
-    whose construction performs no further filesystem access."""
+    raises OSError: import still succeeds, the disabled-cache state is
+    flagged, and the sentinel is a pure placeholder -- no mkdir ever targets
+    it (recorded), so even a root process cannot have it created."""
     result = _run_import(script=_CHECK_NO_TEMP)
     assert result.returncode == 0, result.stderr
     assert _DISABLED_WARNING in result.stderr
