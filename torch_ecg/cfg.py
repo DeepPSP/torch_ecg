@@ -69,15 +69,17 @@ def _resolve_cache_root() -> Path:
         fallback = Path(tempfile.mkdtemp(prefix=f"torch_ecg-{uid}-"))
     except OSError:
         # no writable filesystem at all: return a sentinel that is never
-        # created, so cache-writing features degrade at use time instead of
-        # failing the import
+        # created and whose construction performs no filesystem access
+        # (`tempfile.gettempdir()` may itself raise in such an environment),
+        # so cache-writing features degrade at use time instead of failing
+        # the import
         warnings.warn(
             "No writable cache directory found; the package cache is disabled "
             "for this process. Set TORCH_ECG_CACHE_DIR to a writable path to "
             "enable it.",
             RuntimeWarning,
         )
-        return Path(tempfile.gettempdir()) / f"torch_ecg-cache-disabled-{uid}"
+        return Path(os.sep) / f"torch_ecg-cache-disabled-{uid}"
     warnings.warn(
         "No permanent cache directory is writable; using the temporary "
         "directory (its contents will not survive the process). Set "

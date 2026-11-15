@@ -61,6 +61,38 @@ assert Path(tempfile.gettempdir()) in _PACKAGE_CACHE.parents, _PACKAGE_CACHE
 """
 )
 
+# no candidate succeeds AND the temporary-directory machinery itself fails:
+# mkdtemp and gettempdir are patched to raise, but only AFTER the third-party
+# import chain (torch -> dill calls gettempdir at import) has settled and
+# right before torch_ecg is imported; the sentinel path must then be
+# constructed without any further filesystem access and the import must
+# still succeed
+_CHECK_NO_TEMP = (
+    """
+import pwd
+
+def _no_passwd_entry(uid):
+    raise KeyError(f"getpwuid(): uid not found: {uid}")
+
+pwd.getpwuid = _no_passwd_entry
+
+import torch  # settles the third-party import chain before the patches
+
+import tempfile
+
+def _no_temp_dir(*args, **kwargs):
+    raise OSError("no writable temporary directory")
+
+tempfile.mkdtemp = _no_temp_dir
+tempfile.gettempdir = _no_temp_dir
+"""
+    + _CHECK_IMPORT
+    + """
+import os
+assert _PACKAGE_CACHE == Path(os.sep) / f"torch_ecg-cache-disabled-{os.getuid()}", _PACKAGE_CACHE
+"""
+)
+
 
 def _check_passwd_home(home):
     """HOME unset, passwd entry faked to `home`: the passwd home is used,
@@ -107,6 +139,18 @@ def test_no_home_no_passwd_entry():
     assert _TEMP_WARNING in result.stderr
     assert result.stderr.count(_TEMP_WARNING) == 1
     assert _DISABLED_WARNING not in result.stderr
+
+
+@_SKIP_NON_POSIX
+def test_no_writable_temp_dir():
+    """No candidate succeeds and the temporary-directory machinery itself
+    raises OSError: import still succeeds with the disabled-cache sentinel,
+    whose construction performs no further filesystem access."""
+    result = _run_import(script=_CHECK_NO_TEMP)
+    assert result.returncode == 0, result.stderr
+    assert _DISABLED_WARNING in result.stderr
+    assert result.stderr.count(_DISABLED_WARNING) == 1
+    assert _TEMP_WARNING not in result.stderr
 
 
 @_SKIP_NON_POSIX
