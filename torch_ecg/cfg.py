@@ -34,9 +34,13 @@ def _resolve_cache_root() -> Path:
     ``<home>/.cache/torch_ecg``, then a UID-labelled temporary directory
     (created with restrictive permissions by ``tempfile.mkdtemp``); a
     non-persistent sentinel path is the last resort, setting the
-    module-level ``_CACHE_DISABLED`` flag.  Exactly one ``RuntimeWarning``
-    is emitted when a fallback directory is selected; as with any warning,
-    it surfaces as an error under warnings-as-error settings.
+    module-level ``_CACHE_DISABLED`` flag.  The no-failure guarantee is
+    import-scoped: the import sequence creates nothing in the disabled
+    state, while features that create cache subdirectories on demand (file
+    loggers, checkpoints, database downloads) are not gated by the flag.
+    Exactly one ``RuntimeWarning`` is emitted when a fallback directory is
+    selected; as with any warning, it surfaces as an error under
+    warnings-as-error settings.
 
     Returns
     -------
@@ -73,15 +77,17 @@ def _resolve_cache_root() -> Path:
         fallback = Path(tempfile.mkdtemp(prefix=f"torch_ecg-{uid}-"))
     except OSError:
         # no writable filesystem at all: return a path-like sentinel
-        # placeholder that the module never creates -- mkdir'ing it would
-        # succeed for a root process on a writable root filesystem (root
-        # containers) and pollute the filesystem root -- and whose
+        # placeholder that the import sequence never creates -- mkdir'ing it
+        # would succeed for a root process on a writable root filesystem
+        # (root containers) and pollute the filesystem root -- and whose
         # construction performs no filesystem access
         # (`tempfile.gettempdir()` may itself raise in such an environment)
         warnings.warn(
             "No writable cache directory found; the package cache is disabled "
-            "for this process. Set TORCH_ECG_CACHE_DIR to a writable path to "
-            "enable it.",
+            "at import time for this process. Set TORCH_ECG_CACHE_DIR to a "
+            "writable path to enable it. Features that create cache "
+            "subdirectories on demand (file loggers, checkpoints, database "
+            "downloads) are not gated by this state.",
             RuntimeWarning,
         )
         _CACHE_DISABLED = True
