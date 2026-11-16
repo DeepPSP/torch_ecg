@@ -221,7 +221,7 @@ class CPSC2021(PhysioNetDataBase):
             self.logger.debug(f"subsample `{size}` records from `{len(self._df_records)}`")
             self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
 
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
 
         self._all_records = CFG({t: [] for t in self.db_tranches})
         self._all_subjects = CFG({t: [] for t in self.db_tranches})
