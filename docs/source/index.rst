@@ -22,7 +22,8 @@ The overall system design is depicted in
    Tutorial <tutorial>
    User Guide <user_guide/index>
    Concepts <concepts/index>
-   Examples <examples>
+   Examples Gallery <auto_examples/index>
+   Benchmarks <examples>
    API Reference <api/index>
    Changelog <CHANGELOG>
    Version history <history>

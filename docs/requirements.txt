@@ -1,5 +1,5 @@
 sphinx
-pydata-sphinx-theme
+pydata-sphinx-theme==0.20.0
 sphinx-copybutton
 sphinx-design
 sphinx-emoji-favicon
@@ -7,3 +7,5 @@ sphinx-markdown-tables
 sphinxcontrib-tikz
 sphinxcontrib-bibtex
 myst-parser
+sphinx-gallery
+joblib

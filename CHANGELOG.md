@@ -6,6 +6,21 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ## Unreleased
 
+### Added
+
+- An executable examples gallery (sphinx-gallery) joins the
+  documentation: three verified examples (reading and rendering a
+  12-lead ECG, bandpass and baseline-removal preprocessing, online
+  waveform augmentation) run on the bundled sample data at
+  documentation build time, with their code, output, and rendered
+  figures on the page. The gallery extension is conditionally mounted
+  (old tags in the planned multiversion archive have no `examples/`
+  directory and would fail the build), generated artifacts are
+  gitignored, `sphinx-gallery`/`joblib` join the docs and dev extras,
+  and the `pydata-sphinx-theme` is pinned in the docs requirements to
+  the verified version. The former static examples page now covers the
+  `benchmarks/` directory and cross-links the gallery.
+
 ### Changed
 
 - The `@torch.jit.script` decorator is removed from the private
