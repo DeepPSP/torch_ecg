@@ -8,6 +8,12 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Changed
 
+- Tag releases now create the GitHub release in a single step: the
+  matching `CHANGELOG.md` section as the body, GitHub's auto-generated
+  "What's Changed" PR list appended, and the sdist attached as before.
+  The previous label-driven changelog builder produced near-empty notes
+  for this label-less repository, and the notes were set without the
+  creator-time generation that "What's Changed" requires.
 - Python 3.10 (EOL October 2026) is dropped from the support matrix:
   `requires-python >= 3.11`, the 3.10 classifier removed, the CI
   matrix is now `3.11 / 3.12 / 3.13 / 3.14 / 3.15`, and the nightly
