@@ -421,7 +421,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
                     axis=1,
                 )
 
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._all_records = self._df_records.index.tolist()
 
         # update `current_version`

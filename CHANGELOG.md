@@ -8,6 +8,10 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Changed
 
+- The `@torch.jit.script` decorator is removed from the private
+  `_GroupFC` helper in `torch_ecg.models`: scripting is deprecated by
+  PyTorch and the decorator fired a `DeprecationWarning` at import
+  time; the eager class is call-compatible.
 - Tag releases now create the GitHub release in a single step: the
   matching `CHANGELOG.md` section as the body, GitHub's auto-generated
   "What's Changed" PR list appended, and the sdist attached as before.
@@ -48,6 +52,16 @@ format). Releases up to and including 0.0.33 are preserved on the
 
 ### Fixed
 
+- pandas-4 deprecation warnings are cleared at import and reader
+  construction: the 20 `DataFrame.set_index`/`drop_duplicates`/
+  `drop(..., inplace=True)` calls across the database readers are
+  rewritten in reassignment form (the `inplace` keyword is deprecated
+  in pandas 3.1, removal in pandas 4), and the AHA aux-data module no
+  longer touches the `future.no_silent_downcasting` option on pandas
+  >= 3.1, where the option itself is deprecated and its semantics are
+  already the default (the save/restore dance is kept for pandas 2.x).
+  Importing the package and constructing readers now emit no library
+  warnings under pandas 3.1.
 - `import torch_ecg` no longer fails when no home directory can be
   determined (`HOME` unset for a UID without a `/etc/passwd` entry, as
   occurs in minimal container images, HPC nodes, or other environments

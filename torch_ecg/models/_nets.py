@@ -4181,7 +4181,6 @@ class SpaceToDepth(nn.Module, SizeMixin):
         return self.__in_channels
 
 
-@torch.jit.script
 class _GroupFC(object):
     def __init__(self, embed_len_decoder: int):
         self.embed_len_decoder = embed_len_decoder

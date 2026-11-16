@@ -216,7 +216,7 @@ class CACHET_CADB(_DataBase):
             lambda x: self._full_data_dir / f"{x}/{self.header_ext}"
         )
         self._subject_records = self._df_records.groupby("subject")["record"].apply(sorted).to_dict()
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         # self._subject_records = {
         #     subject: sorted(self._df_records[self._df_records["subject"] == subject].index) for subject in self._all_subjects
         # }
@@ -224,7 +224,7 @@ class CACHET_CADB(_DataBase):
         # the table of metadata
         self._df_metadata = pd.DataFrame([self.get_record_metadata(rec) for rec in self._all_records])
         self._df_metadata["record"] = self._all_records
-        self._df_metadata.set_index("record", inplace=True)
+        self._df_metadata = self._df_metadata.set_index("record")
         self._df_metadata = self._df_metadata[self._metadata_cols]
 
     def get_absolute_path(self, rec: Union[str, int], extension: str = "signal-ecg") -> Path:

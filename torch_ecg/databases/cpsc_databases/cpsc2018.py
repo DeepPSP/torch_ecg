@@ -200,7 +200,7 @@ class CPSC2018(CPSCDataBase):
             self._df_records = self._df_records.sample(n=size, random_state=DEFAULTS.SEED, replace=False)
         self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._all_records = self._df_records.index.values.tolist()
 
         # find and load the annotation csv file
@@ -228,7 +228,7 @@ class CPSC2018(CPSCDataBase):
             )
             df_ann = df_ann[[df_ann.columns[0], "labels_n", "labels_a", "labels_f"]]
             df_ann.columns = ["record", "labels_n", "labels_a", "labels_f"]
-            df_ann.set_index("record", inplace=True)
+            df_ann = df_ann.set_index("record")
             # merge `df_ann` and `self._df_records`
             self._df_records = self._df_records.merge(df_ann, how="left", left_index=True, right_index=True)
 

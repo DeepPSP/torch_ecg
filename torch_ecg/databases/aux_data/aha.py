@@ -13,10 +13,14 @@ import pandas as pd
 
 # `future.no_silent_downcasting` changes the downcasting behavior of
 # `ffill`/`fillna`, which the parsing of the tables below relies on.
-# Save the user's value and restore it after parsing instead of mutating
-# the process-global pandas options at import time.
-_prev_no_silent_downcasting = pd.get_option("future.no_silent_downcasting")
-pd.set_option("future.no_silent_downcasting", True)
+# The option is deprecated since pandas 3.1 (removal in pandas 4), where
+# its intended semantics are already the default, so only set it on older
+# versions; save the user's value and restore it after parsing instead of
+# mutating the process-global pandas options at import time.
+_SET_NO_SILENT_DOWNCASTING = tuple(int(part) for part in pd.__version__.split(".")[:2]) < (3, 1)
+if _SET_NO_SILENT_DOWNCASTING:
+    _prev_no_silent_downcasting = pd.get_option("future.no_silent_downcasting")
+    pd.set_option("future.no_silent_downcasting", True)
 
 __all__ = [
     "df_primary_statements",
@@ -355,4 +359,5 @@ General Modifier Code,May (May Not) Accompany These Primary Codes or May Be Betw
 df_general_modifier_primary_statement_pairing_rules["Location"] = df_general_modifier_primary_statement_pairing_rules[
     "Location"
 ].apply(lambda location: location.replace("b", "before").replace("a", "after").replace("i", "between"))
-pd.set_option("future.no_silent_downcasting", _prev_no_silent_downcasting)
+if _SET_NO_SILENT_DOWNCASTING:
+    pd.set_option("future.no_silent_downcasting", _prev_no_silent_downcasting)

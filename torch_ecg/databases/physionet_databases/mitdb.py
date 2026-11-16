@@ -148,7 +148,7 @@ class MITDB(PhysioNetDataBase):
             self._df_records = pd.DataFrame()
             self._df_records["path"] = get_record_list_recursive3(self.db_dir, self.data_pattern_with_ext, relative=False)
             self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-            self._df_records.set_index("record", inplace=True)
+            self._df_records = self._df_records.set_index("record")
         if subsample is not None:
             size = min(
                 len(self._df_records),
