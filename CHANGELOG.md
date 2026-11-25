@@ -73,8 +73,9 @@ format). Releases up to and including 0.0.33 are preserved on the
   rewritten in reassignment form (the `inplace` keyword is deprecated
   in pandas 3.1, removal in pandas 4), and the AHA aux-data module no
   longer touches the `future.no_silent_downcasting` option on pandas
-  >= 3.1, where the option itself is deprecated and its semantics are
-  already the default (the save/restore dance is kept for pandas 2.x).
+  >= 3.1, where the option itself is deprecated and the parsed tables
+  are identical with and without it (the save/restore dance is kept
+  for older pandas).
   Importing the package and constructing readers now emit no library
   warnings under pandas 3.1.
 - `import torch_ecg` no longer fails when no home directory can be

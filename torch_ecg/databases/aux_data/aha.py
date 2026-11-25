@@ -13,8 +13,9 @@ import pandas as pd
 
 # `future.no_silent_downcasting` changes the downcasting behavior of
 # `ffill`/`fillna`, which the parsing of the tables below relies on.
-# The option is deprecated since pandas 3.1 (removal in pandas 4), where
-# its intended semantics are already the default, so only set it on older
+# The option is deprecated since pandas 3.1 (removal in pandas 4), where the
+# parsed tables are identical with and without it (pinned down in
+# test/test_databases/test_aux_data.py), so it is only set on older
 # versions; save the user's value and restore it after parsing instead of
 # mutating the process-global pandas options at import time.
 _SET_NO_SILENT_DOWNCASTING = tuple(int(part) for part in pd.__version__.split(".")[:2]) < (3, 1)
