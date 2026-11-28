@@ -169,3 +169,8 @@ test/logs/
 # runtime caches written into the bundled sample data by datasets
 sample-data/**/records.json
 sample-data/**/train_test_split_*.json
+
+# sphinx-gallery artifacts
+docs/source/auto_examples/
+docs/source/sg_execution_times.rst
+examples/_output/

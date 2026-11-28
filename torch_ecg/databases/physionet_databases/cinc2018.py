@@ -154,7 +154,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             self._df_records = pd.concat([self._df_records, df_tmp], axis=0, ignore_index=True)
         self._df_records["record"] = self._df_records["path"].apply(lambda x: Path(x).stem)
         self._df_records["subject_id"] = self._df_records["record"].apply(self.get_subject_id)
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
 
         self._df_records["fs"] = None
         self._df_records["siglen"] = None

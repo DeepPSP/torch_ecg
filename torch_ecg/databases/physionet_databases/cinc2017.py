@@ -165,7 +165,7 @@ class CINC2017(PhysioNetDataBase):
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._all_records = self._df_records.index.values.tolist()
 
         ann_file = list(self.db_dir.rglob("REFERENCE.csv"))

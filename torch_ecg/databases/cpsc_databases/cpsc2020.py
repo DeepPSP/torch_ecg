@@ -293,13 +293,13 @@ class CPSC2020(CPSCDataBase):
         all_records = [f"A{i:02d}" for i in range(1, 1 + n_records)]
         self._df_records["path"] = [path for path in self.db_dir.rglob(f"*.{self.rec_ext}") if path.stem in all_records]
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
 
         all_annotations = [f"R{i:02d}" for i in range(1, 1 + n_records)]
         df_ann = pd.DataFrame()
         df_ann["ann_path"] = [path for path in self.db_dir.rglob(f"*.{self.ann_ext}") if path.stem in all_annotations]
         df_ann["record"] = df_ann["ann_path"].apply(lambda x: x.stem.replace("R", "A"))
-        df_ann.set_index("record", inplace=True)
+        df_ann = df_ann.set_index("record")
         # take the intersection by the index of `df_ann` and `self._df_records`
         self._df_records = self._df_records.join(df_ann, how="inner")
 

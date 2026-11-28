@@ -128,7 +128,7 @@ class PTBXL(PhysioNetDataBase):
         # read metadata file and scp_statements file
         self._df_metadata = pd.read_csv(self.db_dir / self.__metadata_file__)
         self._df_metadata["ecg_id"] = self._df_metadata["ecg_id"].apply(lambda x: f"{x:05d}")
-        self._df_metadata.set_index("ecg_id", inplace=True)
+        self._df_metadata = self._df_metadata.set_index("ecg_id")
         self._df_metadata["patient_id"] = self._df_metadata["patient_id"].astype(int)
         self._df_scp_statements = pd.read_csv(self.db_dir / self.__scp_statements_file__, index_col=0)
 
@@ -384,14 +384,14 @@ class PTBXLPlus(PhysioNetDataBase):
         fiducial_point_files = df_fiducial.groupby("ecg_id")["fiducial_path"].apply(list).to_dict()
         df_fiducial["fiducial_point_files"] = df_fiducial["ecg_id"].apply(lambda x: fiducial_point_files.get(x, []))
         # drop duplicates on "ecg_id"
-        df_fiducial.drop_duplicates(subset="ecg_id", keep="first", inplace=True)
+        df_fiducial = df_fiducial.drop_duplicates(subset="ecg_id", keep="first")
         # merge the two dataframes on "ecg_id" and keep empty cells
         self._df_records = self._df_records.merge(df_fiducial, on="ecg_id", how="outer")
         del df_fiducial
 
         # turn the "ecg_id" column into string of 5 digits
         self._df_records["ecg_id"] = self._df_records["ecg_id"].apply(lambda x: f"{x:05d}")
-        self._df_records.set_index("ecg_id", inplace=True)
+        self._df_records = self._df_records.set_index("ecg_id")
         self._all_records = self._df_records.index.tolist()
 
         # Fix potential bugs in the database

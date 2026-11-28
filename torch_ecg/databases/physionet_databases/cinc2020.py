@@ -375,7 +375,7 @@ class CINC2020(PhysioNetDataBase):
         )
         self.__all_records = list_sum(self._all_records.values())
 
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._df_records["fs"] = self._df_records.tranche.apply(lambda x: self.fs[x])
 
         # TODO: perhaps we can load labels and metadata of all records into `self._df_records` here

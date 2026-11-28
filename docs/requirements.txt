@@ -7,3 +7,5 @@ sphinx-markdown-tables
 sphinxcontrib-tikz
 sphinxcontrib-bibtex
 myst-parser
+sphinx-gallery
+joblib

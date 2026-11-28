@@ -59,6 +59,30 @@ extensions = [
     "sphinxcontrib.bibtex",
 ]
 
+# Executable examples gallery (sphinx-gallery).  Conditionally enabled:
+# archived tags in the multiversion site have no `examples/` directory, and
+# sphinx-gallery fails the build at the gallery-header check when the
+# examples directory is absent.  The directory, the `auto_examples/index`
+# toctree entry in index.rst, and this block enter and leave the tree
+# together.
+if (project_root / "examples").is_dir():
+    extensions.append("sphinx_gallery.gen_gallery")
+    sphinx_gallery_conf = {
+        "examples_dirs": ["../../examples"],  # repo root
+        "gallery_dirs": ["auto_examples"],
+        "filename_pattern": "/plot_",  # only plot_-prefixed files are collected and executed
+        # resolved against the process working directory (docs/), not the
+        # source directory, hence the absolute path
+        "default_thumb_file": str(docs_root / "_static" / "images" / "ecg_thumb.png"),
+        # a failed example generates its page with the traceback but does not
+        # turn the build red
+        "only_warn_on_example_error": True,
+        "min_reported_time": 10,
+        # light examples run in parallel (joblib); training examples must
+        # opt out via `# sphinx_gallery_parallel = False` in their header
+        "parallel": 2,
+    }
+
 bibtex_bibfiles = [str(docs_root / "references.bib")]
 bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header

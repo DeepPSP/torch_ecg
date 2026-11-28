@@ -1,7 +1,7 @@
 .. _examples:
 
-Examples
-========
+Benchmarks
+==========
 
 The :code:`benchmarks/` directory of the `repository
 <https://github.com/DeepPSP/torch_ecg/tree/master/benchmarks>`__ contains
@@ -9,7 +9,9 @@ eight complete, self-contained training examples -- one per challenge /
 database -- written against the modern library API.  They also serve
 as the reference usage for the whole package: each one shows reader and
 dataset usage, model construction, training with the library trainer, and
-evaluation with the official challenge metrics where applicable.
+evaluation with the official challenge metrics where applicable.  Minimal
+illustrations of individual library components are provided in the
+:doc:`examples gallery </auto_examples/index>`.
 
 Each benchmark is runnable as a module with a :code:`--smoke` debug mode
 (a few hundred iterations on a subset, no full training):
@@ -19,8 +21,8 @@ Each benchmark is runnable as a module with a :code:`--smoke` debug mode
     python -m benchmarks.train_crnn_cinc2021.train --help
     python -m benchmarks.train_crnn_cinc2021.train --smoke
 
-The examples
-------------
+The benchmarks
+--------------
 
 .. list-table::
    :header-rows: 1

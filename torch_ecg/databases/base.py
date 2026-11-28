@@ -554,7 +554,7 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )  # remove relative path, leaving only the record name
-            self._df_records.set_index("record", inplace=True)
+            self._df_records = self._df_records.set_index("record")
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
@@ -600,7 +600,7 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))  # type: ignore
             self.logger.info(f"Done in {time.time() - start:.3f} seconds!")  # type: ignore
             self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._all_records = self._df_records.index.values.tolist()
 
     def get_subject_id(self, rec: Union[str, int]) -> int:

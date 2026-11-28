@@ -460,7 +460,7 @@ class CINC2021(PhysioNetDataBase):
         )
         self.__all_records = list_sum(self._all_records.values())
 
-        self._df_records.set_index("record", inplace=True)
+        self._df_records = self._df_records.set_index("record")
         self._df_records["fs"] = self._df_records.tranche.apply(lambda x: self.fs[x])
 
         # TODO: perhaps we can load labels and metadata of all records into `self._df_records` here
@@ -493,7 +493,7 @@ class CINC2021(PhysioNetDataBase):
             self._stats = self._df_records.copy(deep=True)
             self._stats["record"] = self._stats.index
             self._stats = self._stats.reset_index(drop=True)
-            self._stats.drop(columns="path", inplace=True)
+            self._stats = self._stats.drop(columns="path")
             self._stats["tranche_name"] = self._stats["tranche"].apply(lambda t: self.tranche_names[t])
             for k in [
                 "diagnosis",
