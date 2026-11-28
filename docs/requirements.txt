@@ -1,5 +1,5 @@
 sphinx
-pydata-sphinx-theme==0.20.0
+pydata-sphinx-theme
 sphinx-copybutton
 sphinx-design
 sphinx-emoji-favicon

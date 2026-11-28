@@ -1,7 +1,7 @@
 """
-==================
+======================
 Reading an ECG record
-==================
+======================
 
 This example loads one record from the CPSC 2018 sample data shipped with the
 repository and renders its 12 standard leads.
@@ -12,6 +12,8 @@ a reader is constructed with the database directory, iterates over record
 names, and returns each record as an array of shape ``(n_leads, n_samples)``.
 """
 
+import contextlib
+import io
 from pathlib import Path
 
 import matplotlib
@@ -33,7 +35,11 @@ matplotlib.use("Agg")
 # without `__file__`, hence this indirection)
 REPO_ROOT = Path(torch_ecg.__file__).resolve().parents[1]
 
-reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
+# the sample data ships without the annotation file of the database, and
+# the reader says so when it is created; the labels are not used here,
+# hence the message is discarded
+with contextlib.redirect_stderr(io.StringIO()):
+    reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
 print(f"{len(reader)} records available, e.g. {reader.all_records[:3]}")
 
 rec = reader.all_records[0]

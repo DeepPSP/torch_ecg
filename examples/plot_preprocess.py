@@ -1,7 +1,7 @@
 """
-==========================================
+========================================================
 Preprocessing: bandpass filtering and baseline removal
-==========================================
+========================================================
 
 This example applies a typical preprocessing chain -- FIR bandpass filtering
 followed by baseline-wander removal -- to a raw record from the CPSC 2018
@@ -13,6 +13,8 @@ configuration.  With ``random = False`` the chain is applied in the declared
 order on every call.
 """
 
+import contextlib
+import io
 from pathlib import Path
 
 import matplotlib
@@ -36,7 +38,11 @@ matplotlib.use("Agg")
 # without `__file__`, hence this indirection)
 REPO_ROOT = Path(torch_ecg.__file__).resolve().parents[1]
 
-reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
+# the sample data ships without the annotation file of the database, and
+# the reader says so when it is created; the labels are not used here,
+# hence the message is discarded
+with contextlib.redirect_stderr(io.StringIO()):
+    reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
 rec = reader.all_records[0]
 sig = reader.load_data(rec)
 fs = reader.fs

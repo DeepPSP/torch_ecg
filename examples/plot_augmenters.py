@@ -15,6 +15,8 @@ augmenter is applied in isolation to make its individual effect visible;
 during training they are composed in one manager and applied to every batch.
 """
 
+import contextlib
+import io
 from pathlib import Path
 
 import matplotlib
@@ -42,7 +44,11 @@ REPO_ROOT = Path(torch_ecg.__file__).resolve().parents[1]
 
 seed_everything(42)
 
-reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
+# the sample data ships without the annotation file of the database, and
+# the reader says so when it is created; the labels are not used here,
+# hence the message is discarded
+with contextlib.redirect_stderr(io.StringIO()):
+    reader = CPSC2018(str(REPO_ROOT / "sample-data" / "cpsc2018"), verbose=0)
 rec = reader.all_records[0]
 sig = reader.load_data(rec)
 fs = reader.fs
